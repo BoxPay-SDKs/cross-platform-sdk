@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'cross_platform_sdk'
     spec.version                  = '1.0.0'
-    spec.homepage                 = 'https://boxpay.com'
+    spec.homepage                 = 'https://developers.boxpay.tech/'
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
     spec.license                  = ''
@@ -50,5 +50,5 @@ Pod::Spec.new do |spec|
             SCRIPT
         }
     ]
-                
+    spec.resources = ['build/compose/cocoapods/compose-resources']
 end

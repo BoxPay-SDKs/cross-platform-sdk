@@ -5,7 +5,12 @@ plugins {
     id("com.android.library")
     kotlin("native.cocoapods")
     id("maven-publish")
+    kotlin("plugin.serialization") version "1.9.24"
+    id("org.jetbrains.compose") version "1.7.3"             // ✅ CMP
+    id("org.jetbrains.kotlin.plugin.compose")
 }
+
+val sdkVersion = "1.0.0"
 
 kotlin {
     jvmToolchain(17)
@@ -35,9 +40,9 @@ kotlin {
     }
 
     cocoapods {
-        version = "1.0.0"
+        version = sdkVersion
         summary = "BoxPayBridge Shared SDK"
-        homepage = "https://boxpay.com"
+        homepage = "https://developers.boxpay.tech/"
         ios.deploymentTarget = "14.1"
         framework {
             baseName = "cross-platform-sdk"
@@ -48,12 +53,40 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+                // Ktor
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.client.auth)
+
+                // Kotlinx
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.datetime)
+
+                // Compose
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+
+                // Navigation
+                implementation(libs.navigation.compose)
             }
         }
-        val androidMain by getting
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.android)
+                implementation(libs.androidx.activity.compose)
+            }
+        }
         val iosMain by creating {
             dependsOn(commonMain)
+            dependencies {
+                implementation(libs.ktor.client.darwin)
+            }
         }
         val iosX64Main by getting {
             dependsOn(iosMain)
@@ -70,8 +103,10 @@ kotlin {
 android {
     namespace = "com.crossplatform.sdk"
     compileSdk = 34
+    buildFeatures.buildConfig  = true
     defaultConfig {
         minSdk = 21
+        buildConfigField("String", "SDK_VERSION", "\"$sdkVersion\"")  // Android
     }
 
     compileOptions {
