@@ -1,6 +1,6 @@
 package com.crossplatform.ios
 
-import com.crossplatform.sdk.UPIAppDetector
+import com.crossplatform.sdk.data.repo.UPIAppDetector
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 

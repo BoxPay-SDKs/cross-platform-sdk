@@ -10,9 +10,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/androidkmpapp" />
             <option value="$PROJECT_DIR$/cross-platform-sdk" />
-            <option value="$PROJECT_DIR$/flutter_plugin" />
-            <option value="$PROJECT_DIR$/react_native_module" />
           </set>
         </option>
       </GradleProjectSettings>

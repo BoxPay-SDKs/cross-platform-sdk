@@ -1,11 +1,18 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
+val sdkVersion = "1.0.0-beta6"
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
     kotlin("native.cocoapods")
     id("maven-publish")
+    kotlin("plugin.serialization") version "1.9.24"
+    id("org.jetbrains.compose") version "1.7.3"             // ✅ CMP
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("com.codingfeline.buildkonfig") version "0.15.2"
 }
+
 
 kotlin {
     jvmToolchain(17)
@@ -18,26 +25,35 @@ kotlin {
     iosX64 {
         binaries.framework {
             baseName = "cross-platform-sdk"
+            freeCompilerArgs += listOf(
+                "-Xbinary=bundleId=com.boxpay.crossplatformsdk"
+            )
             xcf.add(this)
         }
     }
     iosArm64 {
         binaries.framework {
             baseName = "cross-platform-sdk"
+            freeCompilerArgs += listOf(
+                "-Xbinary=bundleId=com.boxpay.crossplatformsdk"
+            )
             xcf.add(this)
         }
     }
     iosSimulatorArm64 {
         binaries.framework {
             baseName = "cross-platform-sdk"
+            freeCompilerArgs += listOf(
+                "-Xbinary=bundleId=com.boxpay.crossplatformsdk"
+            )
             xcf.add(this)
         }
     }
 
     cocoapods {
-        version = "1.0.0"
+        version = sdkVersion
         summary = "BoxPayBridge Shared SDK"
-        homepage = "https://boxpay.com"
+        homepage = "https://developers.boxpay.tech/"
         ios.deploymentTarget = "14.1"
         framework {
             baseName = "cross-platform-sdk"
@@ -48,12 +64,50 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+                // Ktor
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.client.auth)
+
+                // Kotlinx
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.datetime)
+
+                // Compose
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+
+                // Navigation
+                implementation(libs.navigation.compose)
+
+                // ✅ Koin
+                implementation(libs.koin.core)
+                implementation(libs.koin.compose)
+                implementation(libs.koin.compose.viewmodel)
+
+                implementation("io.github.alexzhirkevich:compottie:2.0.0")
+                implementation("media.kamel:kamel-image:0.9.5")
             }
         }
-        val androidMain by getting
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.android)
+                implementation(libs.androidx.activity.compose)
+                implementation(libs.koin.android)
+                implementation("androidx.lifecycle:lifecycle-process:2.8.7")
+            }
+        }
         val iosMain by creating {
             dependsOn(commonMain)
+            dependencies {
+                implementation(libs.ktor.client.darwin)
+            }
         }
         val iosX64Main by getting {
             dependsOn(iosMain)
@@ -70,13 +124,27 @@ kotlin {
 android {
     namespace = "com.crossplatform.sdk"
     compileSdk = 34
+    buildFeatures.buildConfig  = true
     defaultConfig {
         minSdk = 21
+        buildConfigField("String", "SDK_VERSION", "\"$sdkVersion\"")  // Android
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+buildkonfig {
+    packageName = "com.crossplatform.sdk"
+
+    defaultConfigs {
+        buildConfigField(
+            com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
+            "SDK_VERSION",
+            sdkVersion
+        )
     }
 }
 
@@ -96,7 +164,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 groupId = "com.github.BoxPay-SDKs"
                 artifactId = "BoxPayBridge"
-                version = "1.0.0-beta5"
+                version = sdkVersion
 
                 val androidComponent = components.findByName("release")
                 if (androidComponent != null) {

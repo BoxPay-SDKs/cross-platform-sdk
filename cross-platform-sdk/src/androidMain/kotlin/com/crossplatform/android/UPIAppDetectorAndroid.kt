@@ -2,7 +2,7 @@ package com.crossplatform.android
 
 import android.content.Context
 import android.content.pm.PackageManager
-import com.crossplatform.sdk.UPIAppDetector
+import com.crossplatform.sdk.data.repo.UPIAppDetector
 
 class UPIAppDetectorAndroid(
     private val context: Context
