@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.data
 
+import com.crossplatform.sdk.BuildKonfig
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.generateRandomAlphanumericString
 import com.crossplatform.sdk.presentation.getEndpoint
@@ -71,10 +72,10 @@ object ServiceRequest {
                 level = LogLevel.BODY
             }
             install(DefaultRequest) {
-                url("${getEndpoint(checkoutDetails.env)}${checkoutDetails.token}")
+                url("${getEndpoint(checkoutDetails.env)}${checkoutDetails.token}/")
                 header("X-Request-Id", generateRandomAlphanumericString(10))
                 header("X-Client-Connector-Name", "KMP SDK")
-                header("X-Client-Connector-Version", checkoutDetails.sdkVersion)
+                header("X-Client-Connector-Version", BuildKonfig.SDK_VERSION)
                 checkoutDetails.shopperToken?.let {
                     header("Authorization", "Session $it")
                 }

@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SDKPaymentResponse(
     @SerialName("status") val status: String,
-    @SerialName("transactionId") val transactionId: String
+    @SerialName("transactionId") val transactionId: String,
+    @SerialName("inquiryToken") val inquiryToken : String
 )

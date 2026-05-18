@@ -8,20 +8,27 @@ data class CheckoutDetails(
     // ─── Payment Info ───────────────────────────
     val currencySymbol: String,
     val currencyCode: String,
-    val amount: String,
+    val amount: Double,
     val token: String,
     val env: String,
     val itemsLength: Int,
     val errorMessage: String,
+    val isSessionExpired : Boolean,
+    val isPaymentSuccessful : Boolean,
+    val successfulTimeStamp : String,
+    val selectedPaymentMethod : String,
+    val isPaymentFailed : Boolean,
     val shopperToken: String? = null,          // string | null
 
     // ─── Theme ──────────────────────────────────
-    val fontFamily: FontConfiguration? = null,
-    val ctaBorderRadius: Double,
+//    val fontFamily: FontConfiguration? = null,
+    val ctaBorderRadius: Int,
     val buttonColor: String,
     val buttonTextColor: String,
     val headerColor: String,
     val headerTextColor: String,
+    val merchantName : String,
+    val merchantLogo : String,
 
     // ─── Screen Visibility ───────────────────────
     val isSuccessScreenVisible: Boolean,
@@ -43,21 +50,10 @@ data class CheckoutDetails(
     val isDOBEnabled: Boolean,
     val isDOBEditable: Boolean,
 
-    // ─── Payment Methods ─────────────────────────
-    val isUpiIntentMethodEnabled: Boolean,
-    val isUpiCollectMethodEnabled: Boolean,
-    val isUpiQRMethodEnabled: Boolean,
-    val isCardMethodEnabled: Boolean,
-    val isWalletMethodEnabled: Boolean,
-    val isNetBankingMethodEnabled: Boolean,
-    val isEmiMethodEnabled: Boolean,
-    val isBnplMethodEnabled: Boolean,
-    val isUPIOtmIntentMethodEnabled: Boolean,
-    val isUPIOtmCollectMethodEnabled: Boolean,
-    val isUPIOtmQRMethodEnabled: Boolean,
-
-    // ─── SDK Version ─────────────────────────
-    val sdkVersion : String
+    // ---------Payment Current Status --------
+    val status : String,
+    val transactionId : String,
+    val inquiryToken : String
 )
 
 @Serializable

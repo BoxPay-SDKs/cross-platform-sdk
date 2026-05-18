@@ -12,10 +12,10 @@ data class AnalyticsRequest(
     @SerialName("uiEvent") val uiEvent: String,
     @SerialName("eventAttrs") val eventAttrs: EventAttrs,
     @SerialName("deviceDetails") val deviceDetails: DeviceDetails
-)
-
-@Serializable
-data class EventAttrs(
-    @SerialName("errorMessage") val errorMessage: String,
-    @SerialName("screenName") val screenName: String
-)
+) {
+    @Serializable
+    data class EventAttrs(
+        @SerialName("errorMessage") val errorMessage: String,
+        @SerialName("screenName") val screenName: String
+    )
+}

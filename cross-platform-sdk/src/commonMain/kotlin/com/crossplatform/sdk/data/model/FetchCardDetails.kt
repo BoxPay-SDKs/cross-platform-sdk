@@ -16,6 +16,6 @@ data class CardPaymentMethod(
     @SerialName("id") val id: String,
     @SerialName("type") val type: String,
     @SerialName("brand") val brand: String,
-    @SerialName("issuer") val issuer: String,
+    @SerialName("issuer") val issuer: String? = null,
     @SerialName("classification") val classification: String
 )

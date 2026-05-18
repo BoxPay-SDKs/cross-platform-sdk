@@ -10,8 +10,8 @@ data class SessionDetails(
     @SerialName("merchantDetails") val merchantDetails: MerchantDetails,
     @SerialName("sessionExpiryTimestamp") val sessionExpiryTimestamp: String,
     @SerialName("status") val status: String,
-    @SerialName("lastPaidAtTimestampLocale") val lastPaidAtTimestampLocale: String,
-    @SerialName("lastTransactionId") val lastTransactionId: String
+    @SerialName("lastPaidAtTimestamp") val lastPaidAtTimestamp: String?,
+    @SerialName("lastTransactionId") val lastTransactionId: String?
 )
 
 @Serializable
@@ -44,7 +44,6 @@ data class PaymentContext(
 
 @Serializable
 data class Money(
-    @SerialName("amountLocaleFull") val amountLocaleFull: String,
     @SerialName("currencySymbol") val currencySymbol: String,
     @SerialName("currencyCode") val currencyCode: String,
     @SerialName("amount") val amount: Double
@@ -82,21 +81,25 @@ data class SubscriptionDetails(
 
 @Serializable
 data class OrderDetails(
-    @SerialName("shippingAmountLocaleFull") val shippingAmountLocaleFull: String? = null,
-    @SerialName("taxAmountLocaleFull") val taxAmountLocaleFull: String? = null,
-    @SerialName("originalAmountLocaleFull") val originalAmountLocaleFull: String? = null,
+    @SerialName("shippingAmount") val shippingAmount: Double? = null,
+    @SerialName("taxAmount") val taxAmount: Double? = null,
+    @SerialName("originalAmount") val originalAmount: Double? = null,
     @SerialName("items") val items: List<OrderItem>? = null
 )
 
 @Serializable
 data class OrderItem(
-    @SerialName("name") val name: String? = null,
+    @SerialName("id") val id : String? = null,
+    @SerialName("itemName") val itemName: String? = null,
     @SerialName("quantity") val quantity: Int? = null,
-    @SerialName("price") val price: String? = null
+    @SerialName("imageUrl") val imageUrl : String? = null,
+    @SerialName("amountWithoutTax") val amountWithoutTax: Double? = null
 )
 
 @Serializable
 data class MerchantDetails(
+    @SerialName("merchantName") val merchantName : String?,
+    @SerialName("logoUrl") val merchantLogo : String?,
     @SerialName("checkoutTheme") val checkoutTheme: CheckoutTheme
 )
 

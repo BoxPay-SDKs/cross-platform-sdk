@@ -17,7 +17,7 @@ data class UserDetails(
 
     // ─── Phone ───────────────────────────────────
     @SerialName("completePhoneNumber") val completePhoneNumber: String? = null,
-    @SerialName("phoneCode") val phoneCode: String? = null,
+    @SerialName("phoneCode") val phoneCode: String,
 
     // ─── Address ─────────────────────────────────
     @SerialName("address1") val address1: String? = null,
