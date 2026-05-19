@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <queries>
+        <!-- Example Store and Services (existing entries) -->
+        <package android:name="com.example.store" />
+        <package android:name="com.example.services" />
+
+        <!-- GPay -->
+        <package android:name="com.google.android.apps.nbu.paisa.user" />
+
+        <!-- PhonePe -->
+        <package android:name="com.phonepe.app" />
+
+        <!-- Paytm -->
+        <package android:name="net.one97.paytm" />
+    </queries>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <application>
+        <activity
+            android:name="com.crossplatform.BoxPayActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false" />
+    </application>
+</manifest>
