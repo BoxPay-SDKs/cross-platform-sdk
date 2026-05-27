@@ -159,7 +159,8 @@ fun UpiTimerScreen(
                 text = "Kindly avoid using the back button until the transaction process is complete",
                 fontSize = 12.sp,
                 color = Color(0xFF555555),
-                fontFamily = defaultFontFamily
+                fontFamily = defaultFontFamily,
+                lineHeight = 12.sp
             )
         }
 

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,27 +29,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.domain.model.MainScreenModel
+import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
+import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.getInstalledUpiApps
 import com.crossplatform.sdk.presentation.getPlatformContext
+import com.crossplatform.sdk.presentation.screens.CheckboxItem
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.add_icon
-import crossplatformsdk.cross_platform_sdk.generated.resources.add_upi_id_background
 import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
 import crossplatformsdk.cross_platform_sdk.generated.resources.gpay_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_qr
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi_error
 import crossplatformsdk.cross_platform_sdk.generated.resources.other_intent_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.paytm_icon
@@ -61,50 +64,60 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 @Composable
 fun UPIComponent(
     methodFlags: MainScreenModel.MethodFlags,
+    savedUpiList : List<SelectedPaymentMethod>,
     checkoutDetails: CheckoutDetails,
-    onClickUpiCollectPayButton : (String) -> Unit,
+    onClickUpiCollectPayButton : (String, Boolean) -> Unit,
     onClickUpiIntentPayButton : (String) -> Unit,
     onClickUpiQRPayButton : () -> Unit,
-    onClickSavedUpiPayButton : (String, String) -> Unit
+    onClickSavedUpiPayButton : (String, String) -> Unit,
+    onClickRadio : () -> Unit,
+    onErrorLoadingIntent : (String) -> Unit
 ) {
+    val isSaveInstrumentCheckBoxClicked = remember {
+        mutableStateOf(false)
+    }
+
+    val selectedId = remember {
+        mutableStateOf("")
+    }
     val context = getPlatformContext()
 
-        val isTablet = false
-        var upiCollectTextInput  by remember { mutableStateOf("") }
-        var upiCollectError      by remember { mutableStateOf(false) }
-        var upiCollectValid      by remember { mutableStateOf(false) }
-        var upiCollectVisible    by remember { mutableStateOf(false) }
-        var upiQRVisible         by remember { mutableStateOf(false) }
-        var selectedIntent       by remember { mutableStateOf("") }
-        var isGpayInstalled      by remember { mutableStateOf(false) }
-        var isPhonePeInstalled   by remember { mutableStateOf(false) }
-        var isPaytmInstalled     by remember { mutableStateOf(false) }
+    val isTablet = false
+    var upiCollectTextInput  by remember { mutableStateOf("") }
+    var upiCollectError      by remember { mutableStateOf(false) }
+    var upiCollectValid      by remember { mutableStateOf(false) }
+    var upiCollectVisible    by remember { mutableStateOf(false) }
+    var upiQRVisible         by remember { mutableStateOf(false) }
+    var selectedIntent       by remember { mutableStateOf("") }
+    var isGpayInstalled      by remember { mutableStateOf(false) }
+    var isPhonePeInstalled   by remember { mutableStateOf(false) }
+    var isPaytmInstalled     by remember { mutableStateOf(false) }
 
-        val upiRegex = remember { Regex("^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{3,64}$") }
-
-
-        LaunchedEffect(Unit) {
-            val installed    = getInstalledUpiApps(context)
-            println("====installed applications $installed")
-            isGpayInstalled    = installed.contains("gpay")
-            isPhonePeInstalled = installed.contains("phonepe")
-            isPaytmInstalled   = installed.contains("paytm")
-        }
+    val upiRegex = remember { Regex("^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{3,64}$") }
 
 
-        fun handleTextChange(text: String) {
-            upiCollectTextInput = text
-            upiCollectError     = false
-            if (text.trim().isNotEmpty() && upiRegex.matches(text)) {
-                upiCollectValid = true
-                upiCollectError = false
-            } else {
-                if (text.contains("@") && (text.split("@").getOrNull(1)?.length ?: 0) >= 2) {
-                    upiCollectError = true
-                    upiCollectValid = false
-                }
+    LaunchedEffect(Unit) {
+        val installed    = getInstalledUpiApps(context)
+        onErrorLoadingIntent(installed.toString())
+        isGpayInstalled    = installed.contains("gpay")
+        isPhonePeInstalled = installed.contains("phonepe")
+        isPaytmInstalled   = installed.contains("paytm")
+    }
+
+
+    fun handleTextChange(text: String) {
+        upiCollectTextInput = text
+        upiCollectError     = false
+        if (text.trim().isNotEmpty() && upiRegex.matches(text)) {
+            upiCollectValid = true
+            upiCollectError = false
+        } else {
+            if (text.contains("@") && (text.split("@").getOrNull(1)?.length ?: 0) >= 2) {
+                upiCollectError = true
+                upiCollectValid = false
             }
         }
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -116,24 +129,36 @@ fun UPIComponent(
     ) {
 
         // --- Saved UPI Array ---
-//            if (savedUpiArray.isNotEmpty()) {
-//                PaymentSelectorView(
-//                    providerList      = savedUpiArray,
-//                    onProceedForward  = { display, instrument, type ->
-//                        onHandleCollectPayment(display, instrument, type)
-//                    },
-//                    onClickRadio = { value ->
-//                        upiQRVisible      = false
-//                        upiCollectVisible = false
-//                        selectedIntent    = null
-//                        onClickRadio(value)
-//                    }
-//                )
-//                HorizontalDivider(
-//                    color    = Color(0xFFE6E6E6),
-//                    modifier = Modifier.padding(vertical = 8.dp)
-//                )
-//            }
+            if (savedUpiList.isNotEmpty()) {
+                savedUpiList.forEachIndexed { _, provider ->
+                    PaymentSelector(
+                        id                  = provider.id,
+                        title               = provider.displayName,
+                        imageUrl            = provider.imageUrl,
+                        isSelected          = provider.id == selectedId.value,
+                        instrumentTypeValue = provider.instrumentType,
+                        isLastUsed          = false,
+                        onPress             = {
+                            onClickRadio()
+                            selectedId.value = it
+                                              },
+                        onProceedForward    = { displayValue, instrumentValue ->
+                            onClickSavedUpiPayButton(instrumentValue, displayValue )
+                        },
+                        brandColor          = checkoutDetails.buttonColor,
+                        buttonTextColor     = checkoutDetails.buttonTextColor,
+                        currencySymbol      = checkoutDetails.currencySymbol,
+                        amount              = checkoutDetails.amount,
+                        ctaBorderRadius     = checkoutDetails.ctaBorderRadius,
+                        drawableResource    = Res.drawable.ic_upi_error
+                    )
+                    HorizontalDivider(
+                        color     = Color(0xFFECECED),
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                }
+            }
 
         // --- UPI Intent ---
         if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) {
@@ -269,6 +294,11 @@ fun UPIComponent(
                         fontFamily = defaultFontFamily,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        // Border
+                        focusedBorderColor   = checkoutDetails.focusedTextInputBorderColor.toComposeColor(),
+                        unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor.toComposeColor(),
                     )
                 )
 
@@ -281,6 +311,28 @@ fun UPIComponent(
                         modifier   = Modifier.padding(top = 4.dp)
                     )
                 }
+                if(!checkoutDetails.shopperToken.isNullOrBlank()) {
+                    Row(
+                        modifier          = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        CheckboxItem(
+                            isChecked   = isSaveInstrumentCheckBoxClicked.value,
+                            buttonColor = checkoutDetails.buttonColor,
+                            onClick     = { isSaveInstrumentCheckBoxClicked.value = !isSaveInstrumentCheckBoxClicked.value }
+                        )
+                        Text(
+                            text       = "Save UPI ID for future usage",
+                            fontFamily = defaultFontFamily,
+                            fontWeight = FontWeight.Normal,
+                            fontSize   = 14.sp,
+                            color      = Color(0xFF2D2B32),
+                            modifier   = Modifier.padding(start = 6.dp)
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -291,7 +343,7 @@ fun UPIComponent(
                         .background(if (upiCollectValid) checkoutDetails.buttonColor.toComposeColor()
                         else Color(0xFFE6E6E6))
                         .clickable(enabled = upiCollectValid) {
-                            onClickUpiCollectPayButton(upiCollectTextInput)
+                            onClickUpiCollectPayButton(upiCollectTextInput, isSaveInstrumentCheckBoxClicked.value)
                         },
                     text   = "Verify & Pay",
                     amount = checkoutDetails.amount,
@@ -439,7 +491,7 @@ private fun UpiExpandableHeader(
         modifier          = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(start = 8.dp, end = 10.dp),
+            .padding(start = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -467,11 +519,3 @@ private fun UpiExpandableHeader(
         )
     }
 }
-
-
-//// --- Format time helper ---
-//fun formatTime(seconds: Int): String {
-//    val minutes = seconds / 60
-//    val secs    = seconds % 60
-//    return "%02d:%02d".format(minutes, secs)
-//}

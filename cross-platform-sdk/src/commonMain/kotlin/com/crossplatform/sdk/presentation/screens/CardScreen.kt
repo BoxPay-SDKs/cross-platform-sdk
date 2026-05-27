@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,6 +48,7 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.ErrorText
 import com.crossplatform.sdk.presentation.components.CvvInfoBottomSheet
 import com.crossplatform.sdk.presentation.components.Footer
+import com.crossplatform.sdk.presentation.components.KnowMoreBottomSheet
 import com.crossplatform.sdk.presentation.components.PayButton
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
@@ -77,15 +79,15 @@ fun CardScreen(
     val isBoxPayAnimationVisible by viewModel.isBoxPayAnimationVisible.collectAsStateWithLifecycle()
     val showWebView by viewModel.showWebview.collectAsStateWithLifecycle()
 
-    var isSICheckBoxClicked  by remember { mutableStateOf(checkoutDetails.isSICheckboxVisible) }
+    var isSiCheckBoxChecked  by remember { mutableStateOf(checkoutDetails.isSICheckboxChecked) }
 
 
     val isEmiFlow = !duration.isNullOrEmpty()
 
     val isSubscriptionDetailsVisible =
-        checkoutDetails.isSubscriptionCheckout && isSICheckBoxClicked
+        checkoutDetails.isSubscriptionCheckout && isSiCheckBoxChecked
 
-    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).background(Color.White)) {
         // --- EMI Bank Info ---
         if (!bankName.isNullOrEmpty()) {
             Row(
@@ -144,7 +146,7 @@ fun CardScreen(
         CardTextField(
             value         = viewModel.cardNumberText.value,
             label         = "Card Number*",
-            onValueChange = { viewModel.handleCardNumberChange(it, checkoutDetails.env) },
+            onValueChange = { viewModel.handleCardNumberChange(it, checkoutDetails.isTestEnv) },
             isError       = viewModel.cardNumberError.value,
             keyboardType  = KeyboardType.Number,
             maxLength     = viewModel.maxCardNumberLength.value,
@@ -158,10 +160,12 @@ fun CardScreen(
             },
             onFocus = { viewModel.cardNumberError.value = false },
             visualTransformation = CardNumberVisualTransformation(),
+            focusedTextInputBorderColor = checkoutDetails.focusedTextInputBorderColor,
+            unfocusedTextInputBorderColor = checkoutDetails.unfocusedTextInputBorderColor,
             onBlur  = {
                 val cleaned = viewModel.cardNumberText.value.filter { it.isDigit() }
                 viewModel.cardNumberError.value = cleaned.isEmpty() ||
-                        (checkoutDetails.env != "test" && (!viewModel.methodEnabled.value || !viewModel.cardNumberValid.value || !viewModel.emiIssuerExist.value))
+                        (!checkoutDetails.isTestEnv && (!viewModel.methodEnabled.value || !viewModel.cardNumberValid.value || !viewModel.emiIssuerExist.value))
                 viewModel.cardNumberErrorText.value = when {
                     cleaned.isEmpty()     -> "Required"
                     !viewModel.methodEnabled.value        -> "This card is not supported for the payment"
@@ -172,21 +176,23 @@ fun CardScreen(
                 }
             }
         )
-        if (viewModel.cardNumberError.value) ErrorText(viewModel.cardNumberText.value)
+        if (viewModel.cardNumberError.value) ErrorText(viewModel.cardNumberErrorText.value)
 
         // --- Cardholder Name ---
         CardTextField(
             value         = viewModel.cardHolderNameText.value,
             label         = "Cardholder Name*",
             onValueChange = {
-                viewModel.cardHolderNameText.value = it; if (it.isNotEmpty()) viewModel.cardHolderNameError.value = false
-                viewModel.checkCardValid(checkoutDetails.env, false)
+                viewModel.cardHolderNameText.value = it; if (it.isNotBlank()) viewModel.cardHolderNameError.value = false
+                viewModel.checkCardValid(checkoutDetails.isTestEnv, false)
                             },
             isError       = viewModel.cardHolderNameError.value,
             modifier      = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
             onFocus       = { viewModel.cardHolderNameError.value = false },
+            focusedTextInputBorderColor = checkoutDetails.focusedTextInputBorderColor,
+            unfocusedTextInputBorderColor = checkoutDetails.unfocusedTextInputBorderColor,
             onBlur        = {
-                viewModel.cardHolderNameError.value    = viewModel.cardHolderNameErrorText.value.trim().isEmpty()
+                viewModel.cardHolderNameError.value    = viewModel.cardHolderNameText.value.trim().isEmpty()
                 viewModel.cardHolderNameErrorText.value = if (viewModel.cardHolderNameError.value) "Required" else ""
             }
         )
@@ -202,13 +208,15 @@ fun CardScreen(
                     value         = viewModel.cardExpiryText.value,
                     label         = "Expiry (MM/YY)*",
                     onValueChange = {
-                        viewModel.handleExpiryChange(it,checkoutDetails.env) },
+                        viewModel.handleExpiryChange(it,checkoutDetails.isTestEnv) },
                     isError       = viewModel.cardExpiryError.value,
                     keyboardType  = KeyboardType.Number,
                     maxLength     = 5,
                     visualTransformation = ExpiryVisualTransformation(),
                     modifier      = Modifier.fillMaxWidth().padding(start = 16.dp),
                     onFocus       = { viewModel.cardExpiryError.value = false },
+                    focusedTextInputBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                    unfocusedTextInputBorderColor = checkoutDetails.unfocusedTextInputBorderColor,
                     onBlur        = {
                         viewModel.cardExpiryError.value    = viewModel.cardExpiryText.value.length < 4 || !viewModel.cardExpiryValid.value
                         viewModel.cardExpiryErrorText.value = when {
@@ -226,7 +234,7 @@ fun CardScreen(
                     onValueChange =
                         {
                         viewModel.cardCvvText.value = it; if (it.isEmpty()) { viewModel.cardCvvError.value = true; viewModel.cardCvvErrorText.value = "Required" } else viewModel.cardCvvError.value = false
-                        viewModel.checkCardValid(checkoutDetails.env, false)
+                        viewModel.checkCardValid(checkoutDetails.isTestEnv, false)
                         },
                     isError       = viewModel.cardCvvError.value,
                     keyboardType  = KeyboardType.NumberPassword,
@@ -244,6 +252,8 @@ fun CardScreen(
                         )
                     },
                     onFocus = { viewModel.cardCvvError.value = false },
+                    focusedTextInputBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                    unfocusedTextInputBorderColor = checkoutDetails.unfocusedTextInputBorderColor,
                     onBlur  = {
                         viewModel.cardCvvError.value    = viewModel.cardCvvText.value.length < viewModel.maxCvvLength.value
                         viewModel.cardCvvErrorText.value = if (viewModel.cardCvvText.value.isEmpty()) "Required" else "Invalid CVV"
@@ -259,7 +269,9 @@ fun CardScreen(
                 value         = viewModel.cardNickNameText.value,
                 label         = "Card NickName (for easy identification)",
                 onValueChange = { viewModel.cardNickNameText.value = it },
-                modifier      = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                modifier      = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                focusedTextInputBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                unfocusedTextInputBorderColor = checkoutDetails.unfocusedTextInputBorderColor,
             )
 
             // CVV not stored info
@@ -292,7 +304,7 @@ fun CardScreen(
             Row(
                 modifier          = Modifier
                     .fillMaxWidth()
-                    .padding(start = 10.dp, top = 10.dp),
+                    .padding(start = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 CheckboxItem(
@@ -388,10 +400,17 @@ fun CardScreen(
             borderRadius = checkoutDetails.ctaBorderRadius
         )
     }
-//
-//            if (showKnowMoreDialog) {
-//                KnowMoreBottomSheet(onClick = { showKnowMoreDialog = false })
-//            }
+
+    if (viewModel.showKnowMoreDialog.value) {
+        KnowMoreBottomSheet(
+            buttonTextColor = checkoutDetails.buttonTextColor,
+            buttonColor = checkoutDetails.buttonColor,
+            ctaBorderRadius = checkoutDetails.ctaBorderRadius,
+            onDismiss = {
+                viewModel.showKnowMoreDialog.value = false
+            }
+        )
+    }
 
     if(isBoxPayAnimationVisible) {
         ShowLoadingComponent()
@@ -403,7 +422,7 @@ fun CardScreen(
             html = viewModel.htmlString.value,
             onBackPress = {result ->
                 viewModel.callFetchStatus(result ?: "")
-                viewModel.showWebview.value = false
+                viewModel.setWebViewScreen(false)
             }
         )
     }
@@ -422,7 +441,9 @@ private fun CardTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     trailingIcon        : @Composable (() -> Unit)? = null,
     onFocus             : () -> Unit = {},
-    onBlur              : () -> Unit = {}
+    onBlur              : () -> Unit = {},
+    focusedTextInputBorderColor : String,
+    unfocusedTextInputBorderColor : String
 ) {
     var hasBeenFocused by remember { mutableStateOf(false) }  // ← track first focus
     OutlinedTextField(
@@ -460,13 +481,18 @@ private fun CardTextField(
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
             color = Color(0xFF0A090B)
+        ),
+        colors = OutlinedTextFieldDefaults.colors(
+            // Border
+            focusedBorderColor   = focusedTextInputBorderColor.toComposeColor(),
+            unfocusedBorderColor = unfocusedTextInputBorderColor.toComposeColor(),
         )
     )
 }
 
 // --- Reusable Checkbox ---
 @Composable
-private fun CheckboxItem(
+fun CheckboxItem(
     isChecked  : Boolean,
     buttonColor: String,
     onClick    : () -> Unit
@@ -485,7 +511,8 @@ private fun CheckboxItem(
                 text       = "✓",
                 color      = Color.White,
                 fontSize   = 13.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontFamily = defaultFontFamily
             )
         }
     }

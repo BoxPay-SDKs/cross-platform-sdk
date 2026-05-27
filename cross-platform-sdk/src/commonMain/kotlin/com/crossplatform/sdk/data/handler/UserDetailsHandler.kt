@@ -86,4 +86,11 @@ object UserDataHandler {
         userData = defaultUserData()
         _userDataFlow.value = userData
     }
+
+    fun setUniqueRef(uniqueId: String){
+        userData = userData.copy(
+            uniqueId = uniqueId
+        )
+        _userDataFlow.value = userData
+    }
 }

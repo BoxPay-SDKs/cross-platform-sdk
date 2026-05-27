@@ -25,7 +25,7 @@ fun ChevronIcon() {
             .padding(bottom = 10.dp)
             .size(width = 30.dp, height = 30.dp)
             .rotate(-90f)
-            .padding(end = 10.dp, bottom = 20.dp)
+            .padding(end = 10.dp)
     )
 }
 

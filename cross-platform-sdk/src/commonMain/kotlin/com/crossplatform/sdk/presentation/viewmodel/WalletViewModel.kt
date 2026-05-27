@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.domain.mapper.toUiModel
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
+import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
 import com.crossplatform.sdk.domain.repo.OtherPaymentMethodRepo
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.sharedContext.handleFetchStatus
@@ -17,6 +19,7 @@ import kotlinx.coroutines.launch
 
 class WalletViewModel (
     private val repo : OtherPaymentMethodRepo,
+    private val analyticsRepo : CallUIAnalyticsRepo
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<List<SelectedPaymentMethod>>>(UiState.Loading)
@@ -65,20 +68,13 @@ class WalletViewModel (
         _uiState.value = UiState.Success(filtered)
     }
 
-    fun onClickRadio(instrumentValue: String) {
-
-        val updatedList = allWallets.value.map {
-            if (it.id == instrumentValue) {
-                it.copy(isSelected = true)
-            } else {
-                it.copy(isSelected = false)
-            }
-        }
-        _uiState.value = UiState.Success(updatedList)
-    }
-
     fun postWalletRequest(instrumentValue: String) {
         viewModelScope.launch {
+            callUiAnalytics(
+                event = AnalyticsEvents.PAYMENT_INITIATED.value,
+                screenName = "WalletViewModel",
+                message = "Payment initiated"
+            )
             isBoxPayAnimationVisible.value = true
             val response = repo.initiatePayment(
                instrumentDetails = instrumentValue
@@ -87,7 +83,7 @@ class WalletViewModel (
                 response = response,
                 onSetPaymentHtml = {html ->
                     htmlString.value = html
-                    showWebview.value = true
+                    setWebViewScreen(true)
                 },
                 onOpenUpiIntent = {
                     // no operations
@@ -100,7 +96,7 @@ class WalletViewModel (
                 },
                 onSetPaymentUrl = {responseUrl ->
                     url.value = responseUrl
-                    showWebview.value = true
+                    setWebViewScreen(true)
                 },
                 setIsBoxPayAnimationVisible = {isBoxPayAnimationVisible.value = it},
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage
@@ -117,6 +113,21 @@ class WalletViewModel (
                 response = response,
                 setIsBoxPayAnimationVisible = {isBoxPayAnimationVisible.value = it}
             )
+        }
+    }
+
+    fun setWebViewScreen(boolean: Boolean) {
+        showWebview.value = boolean
+        CheckoutDetailsHandler.setIsWebViewVisible(boolean)
+    }
+
+    fun callUiAnalytics(
+        event : String,
+        screenName : String,
+        message : String
+    ) {
+        viewModelScope.launch {
+            analyticsRepo.callUiAnalytics(event, screenName, message)
         }
     }
 }

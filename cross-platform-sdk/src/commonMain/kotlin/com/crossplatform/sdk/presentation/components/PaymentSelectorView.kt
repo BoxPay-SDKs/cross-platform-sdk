@@ -18,6 +18,8 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,13 +42,16 @@ fun PaymentSelectorView(
     providerList     : List<SelectedPaymentMethod>,
     onProceedForward : (instrumentType: String, instrumentValue: String, type: String) -> Unit,
     isLastUsed       : Boolean = false,
-    onClickRadio     : (selectedInstrumentValue: String) -> Unit,
     checkoutDetails : CheckoutDetails,
-    drawableResource: DrawableResource
+    drawableResource: DrawableResource,
+    onClickRadio : () -> Unit
 ) {
+    val selectedId = remember {
+        mutableStateOf("")
+    }
     Column(
         modifier = Modifier
-            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+            .padding(start = 16.dp, end = 16.dp)
             .background(
                 color =  Color.White,
                 shape = RoundedCornerShape(12.dp)
@@ -56,16 +61,20 @@ fun PaymentSelectorView(
                 color = Color(0xFFE6E6E6),
                 RoundedCornerShape(12.dp)
             )
+            .padding(vertical = 8.dp, horizontal = 8.dp)
     ) {
         providerList.forEachIndexed { index, provider ->
             PaymentSelector(
                 id                  = provider.id,
                 title               = provider.displayName,
                 imageUrl            = provider.imageUrl,
-                isSelected          = provider.isSelected == true,
+                isSelected          = provider.id == selectedId.value,
                 instrumentTypeValue = provider.instrumentType,
                 isLastUsed          = isLastUsed && provider.isLastUsed == true,
-                onPress             = { onClickRadio(it) },
+                onPress             = {
+                    onClickRadio()
+                    selectedId.value = it
+                                      },
                 onProceedForward    = { displayValue, instrumentValue ->
                     onProceedForward(displayValue, instrumentValue, provider.type)
                 },
@@ -87,7 +96,7 @@ fun PaymentSelectorView(
 }
 
 @Composable
-private fun PaymentSelector(
+fun PaymentSelector(
     id                 : String,
     title              : String,
     imageUrl           : String,

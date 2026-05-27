@@ -40,6 +40,8 @@ fun SessionDetails.toUiModel(): MainScreenModel {
         isDOBEnabled                = isEnabled("SHOPPER_DOB"),
         isDOBEditable               = isEditable("SHOPPER_DOB"),
         isOrderItemDetailsVisible   = isEnabled("ORDER_ITEM_DETAILS"),
+        isSessionExpiryVisible      = isEnabled("TIMER"),
+        isMerchantLogoVisible       = isEnabled("MERCHANT_LOGO"),
         isSubscriptionCheckout      = paymentDetails.subscriptionDetails != null,
         errorMessage = "You may have cancelled the payment or there was a delay in response. Please retry.",
     )
@@ -76,9 +78,9 @@ fun SessionDetails.toUiModel(): MainScreenModel {
             }
             "UpiOneTimeMandate" -> {
                 when (method.brand) {
-                    "UpiIntentOtm" -> methodFlags.copy(isUPIOtmIntentVisible = true, isUPIVisible = true)
-                    "UpiCollectOtm" -> methodFlags.copy(isUPIOtmCollectVisible = true, isUPIVisible = true)
-                    "UpiQrOtm" -> methodFlags.copy(isUPIOtmQRVisible = true, isUPIVisible = true)
+                    "UpiIntentOtm" -> methodFlags.copy(isUPIOtmIntentVisible = true, isUPIOtmVisible = true)
+                    "UpiCollectOtm" -> methodFlags.copy(isUPIOtmCollectVisible = true, isUPIOtmVisible = true)
+                    "UpiQrOtm" -> methodFlags.copy(isUPIOtmQRVisible = true, isUPIOtmVisible = true)
                     else -> methodFlags
                 }
             }

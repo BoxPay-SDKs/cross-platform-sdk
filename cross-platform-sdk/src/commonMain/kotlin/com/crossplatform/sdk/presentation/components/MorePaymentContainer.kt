@@ -30,7 +30,7 @@ import org.jetbrains.compose.resources.painterResource
 fun MorePaymentContainer(
     title: String,
     image: DrawableResource,
-    surchargeFee: String? = null,
+    surchargeFee: Double? = null,
     onClick : () -> Unit
 ) {
     val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
@@ -38,7 +38,7 @@ fun MorePaymentContainer(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
-            .padding(10.dp)
+            .padding(start = 16.dp, bottom = 10.dp, top = 10.dp, end = 8.dp)
             .clickable{
                 onClick()
             },
@@ -66,7 +66,7 @@ fun MorePaymentContainer(
                 fontFamily = defaultFontFamily,
                 fontWeight = FontWeight.Medium
             )
-            if (!surchargeFee.isNullOrEmpty()) {
+            if (surchargeFee != 0.0 && surchargeFee != null) {
                 Text(
                     text       = "${checkoutDetails.currencySymbol}${surchargeFee} extra applied as surcharge",
                     fontSize   = 14.sp,

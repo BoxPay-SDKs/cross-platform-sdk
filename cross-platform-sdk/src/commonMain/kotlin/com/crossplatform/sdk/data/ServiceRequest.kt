@@ -20,17 +20,6 @@ object ServiceRequest {
     private var _client: HttpClient? = null
     private var _plainClient: HttpClient? = null  // ✅ client without base URL
 
-
-    // ✅ Reuse existing or build new
-    fun getClient(): HttpClient {
-        return _client ?: buildClient().also { _client = it }
-    }
-
-    // ✅ New plain client for different base URLs
-    fun getPlainClient(): HttpClient {
-        return _plainClient ?: buildPlainClient().also { _plainClient = it }
-    }
-
     fun buildPlainClient(): HttpClient {
         _plainClient?.close()
         return HttpClient {
@@ -47,6 +36,10 @@ object ServiceRequest {
                 requestTimeoutMillis = 60_000
                 connectTimeoutMillis = 30_000
                 socketTimeoutMillis  = 60_000
+            }
+            install(DefaultRequest) {
+                header("X-Client-Connector-Name", "KMP SDK")
+                header("X-Client-Connector-Version", BuildKonfig.SDK_VERSION)
             }
             HttpResponseValidator {
                 handleResponseExceptionWithRequest { exception, _ ->
@@ -72,7 +65,7 @@ object ServiceRequest {
                 level = LogLevel.BODY
             }
             install(DefaultRequest) {
-                url("${getEndpoint(checkoutDetails.env)}${checkoutDetails.token}/")
+                url("${getEndpoint(checkoutDetails.isTestEnv)}${checkoutDetails.token}/")
                 header("X-Request-Id", generateRandomAlphanumericString(10))
                 header("X-Client-Connector-Name", "KMP SDK")
                 header("X-Client-Connector-Version", BuildKonfig.SDK_VERSION)
@@ -91,6 +84,8 @@ object ServiceRequest {
     // ✅ Call when SDK is done
     fun close() {
         _client?.close()
+        _plainClient?.close()
+        _plainClient = null
         _client = null
     }
 }

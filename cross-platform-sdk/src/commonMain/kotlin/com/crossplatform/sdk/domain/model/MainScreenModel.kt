@@ -23,7 +23,8 @@ data class MainScreenModel(
         val isBNPLVisible: Boolean = false,
         val isUPIOtmIntentVisible: Boolean = false,
         val isUPIOtmCollectVisible: Boolean = false,
-        val isUPIOtmQRVisible: Boolean = false
+        val isUPIOtmQRVisible: Boolean = false,
+        val isUPIOtmVisible : Boolean = false
     )
 
     data class OrderDetails(

@@ -2,8 +2,10 @@ package com.crossplatform.sdk.presentation
 
 import androidx.compose.ui.graphics.Color
 import com.crossplatform.sdk.data.handler.UserDataHandler
+import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.data.model.DeliveryAddress
 import com.crossplatform.sdk.data.model.Shopper
+import com.crossplatform.sdk.data.model.UserDetails
 import com.crossplatform.sdk.domain.model.CountryDetailsModel
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -14,12 +16,8 @@ private const val TEST_API_URL = "https://test-apis.boxpay.tech/"
 private const val PROD_API_URL = "https://apis.boxpay.in/"
 private const val ROUTE = "v0/checkout/sessions/"
 
-fun getEndpoint(env: String) : String {
-    val baseUrl = when (env) {
-        "test" -> TEST_API_URL
-        "prod" -> PROD_API_URL
-        else -> PROD_API_URL
-    }
+fun getEndpoint(isTestEnv: Boolean) : String {
+    val baseUrl = if (isTestEnv) TEST_API_URL else PROD_API_URL
     return "${baseUrl}${ROUTE}"
 }
 
@@ -203,7 +201,7 @@ fun formatTransactionTimestamp(
 
         return Pair(formattedDate, formattedTime)
 
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         return null
     }
 }
@@ -235,4 +233,61 @@ fun getStatus(status : String) : TransactionStatusEnum {
         "REQUIRESACTION"                          -> TransactionStatusEnum.REQUIRESACTION
         else                                      -> TransactionStatusEnum.NOACTION
     }
+}
+
+fun buildAddressAndUserDetailsString(checkoutDetails: CheckoutDetails, userDetails: UserDetails): String {
+    val showName = checkoutDetails.isFullNameEnabled
+    val showPhone = checkoutDetails.isPhoneEnabled
+    val showEmail = checkoutDetails.isEmailEnabled
+    val showShipping = checkoutDetails.isShippingAddressEnabled
+
+    val firstName = userDetails.firstName.orEmpty()
+    val lastName = userDetails.lastName.orEmpty()
+    val phone = userDetails.completePhoneNumber.orEmpty()
+    val email = userDetails.email.orEmpty()
+    val address1 = userDetails.address1.orEmpty()
+    val address2 = userDetails.address2
+    val city = userDetails.city.orEmpty()
+    val state = userDetails.state.orEmpty()
+    val postalCode = userDetails.pincode.orEmpty()
+
+    return buildString {
+        // Name / phone line
+        when {
+            (showPhone && showName) || showShipping -> append("$firstName $lastName ($phone)")
+            showName -> append("$firstName $lastName")
+            showPhone -> append("($phone)")
+        }
+
+        // Email line
+        if (showEmail || showShipping) {
+            append("\n$email")
+        }
+
+        // Address line
+        if (showShipping) {
+            append("\n")
+            append(
+                if (!address2.isNullOrEmpty())
+                    "$address1, $address2, $city, $state, $postalCode"
+                else
+                    "$address1, $city, $state, $postalCode"
+            )
+        }
+    }.trim()
+}
+
+fun buildAddressString(checkoutDetails: CheckoutDetails, userDetails: UserDetails): String {
+    if (!checkoutDetails.isShippingAddressEnabled) return ""
+
+    val address1 = userDetails.address1.orEmpty()
+    val address2 = userDetails.address2
+    val city = userDetails.city.orEmpty()
+    val state = userDetails.state.orEmpty()
+    val postalCode = userDetails.pincode.orEmpty()
+
+    return if (!address2.isNullOrEmpty())
+        "$address1, $address2, $city, $state, $postalCode"
+    else
+        "$address1, $city, $state, $postalCode"
 }

@@ -13,6 +13,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,9 +36,15 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 @Composable
 fun PaymentFailed(
     sheetState: SheetState,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onDismiss: () -> Unit
 ) {
     val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+    LaunchedEffect(Unit) {
+        if(!checkoutDetails.isFailedScreenVisible) {
+            onDismiss()
+        }
+    }
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(
             Res.readBytes("files/PaymentFailed.json").decodeToString()

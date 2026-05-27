@@ -2,9 +2,10 @@ package com.crossplatform.sdk.data.repo
 
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.implementation.ApiServiceImpl
-import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.data.model.FetchStatusResponse
+import com.crossplatform.sdk.data.model.FetchSurchargeResponse
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
+import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
 import com.crossplatform.sdk.data.model.SessionDetails
 import com.crossplatform.sdk.data.service.ApiService
 import com.crossplatform.sdk.domain.repo.MainScreenRepo
@@ -34,17 +35,47 @@ class MainScreenRepoImpl(
     override suspend fun postUpiCollectRequest(
         type: String,
         instrumentRef: String?,
-        shopperVpa: String?
+        shopperVpa: String?,
+        saveInstrument: Boolean?,
     ): ApiResponse<PaymentMethodPostResponse> =withContext(ioDispatcher) {
         apiService.upiCollectPostRequest(
             type = type,
             instrumentRef = instrumentRef,
-            shopperVpa = shopperVpa
+            shopperVpa = shopperVpa,
+            saveInstrument = saveInstrument
         )
     }
 
     override suspend fun fetchStatus(): ApiResponse<FetchStatusResponse> = withContext(ioDispatcher) {
         apiService.fetchStatus()
+    }
+
+    override suspend fun fetchRecommendedInstruments(): ApiResponse<List<RecommendedInstrumentsResponse>> = withContext(ioDispatcher) {
+        apiService.getRecommendedInstruments()
+    }
+
+    override suspend fun postSavedCardRequest(
+        instrumentRef: String,
+        isSICheckboxChecked: Boolean
+    ): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
+        apiService.savedCardPostRequest(
+            instrumentRef = instrumentRef,
+            isSICheckboxClicked = isSICheckboxChecked
+        )
+    }
+
+    override suspend fun getSurcharge(
+        amount: Double,
+        currencyCode: String
+    ): ApiResponse<FetchSurchargeResponse> = withContext(ioDispatcher) {
+        apiService.getSurcharge(
+            amount = amount,
+            currencyCode = currencyCode
+        )
+    }
+
+    override suspend fun deleteSavedCard(id: String): ApiResponse<RecommendedInstrumentsResponse> = withContext(ioDispatcher) {
+        apiService.deleteSavedCard(id)
     }
 
 }

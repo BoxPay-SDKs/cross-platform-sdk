@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.formatTimer
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
@@ -52,7 +53,7 @@ fun TopBar(
     onBackPress: () -> Unit,
     sessionSeconds: Long? = null
 ) {
-    val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+    val checkoutDetails by CheckoutDetailsHandler.checkoutDetailsFlow.collectAsStateWithLifecycle()
 
     // Timer urgency threshold — turns red under 2 minutes
     val isUrgent = (sessionSeconds ?: Long.MAX_VALUE) <= 120L
@@ -79,18 +80,20 @@ fun TopBar(
         ) {
 
             // ✅ equivalent of Pressable + arrow-left image
-            IconButton(
-                onClick = onBackPress,
-                modifier = Modifier.size(24.dp)
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.arrow_left),
-                    contentDescription = "Back",
+            if(checkoutDetails.isMerchantLogoVisible) {
+                IconButton(
+                    onClick = onBackPress,
                     modifier = Modifier.size(24.dp)
-                )
-            }
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.arrow_left),
+                        contentDescription = "Back",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
 
-            Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+            }
 
             if(checkoutDetails.merchantLogo.isNotEmpty()) {
                 KamelImage(
@@ -186,7 +189,7 @@ fun TopBar(
                     )
                 }
             }
-            if (sessionSeconds != null) {
+            if (sessionSeconds != null && checkoutDetails.isSessionExpiryVisible) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

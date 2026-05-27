@@ -1,7 +1,7 @@
 package com.crossplatform.sdk.data.handler
 
 import com.crossplatform.sdk.data.model.CheckoutDetails
-import com.crossplatform.sdk.data.model.FontConfiguration
+import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,11 +28,10 @@ object CheckoutDetailsHandler {
         buttonTextColor = "white",
         headerColor = "white",
         headerTextColor = "#363840",
-        env = "",
+        isTestEnv = false,
         itemsLength = 0,
         errorMessage = "",
         shopperToken = null,
-        isSuccessScreenVisible = false,
         isShippingAddressEnabled = false,
         isShippingAddressEditable = false,
         isFullNameEnabled = false,
@@ -46,11 +45,21 @@ object CheckoutDetailsHandler {
         isDOBEnabled = false,
         isDOBEditable = false,
         isOrderItemDetailsVisible = true,
-        isSICheckboxVisible = false,
+        isSICheckboxEnabled = false,
+        isSICheckboxChecked = false,
         isSubscriptionCheckout = false,
         status = TransactionStatusEnum.NOACTION.name,
         transactionId = "",
-        inquiryToken = ""
+        inquiryToken = "",
+        isSuccessScreenVisible = false,
+        isFailedScreenVisible = false,
+        showQROnLoad = false,
+        focusedTextInputBorderColor = "#2D2B32",
+        unfocusedTextInputBorderColor = "#ADACB0",
+        isMerchantLogoVisible = false,
+        isSessionExpiryVisible = false,
+        surchargeDetails = emptyList(),
+        isWebViewVisible = false
     )
 
     // ─── State ─────────────────────────────────────────────────
@@ -103,6 +112,8 @@ object CheckoutDetailsHandler {
         isDOBEditable : Boolean,
         isOrderItemDetailsVisible : Boolean,
         isSubscriptionCheckout : Boolean,
+        isMerchantLogoVisible : Boolean,
+        isSessionExpiryVisible : Boolean
     ) {
         checkoutDetails = checkoutDetails.copy(
             currencySymbol = currencySymbol,
@@ -129,7 +140,9 @@ object CheckoutDetailsHandler {
             isDOBEnabled = isDOBEnabled,
             isDOBEditable = isDOBEditable,
             isOrderItemDetailsVisible = isOrderItemDetailsVisible,
-            isSubscriptionCheckout = isSubscriptionCheckout
+            isSubscriptionCheckout = isSubscriptionCheckout,
+            isSessionExpiryVisible = isSessionExpiryVisible,
+            isMerchantLogoVisible = isMerchantLogoVisible
         )
         _checkoutDetailsFlow.value = checkoutDetails
     }
@@ -140,8 +153,32 @@ object CheckoutDetailsHandler {
         _checkoutDetailsFlow.value = checkoutDetails
     }
 
-    fun setCheckoutToken(shopperToken: String?, token : String, env : String, isSuccessScreenVisible: Boolean, ctaBorderRadius: Int, isSICheckboxVisible : Boolean,) {
-        checkoutDetails = checkoutDetails.copy(shopperToken = shopperToken, token = token, env = env, isSuccessScreenVisible = isSuccessScreenVisible, ctaBorderRadius = ctaBorderRadius, isSICheckboxVisible = isSICheckboxVisible)
+    fun setCheckoutToken(
+        shopperToken: String?,
+        token : String,
+        isTestEnv : Boolean,
+        isSuccessScreenVisible: Boolean,
+        ctaBorderRadius: Int,
+        isSICheckboxChecked : Boolean,
+        isSICheckboxEnabled : Boolean,
+        isFailedScreenVisible : Boolean,
+        showQROnLoad : Boolean,
+        focusedTextInputBorderColor : String,
+        unfocusedTextInputBorderColor : String
+    ) {
+        checkoutDetails = checkoutDetails.copy(
+            shopperToken = shopperToken,
+            token = token,
+            isTestEnv = isTestEnv,
+            isSuccessScreenVisible = isSuccessScreenVisible,
+            ctaBorderRadius = ctaBorderRadius,
+            isSICheckboxChecked = isSICheckboxChecked,
+            isSICheckboxEnabled = isSICheckboxEnabled,
+            isFailedScreenVisible = isFailedScreenVisible,
+            focusedTextInputBorderColor = focusedTextInputBorderColor,
+            unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
+            showQROnLoad = showQROnLoad
+        )
         _checkoutDetailsFlow.value = checkoutDetails
     }
 
@@ -169,4 +206,15 @@ object CheckoutDetailsHandler {
         checkoutDetails = checkoutDetails.copy(successfulTimeStamp = timeStamp, selectedPaymentMethod = paymentMethod)
         _checkoutDetailsFlow.value = checkoutDetails
     }
+
+    fun setSurchargeDetails(surchargeDetails : List<SurchargeModel>) {
+        checkoutDetails = checkoutDetails.copy(surchargeDetails = surchargeDetails)
+        _checkoutDetailsFlow.value = checkoutDetails
+    }
+
+    fun setIsWebViewVisible(showWebView : Boolean) {
+        checkoutDetails = checkoutDetails.copy(isWebViewVisible = showWebView)
+        _checkoutDetailsFlow.value = checkoutDetails
+    }
+
 }

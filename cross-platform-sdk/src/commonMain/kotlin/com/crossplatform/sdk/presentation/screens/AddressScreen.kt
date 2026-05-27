@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -187,8 +188,11 @@ fun AddressScreen(
         return valid
     }
 
-    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
-        .padding(bottom = 100.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
         if (isShippingEnabled) {
             AddressTextField(
                 value       = countryTextField,
@@ -197,7 +201,9 @@ fun AddressScreen(
                 readOnly    = true,
                 trailingIcon = { ChevronIcon() },
                 modifier    = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 28.dp),
-                onClick     = { showCountryPicker = true }
+                onClick     = { showCountryPicker = true },
+                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
             )
         }
 
@@ -208,7 +214,9 @@ fun AddressScreen(
                 label         = "Full Name*",
                 onValueChange = { fullNameTextField = it; validateFullName(it) },
                 isError       = isFullNameValid == false,
-                modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp)
+                modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
+                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
             )
             if (isFullNameValid == false) ErrorText(fullNameError)
         }
@@ -226,7 +234,9 @@ fun AddressScreen(
                     readOnly      = true,
                     trailingIcon  = { ChevronIcon() },
                     modifier      = Modifier.width(130.dp),
-                    onClick       = { showCountryPicker = true }
+                    onClick       = { showCountryPicker = true },
+                    focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                    unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 AddressTextField(
@@ -235,7 +245,9 @@ fun AddressScreen(
                     onValueChange = { phoneNumberTextField = it; validatePhone(it) },
                     isError       = isPhoneValid == false,
                     keyboardType  = KeyboardType.Number,
-                    modifier      = Modifier.weight(1f)
+                    modifier      = Modifier.weight(1f),
+                    focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                    unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
                 )
             }
             if (isPhoneValid == false) ErrorText(phoneError)
@@ -249,7 +261,9 @@ fun AddressScreen(
                 onValueChange = { emailTextField = it; validateEmail(it) },
                 isError       = isEmailValid == false,
                 keyboardType  = KeyboardType.Email,
-                modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp)
+                modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
+                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
             )
             if (isEmailValid == false) ErrorText(emailError)
         }
@@ -269,7 +283,9 @@ fun AddressScreen(
                         onValueChange = { pinTextField = it; validatePin(it) },
                         isError       = isPinValid == false,
                         keyboardType  = KeyboardType.Number,
-                        modifier      = Modifier.fillMaxWidth()
+                        modifier      = Modifier.fillMaxWidth(),
+                        focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                        unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
                     )
                     if (isPinValid == false) ErrorText(pinError)
                 }
@@ -280,7 +296,9 @@ fun AddressScreen(
                         label         = "City*",
                         onValueChange = { cityTextField = it; validateCity(it) },
                         isError       = isCityValid == false,
-                        modifier      = Modifier.fillMaxWidth()
+                        modifier      = Modifier.fillMaxWidth(),
+                        focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                        unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
                     )
                     if (isCityValid == false) ErrorText(cityError)
                 }
@@ -292,7 +310,9 @@ fun AddressScreen(
                 label         = "State*",
                 onValueChange = { stateTextField = it; validateState(it) },
                 isError       = isStateValid == false,
-                modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp)
+                modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
+                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
             )
             if (isStateValid == false) ErrorText(stateError)
 
@@ -302,7 +322,9 @@ fun AddressScreen(
                 label         = "House number, Apartment*",
                 onValueChange = { mainAddressTextField = it; validateMainAddress(it) },
                 isError       = isMainAddressValid == false,
-                modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp)
+                modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
+                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
             )
             if (isMainAddressValid == false) ErrorText(mainAddressError)
 
@@ -311,7 +333,9 @@ fun AddressScreen(
                 value         = secondaryAddressTextField,
                 label         = "Area, Colony, Street, Sector",
                 onValueChange = { secondaryAddressTextField = it },
-                modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp)
+                modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
+                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
+                unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
             )
         }
 
@@ -358,6 +382,8 @@ fun AddressScreen(
     if (showCountryPicker) {
         CountryPickerDialog(
             onDismiss = { showCountryPicker = false },
+            focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
+            unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor,
             onSelect  = { code, isdCode, fullName, phoneLengths ->
                 selectedCountryCode            = code
                 selectedPhoneCode              = isdCode
@@ -380,7 +406,9 @@ fun AddressTextField(
     readOnly     : Boolean = false,
     keyboardType : KeyboardType = KeyboardType.Text,
     trailingIcon : @Composable (() -> Unit)? = null,
-    onClick      : (() -> Unit)? = null
+    onClick      : (() -> Unit)? = null,
+    focusedBorderColor : String,
+    unfocusedBorderColor : String
 ) {
     Box(modifier = modifier) {
         OutlinedTextField(
@@ -408,7 +436,12 @@ fun AddressTextField(
                 fontSize   = 16.sp,
                 color      = Color(0xFF0A090B)
             ),
-            maxLines = 1
+            maxLines = 1,
+            colors = OutlinedTextFieldDefaults.colors(
+                // Border
+                focusedBorderColor   = focusedBorderColor.toComposeColor(),
+                unfocusedBorderColor = unfocusedBorderColor.toComposeColor(),
+            )
         )
 
         // ← transparent overlay captures clicks ✅

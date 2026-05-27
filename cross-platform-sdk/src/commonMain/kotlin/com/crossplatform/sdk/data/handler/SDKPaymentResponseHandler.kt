@@ -15,9 +15,4 @@ object SDKPaymentResponseHandler {
     fun notifyResult(result: SDKPaymentResponse) {
         onPaymentResult(result)
     }
-
-    // ─── Reset to default ──────────────────────────────────────
-    fun resetToDefault() {
-        onPaymentResult = {}
-    }
 }

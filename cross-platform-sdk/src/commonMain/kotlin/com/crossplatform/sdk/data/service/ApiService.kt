@@ -5,8 +5,10 @@ import com.crossplatform.sdk.data.model.AnalyticsResponse
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.data.model.FetchStatusResponse
+import com.crossplatform.sdk.data.model.FetchSurchargeResponse
 import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
+import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
 import com.crossplatform.sdk.data.model.SessionDetails
 
 interface ApiService {
@@ -53,7 +55,8 @@ interface ApiService {
     suspend fun upiCollectPostRequest(
         type : String,
         instrumentRef : String?,
-        shopperVpa : String?
+        shopperVpa : String?,
+        saveInstrument : Boolean?
     ) : ApiResponse<PaymentMethodPostResponse>
 
     suspend fun upiQrPostRequest(
@@ -64,5 +67,16 @@ interface ApiService {
         instrumentRef: String,
         isSICheckboxClicked: Boolean?
     ) : ApiResponse<PaymentMethodPostResponse>
+
+    suspend fun getRecommendedInstruments() : ApiResponse<List<RecommendedInstrumentsResponse>>
+
+    suspend fun getSurcharge(
+        amount : Double,
+        currencyCode : String
+    ) : ApiResponse<FetchSurchargeResponse>
+
+    suspend fun getSavedAddress() : ApiResponse<List<FetchSavedAddress>>
+
+    suspend fun deleteSavedCard(id : String) : ApiResponse<RecommendedInstrumentsResponse>
 
 }

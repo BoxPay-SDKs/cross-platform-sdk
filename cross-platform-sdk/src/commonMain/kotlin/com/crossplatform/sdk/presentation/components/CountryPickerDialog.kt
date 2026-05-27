@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,11 +38,14 @@ import androidx.compose.ui.window.Dialog
 import com.crossplatform.sdk.domain.model.CountryDetailsModel
 import com.crossplatform.sdk.presentation.loadCountryData
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.toComposeColor
 
 // commonMain
 @Composable
 fun CountryPickerDialog(
     onDismiss : () -> Unit,
+    focusedBorderColor : String,
+    unfocusedBorderColor : String,
     onSelect  : (code: String, isdCode: String, fullName: String, phoneLengths: List<Int>) -> Unit
 ) {
     val countryData = remember { mutableStateOf<Map<String, CountryDetailsModel>>(emptyMap()) }
@@ -121,6 +125,11 @@ fun CountryPickerDialog(
                     fontFamily = defaultFontFamily,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    // Border
+                    focusedBorderColor   = focusedBorderColor.toComposeColor(),
+                    unfocusedBorderColor = unfocusedBorderColor.toComposeColor(),
                 )
             )
 

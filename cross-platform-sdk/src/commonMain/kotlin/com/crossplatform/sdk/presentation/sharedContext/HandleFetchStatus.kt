@@ -62,3 +62,58 @@ fun handleFetchStatus(
         }
     }
 }
+
+fun handleUpiCollectFetchStatus(
+    response : ApiResponse<FetchStatusResponse>,
+    setIsBoxPayAnimationVisible : (Boolean) -> Unit
+) {
+    when(response) {
+        is ApiResponse.Error -> {
+            CheckoutDetailsHandler.setErrorMessage()
+            CheckoutDetailsHandler.setSessionFailed()
+            setIsBoxPayAnimationVisible(false)
+        }
+        is ApiResponse.Success -> {
+            val apiData = response.data
+            val status = getStatus(apiData.status)
+            val transactionId = apiData.transactionId
+
+            CheckoutDetailsHandler.setStatusAndTransID(
+                status =  status.name,
+                transactionId = transactionId
+            )
+
+            when (status){
+                TransactionStatusEnum.SUCCESS -> {
+                    CheckoutDetailsHandler.setTimeAndPaymentMethod(
+                        timeStamp = response.data.transactionTimestampLocale,
+                        paymentMethod = response.data.paymentMethod.brand ?: ""
+                    )
+                    CheckoutDetailsHandler.setSessionSuccess()
+                    setIsBoxPayAnimationVisible(false)
+                }
+                TransactionStatusEnum.FAILED -> {
+                    val resolvedErrorMessage = resolveErrorMessage(
+                        reasonCode = apiData.reasonCode,
+                        reason = apiData.reason,
+                        fallback = "You may have cancelled the payment or there was a delay in response. Please retry."
+                    )
+                    CheckoutDetailsHandler.setErrorMessage(resolvedErrorMessage)
+                    CheckoutDetailsHandler.setSessionFailed()
+                    setIsBoxPayAnimationVisible(false)
+                }
+                TransactionStatusEnum.EXPIRED ->{
+                    CheckoutDetailsHandler.setSessionExpired()
+                    setIsBoxPayAnimationVisible(false)
+                }
+                else -> {
+                    // no operation
+                }
+            }
+        }
+        else -> {
+            CheckoutDetailsHandler.setSessionFailed()
+            setIsBoxPayAnimationVisible(false)
+        }
+    }
+}

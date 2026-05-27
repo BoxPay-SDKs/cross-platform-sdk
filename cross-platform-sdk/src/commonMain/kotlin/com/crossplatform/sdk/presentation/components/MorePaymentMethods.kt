@@ -13,6 +13,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.crossplatform.sdk.domain.model.MainScreenModel
+import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
+import com.crossplatform.sdk.domain.model.SurchargeModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_bnpl
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card
@@ -27,7 +29,9 @@ fun MorePaymentMethods(
     onNavigateToWallet: () -> Unit,
     onNavigateToNetBanking: () -> Unit,
     onNavigateToEmi: () -> Unit,
-    onNavigateToBNPL: () -> Unit
+    onNavigateToBNPL: () -> Unit,
+    savedCardsList : List<SelectedPaymentMethod>,
+    surchargeList : List<SurchargeModel>
 ) {
     Column(
         modifier = Modifier
@@ -41,11 +45,12 @@ fun MorePaymentMethods(
             )
             .background(Color.White)
     ) {
-        if(methodFlags.isCardsVisible) {
+        if(methodFlags.isCardsVisible && savedCardsList.isEmpty()) {
             MorePaymentContainer(
                 title = "Cards",
                 image = Res.drawable.ic_card,
-                onClick = onNavigateToCard
+                onClick = onNavigateToCard,
+                surchargeFee = surchargeList.find { it.applicableOn == "cards" }?.amount
             )
             if(methodFlags.isWalletVisible || methodFlags.isNetBankingVisible || methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
                 HorizontalDivider()
@@ -55,7 +60,8 @@ fun MorePaymentMethods(
             MorePaymentContainer(
                 title = "Wallet",
                 image = Res.drawable.ic_wallet,
-                onClick = onNavigateToWallet
+                onClick = onNavigateToWallet,
+                surchargeFee = surchargeList.find { it.applicableOn == "wallet" }?.amount
             )
             if(methodFlags.isNetBankingVisible || methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
                 HorizontalDivider()
@@ -65,7 +71,8 @@ fun MorePaymentMethods(
             MorePaymentContainer(
                 title = "Net Banking",
                 image = Res.drawable.ic_netbanking,
-                onClick = onNavigateToNetBanking
+                onClick = onNavigateToNetBanking,
+                surchargeFee = surchargeList.find { it.applicableOn == "netbanking" }?.amount
             )
             if(methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
                 HorizontalDivider()
@@ -75,7 +82,8 @@ fun MorePaymentMethods(
             MorePaymentContainer(
                 title = "EMI",
                 image = Res.drawable.ic_emi,
-                onClick = onNavigateToEmi
+                onClick = onNavigateToEmi,
+                surchargeFee = surchargeList.find { it.applicableOn == "emi" }?.amount
             )
             if(methodFlags.isBNPLVisible) {
                 HorizontalDivider()
@@ -85,7 +93,8 @@ fun MorePaymentMethods(
             MorePaymentContainer(
                 title = "Buy Now Pay Later",
                 image = Res.drawable.ic_bnpl,
-                onClick = onNavigateToBNPL
+                onClick = onNavigateToBNPL,
+                surchargeFee = surchargeList.find { it.applicableOn == "buynowpaylater" }?.amount
             )
         }
     }

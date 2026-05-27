@@ -15,6 +15,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +46,11 @@ fun PaymentSuccessful(
     onClick: () -> Unit,
 ) {
     val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+    LaunchedEffect(Unit) {
+        if(!checkoutDetails.isSuccessScreenVisible) {
+            onClick()
+        }
+    }
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(
             Res.readBytes("files/PaymentSuccessful.json").decodeToString()

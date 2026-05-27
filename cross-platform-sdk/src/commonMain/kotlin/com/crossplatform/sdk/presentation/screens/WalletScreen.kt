@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.components.EmptyListView
@@ -28,6 +30,7 @@ import com.crossplatform.sdk.presentation.components.PaymentSelectorView
 import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.WalletViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_search
@@ -48,6 +51,11 @@ fun WalletScreen() {
         is UiState.Error -> {
             val message = (uiState as UiState.Error).message
             Text("Welcome to error screen $message")
+            viewModel.callUiAnalytics(
+                event = AnalyticsEvents.SDK_CRASH.value,
+                screenName = "WalletScreen",
+                message = "Wallet Screen not loaded $message"
+            )
         }
         UiState.Loading -> {
             ShimmerView()
@@ -72,7 +80,12 @@ fun WalletScreen() {
                             modifier           = Modifier.size(width = 32.dp, height = 32.dp)
                         )
                     },
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        // Border
+                        focusedBorderColor   = checkoutDetails.focusedTextInputBorderColor.toComposeColor(),
+                        unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor.toComposeColor(),
+                    )
                 )
 
                 SectionTitle("All Wallet")
@@ -86,14 +99,18 @@ fun WalletScreen() {
                 } else {
                     PaymentSelectorView(
                         providerList = list,
-                        onClickRadio = {instrumentValue ->
-                            viewModel.onClickRadio(instrumentValue)
-                        },
                         onProceedForward = { _, instrumentValue, _ ->
                             viewModel.postWalletRequest(instrumentValue)
                         },
                         checkoutDetails = checkoutDetails,
-                        drawableResource = Res.drawable.ic_wallet
+                        drawableResource = Res.drawable.ic_wallet,
+                        onClickRadio = {
+                            viewModel.callUiAnalytics(
+                                event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
+                                screenName = "WalletScreen",
+                                message = "Payment category selected"
+                            )
+                        }
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Footer()
@@ -111,7 +128,7 @@ fun WalletScreen() {
             html = viewModel.htmlString.value,
             onBackPress = {result ->
                 viewModel.callFetchStatus(result ?: "")
-                viewModel.showWebview.value = false
+                viewModel.setWebViewScreen(false)
             }
         )
     }

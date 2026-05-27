@@ -25,7 +25,6 @@ import com.crossplatform.sdk.presentation.viewmodel.EMIScreenViewModel
 import com.crossplatform.sdk.presentation.viewmodel.InstantOfferViewModel
 import com.crossplatform.sdk.presentation.viewmodel.MainScreenViewModel
 import com.crossplatform.sdk.presentation.viewmodel.NetBankingViewModel
-import com.crossplatform.sdk.presentation.viewmodel.OtherPaymentMethodViewModel
 import com.crossplatform.sdk.presentation.viewmodel.UpiTimerViewModel
 import com.crossplatform.sdk.presentation.viewmodel.WalletViewModel
 import org.koin.core.module.dsl.viewModel
@@ -57,15 +56,14 @@ val appModule = module {
     factory { FetchStatusRepoImpl(apiService = get()) }
 
     // ✅ ViewModels
-    viewModel { MainScreenViewModel(repo = get()) }
-    viewModel { OtherPaymentMethodViewModel(repo = get()) }
-    viewModel { InstantOfferViewModel(repo = get()) }
-    viewModel { AddressScreenViewModel(repo = get()) }
-    viewModel { CardScreenViewModel(repo = get(), fetchStatusRepo = get()) }
-    viewModel { EMIScreenViewModel(repo = get()) }
-    viewModel { WalletViewModel(repo = get()) }
-    viewModel { NetBankingViewModel(repo = get()) }
-    viewModel { BNPLViewModel(repo = get()) }
-    viewModel { UpiTimerViewModel(repo = get()) }
+    viewModel { MainScreenViewModel(repo = get(), analyticsRepo = get()) }
+    viewModel { InstantOfferViewModel(repo = get(),analyticsRepo = get()) }
+    viewModel { AddressScreenViewModel(repo = get(), analyticsRepo = get()) }
+    viewModel { CardScreenViewModel(repo = get(), fetchStatusRepo = get(),analyticsRepo = get()) }
+    viewModel { EMIScreenViewModel(repo = get(),analyticsRepo = get()) }
+    viewModel { WalletViewModel(repo = get(),analyticsRepo = get()) }
+    viewModel { NetBankingViewModel(repo = get(),analyticsRepo = get()) }
+    viewModel { BNPLViewModel(repo = get(),analyticsRepo = get()) }
+    viewModel { UpiTimerViewModel() }
 
 }

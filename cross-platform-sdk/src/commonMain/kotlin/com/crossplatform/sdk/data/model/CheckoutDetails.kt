@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.data.model
 
+import com.crossplatform.sdk.domain.model.SurchargeModel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -10,7 +11,7 @@ data class CheckoutDetails(
     val currencyCode: String,
     val amount: Double,
     val token: String,
-    val env: String,
+    val isTestEnv: Boolean,
     val itemsLength: Int,
     val errorMessage: String,
     val isSessionExpired : Boolean,
@@ -32,9 +33,14 @@ data class CheckoutDetails(
 
     // ─── Screen Visibility ───────────────────────
     val isSuccessScreenVisible: Boolean,
+    val isFailedScreenVisible : Boolean,
     val isOrderItemDetailsVisible: Boolean,
-    val isSICheckboxVisible: Boolean,
+    val isSICheckboxChecked: Boolean,
+    val isSICheckboxEnabled : Boolean,
     val isSubscriptionCheckout: Boolean,
+    val showQROnLoad : Boolean,
+    val focusedTextInputBorderColor : String,
+    val unfocusedTextInputBorderColor : String,
 
     // ─── Shopper Fields ──────────────────────────
     val isShippingAddressEnabled: Boolean,
@@ -49,11 +55,15 @@ data class CheckoutDetails(
     val isPanEditable: Boolean,
     val isDOBEnabled: Boolean,
     val isDOBEditable: Boolean,
+    val isMerchantLogoVisible : Boolean,
+    val isSessionExpiryVisible : Boolean,
 
     // ---------Payment Current Status --------
     val status : String,
     val transactionId : String,
-    val inquiryToken : String
+    val inquiryToken : String,
+    val surchargeDetails : List<SurchargeModel>,
+    val isWebViewVisible : Boolean
 )
 
 @Serializable

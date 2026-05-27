@@ -10,15 +10,18 @@ import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.data.model.FetchStatusResponse
+import com.crossplatform.sdk.data.model.FetchSurchargeResponse
 import com.crossplatform.sdk.data.model.MethodInstrumentDetails
 import com.crossplatform.sdk.data.model.MethodsPostRequest
 import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
+import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
 import com.crossplatform.sdk.data.model.SessionDetails
 import com.crossplatform.sdk.data.model.UserDetails
 import com.crossplatform.sdk.data.model.requestBody.AnalyticsRequest
 import com.crossplatform.sdk.data.model.requestBody.CardPostRequestBody
 import com.crossplatform.sdk.data.model.requestBody.SavedCardPostRequestBody
+import com.crossplatform.sdk.data.model.requestBody.SurchargeRequestBody
 import com.crossplatform.sdk.data.model.requestBody.UPICollectRequestBody
 import com.crossplatform.sdk.data.model.requestBody.UPIIntentRequestBody
 import com.crossplatform.sdk.data.model.requestBody.UPIQRRequestBody
@@ -68,7 +71,7 @@ class ApiServiceImpl : ApiService {
         )
         return executeWithResponse {
             plainClient.post(
-                urlString = "${getEndpoint(checkoutDetails.env)}/ui-analytics",
+                urlString = "${getEndpoint(checkoutDetails.isTestEnv)}/ui-analytics",
             ) {
                 contentType(ContentType.Application.Json)
                 setBody(requestBody)
@@ -177,7 +180,8 @@ class ApiServiceImpl : ApiService {
     override suspend fun upiCollectPostRequest(
         type: String,
         instrumentRef: String?,
-        shopperVpa: String?
+        shopperVpa: String?,
+        saveInstrument : Boolean?
     ): ApiResponse<PaymentMethodPostResponse> {
         val requestBody = UPICollectRequestBody(
             browserData = getBrowserData(),
@@ -188,7 +192,8 @@ class ApiServiceImpl : ApiService {
                 upi = UPICollectRequestBody.UPIDetails(
                     instrumentRef = instrumentRef,
                     shopperVpa = shopperVpa
-                )
+                ),
+                saveInstrument = saveInstrument
             )
         )
         return executeWithResponse {
@@ -229,13 +234,51 @@ class ApiServiceImpl : ApiService {
                     instrumentRef = instrumentRef
                 )
             ),
-            oneTimePayment = isSICheckboxClicked
+            oneTimePayment = isSICheckboxClicked == false
         )
         return executeWithResponse {
             client.post(urlString = "") {
                 contentType(ContentType.Application.Json)
                 setBody(requestBody)
             }
+        }
+    }
+
+    override suspend fun getRecommendedInstruments(): ApiResponse<List<RecommendedInstrumentsResponse>> {
+        return executeWithResponse {
+            client.get(urlString = "shoppers/${userData.uniqueId}/recommended-instruments") {
+                contentType(ContentType.Application.Json)
+            }
+        }
+    }
+
+    override suspend fun getSurcharge(
+        amount: Double,
+        currencyCode: String
+    ): ApiResponse<FetchSurchargeResponse> {
+        val requestBody = SurchargeRequestBody(
+            discountedMoney = SurchargeRequestBody.DiscountedMoney(
+                amount = amount,
+                currencyCode = currencyCode
+            )
+        )
+        return executeWithResponse {
+            client.post(urlString = "surcharges/evaluate") {
+                contentType(ContentType.Application.Json)
+                setBody(requestBody)
+            }
+        }
+    }
+
+    override suspend fun getSavedAddress(): ApiResponse<List<FetchSavedAddress>> {
+        return executeWithResponse {
+            client.get(urlString = "shoppers/${userData.uniqueId}/addresses")
+        }
+    }
+
+    override suspend fun deleteSavedCard(id: String): ApiResponse<RecommendedInstrumentsResponse> {
+        return executeWithResponse {
+            client.delete(urlString = "shoppers/${userData.uniqueId}/instruments/$id")
         }
     }
 }

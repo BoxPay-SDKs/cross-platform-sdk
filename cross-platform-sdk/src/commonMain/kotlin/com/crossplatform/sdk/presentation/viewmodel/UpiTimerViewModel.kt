@@ -10,9 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class UpiTimerViewModel (
-    private val repo : FetchStatusRepo
-) : ViewModel() {
+class UpiTimerViewModel () : ViewModel() {
     companion object {
         const val TIMER_TOTAL = 300 // 5 minutes in seconds
     }
