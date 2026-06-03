@@ -17,8 +17,14 @@ class OtherPaymentMethodRepoImpl(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO // Injectable dispatcher
 ) : OtherPaymentMethodRepo {
 
-    override suspend fun getPaymentMethods(): ApiResponse<List<PaymentMethod>> = withContext(ioDispatcher) {
-        apiService.fetchPaymentMethods()
+    override suspend fun getPaymentMethods(
+        amount: Double?,
+        offerId: String?
+    ): ApiResponse<List<PaymentMethod>> = withContext(ioDispatcher) {
+        apiService.fetchPaymentMethods(
+            amount = amount,
+            offerId = offerId
+        )
     }
 
     override suspend fun initiatePayment(instrumentDetails: String): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {

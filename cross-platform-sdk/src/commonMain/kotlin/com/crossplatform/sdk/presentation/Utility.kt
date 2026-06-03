@@ -7,6 +7,7 @@ import com.crossplatform.sdk.data.model.DeliveryAddress
 import com.crossplatform.sdk.data.model.Shopper
 import com.crossplatform.sdk.data.model.UserDetails
 import com.crossplatform.sdk.domain.model.CountryDetailsModel
+import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import kotlinx.serialization.json.Json
@@ -290,4 +291,8 @@ fun buildAddressString(checkoutDetails: CheckoutDetails, userDetails: UserDetail
         "$address1, $address2, $city, $state, $postalCode"
     else
         "$address1, $city, $state, $postalCode"
+}
+
+fun isPresentInSurchargeModel(surchargeModel: List<SurchargeModel>, selectedMethod : String) : Boolean {
+    return surchargeModel.any { it.applicableOn.equals(selectedMethod, ignoreCase = true) }
 }

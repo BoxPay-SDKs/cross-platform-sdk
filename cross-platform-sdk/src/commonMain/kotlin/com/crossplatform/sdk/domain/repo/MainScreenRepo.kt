@@ -3,6 +3,7 @@ package com.crossplatform.sdk.domain.repo
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.model.FetchStatusResponse
 import com.crossplatform.sdk.data.model.FetchSurchargeResponse
+import com.crossplatform.sdk.data.model.InstantOfferResponse
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
 import com.crossplatform.sdk.data.model.SessionDetails
@@ -21,8 +22,6 @@ interface MainScreenRepo {
         shopperVpa : String?,
         saveInstrument : Boolean?
     ) : ApiResponse<PaymentMethodPostResponse>
-
-    suspend fun fetchStatus() : ApiResponse<FetchStatusResponse>
 
     suspend fun fetchRecommendedInstruments() : ApiResponse<List<RecommendedInstrumentsResponse>>
 

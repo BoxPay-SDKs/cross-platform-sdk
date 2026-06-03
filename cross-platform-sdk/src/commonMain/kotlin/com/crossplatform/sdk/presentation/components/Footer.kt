@@ -26,7 +26,7 @@ fun Footer() {
     Row(
         modifier          = Modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp, top = 16.dp),
+            .padding(bottom = 16.dp, top = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {

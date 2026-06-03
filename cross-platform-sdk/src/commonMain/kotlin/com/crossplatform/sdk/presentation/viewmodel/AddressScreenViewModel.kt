@@ -2,6 +2,7 @@ package com.crossplatform.sdk.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.domain.repo.AddressScreenRepo
@@ -22,15 +23,22 @@ class AddressScreenViewModel(
 
 
     init {
-        val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
-        if(!checkoutDetails.shopperToken.isNullOrBlank()) {
-            getSavedAddress()
-        }
+        getSavedAddress()
     }
 
     fun getSavedAddress() {
         viewModelScope.launch {
-            val response = repo.getSavedAddress()
+            _savedList.value = when(val response = repo.getSavedAddress()) {
+                is ApiResponse.Error -> {
+                    UiState.Error(response.message)
+                }
+                ApiResponse.Loading -> {
+                    UiState.Loading
+                }
+                is ApiResponse.Success -> {
+                    UiState.Success(response.data)
+                }
+            }
         }
     }
 

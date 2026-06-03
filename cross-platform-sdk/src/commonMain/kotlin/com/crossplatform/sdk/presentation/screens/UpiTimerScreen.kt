@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.PayButton
 import com.crossplatform.sdk.presentation.formatTimer
@@ -64,6 +65,8 @@ fun UpiTimerScreen(
     val isUrgent      = timeRemaining <= 30
     val progressColor = if (isUrgent) Color(0xFFFAA4A4) else checkoutDetails.buttonColor.toComposeColor()
     val textColor     = if (isUrgent) Color(0xFFF53535) else checkoutDetails.buttonColor.toComposeColor()
+
+    BackHandler(onBack = onBackPress)
     Column(
         modifier = Modifier
             .fillMaxSize()

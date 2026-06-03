@@ -90,9 +90,14 @@ fun AppNavHost() {
         Routes.CardScreen.route -> "Pay via Card"
         Routes.NetBankingScreen.route  -> "Select Bank"
         Routes.WalletScreen.route -> "Select Wallet"
+        Routes.SavedAddressScreen.route -> "Your Addresses"
         Routes.BNPLScreen.route -> "Select BNPL"
         Routes.EMIScreen.route -> "Choose EMI Option"
         else                           -> "Payment Details"
+    }
+
+    val selectedOfferCode = remember {
+        mutableStateOf("")
     }
 
     Column (modifier = Modifier.fillMaxSize()) {
@@ -104,6 +109,10 @@ fun AppNavHost() {
                 onBackPress = {
                     if (!navController.popBackStack()) {
                         callSDKPaymentResponse()
+                    } else {
+                        if(!checkoutDetails.surchargeDetails.isEmpty()) {
+                            CheckoutDetailsHandler.setAmount(checkoutDetails.amountBeforeSurcharge)
+                        }
                     }
                 },    // from API via ViewModel
                 sessionSeconds = viewModel.sessionSeconds.value,
@@ -142,6 +151,14 @@ fun AppNavHost() {
                     },
                     onShowSwipeToPay = {
                         showSwipeToPay = true
+                    },
+                    selectedOfferCode = selectedOfferCode.value,
+                    onSetSelectedOfferCode = {
+                        selectedOfferCode.value = it
+                    },
+                    checkoutDetails = checkoutDetails,
+                    onProceedInstantOfferScreen = {
+                        navController.navigate("${Routes.InstantOfferScreen.route}/${selectedOfferCode.value.ifBlank { null }}")
                     }
                 )
             }
@@ -160,11 +177,25 @@ fun AppNavHost() {
             }
 
             composable(Routes.CardScreen.route) {
-                CardScreen()
+                CardScreen(
+                    onBackPress = {
+                        if(!checkoutDetails.surchargeDetails.isEmpty()) {
+                            CheckoutDetailsHandler.setAmount(checkoutDetails.amountBeforeSurcharge)
+                        }
+                        navController.popBackStack()
+                    }
+                )
             }
 
             composable(Routes.EMIScreen.route) {
-                EMIScreen()
+                EMIScreen(
+                    onBackPress = {
+                        if(!checkoutDetails.surchargeDetails.isEmpty()) {
+                            CheckoutDetailsHandler.setAmount(checkoutDetails.amountBeforeSurcharge)
+                        }
+                        navController.popBackStack()
+                    }
+                )
             }
 
             composable(
@@ -179,29 +210,71 @@ fun AppNavHost() {
                             message = "Address Updated successfully"
                         )
                         navController.popBackStack()
+                    },
+                    onBackPress = {
+                        navController.popBackStack()
                     }
                 )
             }
 
             composable(Routes.SavedAddressScreen.route) {
-                SavedAddressScreen()
+                SavedAddressScreen(
+                    onBackPress = {
+                        navController.popBackStack()
+                    }
+                )
             }
 
             composable(Routes.BNPLScreen.route) {
-                BNPLScreen()
+                BNPLScreen(
+                    onBackPress = {
+                        if(!checkoutDetails.surchargeDetails.isEmpty()) {
+                            CheckoutDetailsHandler.setAmount(checkoutDetails.amountBeforeSurcharge)
+                        }
+                        navController.popBackStack()
+                    }
+                )
             }
 
             composable(Routes.NetBankingScreen.route) {
-                NetBankingScreen()
+                NetBankingScreen(
+                    onBackPress = {
+                        if(!checkoutDetails.surchargeDetails.isEmpty()) {
+                            CheckoutDetailsHandler.setAmount(checkoutDetails.amountBeforeSurcharge)
+                        }
+                        navController.popBackStack()
+                    }
+                )
             }
 
             composable(Routes.WalletScreen.route) {
-                WalletScreen()
+                WalletScreen(
+                    onBackPress = {
+                        if(!checkoutDetails.surchargeDetails.isEmpty()) {
+                            CheckoutDetailsHandler.setAmount(checkoutDetails.amountBeforeSurcharge)
+                        }
+                        navController.popBackStack()
+                    }
+                )
             }
 
-            composable(Routes.InstantOfferScreen.route) {
+            composable(
+                route = Routes.InstantOfferScreen.route,
+            ) {
                 InstantOfferScreen(
+                    selectedCode = selectedOfferCode.value,
                     onBackPress = {
+                        navController.popBackStack()
+                    },
+                    onClickRemove = {
+                        selectedOfferCode.value = ""
+                        viewModel.removeOffer(checkoutDetails.discountAmount, checkoutDetails.amount)
+                        navController.popBackStack()
+                    },
+                    onClickApply = {
+                        selectedOfferCode.value = it
+                        val amount = checkoutDetails.amount + checkoutDetails.discountAmount
+                        viewModel.applyOffer(it, amount)
                         navController.popBackStack()
                     }
                 )
@@ -322,6 +395,10 @@ fun callSDKPaymentResponse() {
 
     ServiceRequest.close()
 
+    // ✅ Reset first so UI clears immediately
+    CheckoutDetailsHandler.resetToDefault()
+    UserDataHandler.resetToDefault()
+
     // ✅ Notify after reset
     SDKPaymentResponseHandler.notifyResult(
         result = SDKPaymentResponse(
@@ -330,10 +407,6 @@ fun callSDKPaymentResponse() {
             inquiryToken = inquiryToken
         )
     )
-
-    // ✅ Reset first so UI clears immediately
-    CheckoutDetailsHandler.resetToDefault()
-    UserDataHandler.resetToDefault()
 
     CommonSDKDismissHandler.notifyToCloseSDK()
 }

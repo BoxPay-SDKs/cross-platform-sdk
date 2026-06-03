@@ -38,7 +38,11 @@ class NetBankingViewModel (
 
     fun loadBanksList() {
         viewModelScope.launch {
-            _uiState.value = when (val response = repo.getPaymentMethods()) {
+            val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+            _uiState.value = when (val response = repo.getPaymentMethods(
+                amount = if (checkoutDetails.appliedOfferId.isNullOrBlank()) checkoutDetails.amount else null,
+                offerId = checkoutDetails.appliedOfferId
+            )) {
                 is ApiResponse.Error -> {
                     UiState.Error(response.message)
                 }

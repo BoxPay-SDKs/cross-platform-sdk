@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.presentation.ChevronIcon
+import com.crossplatform.sdk.presentation.screens.CheckboxItem
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -231,13 +232,26 @@ private fun SavedCardRow(
         // SI Checkbox
         val showSI = (checkoutDetails.isSICheckboxChecked || checkoutDetails.isSICheckboxEnabled) && isSelected
         if (showSI) {
-            CheckBoxContainer(
-                text             = "Set up Standing Instructions (SI) for this payment.",
-                isCheckBoxSelected = isSICheckBoxChecked,
-                onCheckBoxClicked  = { isSICheckBoxChecked = !isSICheckBoxChecked },
-                buttonColor = checkoutDetails.buttonColor,
-                isSICheckboxEnabled = checkoutDetails.isSICheckboxEnabled
-            )
+            Row(
+                modifier          = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CheckboxItem(
+                    isChecked   = isSICheckBoxChecked,
+                    buttonColor = checkoutDetails.buttonColor,
+                    onClick     = { isSICheckBoxChecked = !isSICheckBoxChecked }
+                )
+                Text(
+                    text       = "Set up Standing Instructions (SI) for this payment.",
+                    fontFamily = defaultFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontSize   = 14.sp,
+                    color      = Color(0xFF2D2B32),
+                    modifier   = Modifier.padding(start = 6.dp)
+                )
+            }
         }
 
         // Pay button

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
+import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.components.EmptyListView
@@ -39,7 +40,10 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun NetBankingScreen() {
+fun NetBankingScreen(
+    onBackPress : () -> Unit
+) {
+    BackHandler(onBack = onBackPress)
     val viewModel : NetBankingViewModel = koinViewModel()
     val checkoutDetails by CheckoutDetailsHandler.checkoutDetailsFlow
         .collectAsStateWithLifecycle()

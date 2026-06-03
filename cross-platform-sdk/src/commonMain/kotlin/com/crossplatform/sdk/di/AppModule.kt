@@ -56,7 +56,7 @@ val appModule = module {
     factory { FetchStatusRepoImpl(apiService = get()) }
 
     // ✅ ViewModels
-    viewModel { MainScreenViewModel(repo = get(), analyticsRepo = get()) }
+    viewModel { MainScreenViewModel(repo = get(), analyticsRepo = get(), otherPaymentMethodRepo = get(), instantOfferRepo = get()) }
     viewModel { InstantOfferViewModel(repo = get(),analyticsRepo = get()) }
     viewModel { AddressScreenViewModel(repo = get(), analyticsRepo = get()) }
     viewModel { CardScreenViewModel(repo = get(), fetchStatusRepo = get(),analyticsRepo = get()) }

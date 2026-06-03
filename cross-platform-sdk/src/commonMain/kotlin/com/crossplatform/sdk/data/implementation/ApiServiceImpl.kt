@@ -6,11 +6,13 @@ import com.crossplatform.sdk.data.executeWithResponse
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsResponse
+import com.crossplatform.sdk.data.model.AppliedOfferResponse
 import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.data.model.FetchStatusResponse
 import com.crossplatform.sdk.data.model.FetchSurchargeResponse
+import com.crossplatform.sdk.data.model.InstantOfferResponse
 import com.crossplatform.sdk.data.model.MethodInstrumentDetails
 import com.crossplatform.sdk.data.model.MethodsPostRequest
 import com.crossplatform.sdk.data.model.PaymentMethod
@@ -19,7 +21,9 @@ import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
 import com.crossplatform.sdk.data.model.SessionDetails
 import com.crossplatform.sdk.data.model.UserDetails
 import com.crossplatform.sdk.data.model.requestBody.AnalyticsRequest
+import com.crossplatform.sdk.data.model.requestBody.ApplyOfferRequestBody
 import com.crossplatform.sdk.data.model.requestBody.CardPostRequestBody
+import com.crossplatform.sdk.data.model.requestBody.InstantOfferRequestBody
 import com.crossplatform.sdk.data.model.requestBody.SavedCardPostRequestBody
 import com.crossplatform.sdk.data.model.requestBody.SurchargeRequestBody
 import com.crossplatform.sdk.data.model.requestBody.UPICollectRequestBody
@@ -145,9 +149,17 @@ class ApiServiceImpl : ApiService {
         }
     }
 
-    override suspend fun fetchPaymentMethods(): ApiResponse<List<PaymentMethod>> {
+    override suspend fun fetchPaymentMethods(
+        amount: Double?,
+        offerId: String?
+    ): ApiResponse<List<PaymentMethod>> {
         return executeWithResponse {
-            client.get(urlString = "payment-methods")
+            client.get(urlString = "payment-methods") {
+                url {
+                    amount?.let { parameters.append("amount", "$it") }
+                    offerId?.let { parameters.append("offerId", it) }
+                }
+            }
         }
     }
 
@@ -279,6 +291,41 @@ class ApiServiceImpl : ApiService {
     override suspend fun deleteSavedCard(id: String): ApiResponse<RecommendedInstrumentsResponse> {
         return executeWithResponse {
             client.delete(urlString = "shoppers/${userData.uniqueId}/instruments/$id")
+        }
+    }
+
+    override suspend fun getOffer(
+        minAmount: Double,
+        maxAmount: Double
+    ): ApiResponse<List<InstantOfferResponse>> {
+        val requestBody = InstantOfferRequestBody(
+            minAmount = minAmount,
+            maxAmount = maxAmount,
+            currencyCode = checkoutDetails.currencyCode
+        )
+        return executeWithResponse{
+            client.post(urlString = "offers/search") {
+                contentType(ContentType.Application.Json)
+                setBody(requestBody)
+            }
+        }
+    }
+
+    override suspend fun applyOffer(
+        offerId: List<String>,
+        minAmount: Double
+    ): ApiResponse<AppliedOfferResponse> {
+        val requestBody = ApplyOfferRequestBody(
+            offerSearchRequest = ApplyOfferRequestBody.OfferSearchRequest(
+                minAmount = minAmount,
+                offers = offerId
+            ),
+        )
+        return executeWithResponse{
+            client.post(urlString = "offers/evaluate") {
+                contentType(ContentType.Application.Json)
+                setBody(requestBody)
+            }
         }
     }
 }

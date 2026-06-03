@@ -46,10 +46,6 @@ class MainScreenRepoImpl(
         )
     }
 
-    override suspend fun fetchStatus(): ApiResponse<FetchStatusResponse> = withContext(ioDispatcher) {
-        apiService.fetchStatus()
-    }
-
     override suspend fun fetchRecommendedInstruments(): ApiResponse<List<RecommendedInstrumentsResponse>> = withContext(ioDispatcher) {
         apiService.getRecommendedInstruments()
     }

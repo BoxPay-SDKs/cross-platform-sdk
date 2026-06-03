@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
+import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.ErrorText
 import com.crossplatform.sdk.presentation.components.CountryPickerDialog
@@ -46,8 +47,10 @@ import com.crossplatform.sdk.presentation.toComposeColor
 
 @Composable
 fun AddressScreen(
-    onAddressSaved: () -> Unit
+    onAddressSaved: () -> Unit,
+    onBackPress : () -> Unit
 ) {
+    BackHandler(onBack = onBackPress)
     val checkoutDetails by CheckoutDetailsHandler.checkoutDetailsFlow.collectAsStateWithLifecycle()
     val userData = UserDataHandler.userData
 

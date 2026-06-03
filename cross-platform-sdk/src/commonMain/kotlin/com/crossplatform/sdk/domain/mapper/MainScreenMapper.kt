@@ -16,11 +16,34 @@ fun SessionDetails.toUiModel(): MainScreenModel {
     fun isEnabled(field: String)  = enabledFields.any { it.field == field }
     fun isEditable(field: String) = enabledFields.find { it.field == field }?.editable == true
 
+    val subscriptionDetails: List<Pair<String, String>>? = paymentDetails.subscriptionDetails?.let { data ->
+        val billingCycle = data.billingCycle
+
+        val frequency: String? = billingCycle?.let {
+            if (it.count == 1) formatWords(it.billingTimeUnit)
+            else "Every ${it.count} ${formatWords(it.billingCycleValue)}"
+        }
+
+        val validity: String? = when {
+            !data.expiryDateLocale.isNullOrEmpty()         -> formatDate(data.expiryDateLocale.split(" ").firstOrNull() ?: "")
+            !data.recurringExpiryDateLocale.isNullOrEmpty() -> formatDate(data.recurringExpiryDateLocale.split(" ").firstOrNull() ?: "")
+            else                                            -> null
+        }
+
+        listOfNotNull(
+            moneyObject.amount.takeIf { it != 0.0 }?.let { "To be paid now" to "$it" },
+            data.maxAmountLocaleFull?.takeIf { it.isNotEmpty() }?.let { "Recurring Amount" to "Up to $it" },
+            frequency?.let { "Frequency" to it },
+            validity?.let { "Expiry Date" to it }
+        )
+    }
+
     CheckoutDetailsHandler.setSDKConfig(
         currencySymbol              = moneyObject.currencySymbol,
         currencyCode                = moneyObject.currencyCode,
         itemsLength                 = this.paymentDetails.order?.items?.sumOf { it.quantity ?: 1 } ?: 0,
         amount                      = paymentDetails.money.amount,
+        amountBeforeSurcharge = paymentDetails.money.amount,
         buttonColor                 = merchantDetails.checkoutTheme.primaryButtonColor,
         buttonTextColor             = merchantDetails.checkoutTheme.buttonTextColor,
         merchantLogo                = merchantDetails.merchantLogo ?: "",
@@ -42,8 +65,9 @@ fun SessionDetails.toUiModel(): MainScreenModel {
         isOrderItemDetailsVisible   = isEnabled("ORDER_ITEM_DETAILS"),
         isSessionExpiryVisible      = isEnabled("TIMER"),
         isMerchantLogoVisible       = isEnabled("MERCHANT_LOGO"),
-        isSubscriptionCheckout      = paymentDetails.subscriptionDetails != null,
+        isSubscriptionCheckout      = subscriptionDetails != null,
         errorMessage = "You may have cancelled the payment or there was a delay in response. Please retry.",
+        subscription = subscriptionDetails
     )
 
     UserDataHandler.set(
@@ -61,9 +85,6 @@ fun SessionDetails.toUiModel(): MainScreenModel {
         labelName = paymentDetails.shopper.deliveryAddress?.labelName,
         labelType = paymentDetails.shopper.deliveryAddress?.labelType
     )
-
-    println("===respon se ${CheckoutDetailsHandler.checkoutDetails}")
-    println("===respon se ${UserDataHandler.userData}")
 
     var methodFlags = MainScreenModel.MethodFlags()
     this.configs.paymentMethods.forEach { method ->
@@ -121,4 +142,24 @@ fun SessionDetails.toUiModel(): MainScreenModel {
         orderDetails = orderDetails,
         sessionExpiryTimer = this.sessionExpiryTimestamp
     )
+}
+
+fun formatWords(text: String): String {
+    return text.replace(Regex("([a-z])([A-Z])"), "$1 $2")
+}
+
+fun formatDate(dateStr: String): String {
+    val datePart = dateStr.split(" ").firstOrNull() ?: return ""
+    val parts = datePart.split("/")
+    if (parts.size < 3) return ""
+
+    val (day, month, year) = parts
+
+    val months = listOf(
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    )
+
+    val monthName = months.getOrNull(month.toIntOrNull()?.minus(1) ?: return "") ?: return ""
+    return "$day-$monthName-$year"
 }

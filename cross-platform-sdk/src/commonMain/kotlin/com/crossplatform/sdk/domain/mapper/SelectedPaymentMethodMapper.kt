@@ -8,7 +8,7 @@ fun List<PaymentMethod>.toUiModel(type: String): List<SelectedPaymentMethod> {
         .filter { it.type.equals(type, ignoreCase = true) } // ✅ filter by type
         .mapNotNull { item ->
 
-            val title = item.title?.trim() ?: ""
+            val title = item.title.trim()
 
             if (title.isEmpty()) return@mapNotNull null
 

@@ -25,3 +25,6 @@ expect class AppLifecycleObserver(
     fun start()
     fun stop()
 }
+
+@Composable
+expect fun BackHandler(onBack: () -> Unit)

@@ -7,6 +7,7 @@ import com.crossplatform.sdk.data.model.BrowserData
 
 import android.content.res.Resources
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.crossplatform.sdk.data.model.DeviceDetails
@@ -16,6 +17,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.crossplatform.sdk.domain.model.AppLifecycleState
+import java.util.Calendar
 
 
 lateinit var appContext: Context
@@ -71,11 +73,11 @@ actual fun currentTimeMillis(): Long {
 }
 
 actual fun currentYear(): Int {
-    return java.util.Calendar.getInstance().get(java.util.Calendar.YEAR) % 100
+    return Calendar.getInstance().get(Calendar.YEAR) % 100
 }
 
 actual fun currentMonth(): Int {
-    return java.util.Calendar.getInstance().get(java.util.Calendar.MONTH) + 1
+    return Calendar.getInstance().get(Calendar.MONTH) + 1
 }
 
 actual fun launchUpiIntent(url: String, onFailure: (Throwable) -> Unit, onSuccess: () -> Unit) {
@@ -116,5 +118,12 @@ actual class AppLifecycleObserver actual constructor(onStateChange: (AppLifecycl
 
     actual fun stop() {
         ProcessLifecycleOwner.get().lifecycle.removeObserver(observer)
+    }
+}
+
+@Composable
+actual fun BackHandler(onBack: () -> Unit) {
+    BackHandler {
+        onBack()
     }
 }

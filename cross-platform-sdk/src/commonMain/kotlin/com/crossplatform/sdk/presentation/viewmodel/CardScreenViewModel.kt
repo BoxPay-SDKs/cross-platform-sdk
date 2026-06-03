@@ -192,7 +192,7 @@ class CardScreenViewModel(
         checkCardValid(isTestEnv, false)
     }
 
-    fun postCardRequest() {
+    fun postCardRequest(isSICheckBoxClicked : Boolean) {
         viewModelScope.launch {
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
@@ -213,7 +213,7 @@ class CardScreenViewModel(
                 cvv = cardCvvText.value,
                 nickName = cardNickNameText.value,
                 isSaveInstrumentCheckboxClicked = isSavedCardCheckBoxClicked.value,
-                isSICheckboxClicked = false
+                isSICheckboxClicked = !isSICheckBoxClicked
             )
             handlePaymentResponse(
                 response = response,

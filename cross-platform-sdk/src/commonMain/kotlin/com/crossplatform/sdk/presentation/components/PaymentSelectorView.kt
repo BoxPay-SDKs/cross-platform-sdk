@@ -61,7 +61,6 @@ fun PaymentSelectorView(
                 color = Color(0xFFE6E6E6),
                 RoundedCornerShape(12.dp)
             )
-            .padding(vertical = 8.dp, horizontal = 8.dp)
     ) {
         providerList.forEachIndexed { index, provider ->
             PaymentSelector(
@@ -115,7 +114,7 @@ fun PaymentSelector(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Row(
             modifier          = Modifier.fillMaxWidth().clickable{onPress(id)},

@@ -2,10 +2,12 @@ package com.crossplatform.sdk.data.service
 
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.model.AnalyticsResponse
+import com.crossplatform.sdk.data.model.AppliedOfferResponse
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.data.model.FetchStatusResponse
 import com.crossplatform.sdk.data.model.FetchSurchargeResponse
+import com.crossplatform.sdk.data.model.InstantOfferResponse
 import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
@@ -43,7 +45,10 @@ interface ApiService {
         instrumentDetails : String
     ) : ApiResponse<PaymentMethodPostResponse>
 
-    suspend fun fetchPaymentMethods() : ApiResponse<List<PaymentMethod>>
+    suspend fun fetchPaymentMethods(
+        amount: Double?,
+        offerId: String?
+    ) : ApiResponse<List<PaymentMethod>>
 
     suspend fun fetchStatus() : ApiResponse<FetchStatusResponse>
 
@@ -78,5 +83,12 @@ interface ApiService {
     suspend fun getSavedAddress() : ApiResponse<List<FetchSavedAddress>>
 
     suspend fun deleteSavedCard(id : String) : ApiResponse<RecommendedInstrumentsResponse>
+
+    suspend fun getOffer(minAmount : Double, maxAmount : Double) : ApiResponse<List<InstantOfferResponse>>
+
+    suspend fun applyOffer(
+        offerId : List<String>,
+        minAmount: Double
+    ) : ApiResponse<AppliedOfferResponse>
 
 }

@@ -33,7 +33,9 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
@@ -41,10 +43,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.ErrorText
 import com.crossplatform.sdk.presentation.components.CvvInfoBottomSheet
 import com.crossplatform.sdk.presentation.components.Footer
@@ -52,6 +57,7 @@ import com.crossplatform.sdk.presentation.components.KnowMoreBottomSheet
 import com.crossplatform.sdk.presentation.components.PayButton
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.CardScreenViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -72,8 +78,10 @@ fun CardScreen(
     percent                : String? = null,
     cardType               : String? = null,
     issuerBrand            : String? = null,
-    isAutoNavigationEnabled: Boolean = false
+    isAutoNavigationEnabled: Boolean = false,
+    onBackPress : () -> Unit
 ) {
+    BackHandler(onBack = onBackPress)
     val checkoutDetails by CheckoutDetailsHandler.checkoutDetailsFlow.collectAsStateWithLifecycle()
     val viewModel: CardScreenViewModel = koinViewModel()
     val isBoxPayAnimationVisible by viewModel.isBoxPayAnimationVisible.collectAsStateWithLifecycle()
@@ -335,37 +343,56 @@ fun CardScreen(
         }
 
         // --- SI Checkbox ---
-//                    if ((checkoutDetails.isSICheckboxChecked || checkoutDetails.isSICheckboxVisible) &&
-//                        checkoutDetails.isSubscriptionCheckout
-//                    ) {
-//                        CheckBoxContainer(
-//                            text              = "Set up Standing Instructions (SI) for this payment.",
-//                            isCheckBoxSelected = isSICheckBoxClicked,
-//                            onCheckBoxClicked  = { isSICheckBoxClicked = !isSICheckBoxClicked }
-//                        )
-//                    }
-//
-//                    // --- Subscription Details ---
-//                    if (isSubscriptionDetailsVisible) {
-//                        Column(
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(horizontal = 16.dp, vertical = 10.dp)
-//                                .clip(RoundedCornerShape(6.dp))
-//                                .background(Color(0xFFEFF3FA))
-//                                .padding(vertical = 12.dp)
-//                        ) {
-//                            checkoutDetails.subscriptionDetails?.forEach { item ->
-//                                if (item.value != null) {
-//                                    SubscriptionRow(
-//                                        heading        = item.label,
-//                                        value          = item.value,
-//                                        checkoutDetails = checkoutDetails
-//                                    )
-//                                }
-//                            }
-//                        }
-//                    }
+        if ((checkoutDetails.isSICheckboxChecked || checkoutDetails.isSICheckboxEnabled) &&
+            checkoutDetails.isSubscriptionCheckout
+        ) {
+            Row(
+                modifier          = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 8.dp, end = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CheckboxItem(
+                    isChecked   = isSiCheckBoxChecked,
+                    buttonColor = checkoutDetails.buttonColor,
+                    onClick     = {
+                        if(checkoutDetails.isSICheckboxEnabled) {
+                            isSiCheckBoxChecked = !isSiCheckBoxChecked
+                        }
+                    }
+                )
+                Text(
+                    text       = "Set up Standing Instructions (SI) for this payment.",
+                    fontFamily = defaultFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontSize   = 14.sp,
+                    color      = Color(0xFF2D2B32),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier   = Modifier.padding(start = 6.dp)
+                )
+            }
+        }
+
+        // --- Subscription Details ---
+        if (isSubscriptionDetailsVisible) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(Color(0xFFEFF3FA))
+                    .padding(vertical = 12.dp)
+            ) {
+                checkoutDetails.subscription?.forEach { item ->
+                    SubscriptionRow(
+                        heading        = item.first,
+                        value          = item.second,
+                        currencySymbol = checkoutDetails.currencySymbol
+                    )
+                }
+            }
+        }
         // --- Pay Button ---
         Spacer(Modifier.weight(1f))
         PayButton(
@@ -378,7 +405,7 @@ fun CardScreen(
                     else Color(0xFFE6E6E6)
                 )
                 .clickable(enabled = viewModel.cardValid.value) {
-                    viewModel.postCardRequest()
+                    viewModel.postCardRequest(isSiCheckBoxChecked)
                 },
             amount = checkoutDetails.amount,
             currencySymbol = checkoutDetails.currencySymbol,
@@ -572,5 +599,58 @@ class ExpiryVisualTransformation : VisualTransformation {
         }
 
         return TransformedText(AnnotatedString(formatted), offsetMapping)
+    }
+}
+
+@Composable
+fun SubscriptionRow(
+    heading: String,
+    value: String,
+    currencySymbol : String
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp), // paddingTop: 4 approximated as vertical for symmetry; change to top-only if needed
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = heading,
+            fontFamily = defaultFontFamily,
+            color = Color(0xFF2D2B32)
+        )
+        Text(
+            text = if(heading.contains("amount", true) || heading.contains("paid", true)) {buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontSize = 12.sp,
+                        fontFamily = defaultInterFontFamily,
+                        color = Color(0xFF4F4D55)
+                    )
+                ) {
+                    append(currencySymbol)
+                }
+
+                // ✅ equivalent of amount Text
+                withStyle(
+                    style = SpanStyle(
+                        fontSize = 12.sp,
+                        fontFamily = defaultFontFamily
+                    )
+                ) {
+                    append(value)
+                }
+            }} else buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontSize = 12.sp,
+                        fontFamily = defaultFontFamily
+                    )
+                ) {
+                    append(value)
+                }
+            },
+            color = Color(0xFF2D2B32)
+        )
     }
 }

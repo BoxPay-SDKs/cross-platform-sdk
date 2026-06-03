@@ -9,10 +9,11 @@ import kotlinx.coroutines.flow.StateFlow
 
 object CheckoutDetailsHandler {
 
-    // ─── Default Values (equivalent of your default object) ───
     private fun defaultCheckoutDetails() = CheckoutDetails(
         currencySymbol = "",
         currencyCode = "",
+        amountBeforeSurcharge = 0.0,
+        discountAmount = 0.0,
         amount = 0.0,
         token = "",
         isSessionExpired = false,
@@ -22,11 +23,10 @@ object CheckoutDetailsHandler {
         isPaymentSuccessful = false,
         merchantLogo = "",
         merchantName = "",
-//        fontFamily = FontConfiguration(),
         ctaBorderRadius = 12,
         buttonColor = "#1CA672",
-        buttonTextColor = "white",
-        headerColor = "white",
+        buttonTextColor = "#FFFFFF",
+        headerColor = "#FFFFFF",
         headerTextColor = "#363840",
         isTestEnv = false,
         itemsLength = 0,
@@ -59,10 +59,11 @@ object CheckoutDetailsHandler {
         isMerchantLogoVisible = false,
         isSessionExpiryVisible = false,
         surchargeDetails = emptyList(),
-        isWebViewVisible = false
+        isWebViewVisible = false,
+        appliedOfferId = null,
+        subscription = null
     )
 
-    // ─── State ─────────────────────────────────────────────────
     private val _checkoutDetailsFlow = MutableStateFlow(defaultCheckoutDetails())
     val checkoutDetailsFlow: StateFlow<CheckoutDetails> = _checkoutDetailsFlow
     var checkoutDetails: CheckoutDetails = defaultCheckoutDetails()
@@ -89,6 +90,7 @@ object CheckoutDetailsHandler {
     fun setSDKConfig(
         currencySymbol : String,
         currencyCode : String,
+        amountBeforeSurcharge : Double,
         amount :Double,
         buttonColor : String,
         buttonTextColor : String,
@@ -113,11 +115,13 @@ object CheckoutDetailsHandler {
         isOrderItemDetailsVisible : Boolean,
         isSubscriptionCheckout : Boolean,
         isMerchantLogoVisible : Boolean,
-        isSessionExpiryVisible : Boolean
+        isSessionExpiryVisible : Boolean,
+        subscription : List<Pair<String, String>>?
     ) {
         checkoutDetails = checkoutDetails.copy(
             currencySymbol = currencySymbol,
             currencyCode = currencyCode,
+            amountBeforeSurcharge = amountBeforeSurcharge,
             amount = amount,
             buttonColor = buttonColor,
             buttonTextColor = buttonTextColor,
@@ -142,7 +146,8 @@ object CheckoutDetailsHandler {
             isOrderItemDetailsVisible = isOrderItemDetailsVisible,
             isSubscriptionCheckout = isSubscriptionCheckout,
             isSessionExpiryVisible = isSessionExpiryVisible,
-            isMerchantLogoVisible = isMerchantLogoVisible
+            isMerchantLogoVisible = isMerchantLogoVisible,
+            subscription = subscription
         )
         _checkoutDetailsFlow.value = checkoutDetails
     }
@@ -217,4 +222,13 @@ object CheckoutDetailsHandler {
         _checkoutDetailsFlow.value = checkoutDetails
     }
 
+    fun setAmount(amount : Double) {
+        checkoutDetails = checkoutDetails.copy(amount = amount)
+        _checkoutDetailsFlow.value = checkoutDetails
+    }
+
+    fun setAppliedOffer(appliedOfferId : String, amount : Double) {
+        checkoutDetails = checkoutDetails.copy(appliedOfferId = appliedOfferId, discountAmount = amount)
+        _checkoutDetailsFlow.value = checkoutDetails
+    }
 }

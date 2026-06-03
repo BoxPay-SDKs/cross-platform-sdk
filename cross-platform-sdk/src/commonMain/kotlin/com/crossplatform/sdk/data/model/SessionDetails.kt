@@ -75,8 +75,26 @@ data class DeliveryAddress(
 
 @Serializable
 data class SubscriptionDetails(
-    @SerialName("type") val type: String,
-    @SerialName("maxAmountLocaleFull") val maxAmountLocaleFull: String
+    @SerialName("type") val type: String?,
+    @SerialName("billingCycle") val billingCycle : SubscriptionBillingCycle?,
+    @SerialName("billingDuration") val billingDuration : SubscriptionBillingDuration?,
+    @SerialName("nextBillingDateLocale") val nextBillingDateLocale : String? = null,
+    @SerialName("expiryDateLocale") val expiryDateLocale : String? = null,
+    @SerialName("recurringExpiryDateLocale") val recurringExpiryDateLocale : String? = null,
+    @SerialName("maxAmountLocaleFull") val maxAmountLocaleFull: String? = null
+)
+
+@Serializable
+data class SubscriptionBillingCycle(
+    @SerialName("billingTimeUnit") val billingTimeUnit : String,
+    @SerialName("count") val count : Int,
+    @SerialName("billingCycleValue") val billingCycleValue : String
+)
+
+@Serializable
+data class SubscriptionBillingDuration(
+    @SerialName("type") val type : String,
+    @SerialName("noOfCycles") val noOfCycles : Int
 )
 
 @Serializable
@@ -119,42 +137,30 @@ data class PaymentMethod(
     @SerialName("title") val title: String,
     @SerialName("logoUrl") val logoUrl: String,
     @SerialName("instrumentTypeValue") val instrumentTypeValue: String,
-    @SerialName("emiMethod") val emiMethod: EmiMethod? = null  // optional (?) = null
+    @SerialName("applicableOffers") val applicableOffer: List<ApplicableOffer>? = null,
+    @SerialName("emiMethod") val emiMethod: EmiMethod? = null
 )
 
 @Serializable
 data class EmiMethod(
-    @SerialName("brand") val brand: String,
-    @SerialName("issuer") val issuer: String,
-    @SerialName("duration") val duration: Int,
-    @SerialName("effectiveInterestRate") val effectiveInterestRate: Double,
-    @SerialName("merchantBorneInterestRate") val merchantBorneInterestRate: Double,
-    @SerialName("issuerTitle") val issuerTitle: String,
-    @SerialName("netAmountLocaleFull") val netAmountLocaleFull: String,
-    @SerialName("totalAmountLocaleFull") val totalAmountLocaleFull: String,
-    @SerialName("emiAmountLocaleFull") val emiAmountLocaleFull: String,
-    @SerialName("merchantBorneInterestAmountLocaleFull") val merchantBorneInterestAmountLocaleFull: String,
-    @SerialName("bankChargedInterestAmountLocaleFull") val bankChargedInterestAmountLocaleFull: String,
-    @SerialName("interestChargedAmountLocaleFull") val interestChargedAmountLocaleFull: String,
-    @SerialName("cardlessEmiProviderTitle") val cardlessEmiProviderTitle: String,
-    @SerialName("cardlessEmiProviderValue") val cardlessEmiProviderValue: String,
-    @SerialName("applicableOffer") val applicableOffer: ApplicableOffer? = null,
-    @SerialName("processingFee") val processingFee: ProcessingFee? = null
+    @SerialName("brand") val brand: String? = null,
+    @SerialName("issuer") val issuer: String? = null,
+    @SerialName("duration") val duration: Int? = null,
+    @SerialName("effectiveInterestRate") val effectiveInterestRate: Double? = null,
+    @SerialName("merchantBorneInterestRate") val merchantBorneInterestRate: Double? = null,
+    @SerialName("issuerTitle") val issuerTitle: String? = null,
+    @SerialName("netAmountLocaleFull") val netAmountLocaleFull: String? = null,
+    @SerialName("totalAmountLocaleFull") val totalAmountLocaleFull: String? = null,
+    @SerialName("emiAmountLocaleFull") val emiAmountLocaleFull: String? = null,
+    @SerialName("merchantBorneInterestAmountLocaleFull") val merchantBorneInterestAmountLocaleFull: String? = null,
+    @SerialName("bankChargedInterestAmountLocaleFull") val bankChargedInterestAmountLocaleFull: String? = null,
+    @SerialName("interestChargedAmountLocaleFull") val interestChargedAmountLocaleFull: String? = null,
+    @SerialName("cardlessEmiProviderTitle") val cardlessEmiProviderTitle: String? = null,
+    @SerialName("cardlessEmiProviderValue") val cardlessEmiProviderValue: String? = null,
 )
 
 @Serializable
 data class ApplicableOffer(
     @SerialName("code") val code: String,
-    @SerialName("discount") val discount: Discount
-)
-
-@Serializable
-data class Discount(
-    @SerialName("percentage") val percentage: Double,
-    @SerialName("type") val type: String
-)
-
-@Serializable
-data class ProcessingFee(
-    @SerialName("amountLocaleFull") val amountLocaleFull: String
+    @SerialName("title") val title: String
 )

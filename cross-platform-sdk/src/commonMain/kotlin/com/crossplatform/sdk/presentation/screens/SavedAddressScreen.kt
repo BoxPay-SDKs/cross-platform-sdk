@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.components.SavedAddressCard
 import com.crossplatform.sdk.presentation.components.ShimmerView
@@ -22,7 +23,10 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_work
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SavedAddressScreen() {
+fun SavedAddressScreen(
+    onBackPress : () -> Unit
+) {
+    BackHandler(onBack = onBackPress)
     val viewModel : AddressScreenViewModel = koinViewModel()
     val uiState by viewModel.savedList.collectAsStateWithLifecycle()
     val selectedAddress by viewModel.selectedSavedAddress.collectAsStateWithLifecycle()

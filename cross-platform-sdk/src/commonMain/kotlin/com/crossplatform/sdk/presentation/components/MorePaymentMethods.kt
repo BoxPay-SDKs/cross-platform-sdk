@@ -50,7 +50,7 @@ fun MorePaymentMethods(
                 title = "Cards",
                 image = Res.drawable.ic_card,
                 onClick = onNavigateToCard,
-                surchargeFee = surchargeList.find { it.applicableOn == "cards" }?.amount
+                surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "card" }?.amount
             )
             if(methodFlags.isWalletVisible || methodFlags.isNetBankingVisible || methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
                 HorizontalDivider()
@@ -61,7 +61,7 @@ fun MorePaymentMethods(
                 title = "Wallet",
                 image = Res.drawable.ic_wallet,
                 onClick = onNavigateToWallet,
-                surchargeFee = surchargeList.find { it.applicableOn == "wallet" }?.amount
+                surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "wallet" }?.amount
             )
             if(methodFlags.isNetBankingVisible || methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
                 HorizontalDivider()
@@ -72,7 +72,7 @@ fun MorePaymentMethods(
                 title = "Net Banking",
                 image = Res.drawable.ic_netbanking,
                 onClick = onNavigateToNetBanking,
-                surchargeFee = surchargeList.find { it.applicableOn == "netbanking" }?.amount
+                surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "netbanking" }?.amount
             )
             if(methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
                 HorizontalDivider()
@@ -83,7 +83,7 @@ fun MorePaymentMethods(
                 title = "EMI",
                 image = Res.drawable.ic_emi,
                 onClick = onNavigateToEmi,
-                surchargeFee = surchargeList.find { it.applicableOn == "emi" }?.amount
+                surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "emi" }?.amount
             )
             if(methodFlags.isBNPLVisible) {
                 HorizontalDivider()
@@ -94,7 +94,7 @@ fun MorePaymentMethods(
                 title = "Buy Now Pay Later",
                 image = Res.drawable.ic_bnpl,
                 onClick = onNavigateToBNPL,
-                surchargeFee = surchargeList.find { it.applicableOn == "buynowpaylater" }?.amount
+                surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "buynowpaylater" }?.amount
             )
         }
     }

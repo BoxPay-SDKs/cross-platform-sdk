@@ -9,6 +9,8 @@ data class CheckoutDetails(
     // ─── Payment Info ───────────────────────────
     val currencySymbol: String,
     val currencyCode: String,
+    val amountBeforeSurcharge : Double,
+    val discountAmount : Double,
     val amount: Double,
     val token: String,
     val isTestEnv: Boolean,
@@ -63,14 +65,7 @@ data class CheckoutDetails(
     val transactionId : String,
     val inquiryToken : String,
     val surchargeDetails : List<SurchargeModel>,
-    val isWebViewVisible : Boolean
-)
-
-@Serializable
-data class FontConfiguration(
-    @SerialName("regular") val regular: String? = null,       // regular?: string
-    @SerialName("medium") val medium: String? = null,         // medium?: string
-    @SerialName("semiBold") val semiBold: String? = null,     // semiBold?: string
-    @SerialName("bold") val bold: String? = null,             // bold?: string
-    @SerialName("extraBold") val extraBold: String? = null    // extraBold?: string
+    val isWebViewVisible : Boolean,
+    val appliedOfferId : String?,
+    val subscription : List<Pair<String, String>>?
 )

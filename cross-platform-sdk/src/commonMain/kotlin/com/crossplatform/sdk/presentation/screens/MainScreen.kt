@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -16,10 +17,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
+import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
@@ -27,14 +30,18 @@ import com.crossplatform.sdk.presentation.buildAddressString
 import com.crossplatform.sdk.presentation.components.AddressComponent
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.MorePaymentMethods
+import com.crossplatform.sdk.presentation.components.OfferSection
 import com.crossplatform.sdk.presentation.components.OrderDetails
 import com.crossplatform.sdk.presentation.components.PaymentSelectorView
 import com.crossplatform.sdk.presentation.components.SavedCardComponent
 import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
+import com.crossplatform.sdk.presentation.components.ShowUpdateAmountBottomSheet
 import com.crossplatform.sdk.presentation.components.UPIComponent
+import com.crossplatform.sdk.presentation.isPresentInSurchargeModel
 import com.crossplatform.sdk.presentation.launchUpiIntent
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.MainScreenViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi
@@ -52,18 +59,17 @@ fun MainScreen(
     onProceedWalletScreen: () -> Unit,
     onProceedBNPLScreen: () -> Unit,
     onProceedUPITimerScreen: (shopperVpa: String) -> Unit,
-    onShowSwipeToPay : () -> Unit
+    onShowSwipeToPay : () -> Unit,
+    onProceedInstantOfferScreen : () -> Unit,
+    selectedOfferCode: String,
+    onSetSelectedOfferCode : (String) -> Unit,
+    checkoutDetails: CheckoutDetails
 ) {
     val screenState by viewModel.state.collectAsStateWithLifecycle()
     val boxPayAnimationVisible by viewModel.isBoxPayAnimationLoading.collectAsStateWithLifecycle()
-    val checkoutDetails by CheckoutDetailsHandler.checkoutDetailsFlow
-        .collectAsStateWithLifecycle()
     val userDetails by UserDataHandler.userDataFlow
         .collectAsStateWithLifecycle()
     val showWebView by viewModel.showWebViewScreen.collectAsStateWithLifecycle()
-    val isSwipeToPayVisible = remember {
-        mutableStateOf(false)
-    }
     val selectedDeleteCardId = remember {
         mutableStateOf("")
     }
@@ -71,6 +77,13 @@ fun MainScreen(
         mutableStateOf(false)
     }
     val selectedDeleteCardName = remember {
+        mutableStateOf("")
+    }
+    val showUpdatedAmountBottomSheet = remember {
+        mutableStateOf(false)
+    }
+
+    val selectedMethod = remember {
         mutableStateOf("")
     }
     val isToastVisible by viewModel.isToastVisible.collectAsStateWithLifecycle()
@@ -119,8 +132,8 @@ fun MainScreen(
                     viewModel.recommendedList.value.isNotEmpty()
 
             LaunchedEffect(Unit) {
-                if(showSwipeToPay && !isSwipeToPayVisible.value) {
-                    isSwipeToPayVisible.value = true
+                if(showSwipeToPay && !viewModel.isSwipeToPayVisible.value) {
+                    viewModel.isSwipeToPayVisible.value = true
                     onShowSwipeToPay()
                 }
             }
@@ -163,7 +176,29 @@ fun MainScreen(
                     )
                 }
 
-                if(!viewModel.recommendedList.value.isEmpty()) {
+                if(viewModel.appliedOffers.value.isNotEmpty()) {
+                    SectionTitle("Offers & discounts")
+                    OfferSection(
+                        offers = viewModel.appliedOffers.value,
+                        selectedCode = selectedOfferCode,
+                        themeColor = checkoutDetails.buttonColor.toComposeColor(),
+                        onApply = { offer ->
+                            val amount = checkoutDetails.amount + checkoutDetails.discountAmount
+                            viewModel.applyOffer(offer.code, amount)
+                            onSetSelectedOfferCode(offer.code)
+                        },
+                        onRemove = {
+                            viewModel.removeOffer(checkoutDetails.discountAmount, checkoutDetails.amount)
+                            onSetSelectedOfferCode("")
+                        },
+                        onViewAll = {
+                            onProceedInstantOfferScreen()
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+
+                if(viewModel.recommendedList.value.isNotEmpty() && response.methodFlags.isUPIVisible) {
                     SectionTitle("Recommended")
                     PaymentSelectorView(
                         providerList      = viewModel.recommendedList.value,
@@ -295,7 +330,12 @@ fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to Add card screen from normal flow"
                                 )
-                                onProceedCardScreen()
+                                if(isPresentInSurchargeModel(checkoutDetails.surchargeDetails, "card")) {
+                                    selectedMethod.value = "card"
+                                    showUpdatedAmountBottomSheet.value = true
+                                } else{
+                                    onProceedCardScreen()
+                                }
                             },
                         onNavigateToWallet      =
                             {
@@ -304,7 +344,12 @@ fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to Wallet screen"
                                 )
-                                onProceedWalletScreen()
+                                if(isPresentInSurchargeModel(checkoutDetails.surchargeDetails, "wallet")) {
+                                    selectedMethod.value = "wallet"
+                                    showUpdatedAmountBottomSheet.value = true
+                                } else{
+                                    onProceedWalletScreen()
+                                }
                             },
                         onNavigateToNetBanking  =
                             {
@@ -313,7 +358,12 @@ fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to NetBanking screen"
                                 )
-                                onProceedNetBankingScreen()
+                                if(isPresentInSurchargeModel(checkoutDetails.surchargeDetails, "netbanking")) {
+                                    selectedMethod.value = "netbanking"
+                                    showUpdatedAmountBottomSheet.value = true
+                                } else{
+                                    onProceedNetBankingScreen()
+                                }
                             },
                         onNavigateToEmi         =
                             {
@@ -322,7 +372,12 @@ fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to EMI screen"
                                 )
-                                onProceedEMIScreen()
+                                if(isPresentInSurchargeModel(checkoutDetails.surchargeDetails, "emi")) {
+                                    selectedMethod.value = "emi"
+                                    showUpdatedAmountBottomSheet.value = true
+                                } else{
+                                    onProceedEMIScreen()
+                                }
                             },
                         onNavigateToBNPL        =
                             {
@@ -331,7 +386,12 @@ fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to BNPL screen"
                                 )
-                                onProceedBNPLScreen()
+                                if(isPresentInSurchargeModel(checkoutDetails.surchargeDetails, "buynowpaylater")) {
+                                    selectedMethod.value = "buynowpaylater"
+                                    showUpdatedAmountBottomSheet.value = true
+                                } else{
+                                    onProceedBNPLScreen()
+                                }
                             },
                         savedCardsList = viewModel.cardsRecommendedList.value,
                         surchargeList = checkoutDetails.surchargeDetails
@@ -443,6 +503,28 @@ fun MainScreen(
             viewModel.startFetchStatusPolling("")
             onProceedUPITimerScreen(viewModel.upiId.value)
         }
+    }
+
+    if (showUpdatedAmountBottomSheet.value) {
+        ShowUpdateAmountBottomSheet(
+            checkoutDetails = checkoutDetails,
+            selectedMethod = selectedMethod.value,
+            onClickProceed = {
+                showUpdatedAmountBottomSheet.value = false
+                selectedMethod.value = ""
+                when (selectedMethod.value) {
+                    "card"       -> onProceedCardScreen()
+                    "wallet"     -> onProceedWalletScreen()
+                    "netbanking" -> onProceedNetBankingScreen()
+                    "emi"        -> onProceedEMIScreen()
+                    "buynowpaylater"       -> onProceedBNPLScreen()
+                }
+            },
+            onClick = {
+                showUpdatedAmountBottomSheet.value = false
+                selectedMethod.value = ""
+            }
+        )
     }
 
     if(showWebView) {

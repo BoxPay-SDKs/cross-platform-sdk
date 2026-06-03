@@ -151,3 +151,8 @@ actual class AppLifecycleObserver actual constructor(private val onStateChange: 
         tokens.clear()
     }
 }
+
+@Composable
+actual fun BackHandler(onBack: () -> Unit) {
+    // No-op on iOS — back is handled via UI button only
+}

@@ -8,6 +8,7 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.SDKJobHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
+import com.crossplatform.sdk.domain.model.OfferItem
 import com.crossplatform.sdk.domain.mapper.toUiModel
 import com.crossplatform.sdk.domain.model.AppLifecycleState
 import com.crossplatform.sdk.domain.model.CountryDetailsModel
@@ -15,7 +16,9 @@ import com.crossplatform.sdk.domain.model.MainScreenModel
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
+import com.crossplatform.sdk.domain.repo.InstantOfferRepo
 import com.crossplatform.sdk.domain.repo.MainScreenRepo
+import com.crossplatform.sdk.domain.repo.OtherPaymentMethodRepo
 import com.crossplatform.sdk.presentation.AppLifecycleObserver
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.currentTimeMillis
@@ -37,7 +40,9 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 class MainScreenViewModel(
     private val repo: MainScreenRepo,
-    private val analyticsRepo : CallUIAnalyticsRepo
+    private val analyticsRepo : CallUIAnalyticsRepo,
+    private val otherPaymentMethodRepo: OtherPaymentMethodRepo,
+    private val instantOfferRepo: InstantOfferRepo
 ): ViewModel() {
 
     private val _state = MutableStateFlow<UiState<MainScreenModel>>(UiState.Loading)
@@ -50,6 +55,7 @@ class MainScreenViewModel(
     val isBoxPayAnimationLoading = MutableStateFlow(false)
 
     val isLoadingSession = mutableStateOf(true)
+    val isSwipeToPayVisible = mutableStateOf(false)
     val sessionSeconds = mutableStateOf(0L)
     val setWebViewUrl = mutableStateOf("")
     val setWebViewHtml = mutableStateOf("")
@@ -66,6 +72,7 @@ class MainScreenViewModel(
     val recommendedList = mutableStateOf<List<SelectedPaymentMethod>>(emptyList())
     val upiRecommendedList = mutableStateOf<List<SelectedPaymentMethod>>(emptyList())
     val cardsRecommendedList = mutableStateOf<List<SelectedPaymentMethod>>(emptyList())
+    val appliedOffers = mutableStateOf<List<OfferItem>>(emptyList())
 
     private val lifecycleObserver = AppLifecycleObserver { state ->
         if (state == AppLifecycleState.Foreground && isUpiOpening.value) {
@@ -102,8 +109,15 @@ class MainScreenViewModel(
                 }
 
                 val sessionData = sessionResponse.data
+                val responseData = sessionData.toUiModel()
                 val shopper = sessionData.paymentDetails.shopper
-                val money = sessionData.paymentDetails.money
+
+                if (responseData.status == TransactionStatusEnum.EXPIRED || responseData.status == TransactionStatusEnum.SUCCESS) {
+                    isSessionLoaded = true
+                    isBoxPayAnimationLoading.value = false
+                    _state.value = UiState.Success(sessionData.toUiModel())
+                    return@launch
+                }
 
                 // Set user data
                 val countryDetails = getPhoneNumberCodeAndCountryName(
@@ -117,42 +131,62 @@ class MainScreenViewModel(
                 )
                 UserDataHandler.setUniqueRef(shopper.uniqueReference)
 
-                // ✅ supervisorScope isolates failures between the two async blocks
+                val instruments: List<SelectedPaymentMethod>?
+                val offers: List<OfferItem>?
+
                 supervisorScope {
                     val instrumentsDeferred = async {
                         if (!checkoutDetails.shopperToken.isNullOrBlank())
                             repo.fetchRecommendedInstruments()
                         else null
                     }
-                    val surchargeDeferred = async {
-                        repo.getSurcharge(money.amount, money.currencyCode)
+                    val offersDeferred = async {
+                        val hasApplicableOffer = sessionResponse.data.configs.paymentMethods
+                            .any { !it.applicableOffer.isNullOrEmpty() }
+                        if (hasApplicableOffer)
+                            instantOfferRepo.getOffers(responseData.totalAmount, responseData.totalAmount)
+                        else null
                     }
 
-                    // ✅ Catch individually so one failure doesn't block the other
-                    val instruments = runCatching { instrumentsDeferred.await() }
+                    // ✅ Surcharge runs and completes here before moving on
+                    val surchargeJob = async {
+                        fetchSurchargeAndApply(
+                            amount       = responseData.totalAmount,
+                            currencyCode = responseData.currencyCode
+                        )
+                    }
+
+                    instruments = runCatching { instrumentsDeferred.await() }
                         .getOrNull()
                         ?.let { (it as? ApiResponse.Success)?.data?.toUiModel() }
 
-                    if (!instruments.isNullOrEmpty()) {
-                        recommendedList.value      = instruments.filter { it.type.lowercase() == "upi" }.take(2)
-                        upiRecommendedList.value   = instruments.filter { it.type.lowercase() == "upi" }
-                        cardsRecommendedList.value = instruments.filter { it.type.lowercase() == "card" }
-                    }
-
-                    runCatching { surchargeDeferred.await() }
+                    offers = runCatching { offersDeferred.await() }
                         .getOrNull()
                         ?.let { (it as? ApiResponse.Success)?.data?.toUiModel() }
-                        ?.let { CheckoutDetailsHandler.setSurchargeDetails(it) }
+                        ?: emptyList()
+
+                    // ✅ Explicitly wait for surcharge to finish
+                    surchargeJob.await()
                 }
+
+                if (!instruments.isNullOrEmpty()) {
+                    recommendedList.value      = instruments.filter { it.type.lowercase() == "upi" }.take(2)
+                    upiRecommendedList.value   = instruments.filter { it.type.lowercase() == "upi" }
+                    cardsRecommendedList.value = instruments.filter { it.type.lowercase() == "card" }
+                }
+
+                appliedOffers.value = offers ?: emptyList()
 
                 isSessionLoaded = true
                 isBoxPayAnimationLoading.value = false
                 _state.value = UiState.Success(sessionData.toUiModel())
+
                 callUiAnalytics(
                     event = AnalyticsEvents.CHECKOUT_LOADED.value,
                     screenName = "MainScreenViewModel",
                     message = "Checkout loaded successfully in function load session"
                 )
+
             } catch (e: Exception) {
                 _state.value = UiState.Error(e.message ?: checkoutDetails.errorMessage)
                 callUiAnalytics(
@@ -161,6 +195,21 @@ class MainScreenViewModel(
                     message = "Error in loading checkout $e"
                 )
             }
+        }
+    }
+
+    // ── Surcharge function — suspend so loadSession waits for it ──────────────────
+    private suspend fun fetchSurchargeAndApply(
+        amount: Double,
+        currencyCode: String
+    ) {
+        val surchargeResult = runCatching {
+            repo.getSurcharge(amount, currencyCode)
+        }.getOrNull()
+            ?.let { (it as? ApiResponse.Success)?.data?.toUiModel() }
+
+        surchargeResult?.let {
+            CheckoutDetailsHandler.setSurchargeDetails(it)
         }
     }
 
@@ -327,7 +376,7 @@ class MainScreenViewModel(
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
             isBoxPayAnimationLoading.value = true
-            val response = repo.fetchStatus()
+            val response = otherPaymentMethodRepo.fetchStatus()
             handleFetchStatus(
                 response = response,
                 setIsBoxPayAnimationVisible = {
@@ -341,7 +390,7 @@ class MainScreenViewModel(
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
             isBoxPayAnimationLoading.value = true
-            val response = repo.fetchStatus()
+            val response = otherPaymentMethodRepo.fetchStatus()
             handleUpiCollectFetchStatus(
                 response = response,
                 setIsBoxPayAnimationVisible = {
@@ -419,7 +468,7 @@ class MainScreenViewModel(
             val response = repo.deleteSavedCard(id)
             when(response) {
                 is ApiResponse.Success -> {
-                    isBoxPayAnimationLoading.value = true
+                    isBoxPayAnimationLoading.value = false
                     cardsRecommendedList.value = cardsRecommendedList.value.filter { it.id != id }
                 }
                 is ApiResponse.Error -> {
@@ -443,6 +492,110 @@ class MainScreenViewModel(
     ) {
         viewModelScope.launch {
             analyticsRepo.callUiAnalytics(event, screenName, message)
+        }
+    }
+
+    fun applyOffer(selectedCode: String, amount: Double) {
+        viewModelScope.launch {
+            isBoxPayAnimationLoading.value = true
+            when (val response = instantOfferRepo.applyOffer(listOf(selectedCode), amount)) {
+                is ApiResponse.Success -> {
+                    val appliedDiscount = response.data.evaluatedOffers?.get(0)?.appliedDiscountAmount ?: 0.0
+                    val offerAmount = amount - appliedDiscount
+
+                    CheckoutDetailsHandler.setAppliedOffer(
+                        appliedOfferId = selectedCode,
+                        amount = appliedDiscount
+                    )
+                    CheckoutDetailsHandler.setAmount(offerAmount)
+
+                    // Run fetchPaymentMethods and fetchSurcharge in parallel
+                    supervisorScope {
+                        val paymentMethodsJob = async {
+                            fetchPaymentMethods(offerAmount, selectedCode)
+                        }
+                        val surchargeJob = async {
+                            fetchSurchargeAndApply(offerAmount, CheckoutDetailsHandler.checkoutDetails.currencyCode)
+                        }
+                        paymentMethodsJob.await()
+                        surchargeJob.await()
+                    }
+                    isBoxPayAnimationLoading.value = false
+                }
+                is ApiResponse.Error -> {
+                    isBoxPayAnimationLoading.value = false
+                }
+                else -> {}
+            }
+        }
+    }
+
+    fun removeOffer(discountAmount: Double, amount: Double) {
+        viewModelScope.launch {
+            isBoxPayAnimationLoading.value = true
+            val originalAmount = amount + discountAmount
+            CheckoutDetailsHandler.setAmount(originalAmount)
+            CheckoutDetailsHandler.setAppliedOffer(appliedOfferId = "", amount = 0.0)
+
+            // Run fetchPaymentMethods and fetchSurcharge in parallel
+            supervisorScope {
+                val paymentMethodsJob = async {
+                    fetchPaymentMethods()
+                }
+                val surchargeJob = async {
+                    fetchSurchargeAndApply(originalAmount, CheckoutDetailsHandler.checkoutDetails.currencyCode)
+                }
+                paymentMethodsJob.await()
+                surchargeJob.await()
+            }
+            isBoxPayAnimationLoading.value = false
+        }
+    }
+
+    fun fetchPaymentMethods(amount : Double? = null, offerId : String? = null) {
+        viewModelScope.launch {
+            when(val response = otherPaymentMethodRepo.getPaymentMethods(amount = amount, offerId = offerId)) {
+                is ApiResponse.Error -> {
+                    isBoxPayAnimationLoading.value = false
+                }
+                is ApiResponse.Success -> {
+                    val currentState = _state.value as? UiState.Success ?: return@launch
+                    var methodFlags = MainScreenModel.MethodFlags()
+                    response.data.forEach { method ->
+                        methodFlags = when (method.type) {
+                            "Upi" -> {
+                                when (method.brand) {
+                                    "UpiIntent"  -> methodFlags.copy(isUPIIntentVisible = true, isUPIVisible = true)
+                                    "UpiCollect" -> methodFlags.copy(isUPICollectVisible = true, isUPIVisible = true)
+                                    "UpiQr"      -> methodFlags.copy(isUPIQRVisible = true, isUPIVisible = true)
+                                    else         -> methodFlags
+                                }
+                            }
+                            "UpiOneTimeMandate" -> {
+                                when (method.brand) {
+                                    "UpiIntentOtm"  -> methodFlags.copy(isUPIOtmIntentVisible = true, isUPIOtmVisible = true)
+                                    "UpiCollectOtm" -> methodFlags.copy(isUPIOtmCollectVisible = true, isUPIOtmVisible = true)
+                                    "UpiQrOtm"      -> methodFlags.copy(isUPIOtmQRVisible = true, isUPIOtmVisible = true)
+                                    else            -> methodFlags
+                                }
+                            }
+                            "Card"           -> methodFlags.copy(isCardsVisible      = true)
+                            "Wallet"         -> methodFlags.copy(isWalletVisible     = true)
+                            "NetBanking"     -> methodFlags.copy(isNetBankingVisible = true)
+                            "Emi"            -> methodFlags.copy(isEMIVisible        = true)
+                            "BuyNowPayLater" -> methodFlags.copy(isBNPLVisible       = true)
+                            else             -> methodFlags
+                        }
+                    }
+
+                    _state.value = currentState.copy(
+                        data = currentState.data.copy(methodFlags = methodFlags)
+                    )
+                }
+                else -> {
+                    // no op
+                }
+            }
         }
     }
 }

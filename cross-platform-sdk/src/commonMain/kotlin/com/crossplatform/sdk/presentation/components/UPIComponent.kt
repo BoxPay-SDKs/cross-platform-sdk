@@ -34,13 +34,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.domain.model.MainScreenModel
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
-import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.getInstalledUpiApps
 import com.crossplatform.sdk.presentation.getPlatformContext
 import com.crossplatform.sdk.presentation.screens.CheckboxItem
@@ -51,7 +49,6 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.add_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
 import crossplatformsdk.cross_platform_sdk.generated.resources.gpay_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_qr
-import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi_error
 import crossplatformsdk.cross_platform_sdk.generated.resources.other_intent_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.paytm_icon
@@ -125,7 +122,7 @@ fun UPIComponent(
             .clip(RoundedCornerShape(12.dp))
             .border(1.dp, Color(0xFFE6E6E6), RoundedCornerShape(12.dp))
             .background(Color.White)
-            .padding(12.dp)
+            .padding(bottom = 12.dp)
     ) {
 
         // --- Saved UPI Array ---
@@ -155,7 +152,7 @@ fun UPIComponent(
                     HorizontalDivider(
                         color     = Color(0xFFECECED),
                         thickness = 1.dp,
-                        modifier = Modifier.padding(bottom = 12.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
             }
@@ -163,7 +160,7 @@ fun UPIComponent(
         // --- UPI Intent ---
         if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) {
             Row(
-                modifier              = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                modifier              = Modifier.fillMaxWidth().padding(start = 16.dp,end = 16.dp, top = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 if (isGpayInstalled) {
@@ -229,6 +226,7 @@ fun UPIComponent(
                 PayButton(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
                         .clip(RoundedCornerShape(checkoutDetails.ctaBorderRadius.dp))
                         .background(checkoutDetails.buttonColor.toComposeColor())
                         .clickable {
@@ -248,7 +246,7 @@ fun UPIComponent(
             if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) {
                 HorizontalDivider(
                     color    = Color(0xFFE6E6E6),
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                 )
             }
 
@@ -289,7 +287,7 @@ fun UPIComponent(
                         }
                     },
                     shape    = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                     textStyle = TextStyle(
                         fontFamily = defaultFontFamily,
                         fontWeight = FontWeight.Normal,
@@ -308,14 +306,14 @@ fun UPIComponent(
                         color      = Color.Red,
                         fontSize   = 12.sp,
                         fontFamily = defaultFontFamily,
-                        modifier   = Modifier.padding(top = 4.dp)
+                        modifier   = Modifier.padding(top = 4.dp, start = 12.dp, end = 12.dp)
                     )
                 }
                 if(!checkoutDetails.shopperToken.isNullOrBlank()) {
                     Row(
                         modifier          = Modifier
                             .fillMaxWidth()
-                            .padding(top = 12.dp),
+                            .padding(top = 12.dp, start = 12.dp, end = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         CheckboxItem(
@@ -339,6 +337,7 @@ fun UPIComponent(
                 PayButton(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
                         .clip(RoundedCornerShape(checkoutDetails.ctaBorderRadius.dp))
                         .background(if (upiCollectValid) checkoutDetails.buttonColor.toComposeColor()
                         else Color(0xFFE6E6E6))
@@ -450,7 +449,7 @@ private fun UpiIntentItem(
                 .clip(RoundedCornerShape(12.dp))
                 .border(
                     width = if (isSelected) 2.dp else 1.dp,
-                    color = if (isSelected) buttonColor.toComposeColor() else Color(0xFFE6E6E6),
+                    color = if (isSelected) buttonColor.toComposeColor() else Color(0xFFFFFFFF),
                     shape = RoundedCornerShape(12.dp)
                 )
                 .clickable { onClick() },
@@ -491,7 +490,7 @@ private fun UpiExpandableHeader(
         modifier          = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(start = 8.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
