@@ -158,7 +158,7 @@ fun AppNavHost() {
                     },
                     checkoutDetails = checkoutDetails,
                     onProceedInstantOfferScreen = {
-                        navController.navigate("${Routes.InstantOfferScreen.route}/${selectedOfferCode.value.ifBlank { null }}")
+                        navController.navigate(Routes.InstantOfferScreen.route)
                     }
                 )
             }

@@ -26,6 +26,8 @@ import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationDidBecomeActiveNotification
 import platform.UIKit.UIApplicationDidEnterBackgroundNotification
 import platform.UIKit.UIApplicationWillResignActiveNotification
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 actual fun getDeviceDetails(): DeviceDetails {
     return DeviceDetails(
@@ -58,14 +60,18 @@ actual fun getBrowserData(): BrowserData {
 }
 
 actual fun getInstalledUpiApps(context: Any?): List<String> {
-    val schemes = mapOf(
-        "gpay"    to "gpay://",
-        "phonepe" to "phonepe://",
-        "paytm"   to "paytmmp://"
+    val knownUpiSchemes: Map<String, String> = mapOf(
+        "gpay"         to "gpay://",
+        "phonepe"      to "phonepe://",
+        "tez"          to "tez://",
+        "paytm"        to "paytmmp://",
+//        "bhim"         to "bhim://",
+//        "amazon_pay"   to "amzn://"
     )
-    return schemes.filter { (_, scheme) ->
-        val url = NSURL.URLWithString(scheme)
-        url != null && UIApplication.sharedApplication.canOpenURL(url)
+
+    return knownUpiSchemes.filter { (_, scheme) ->
+        val nsUrl = NSURL.URLWithString(scheme) ?: return@filter false
+        UIApplication.sharedApplication.canOpenURL(nsUrl)
     }.keys.toList()
 }
 

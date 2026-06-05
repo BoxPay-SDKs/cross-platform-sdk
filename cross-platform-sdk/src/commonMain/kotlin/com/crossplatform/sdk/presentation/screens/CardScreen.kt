@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -62,6 +63,9 @@ import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.CardScreenViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -109,12 +113,23 @@ fun CardScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-//                                AsyncImage(
-//                                    model             = bankUrl,
-//                                    contentDescription = bankName,
-//                                    modifier          = Modifier.size(32.dp),
-//                                    error             = painterResource(Res.drawable.ic_netbanking)
-//                                )
+                    KamelImage(
+                        resource              = asyncPainterResource(data = bankUrl ?: ""),
+                        contentDescription = "Bank Logo",
+                        modifier           = Modifier.size(32.dp),
+                        onLoading = {
+                            Box(
+                                modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFFE0E0E0), CircleShape)
+                            )
+                        },
+                        onFailure = {
+                            Image(
+                                painter = painterResource(Res.drawable.ic_netbanking),
+                                contentDescription = "Back",
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    )
                     Text(
                         text       = bankName,
                         fontFamily = defaultFontFamily,

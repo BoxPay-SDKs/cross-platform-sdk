@@ -16,7 +16,7 @@ data class UPIIntentRequestBody(
     @Serializable
     data class Instrument(
         @SerialName("type") val type : String, // 'upi/intent' | 'upiotm/intent'
-        @SerialName("upiAppDetails") val upiAppDetails : UPIAppDetails
+        @SerialName("upiAppDetails") val upiAppDetails : UPIAppDetails?
     )
 
     @Serializable

@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
@@ -39,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.domain.model.MainScreenModel
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
+import com.crossplatform.sdk.presentation.getDeviceDetails
 import com.crossplatform.sdk.presentation.getInstalledUpiApps
 import com.crossplatform.sdk.presentation.getPlatformContext
 import com.crossplatform.sdk.presentation.screens.CheckboxItem
@@ -48,6 +51,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.add_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
 import crossplatformsdk.cross_platform_sdk.generated.resources.gpay_icon
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_bhim_upi
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_qr
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi_error
 import crossplatformsdk.cross_platform_sdk.generated.resources.other_intent_icon
@@ -89,6 +93,7 @@ fun UPIComponent(
     var isGpayInstalled      by remember { mutableStateOf(false) }
     var isPhonePeInstalled   by remember { mutableStateOf(false) }
     var isPaytmInstalled     by remember { mutableStateOf(false) }
+    var isBhimUpiInstalled by remember { mutableStateOf(false) }
 
     val upiRegex = remember { Regex("^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{3,64}$") }
 
@@ -99,6 +104,7 @@ fun UPIComponent(
         isGpayInstalled    = installed.contains("gpay")
         isPhonePeInstalled = installed.contains("phonepe")
         isPaytmInstalled   = installed.contains("paytm")
+        isBhimUpiInstalled = installed.contains("bhim")
     }
 
 
@@ -160,8 +166,10 @@ fun UPIComponent(
         // --- UPI Intent ---
         if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) {
             Row(
-                modifier              = Modifier.fillMaxWidth().padding(start = 16.dp,end = 16.dp, top = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier              = Modifier.fillMaxWidth().padding(start = 16.dp,end = 16.dp, top = 8.dp).horizontalScroll(
+                    rememberScrollState()
+                ),
+                horizontalArrangement = Arrangement.spacedBy(32.dp)
             ) {
                 if (isGpayInstalled) {
                     UpiIntentItem(
@@ -205,19 +213,35 @@ fun UPIComponent(
                         }
                     )
                 }
-                UpiIntentItem(
-                    label       = "Others",
-                    icon        = Res.drawable.other_intent_icon,
-                    isSelected  = false,
-                    buttonColor = checkoutDetails.buttonColor,
-                    onClick     = {
-                        upiCollectVisible = false
-                        upiCollectError   = false
-                        selectedIntent    = "Other"
+                if(isBhimUpiInstalled) {
+                    UpiIntentItem(
+                        label       = "Bhim",
+                        icon        = Res.drawable.ic_bhim_upi,
+                        isSelected  = selectedIntent == "Bhim",
+                        buttonColor = checkoutDetails.buttonColor,
+                        onClick     = {
+                            upiCollectVisible = false
+                            upiCollectError   = false
+                            selectedIntent    = "Bhim"
+//                                resetSavedUpi()
+                        }
+                    )
+                }
+                if(!getDeviceDetails().browser.equals("ios", true)) {
+                    UpiIntentItem(
+                        label       = "Others",
+                        icon        = Res.drawable.other_intent_icon,
+                        isSelected  = false,
+                        buttonColor = checkoutDetails.buttonColor,
+                        onClick     = {
+                            upiCollectVisible = false
+                            upiCollectError   = false
+                            selectedIntent    = ""
+                            onClickUpiIntentPayButton(selectedIntent)
 //                            resetSavedUpi()
-//                            onHandleUpiPayment("")
-                    }
-                )
+                        }
+                    )
+                }
             }
 
             // --- Pay via Intent Button ---

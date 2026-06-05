@@ -149,6 +149,7 @@ data class EmiMethod(
     @SerialName("effectiveInterestRate") val effectiveInterestRate: Double? = null,
     @SerialName("merchantBorneInterestRate") val merchantBorneInterestRate: Double? = null,
     @SerialName("issuerTitle") val issuerTitle: String? = null,
+    @SerialName("processingFee") val processingFee : ProcessingFee? = null,
     @SerialName("netAmountLocaleFull") val netAmountLocaleFull: String? = null,
     @SerialName("totalAmountLocaleFull") val totalAmountLocaleFull: String? = null,
     @SerialName("emiAmountLocaleFull") val emiAmountLocaleFull: String? = null,
@@ -160,7 +161,18 @@ data class EmiMethod(
 )
 
 @Serializable
+data class ProcessingFee(
+    @SerialName("amountLocaleFull") val amountLocaleFull : String?
+)
+
+@Serializable
 data class ApplicableOffer(
     @SerialName("code") val code: String,
-    @SerialName("title") val title: String
+    @SerialName("title") val title: String,
+    @SerialName("discount") val discount : Discount?
+)
+
+@Serializable
+data class Discount(
+    @SerialName("type") val type : String?
 )

@@ -224,7 +224,7 @@ fun MainScreen(
 
                 // --- UPI ---
                 if (response.methodFlags.isUPIVisible || response.methodFlags.isUPIOtmVisible) {
-                    SectionTitle("Pay by any UPI")
+                    SectionTitle(if(response.methodFlags.isUPIOtmVisible) "UPI One Time Mandate" else "Pay by any UPI")
                     UPIComponent(
                         methodFlags = response.methodFlags,
                         checkoutDetails = checkoutDetails,
@@ -431,6 +431,7 @@ fun MainScreen(
                         screenName = "MainScreen",
                         message = "UPI intent not launched $error"
                     )
+                    viewModel.isBoxPayAnimationLoading.value = false
                     CheckoutDetailsHandler.setSessionFailed()
                     viewModel.upiIntentUrl.value = ""
                 },

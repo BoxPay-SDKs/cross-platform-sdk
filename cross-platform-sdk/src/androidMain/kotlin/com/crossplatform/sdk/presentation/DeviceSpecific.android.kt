@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import com.crossplatform.sdk.data.model.BrowserData
 
 import android.content.res.Resources
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
@@ -18,6 +19,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.crossplatform.sdk.domain.model.AppLifecycleState
 import java.util.Calendar
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 
 lateinit var appContext: Context
@@ -47,19 +50,49 @@ actual fun getBrowserData(): BrowserData {
 }
 
 actual fun getInstalledUpiApps(context: Any?): List<String> {
-    val androidContext = context as Context
-    val pm = androidContext.packageManager
-    val packages = mapOf(
-        "gpay"    to "com.google.android.apps.nbu.paisa.user",
-        "paytm"   to "net.one97.paytm",
-        "phonepe" to "com.phonepe.app"
-    )
-    return packages.filter { (_, pkg) ->
-        try {
-            pm.getPackageInfo(pkg, PackageManager.GET_ACTIVITIES)
-            true
-        } catch (e: PackageManager.NameNotFoundException) { false }
-    }.keys.toList()
+
+    try {
+        val knownUpiPackages: Map<String, String> = mapOf(
+            "gpay"         to "com.google.android.apps.nbu.paisa.user",
+            "paytm"        to "net.one97.paytm",
+            "phonepe"      to "com.phonepe.app",
+//            "bhim"         to "in.org.npci.upiapp",
+//            "amazon_pay"   to "com.amazon.mShop.android.shopping",
+        )
+        val pm = (context as Context).packageManager
+
+        // Step 1: Scheme-only intent — matches ALL upi:// actions (pay, mandate, collect, etc.)
+        val upiIntent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.Builder().scheme("upi").build()
+        }
+        val intentDiscovered: Set<String> = pm
+            .queryIntentActivities(upiIntent, PackageManager.MATCH_DEFAULT_ONLY)
+            .map { it.activityInfo.packageName }
+            .toSet()
+
+        // Step 2: Explicit package check — fallback for known apps with custom schemes
+        val explicitlyFound: Set<String> = knownUpiPackages
+            .filter { (_, packageName) ->
+                try {
+                    pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+                    true
+                } catch (_: PackageManager.NameNotFoundException) {
+                    false
+                }
+            }
+            .values
+            .toSet()
+
+        // Step 3: Merge both sets and map back to friendly names
+        val allFound = intentDiscovered + explicitlyFound
+        val knownPackageToKey = knownUpiPackages.entries.associate { it.value to it.key }
+
+        return allFound.map { packageName ->
+            knownPackageToKey[packageName] ?: packageName
+        }
+    } catch (_ : Exception) {
+       return emptyList()
+    }
 }
 
 @Composable

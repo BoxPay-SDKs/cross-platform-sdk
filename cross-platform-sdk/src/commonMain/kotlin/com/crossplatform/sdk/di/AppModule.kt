@@ -4,7 +4,6 @@ import com.crossplatform.sdk.data.implementation.ApiServiceImpl
 import com.crossplatform.sdk.data.repo.AddressScreenRepoImpl
 import com.crossplatform.sdk.data.repo.CallUIAnalyticsRepoImpl
 import com.crossplatform.sdk.data.repo.CardScreenRepoImpl
-import com.crossplatform.sdk.data.repo.EMIScreenRepoImpl
 import com.crossplatform.sdk.data.repo.FetchStatusRepoImpl
 import com.crossplatform.sdk.data.repo.InstantOfferRepoImpl
 import com.crossplatform.sdk.data.repo.MainScreenRepoImpl
@@ -13,7 +12,6 @@ import com.crossplatform.sdk.data.service.ApiService
 import com.crossplatform.sdk.domain.repo.AddressScreenRepo
 import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
 import com.crossplatform.sdk.domain.repo.CardScreenRepo
-import com.crossplatform.sdk.domain.repo.EMIScreenRepo
 import com.crossplatform.sdk.domain.repo.FetchStatusRepo
 import com.crossplatform.sdk.domain.repo.InstantOfferRepo
 import com.crossplatform.sdk.domain.repo.MainScreenRepo
@@ -40,7 +38,6 @@ val appModule = module {
     single<OtherPaymentMethodRepo> { OtherPaymentMethodRepoImpl(apiService = get()) }
     single<AddressScreenRepo>{ AddressScreenRepoImpl(apiService = get()) }
     single<CardScreenRepo> { CardScreenRepoImpl(apiService = get()) }
-    single<EMIScreenRepo> { EMIScreenRepoImpl(apiService = get()) }
     single<InstantOfferRepo> { InstantOfferRepoImpl(apiService = get()) }
     single<CallUIAnalyticsRepo> { CallUIAnalyticsRepoImpl(apiService = get()) }
     single<FetchStatusRepo> { FetchStatusRepoImpl(apiService = get()) }
@@ -50,7 +47,6 @@ val appModule = module {
     factory { OtherPaymentMethodRepoImpl(apiService = get()) }
     factory { AddressScreenRepoImpl(apiService = get()) }
     factory { CardScreenRepoImpl(apiService = get()) }
-    factory { EMIScreenRepoImpl(apiService = get()) }
     factory { InstantOfferRepoImpl(apiService = get()) }
     factory { CallUIAnalyticsRepoImpl(apiService = get()) }
     factory { FetchStatusRepoImpl(apiService = get()) }

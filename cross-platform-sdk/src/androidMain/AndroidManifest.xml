@@ -5,6 +5,11 @@
         <package android:name="com.example.store" />
         <package android:name="com.example.services" />
 
+<!--        <intent>-->
+<!--            <action android:name="android.intent.action.VIEW" />-->
+<!--            <data android:scheme="upi" />-->
+<!--        </intent>-->
+
         <!-- GPay -->
         <package android:name="com.google.android.apps.nbu.paisa.user" />
 
@@ -13,6 +18,8 @@
 
         <!-- Paytm -->
         <package android:name="net.one97.paytm" />
+<!--        <package android:name="in.org.npci.upiapp" />                     &lt;!&ndash; BHIM &ndash;&gt;-->
+<!--        <package android:name="com.amazon.mShop.android.shopping" />      &lt;!&ndash; Amazon Pay &ndash;&gt;-->
     </queries>
 
     <uses-permission android:name="android.permission.INTERNET"/>

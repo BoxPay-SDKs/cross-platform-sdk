@@ -87,7 +87,6 @@ class MainActivity : ComponentActivity() {
     }
 
     fun onPaymentResult(result : SDKPaymentResponse) {
-        println("Payment Result: $result")
         paymentResult.value = result
     }
 }

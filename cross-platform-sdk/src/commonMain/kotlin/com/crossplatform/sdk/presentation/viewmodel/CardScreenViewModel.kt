@@ -77,15 +77,10 @@ class CardScreenViewModel(
             when(val response = repo.getCardDetails(cardNumber)) {
                 is ApiResponse.Success<*> -> {
                     val data = response.data as FetchCardDetails
-                    println("-======data $data")
                     updateCardIcon(isTestEnv, data.paymentMethod.brand)
                     _cardDetails.value = UiState.Success(data)
                 }
-                is ApiResponse.Error->  {
-                    println("==============error ${response.errorBody}")
-                }
                 else -> {
-                    println("==============error")
                     // no instructions to be performed
                 }
             }
