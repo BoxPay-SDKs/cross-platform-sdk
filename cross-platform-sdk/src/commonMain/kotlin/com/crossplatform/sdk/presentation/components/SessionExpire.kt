@@ -3,7 +3,6 @@ package com.crossplatform.sdk.presentation.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
 import com.crossplatform.sdk.presentation.toComposeColor
@@ -36,7 +36,9 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 fun SessionExpire(
     onClick: () -> Unit
 ) {
-    val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+    val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
+    val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
+    val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(
             Res.readBytes("files/PaymentPending.json").decodeToString()
@@ -93,12 +95,12 @@ fun SessionExpire(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp)
-                    .clip(RoundedCornerShape(checkoutDetails.ctaBorderRadius.dp))
-                    .background(checkoutDetails.buttonColor.toComposeColor())
+                    .clip(RoundedCornerShape(ctaBorderRadius.value.dp))
+                    .background(buttonColor.value.toComposeColor())
                     .clickable { onClick() },
                 amount = 0.0,
                 currencySymbol = "",
-                buttonTextColor = checkoutDetails.buttonTextColor,
+                buttonTextColor = buttonTextColor.value,
                 isValid = true
             )
         }

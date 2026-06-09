@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
 import com.crossplatform.sdk.presentation.toComposeColor
@@ -42,9 +41,13 @@ fun PaymentSelectorView(
     providerList     : List<SelectedPaymentMethod>,
     onProceedForward : (instrumentType: String, instrumentValue: String, type: String) -> Unit,
     isLastUsed       : Boolean = false,
-    checkoutDetails : CheckoutDetails,
+    buttonTextColor: String,
+    buttonColor : String,
     drawableResource: DrawableResource,
-    onClickRadio : () -> Unit
+    onClickRadio : () -> Unit,
+    currencySymbol: String,
+    amount: Double,
+    ctaBorderRadius: Int
 ) {
     val selectedId = remember {
         mutableStateOf("")
@@ -77,11 +80,11 @@ fun PaymentSelectorView(
                 onProceedForward    = { displayValue, instrumentValue ->
                     onProceedForward(displayValue, instrumentValue, provider.type)
                 },
-                brandColor          = checkoutDetails.buttonColor,
-                buttonTextColor     = checkoutDetails.buttonTextColor,
-                currencySymbol      = checkoutDetails.currencySymbol,
-                amount              = checkoutDetails.amount,
-                ctaBorderRadius     = checkoutDetails.ctaBorderRadius,
+                brandColor          = buttonColor,
+                buttonTextColor     = buttonTextColor,
+                currencySymbol      = currencySymbol,
+                amount              = amount,
+                ctaBorderRadius     = ctaBorderRadius,
                 drawableResource = drawableResource
             )
             if (index != providerList.lastIndex) {

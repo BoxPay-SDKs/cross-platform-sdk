@@ -22,7 +22,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
-import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
@@ -51,25 +50,45 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 @Composable
 fun MainScreen(
     viewModel : MainScreenViewModel,
-    onProceedCardScreen: () -> Unit,
-    onProceedEMIScreen: () -> Unit,
+    onProceedCardScreen: (isAutoNavigationEnabled: Boolean) -> Unit,
+    onProceedEMIScreen: (isAutoNavigationEnabled: Boolean) -> Unit,
     onProceedAddressScreen: (isNewAddress : Boolean) -> Unit,
     onProceedSavedAddressScreen: () -> Unit,
-    onProceedNetBankingScreen: () -> Unit,
-    onProceedWalletScreen: () -> Unit,
-    onProceedBNPLScreen: () -> Unit,
+    onProceedNetBankingScreen: (isAutoNavigationEnabled: Boolean) -> Unit,
+    onProceedWalletScreen: (isAutoNavigationEnabled: Boolean) -> Unit,
+    onProceedBNPLScreen: (isAutoNavigationEnabled: Boolean) -> Unit,
     onProceedUPITimerScreen: (shopperVpa: String) -> Unit,
     onShowSwipeToPay : () -> Unit,
     onProceedInstantOfferScreen : () -> Unit,
     selectedOfferCode: String,
-    onSetSelectedOfferCode : (String) -> Unit,
-    checkoutDetails: CheckoutDetails
+    onSetSelectedOfferCode : (String) -> Unit
 ) {
     val screenState by viewModel.state.collectAsStateWithLifecycle()
     val boxPayAnimationVisible by viewModel.isBoxPayAnimationLoading.collectAsStateWithLifecycle()
-    val userDetails by UserDataHandler.userDataFlow
-        .collectAsStateWithLifecycle()
     val showWebView by viewModel.showWebViewScreen.collectAsStateWithLifecycle()
+    val shopperFlow = CheckoutDetailsHandler.shopperFieldsConfigFlow.collectAsStateWithLifecycle()
+    val firstName = UserDataHandler.firstNameFlow.collectAsStateWithLifecycle()
+    val lastName = UserDataHandler.lastNameFlow.collectAsStateWithLifecycle()
+    val email = UserDataHandler.lastNameFlow.collectAsStateWithLifecycle()
+    val completePhoneNumber = UserDataHandler.completePhoneNumberFlow.collectAsStateWithLifecycle()
+    val addressFlow = UserDataHandler.addressFlow.collectAsStateWithLifecycle()
+    val labelFlow = UserDataHandler.labelFlow.collectAsStateWithLifecycle()
+
+    val focusedTextInputBorderColor = CheckoutDetailsHandler.focusedBorderColorFlow.collectAsStateWithLifecycle()
+    val unfocusedTextInputBorderColor = CheckoutDetailsHandler.unfocusedBorderColorFlow.collectAsStateWithLifecycle()
+    val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
+    val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
+    val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
+    val (currencySymbol, _) = currencyFlow.value
+    val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
+    val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
+    val shopperToken = CheckoutDetailsHandler.shopperTokenFlow.collectAsStateWithLifecycle()
+    val discountAmount = CheckoutDetailsHandler.discountAmountFlow.collectAsStateWithLifecycle()
+    val surchargeDetails = CheckoutDetailsHandler.surchargeDetailsFlow.collectAsStateWithLifecycle()
+    val isSICheckboxChecked = CheckoutDetailsHandler.isSICheckboxCheckedFlow.collectAsStateWithLifecycle()
+    val isSICheckboxEnabled = CheckoutDetailsHandler.isSICheckboxEnabledFlow.collectAsStateWithLifecycle()
+    val isOrderItemDetailsVisible = CheckoutDetailsHandler.isOrderItemDetailsVisibleFlow.collectAsStateWithLifecycle()
+
     val selectedDeleteCardId = remember {
         mutableStateOf("")
     }
@@ -120,10 +139,10 @@ fun MainScreen(
             }
 
             val isMandatoryDataMissing =
-                (checkoutDetails.isFullNameEnabled  && checkoutDetails.isFullNameEditable  && userDetails.firstName.isNullOrEmpty()) ||
-                        (checkoutDetails.isEmailEnabled     && checkoutDetails.isEmailEditable     && userDetails.email.isNullOrEmpty()) ||
-                        (checkoutDetails.isPhoneEnabled     && checkoutDetails.isPhoneEditable     && userDetails.completePhoneNumber.isNullOrEmpty()) ||
-                        (checkoutDetails.isShippingAddressEnabled && checkoutDetails.isShippingAddressEditable && userDetails.address1.isNullOrEmpty())
+                (shopperFlow.value.isFullNameEnabled  && shopperFlow.value.isFullNameEditable  && firstName.value.isNullOrEmpty()) ||
+                        (shopperFlow.value.isEmailEnabled     && shopperFlow.value.isEmailEditable     && email.value.isNullOrEmpty()) ||
+                        (shopperFlow.value.isPhoneEnabled     && shopperFlow.value.isPhoneEditable     && completePhoneNumber.value.isNullOrEmpty()) ||
+                        (shopperFlow.value.isShippingAddressEnabled && shopperFlow.value.isShippingAddressEditable && addressFlow.value.address1.isNullOrEmpty())
 
             if (isMandatoryDataMissing) {
                 onProceedAddressScreen(true)
@@ -138,16 +157,16 @@ fun MainScreen(
                 }
             }
             val showAddressComponent =
-                checkoutDetails.isShippingAddressEnabled ||
-                        checkoutDetails.isFullNameEnabled ||
-                        checkoutDetails.isEmailEnabled ||
-                        checkoutDetails.isPhoneEnabled
+                shopperFlow.value.isShippingAddressEnabled ||
+                        shopperFlow.value.isFullNameEnabled ||
+                        shopperFlow.value.isEmailEnabled ||
+                        shopperFlow.value.isPhoneEnabled
 
             val isAddressComponentClickable =
-                checkoutDetails.isShippingAddressEditable ||
-                        checkoutDetails.isFullNameEditable ||
-                        checkoutDetails.isEmailEditable ||
-                        checkoutDetails.isPhoneEditable
+                shopperFlow.value.isShippingAddressEditable ||
+                        shopperFlow.value.isFullNameEditable ||
+                        shopperFlow.value.isEmailEditable ||
+                        shopperFlow.value.isPhoneEditable
 
             val otherPaymentMethodEnabled =
                 response.methodFlags.isCardsVisible ||
@@ -155,6 +174,33 @@ fun MainScreen(
                         response.methodFlags.isNetBankingVisible ||
                         response.methodFlags.isEMIVisible ||
                         response.methodFlags.isBNPLVisible
+
+            val enabledMethods = buildList {
+                if (response.methodFlags.isCardsVisible) add("card")
+                if (response.methodFlags.isWalletVisible) add("wallet")
+                if (response.methodFlags.isNetBankingVisible) add("netbanking")
+                if (response.methodFlags.isEMIVisible) add("emi")
+                if (response.methodFlags.isBNPLVisible) add("bnpl")
+                if (response.methodFlags.isUPIVisible) add("upi")
+            }.distinct()
+
+            val shouldAutoNavigate =
+                enabledMethods.size == 1 &&
+                        !isMandatoryDataMissing &&
+                        !showAddressComponent &&
+                        !isOrderItemDetailsVisible.value
+
+            LaunchedEffect(shouldAutoNavigate) {
+                if (!shouldAutoNavigate) return@LaunchedEffect
+
+                when (enabledMethods.first()) {
+                    "card" -> onProceedCardScreen(true)
+                    "wallet" -> onProceedWalletScreen(true)
+                    "netbanking" -> onProceedNetBankingScreen(true)
+                    "emi" -> onProceedEMIScreen(true)
+                    "bnpl" -> onProceedBNPLScreen(true)
+                }
+            }
 
             Column(
                 modifier = Modifier
@@ -166,13 +212,25 @@ fun MainScreen(
                 // --- Address ---
                 if (showAddressComponent) {
                     AddressComponent(
-                        address = buildAddressString(checkoutDetails, userDetails),
+                        address = buildAddressString(),
                         navigateToAddressScreen = {
-                            if (isAddressComponentClickable && checkoutDetails.shopperToken.isNullOrBlank()) onProceedAddressScreen(false)
+                            if (isAddressComponentClickable && shopperToken.value.isNullOrBlank()) onProceedAddressScreen(false)
                             else onProceedSavedAddressScreen()
                         },
-                        checkoutDetails = checkoutDetails,
-                        userData = userDetails
+                        isEmailEditable = shopperFlow.value.isEmailEditable,
+                        isPhoneEditable = shopperFlow.value.isPhoneEditable,
+                        isFullNameEditable = shopperFlow.value.isFullNameEditable,
+                        isShippingAddressEditable = shopperFlow.value.isShippingAddressEditable,
+                        isEmailEnabled = shopperFlow.value.isEmailEnabled,
+                        isPhoneEnabled = shopperFlow.value.isPhoneEnabled,
+                        isFullNameEnabled = shopperFlow.value.isFullNameEnabled,
+                        isShippingAddressEnabled = shopperFlow.value.isShippingAddressEnabled,
+                        firstName = firstName.value,
+                        lastName = lastName.value,
+                        email = email.value,
+                        completePhoneNumber = completePhoneNumber.value,
+                        labelType = labelFlow.value.first,
+                        labelName = labelFlow.value.second
                     )
                 }
 
@@ -181,14 +239,14 @@ fun MainScreen(
                     OfferSection(
                         offers = viewModel.appliedOffers.value,
                         selectedCode = selectedOfferCode,
-                        themeColor = checkoutDetails.buttonColor.toComposeColor(),
+                        themeColor = buttonColor.value.toComposeColor(),
                         onApply = { offer ->
-                            val amount = checkoutDetails.amount + checkoutDetails.discountAmount
+                            val amount = amount.value + discountAmount.value
                             viewModel.applyOffer(offer.code, amount)
                             onSetSelectedOfferCode(offer.code)
                         },
                         onRemove = {
-                            viewModel.removeOffer(checkoutDetails.discountAmount, checkoutDetails.amount)
+                            viewModel.removeOffer(discountAmount.value, amount.value)
                             onSetSelectedOfferCode("")
                         },
                         onViewAll = {
@@ -210,7 +268,6 @@ fun MainScreen(
                             )
                             viewModel.postUpiCollectRequest(instrumentRef = instrument, type = "upi/collect", shopperVpa = display)
                         },
-                        checkoutDetails = checkoutDetails,
                         drawableResource = Res.drawable.ic_upi,
                         onClickRadio = {
                             viewModel.callUiAnalytics(
@@ -218,7 +275,12 @@ fun MainScreen(
                                 screenName = "MainScreen",
                                 message = "Payment Category selected through recommended method"
                             )
-                        }
+                        },
+                        buttonTextColor = buttonTextColor.value,
+                        buttonColor = buttonColor.value,
+                        currencySymbol = currencySymbol,
+                        amount = amount.value,
+                        ctaBorderRadius = ctaBorderRadius.value
                     )
                 }
 
@@ -227,7 +289,6 @@ fun MainScreen(
                     SectionTitle(if(response.methodFlags.isUPIOtmVisible) "UPI One Time Mandate" else "Pay by any UPI")
                     UPIComponent(
                         methodFlags = response.methodFlags,
-                        checkoutDetails = checkoutDetails,
                         onClickSavedUpiPayButton = {instrumentRef, shopperVpa ->
                             viewModel.callUiAnalytics(
                                 event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
@@ -279,7 +340,15 @@ fun MainScreen(
                                 screenName = "MainScreen",
                                 message = "UPI App related messages $message"
                             )
-                        }
+                        },
+                        buttonTextColor = buttonTextColor.value,
+                        buttonColor = buttonColor.value,
+                        currencySymbol = currencySymbol,
+                        amount = amount.value,
+                        ctaBorderRadius = ctaBorderRadius.value,
+                        focusedTextInputBorderColor = focusedTextInputBorderColor.value,
+                        unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
+                        shopperToken = shopperToken.value
                     )
                 }
 
@@ -308,13 +377,19 @@ fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to Add card screen from saved card component"
                                 )
-                                onProceedCardScreen()
+                                onProceedCardScreen(false)
                             },
-                            checkoutDetails = checkoutDetails,
                             onClickDeleteCard = {id , nickname ->
                                 selectedDeleteCardName.value = nickname
                                 selectedDeleteCardId.value = id
-                            }
+                            },
+                            buttonColor = buttonColor.value,
+                            buttonTextColor = buttonTextColor.value,
+                            currencySymbol = currencySymbol,
+                            amount = amount.value,
+                            ctaBorderRadius = ctaBorderRadius.value,
+                            isSICheckboxChecked = isSICheckboxChecked.value,
+                            isSICheckboxEnabled = isSICheckboxEnabled.value,
                         )
                     }
                     SectionTitle(
@@ -330,11 +405,11 @@ fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to Add card screen from normal flow"
                                 )
-                                if(isPresentInSurchargeModel(checkoutDetails.surchargeDetails, "card")) {
+                                if(isPresentInSurchargeModel(surchargeDetails.value, "card")) {
                                     selectedMethod.value = "card"
                                     showUpdatedAmountBottomSheet.value = true
                                 } else{
-                                    onProceedCardScreen()
+                                    onProceedCardScreen(false)
                                 }
                             },
                         onNavigateToWallet      =
@@ -344,11 +419,11 @@ fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to Wallet screen"
                                 )
-                                if(isPresentInSurchargeModel(checkoutDetails.surchargeDetails, "wallet")) {
+                                if(isPresentInSurchargeModel(surchargeDetails.value, "wallet")) {
                                     selectedMethod.value = "wallet"
                                     showUpdatedAmountBottomSheet.value = true
                                 } else{
-                                    onProceedWalletScreen()
+                                    onProceedWalletScreen(false)
                                 }
                             },
                         onNavigateToNetBanking  =
@@ -358,11 +433,11 @@ fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to NetBanking screen"
                                 )
-                                if(isPresentInSurchargeModel(checkoutDetails.surchargeDetails, "netbanking")) {
+                                if(isPresentInSurchargeModel(surchargeDetails.value, "netbanking")) {
                                     selectedMethod.value = "netbanking"
                                     showUpdatedAmountBottomSheet.value = true
                                 } else{
-                                    onProceedNetBankingScreen()
+                                    onProceedNetBankingScreen(false)
                                 }
                             },
                         onNavigateToEmi         =
@@ -372,11 +447,11 @@ fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to EMI screen"
                                 )
-                                if(isPresentInSurchargeModel(checkoutDetails.surchargeDetails, "emi")) {
+                                if(isPresentInSurchargeModel(surchargeDetails.value, "emi")) {
                                     selectedMethod.value = "emi"
                                     showUpdatedAmountBottomSheet.value = true
                                 } else{
-                                    onProceedEMIScreen()
+                                    onProceedEMIScreen(false)
                                 }
                             },
                         onNavigateToBNPL        =
@@ -386,29 +461,30 @@ fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to BNPL screen"
                                 )
-                                if(isPresentInSurchargeModel(checkoutDetails.surchargeDetails, "buynowpaylater")) {
+                                if(isPresentInSurchargeModel(surchargeDetails.value, "buynowpaylater")) {
                                     selectedMethod.value = "buynowpaylater"
                                     showUpdatedAmountBottomSheet.value = true
                                 } else{
-                                    onProceedBNPLScreen()
+                                    onProceedBNPLScreen(false)
                                 }
                             },
                         savedCardsList = viewModel.cardsRecommendedList.value,
-                        surchargeList = checkoutDetails.surchargeDetails
+                        surchargeList = surchargeDetails.value,
+                        currencySymbol = currencySymbol
                     )
                 }
 
-                if (checkoutDetails.isOrderItemDetailsVisible) {
+                if (isOrderItemDetailsVisible.value) {
                     SectionTitle("Order Details")
                     OrderDetails(
-                        totalAmount = checkoutDetails.amount,
+                        totalAmount = amount.value,
                         itemsArray = response.orderDetails?.items ?: emptyList(),
                         subTotalAmount = response.orderDetails?.subTotalAmount ?: 0.0,
                         shippingAmount = response.orderDetails?.shippingAmount ?: 0.0,
                         taxAmount = response.orderDetails?.taxAmount ?: 0.0,
-                        surchargeDetails = checkoutDetails.surchargeDetails,
+                        surchargeDetails = surchargeDetails.value,
                         selectedPaymentMethod = "Upi",
-                        currencySymbol = checkoutDetails.currencySymbol
+                        currencySymbol = currencySymbol
                     )
                 }
                 Spacer(Modifier.weight(1f))
@@ -508,23 +584,28 @@ fun MainScreen(
 
     if (showUpdatedAmountBottomSheet.value) {
         ShowUpdateAmountBottomSheet(
-            checkoutDetails = checkoutDetails,
             selectedMethod = selectedMethod.value,
             onClickProceed = {
                 showUpdatedAmountBottomSheet.value = false
                 selectedMethod.value = ""
                 when (selectedMethod.value) {
-                    "card"       -> onProceedCardScreen()
-                    "wallet"     -> onProceedWalletScreen()
-                    "netbanking" -> onProceedNetBankingScreen()
-                    "emi"        -> onProceedEMIScreen()
-                    "buynowpaylater"       -> onProceedBNPLScreen()
+                    "card"       -> onProceedCardScreen(false)
+                    "wallet"     -> onProceedWalletScreen(false)
+                    "netbanking" -> onProceedNetBankingScreen(false)
+                    "emi"        -> onProceedEMIScreen(false)
+                    "buynowpaylater"       -> onProceedBNPLScreen(false)
                 }
             },
             onClick = {
                 showUpdatedAmountBottomSheet.value = false
                 selectedMethod.value = ""
-            }
+            },
+            surchargeDetails = surchargeDetails.value,
+            currencySymbol = currencySymbol,
+            amount = amount.value,
+            ctaBorderRadius = ctaBorderRadius.value,
+            buttonColor = buttonColor.value,
+            buttonTextColor = buttonTextColor.value
         )
     }
 

@@ -7,7 +7,6 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsResponse
 import com.crossplatform.sdk.data.model.AppliedOfferResponse
-import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.data.model.FetchStatusResponse
@@ -46,9 +45,6 @@ class ApiServiceImpl : ApiService {
     private val client get() = ServiceRequest.buildClient()
     private val plainClient get() = ServiceRequest.buildPlainClient()
 
-    private val checkoutDetails: CheckoutDetails
-        get() = CheckoutDetailsHandler.checkoutDetails
-
     private val userData : UserDetails
         get() = UserDataHandler.userData
 
@@ -63,9 +59,11 @@ class ApiServiceImpl : ApiService {
         screenName: String,
         message: String
     ): ApiResponse<AnalyticsResponse> {
+        val token = CheckoutDetailsHandler.tokenFlow.value
+        val isTestEnv = CheckoutDetailsHandler.isTestEnvFlow.value
         val requestBody = AnalyticsRequest(
             browserData = getBrowserData(),
-            callerToken = checkoutDetails.token,
+            callerToken = token,
             uiEvent = uiEvent,
             eventAttrs = AnalyticsRequest.EventAttrs(
                 errorMessage = message,
@@ -75,7 +73,7 @@ class ApiServiceImpl : ApiService {
         )
         return executeWithResponse {
             plainClient.post(
-                urlString = "${getEndpoint(checkoutDetails.isTestEnv)}/ui-analytics",
+                urlString = "${getEndpoint(isTestEnv)}/ui-analytics",
             ) {
                 contentType(ContentType.Application.Json)
                 setBody(requestBody)
@@ -164,8 +162,9 @@ class ApiServiceImpl : ApiService {
     }
 
     override suspend fun fetchStatus(): ApiResponse<FetchStatusResponse> {
+        val (_,transactionId) = CheckoutDetailsHandler.transactionFlow.value
         return executeWithResponse {
-            client.get(urlString = "transactions/${checkoutDetails.transactionId}/status")
+            client.get(urlString = "transactions/$transactionId/status")
         }
     }
 
@@ -300,10 +299,11 @@ class ApiServiceImpl : ApiService {
         minAmount: Double,
         maxAmount: Double
     ): ApiResponse<List<InstantOfferResponse>> {
+        val (_, currencyCode) = CheckoutDetailsHandler.currencyFlow.value
         val requestBody = InstantOfferRequestBody(
             minAmount = minAmount,
             maxAmount = maxAmount,
-            currencyCode = checkoutDetails.currencyCode
+            currencyCode = currencyCode
         )
         return executeWithResponse{
             client.post(urlString = "offers/search") {

@@ -5,15 +5,15 @@ import com.crossplatform.sdk.data.model.InstantOfferResponse
 import com.crossplatform.sdk.domain.model.OfferItem
 
 fun List<InstantOfferResponse>.toUiModel(): List<OfferItem> {
-    val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+    val (currencySymbol, _) = CheckoutDetailsHandler.currencyFlow.value
     return this.map { item ->
         OfferItem(
             code = item.code,
             description = item.description ?: item.title ?: "",
             terms = item.terms ?: "",
-            discountType = if(item.discount.type.equals("flat", true)) "${checkoutDetails.currencySymbol}${item.discount.amount}" else "${item.discount.percentage}%",
+            discountType = if(item.discount.type.equals("flat", true)) "$currencySymbol${item.discount.amount}" else "${item.discount.percentage}%",
             discountAmount = item.discount.amount ?: 0.0,
-            currencySymbol = checkoutDetails.currencySymbol
+            currencySymbol = currencySymbol
         )
     }
 }

@@ -27,7 +27,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.domain.model.SelectTenureCardData
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
 import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
@@ -38,12 +37,14 @@ fun SelectTenureCard(
     data: SelectTenureCardData,
     onRadioClick: (duration: Int, amount: String) -> Unit,
     onProceedForward: () -> Unit,
-    checkoutDetails: CheckoutDetails
+    buttonTextColor: String,
+    buttonColor : String,
+    currencySymbol: String
 ) {
     if (data.isSelected) {
-        SelectedTenureCard(data, checkoutDetails.buttonColor.toComposeColor(), checkoutDetails.currencySymbol,checkoutDetails.buttonTextColor, onRadioClick, onProceedForward)
+        SelectedTenureCard(data, buttonColor.toComposeColor(), currencySymbol,buttonTextColor, onRadioClick, onProceedForward)
     } else {
-        UnselectedTenureCard(data, checkoutDetails.buttonColor.toComposeColor(), checkoutDetails.currencySymbol,onRadioClick)
+        UnselectedTenureCard(data, buttonColor.toComposeColor(), currencySymbol,onRadioClick)
     }
 }
 

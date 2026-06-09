@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.formatTransactionTimestamp
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
@@ -45,9 +46,17 @@ fun PaymentSuccessful(
     paymentMethod : String,
     onClick: () -> Unit,
 ) {
-    val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+    val isSuccessScreenVisible = CheckoutDetailsHandler.isSuccessScreenVisibleFlow.collectAsStateWithLifecycle()
+    val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
+    val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
+    val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
+    val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
+    val currencyDetails = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
+    val (currencySymbol, _) = currencyDetails.value
+    val transactionDetail = CheckoutDetailsHandler.transactionFlow.collectAsStateWithLifecycle()
+    val (_, transactionId) = transactionDetail.value
     LaunchedEffect(Unit) {
-        if(!checkoutDetails.isSuccessScreenVisible) {
+        if(!isSuccessScreenVisible.value) {
             onClick()
         }
     }
@@ -59,7 +68,7 @@ fun PaymentSuccessful(
 
     val dateNTimeExtracted = formatTransactionTimestamp(dateNTime)
     val uiRows = listOf(
-        Pair("Transaction ID", checkoutDetails.transactionId),
+        Pair("Transaction ID", transactionId),
         Pair("Date", dateNTimeExtracted?.first ?: ""),
         Pair("Time", dateNTimeExtracted?.second ?: ""),
         Pair("Payment Method", paymentMethod)
@@ -138,14 +147,14 @@ fun PaymentSuccessful(
                                 fontFamily = defaultInterFontFamily
                             )
                         ) {
-                            append(checkoutDetails.currencySymbol)
+                            append(currencySymbol)
                         }
                         withStyle(
                             style = SpanStyle(
                                 fontFamily = defaultFontFamily
                             )
                         ) {
-                            append("${checkoutDetails.amount}")
+                            append("$amount")
                         }
                     },
                     fontSize = 16.sp,
@@ -162,12 +171,12 @@ fun PaymentSuccessful(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp)
-                    .clip(RoundedCornerShape(checkoutDetails.ctaBorderRadius.dp))
-                    .background(checkoutDetails.buttonColor.toComposeColor())
+                    .clip(RoundedCornerShape(ctaBorderRadius.value.dp))
+                    .background(buttonColor.value.toComposeColor())
                     .clickable { onClick() },
                 amount = 0.0,
                 currencySymbol = "",
-                buttonTextColor = checkoutDetails.buttonTextColor,
+                buttonTextColor = buttonTextColor.value,
                 isValid = true
             )
         }

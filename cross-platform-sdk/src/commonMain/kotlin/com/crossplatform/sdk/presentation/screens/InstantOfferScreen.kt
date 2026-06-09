@@ -45,7 +45,9 @@ fun InstantOfferScreen(
     BackHandler(onBack = onBackPress)
     val viewModel : InstantOfferViewModel = koinViewModel()
     val screenState by viewModel.offerState.collectAsStateWithLifecycle()
-    val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+    val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
+    val focusedTextInputBorderColor = CheckoutDetailsHandler.focusedBorderColorFlow.collectAsStateWithLifecycle()
+    val unfocusedTextInputBorderColor = CheckoutDetailsHandler.unfocusedBorderColorFlow.collectAsStateWithLifecycle()
     val codeTextField = remember {
         mutableStateOf("")
     }
@@ -86,15 +88,15 @@ fun InstantOfferScreen(
                         },
                         shape = RoundedCornerShape(8.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor   = checkoutDetails.focusedTextInputBorderColor.toComposeColor(),
-                            unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor.toComposeColor(),
+                            focusedBorderColor   = focusedTextInputBorderColor.value.toComposeColor(),
+                            unfocusedBorderColor = unfocusedTextInputBorderColor.value.toComposeColor(),
                         )
                     )
                     SectionTitle("Instant Offers")
                 }
                 items(data) { item ->
                     OfferCard(
-                        selectedColor = checkoutDetails.buttonColor.toComposeColor(),
+                        selectedColor = buttonColor.value.toComposeColor(),
                         offerCode = item.code,
                         description = item.description,
                         terms = item.terms,

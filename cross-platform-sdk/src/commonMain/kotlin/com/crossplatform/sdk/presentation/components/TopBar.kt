@@ -48,13 +48,19 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun TopBar(
     showDesc: Boolean,
-    showSecure: Boolean,
     text: String,
     onBackPress: () -> Unit,
     sessionSeconds: Long? = null
 ) {
-    val checkoutDetails by CheckoutDetailsHandler.checkoutDetailsFlow.collectAsStateWithLifecycle()
 
+    val isMerchantLogoVisible = CheckoutDetailsHandler.isMerchantLogoVisibleFlow.collectAsStateWithLifecycle()
+    val merchantLogo = CheckoutDetailsHandler.merchantLogoFlow.collectAsStateWithLifecycle()
+    val merchantName = CheckoutDetailsHandler.merchantNameFlow.collectAsStateWithLifecycle()
+    val itemsLength = CheckoutDetailsHandler.itemsLengthFlow.collectAsStateWithLifecycle()
+    val currency = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
+    val (currencySymbol, _) = currency.value
+    val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
+    val isSessionExpiryVisible = CheckoutDetailsHandler.isSessionExpiryVisibleFlow.collectAsStateWithLifecycle()
     // Timer urgency threshold — turns red under 2 minutes
     val isUrgent = (sessionSeconds ?: Long.MAX_VALUE) <= 120L
 
@@ -80,7 +86,7 @@ fun TopBar(
         ) {
 
             // ✅ equivalent of Pressable + arrow-left image
-            if(checkoutDetails.isMerchantLogoVisible) {
+            if(isMerchantLogoVisible.value) {
                 IconButton(
                     onClick = onBackPress,
                     modifier = Modifier.size(24.dp)
@@ -95,10 +101,10 @@ fun TopBar(
                 Spacer(modifier = Modifier.width(8.dp))
             }
 
-            if(checkoutDetails.merchantLogo.isNotEmpty()) {
+            if(merchantLogo.value.isNotEmpty()) {
                 KamelImage(
-                    resource              = asyncPainterResource(data = checkoutDetails.merchantLogo),
-                    contentDescription = checkoutDetails.merchantName,
+                    resource              = asyncPainterResource(data = merchantLogo.value),
+                    contentDescription = merchantName.value,
                     modifier           = Modifier.size(32.dp),
                     onLoading = {
                         Box(
@@ -142,10 +148,10 @@ fun TopBar(
                                     color = Color(0xFF4F4D55)
                                 )
                             ) {
-                                if (checkoutDetails.itemsLength > 0) {
-                                    append("${checkoutDetails.itemsLength} ")
+                                if (itemsLength.value > 0) {
+                                    append("${itemsLength.value} ")
                                     append(
-                                        if (checkoutDetails.itemsLength == 1) "item" else "items"
+                                        if (itemsLength.value == 1) "item" else "items"
                                     )
                                     append(" . ")
                                 }
@@ -169,7 +175,7 @@ fun TopBar(
                                     color = Color(0xFF4F4D55)
                                 )
                             ) {
-                                append(" ${checkoutDetails.currencySymbol}")
+                                append(" $currencySymbol")
                             }
 
                             // ✅ equivalent of amount Text
@@ -180,7 +186,7 @@ fun TopBar(
                                     color = Color(0xFF4F4D55)
                                 )
                             ) {
-                                append("${checkoutDetails.amount}")
+                                append("${amount.value}")
                             }
                         },
                         fontSize = 12.sp,
@@ -189,7 +195,7 @@ fun TopBar(
                     )
                 }
             }
-            if (sessionSeconds != null && checkoutDetails.isSessionExpiryVisible) {
+            if (sessionSeconds != null && isSessionExpiryVisible.value) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -212,34 +218,6 @@ fun TopBar(
                     )
                 }
             }
-//            Column {
-
-
-//                // ✅ equivalent of showSecure &&
-//                if (showSecure) {
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        modifier = Modifier
-//                            .padding(horizontal = 4.dp, vertical = 2.dp)
-//                    ) {
-////                    // ✅ equivalent of ic_lock.png
-//                        Image(
-//                            painter = painterResource(Res.drawable.ic_lock),
-//                            contentDescription = "Secure",
-//                            modifier = Modifier
-//                                .size(14.dp)
-//                                .padding(end = 4.dp)
-//                        )
-//
-//                        // ✅ equivalent of secureText
-//                        Text(
-//                            text = "100% Secure",
-//                            fontSize = 12.sp,
-//                            color = Color(0xFF1CA672)
-//                        )
-//                    }
-//                }
-//            }
         }
         HorizontalDivider()
     }

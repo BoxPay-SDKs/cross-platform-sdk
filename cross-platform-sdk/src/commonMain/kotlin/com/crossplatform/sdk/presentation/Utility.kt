@@ -1,6 +1,7 @@
 package com.crossplatform.sdk.presentation
 
 import androidx.compose.ui.graphics.Color
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.data.model.DeliveryAddress
@@ -236,7 +237,10 @@ fun getStatus(status : String) : TransactionStatusEnum {
     }
 }
 
-fun buildAddressAndUserDetailsString(checkoutDetails: CheckoutDetails, userDetails: UserDetails): String {
+fun buildAddressAndUserDetailsString(): String {
+    val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+    val userDetails = UserDataHandler.userData
+
     val showName = checkoutDetails.isFullNameEnabled
     val showPhone = checkoutDetails.isPhoneEnabled
     val showEmail = checkoutDetails.isEmailEnabled
@@ -278,7 +282,9 @@ fun buildAddressAndUserDetailsString(checkoutDetails: CheckoutDetails, userDetai
     }.trim()
 }
 
-fun buildAddressString(checkoutDetails: CheckoutDetails, userDetails: UserDetails): String {
+fun buildAddressString(): String {
+    val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+    val userDetails = UserDataHandler.userData
     if (!checkoutDetails.isShippingAddressEnabled) return ""
 
     val address1 = userDetails.address1.orEmpty()

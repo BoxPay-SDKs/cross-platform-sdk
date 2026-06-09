@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -24,16 +23,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
-import com.crossplatform.sdk.data.handler.UserDataHandler
-import com.crossplatform.sdk.data.model.CheckoutDetails
-import com.crossplatform.sdk.data.model.UserDetails
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
-import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
-import crossplatformsdk.cross_platform_sdk.generated.resources.add_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_location
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_user
 import org.jetbrains.compose.resources.painterResource
@@ -42,23 +35,35 @@ import org.jetbrains.compose.resources.painterResource
 fun AddressComponent(
     address: String,
     navigateToAddressScreen: () -> Unit,
-    checkoutDetails: CheckoutDetails,
-    userData: UserDetails
+    isShippingAddressEnabled: Boolean,
+    isFullNameEnabled : Boolean,
+    isPhoneEnabled : Boolean,
+    isEmailEnabled : Boolean,
+    isShippingAddressEditable : Boolean,
+    isFullNameEditable : Boolean,
+    isEmailEditable : Boolean,
+    isPhoneEditable : Boolean,
+    firstName  :String?,
+    lastName : String?,
+    email : String?,
+    completePhoneNumber : String?,
+    labelType : String?,
+    labelName : String?
 ) {
 
-    val showPersonalDetails = (checkoutDetails.isFullNameEnabled ||
-            checkoutDetails.isPhoneEnabled ||
-            checkoutDetails.isEmailEnabled) &&
-            !checkoutDetails.isShippingAddressEnabled
+    val showPersonalDetails = (isFullNameEnabled ||
+            isPhoneEnabled ||
+            isEmailEnabled) &&
+            !isShippingAddressEnabled
     Column {
 
         // --- Case 1: Address exists ---
-        if (address.isNotEmpty() && checkoutDetails.isShippingAddressEnabled) {
+        if (address.isNotEmpty() && isShippingAddressEnabled) {
             SectionTitle("Address")
 
             AddressCard(
                 onClick = {
-                    if (checkoutDetails.isShippingAddressEditable) navigateToAddressScreen()
+                    if (isShippingAddressEditable) navigateToAddressScreen()
                 }
             ) {
                 Image(
@@ -76,8 +81,8 @@ fun AddressComponent(
                             append("Deliver at ")
                             withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                                 append(
-                                    if (userData.labelType == "Other") userData.labelName ?: ""
-                                    else userData.labelType ?: ""
+                                    if (labelType == "Other") labelName ?: ""
+                                    else labelType ?: ""
                                 )
                             }
                         },
@@ -95,7 +100,7 @@ fun AddressComponent(
                     )
                 }
 
-                if (checkoutDetails.isShippingAddressEditable) {
+                if (isShippingAddressEditable) {
                     ChevronIcon()
                 }
             }
@@ -103,18 +108,18 @@ fun AddressComponent(
         else if (showPersonalDetails) {
             SectionTitle("Personal Details")
 
-            val isEditable = checkoutDetails.isFullNameEditable ||
-                    checkoutDetails.isPhoneEditable ||
-                    checkoutDetails.isEmailEditable
+            val isEditable = isFullNameEditable ||
+                    isPhoneEditable ||
+                    isEmailEditable
 
             AddressCard(
                 onClick = { if (isEditable) navigateToAddressScreen() }
             ) {
                 // ← check only enabled fields for hasData
                 val hasData =
-                    (checkoutDetails.isFullNameEnabled  && !userData.firstName.isNullOrEmpty()) ||
-                            (checkoutDetails.isPhoneEnabled     && !userData.completePhoneNumber.isNullOrEmpty()) ||
-                            (checkoutDetails.isEmailEnabled     && !userData.email.isNullOrEmpty())
+                    (isFullNameEnabled  && !firstName.isNullOrEmpty()) ||
+                            (isPhoneEnabled     && !completePhoneNumber.isNullOrEmpty()) ||
+                            (isEmailEnabled     && !email.isNullOrEmpty())
 
                 if (hasData) {
                     Image(
@@ -128,19 +133,19 @@ fun AddressComponent(
                             .padding(start = 12.dp)
                     ) {
                         // show name + phone only if enabled
-                        if (checkoutDetails.isFullNameEnabled || checkoutDetails.isPhoneEnabled) {
+                        if (isFullNameEnabled || isPhoneEnabled) {
                             Text(
                                 text = buildString {
-                                    if (checkoutDetails.isFullNameEnabled && !userData.firstName.isNullOrEmpty()) {
-                                        append("${userData.firstName} ${userData.lastName ?: ""}")
+                                    if (isFullNameEnabled && !firstName.isNullOrEmpty()) {
+                                        append("$firstName ${lastName ?: ""}")
                                     }
-                                    if (checkoutDetails.isFullNameEnabled && checkoutDetails.isPhoneEnabled &&
-                                        !userData.firstName.isNullOrEmpty() && !userData.completePhoneNumber.isNullOrEmpty()
+                                    if (isFullNameEnabled && isPhoneEnabled &&
+                                        !firstName.isNullOrEmpty() && !completePhoneNumber.isNullOrEmpty()
                                     ) {
                                         append(" | ")
                                     }
-                                    if (checkoutDetails.isPhoneEnabled && !userData.completePhoneNumber.isNullOrEmpty()) {
-                                        append(userData.completePhoneNumber)
+                                    if (isPhoneEnabled && !completePhoneNumber.isNullOrEmpty()) {
+                                        append(completePhoneNumber)
                                     }
                                 },
                                 fontFamily = defaultFontFamily,
@@ -149,9 +154,9 @@ fun AddressComponent(
                             )
                         }
                         // show email only if enabled
-                        if (checkoutDetails.isEmailEnabled && !userData.email.isNullOrEmpty()) {
+                        if (isEmailEnabled && !email.isNullOrEmpty()) {
                             Text(
-                                text       = userData.email,
+                                text       = email,
                                 fontFamily = defaultFontFamily,
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize   = 14.sp,

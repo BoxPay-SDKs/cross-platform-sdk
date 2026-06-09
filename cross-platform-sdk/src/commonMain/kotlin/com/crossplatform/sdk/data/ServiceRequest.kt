@@ -52,7 +52,9 @@ object ServiceRequest {
     // ✅ Force rebuild (call when token/env changes)
     fun buildClient(): HttpClient {
         _client?.close()
-        val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+        val isTestEnv = CheckoutDetailsHandler.isTestEnvFlow.value
+        val token = CheckoutDetailsHandler.tokenFlow.value
+        val shopperToken = CheckoutDetailsHandler.shopperTokenFlow.value
 
         return HttpClient {
             install(ContentNegotiation) {
@@ -65,11 +67,11 @@ object ServiceRequest {
                 level = LogLevel.BODY
             }
             install(DefaultRequest) {
-                url("${getEndpoint(checkoutDetails.isTestEnv)}${checkoutDetails.token}/")
+                url("${getEndpoint(isTestEnv)}$token/")
                 header("X-Request-Id", generateRandomAlphanumericString(10))
                 header("X-Client-Connector-Name", "KMP SDK")
                 header("X-Client-Connector-Version", BuildKonfig.SDK_VERSION)
-                checkoutDetails.shopperToken?.let {
+                shopperToken?.let {
                     header("Authorization", "Session $it")
                 }
             }

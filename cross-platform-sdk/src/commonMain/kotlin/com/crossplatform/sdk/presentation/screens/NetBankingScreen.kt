@@ -15,6 +15,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,15 +42,29 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NetBankingScreen(
-    onBackPress : () -> Unit
+    onBackPress : () -> Unit,
+    isAutoNavigationEnabled : Boolean,
+    onExitCheckout : () -> Unit
 ) {
     BackHandler(onBack = onBackPress)
     val viewModel : NetBankingViewModel = koinViewModel()
-    val checkoutDetails by CheckoutDetailsHandler.checkoutDetailsFlow
-        .collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val focusedTextInputBorderColor = CheckoutDetailsHandler.focusedBorderColorFlow.collectAsStateWithLifecycle()
+    val unfocusedTextInputBorderColor = CheckoutDetailsHandler.unfocusedBorderColorFlow.collectAsStateWithLifecycle()
+    val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
+    val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
+    val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
+    val (currencySymbol, _) = currencyFlow.value
+    val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
+    val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
     val isBoxPayAnimationVisible by viewModel.isBoxPayAnimationVisible.collectAsStateWithLifecycle()
     val showWebView by viewModel.showWebview.collectAsStateWithLifecycle()
+
+    LaunchedEffect(isAutoNavigationEnabled) {
+        if(isAutoNavigationEnabled) {
+            onExitCheckout()
+        }
+    }
 
     when(uiState) {
         is UiState.Error -> {
@@ -87,8 +102,8 @@ fun NetBankingScreen(
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         // Border
-                        focusedBorderColor   = checkoutDetails.focusedTextInputBorderColor.toComposeColor(),
-                        unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor.toComposeColor(),
+                        focusedBorderColor   = focusedTextInputBorderColor.value.toComposeColor(),
+                        unfocusedBorderColor = unfocusedTextInputBorderColor.value.toComposeColor(),
                     )
                 )
 
@@ -106,7 +121,6 @@ fun NetBankingScreen(
                         onProceedForward = { _, instrumentValue, _ ->
                             viewModel.postNetBankingRequest(instrumentValue)
                         },
-                        checkoutDetails = checkoutDetails,
                         drawableResource = Res.drawable.ic_netbanking,
                         onClickRadio = {
                             viewModel.callUiAnalytics(
@@ -114,7 +128,12 @@ fun NetBankingScreen(
                                 screenName = "NetBankingScreen",
                                 message = "payment category selected"
                             )
-                        }
+                        },
+                        buttonTextColor = buttonTextColor.value,
+                        buttonColor = buttonColor.value,
+                        currencySymbol = currencySymbol,
+                        amount = amount.value,
+                        ctaBorderRadius = ctaBorderRadius.value
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Footer()

@@ -53,9 +53,30 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost() {
-    val checkoutDetails by CheckoutDetailsHandler.checkoutDetailsFlow
-        .collectAsStateWithLifecycle()
-    val userDetails by UserDataHandler.userDataFlow.collectAsStateWithLifecycle()
+    val shopperDetails by CheckoutDetailsHandler.shopperFieldsConfigFlow.collectAsStateWithLifecycle()
+    val isShippingAddressEnabled = shopperDetails.isShippingAddressEnabled
+    val isShippingAddressEditable = shopperDetails.isShippingAddressEditable
+    val isFullNameEnabled = shopperDetails.isFullNameEnabled
+    val isFullNameEditable = shopperDetails.isFullNameEditable
+    val isEmailEnabled = shopperDetails.isEmailEnabled
+    val isEmailEditable = shopperDetails.isEmailEditable
+    val isPhoneEnabled = shopperDetails.isPhoneEnabled
+    val isPhoneEditable = shopperDetails.isPhoneEditable
+    val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
+    val (_, currencySymbol) = currencyFlow.value
+    val isWebViewVisible = CheckoutDetailsHandler.isWebViewVisibleFlow.collectAsStateWithLifecycle()
+    val surchargeDetails = CheckoutDetailsHandler.surchargeDetailsFlow.collectAsStateWithLifecycle()
+    val amountBeforeSurcharge = CheckoutDetailsHandler.amountBeforeSurchargeFlow.collectAsStateWithLifecycle()
+    val discountAmount = CheckoutDetailsHandler.discountAmountFlow.collectAsStateWithLifecycle()
+    val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
+    val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
+    val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
+    val isPaymentFailed = CheckoutDetailsHandler.isPaymentFailedFlow.collectAsStateWithLifecycle()
+    val isPaymentSuccessful = CheckoutDetailsHandler.isPaymentSuccessfulFlow.collectAsStateWithLifecycle()
+    val isSessionExpired = CheckoutDetailsHandler.isSessionExpiredFlow.collectAsStateWithLifecycle()
+    val successDetails = CheckoutDetailsHandler.successfulTimestampFlow.collectAsStateWithLifecycle()
+    val (successTimeStamp , selectedPaymentMethod) = successDetails.value
+
     val navController = rememberNavController()
     val viewModel: MainScreenViewModel = koinViewModel()
     var showSwipeToPay by remember { mutableStateOf(false) }
@@ -81,9 +102,9 @@ fun AppNavHost() {
         Routes.MainScreen.route    -> "Payment Details"
         Routes.AddressScreen.route -> {
             when {
-                checkoutDetails.isShippingAddressEnabled && isNewAddress   -> "Add Address"
-                checkoutDetails.isShippingAddressEnabled && !isNewAddress  -> "Edit Address"
-                !checkoutDetails.isShippingAddressEnabled && isNewAddress  -> "Add Personal Details"
+                isShippingAddressEnabled && isNewAddress   -> "Add Address"
+                isShippingAddressEnabled && !isNewAddress  -> "Edit Address"
+                !isShippingAddressEnabled && isNewAddress  -> "Add Personal Details"
                 else                                -> "Edit Personal Details"
             }
         }
@@ -101,17 +122,16 @@ fun AppNavHost() {
     }
 
     Column (modifier = Modifier.fillMaxSize()) {
-        if(!viewModel.isLoadingSession.value && !checkoutDetails.isWebViewVisible) {
+        if(!viewModel.isLoadingSession.value && !isWebViewVisible.value) {
             TopBar(
                 showDesc   = true,
-                showSecure = true,
                 text       = screenTitle,             // changes per screen
                 onBackPress = {
                     if (!navController.popBackStack()) {
                         callSDKPaymentResponse()
                     } else {
-                        if(!checkoutDetails.surchargeDetails.isEmpty()) {
-                            CheckoutDetailsHandler.setAmount(checkoutDetails.amountBeforeSurcharge)
+                        if(!surchargeDetails.value.isEmpty()) {
+                            CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
                         }
                     }
                 },    // from API via ViewModel
@@ -125,11 +145,11 @@ fun AppNavHost() {
             composable(Routes.MainScreen.route) {
                 MainScreen(
                     viewModel = viewModel,
-                    onProceedCardScreen = {
-                        navController.navigate(Routes.CardScreen.route)
+                    onProceedCardScreen = { isAutoNavigationEnabled ->
+                        navController.navigate("${Routes.CardScreen.route}/$isAutoNavigationEnabled")
                     },
-                    onProceedEMIScreen = {
-                        navController.navigate(Routes.EMIScreen.route)
+                    onProceedEMIScreen = { isAutoNavigationEnabled ->
+                        navController.navigate("${Routes.EMIScreen.route}/$isAutoNavigationEnabled")
                     },
                     onProceedAddressScreen = {isNewAddress ->
                         navController.navigate("${Routes.AddressScreen.route}/${isNewAddress}")
@@ -137,16 +157,16 @@ fun AppNavHost() {
                     onProceedSavedAddressScreen = {
                         navController.navigate(Routes.SavedAddressScreen.route)
                     },
-                    onProceedNetBankingScreen = {
-                        navController.navigate(Routes.NetBankingScreen.route)
+                    onProceedNetBankingScreen = { isAutoNavigationEnabled ->
+                        navController.navigate("${Routes.NetBankingScreen.route}/$isAutoNavigationEnabled")
                     },
-                    onProceedWalletScreen = {
-                        navController.navigate(Routes.WalletScreen.route)
+                    onProceedWalletScreen = { isAutoNavigationEnabled ->
+                        navController.navigate("${Routes.WalletScreen.route}/$isAutoNavigationEnabled")
                     },
-                    onProceedBNPLScreen = {
-                        navController.navigate(Routes.BNPLScreen.route)
+                    onProceedBNPLScreen = { isAutoNavigationEnabled ->
+                        navController.navigate("${Routes.BNPLScreen.route}/$isAutoNavigationEnabled")
                     },
-                    onProceedUPITimerScreen = {shopperVpa ->
+                    onProceedUPITimerScreen = { shopperVpa ->
                         navController.navigate("${Routes.UpiTimerScreen.route}/$shopperVpa")
                     },
                     onShowSwipeToPay = {
@@ -156,7 +176,6 @@ fun AppNavHost() {
                     onSetSelectedOfferCode = {
                         selectedOfferCode.value = it
                     },
-                    checkoutDetails = checkoutDetails,
                     onProceedInstantOfferScreen = {
                         navController.navigate(Routes.InstantOfferScreen.route)
                     }
@@ -172,28 +191,46 @@ fun AppNavHost() {
                     shopperVpa  = shopperVpa,
                     onBackPress = {
                         navController.popBackStack()
-                    }
+                    },
+                    buttonColor = buttonColor.value,
+                    buttonTextColor = buttonTextColor.value
                 )
             }
 
-            composable(Routes.CardScreen.route) {
+            composable(
+                route = "${Routes.CardScreen.route}/{isAutoNavigationEnabled}",
+                arguments = listOf(navArgument("isAutoNavigationEnabled") { type = NavType.BoolType })
+            ) { backStackEntry ->
+                val isAutoNavigationEnabled = backStackEntry.arguments?.getBoolean("isAutoNavigationEnabled") ?: false
                 CardScreen(
                     onBackPress = {
-                        if(!checkoutDetails.surchargeDetails.isEmpty()) {
-                            CheckoutDetailsHandler.setAmount(checkoutDetails.amountBeforeSurcharge)
+                        if(!surchargeDetails.value.isEmpty()) {
+                            CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
                         }
                         navController.popBackStack()
+                    },
+                    isAutoNavigationEnabled = isAutoNavigationEnabled,
+                    onExitCheckout = {
+                        callSDKPaymentResponse()
                     }
                 )
             }
 
-            composable(Routes.EMIScreen.route) {
+            composable(
+                route = "${Routes.EMIScreen.route}/{isAutoNavigationEnabled}",
+                arguments = listOf(navArgument("isAutoNavigationEnabled") { type = NavType.BoolType })
+            ) { backStackEntry ->
+                val isAutoNavigationEnabled = backStackEntry.arguments?.getBoolean("isAutoNavigationEnabled") ?: false
                 EMIScreen(
                     onBackPress = {
-                        if(!checkoutDetails.surchargeDetails.isEmpty()) {
-                            CheckoutDetailsHandler.setAmount(checkoutDetails.amountBeforeSurcharge)
+                        if(!surchargeDetails.value.isEmpty()) {
+                            CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
                         }
                         navController.popBackStack()
+                    },
+                    isAutoNavigationEnabled = isAutoNavigationEnabled,
+                    onExitCheckout = {
+                        callSDKPaymentResponse()
                     }
                 )
             }
@@ -213,7 +250,11 @@ fun AppNavHost() {
                     },
                     onBackPress = {
                         navController.popBackStack()
-                    }
+                    },
+                    isEmailEnabled = isEmailEnabled,
+                    isFullNameEnabled = isFullNameEnabled,
+                    isPhoneEnabled = isPhoneEditable,
+                    isShippingEnabled = isShippingAddressEnabled
                 )
             }
 
@@ -221,39 +262,64 @@ fun AppNavHost() {
                 SavedAddressScreen(
                     onBackPress = {
                         navController.popBackStack()
-                    }
+                    },
+                    buttonColor = buttonColor.value
                 )
             }
 
-            composable(Routes.BNPLScreen.route) {
+            composable(
+                route = "${Routes.BNPLScreen.route}/{isAutoNavigationEnabled}",
+                arguments = listOf(navArgument("isAutoNavigationEnabled") { type = NavType.BoolType })
+            ) { backStackEntry ->
+                val isAutoNavigationEnabled = backStackEntry.arguments?.getBoolean("isAutoNavigationEnabled") ?: false
                 BNPLScreen(
                     onBackPress = {
-                        if(!checkoutDetails.surchargeDetails.isEmpty()) {
-                            CheckoutDetailsHandler.setAmount(checkoutDetails.amountBeforeSurcharge)
+                        if(!surchargeDetails.value.isEmpty()) {
+                            CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
                         }
                         navController.popBackStack()
+                    },
+                    isAutoNavigationEnabled = isAutoNavigationEnabled,
+                    onExitCheckout = {
+                        callSDKPaymentResponse()
                     }
                 )
             }
 
-            composable(Routes.NetBankingScreen.route) {
+            composable(
+                route = "${Routes.NetBankingScreen.route}/{isAutoNavigationEnabled}",
+                arguments = listOf(navArgument("isAutoNavigationEnabled") { type = NavType.BoolType })
+            ) { backStackEntry ->
+                val isAutoNavigationEnabled = backStackEntry.arguments?.getBoolean("isAutoNavigationEnabled") ?: false
                 NetBankingScreen(
                     onBackPress = {
-                        if(!checkoutDetails.surchargeDetails.isEmpty()) {
-                            CheckoutDetailsHandler.setAmount(checkoutDetails.amountBeforeSurcharge)
+                        if(!surchargeDetails.value.isEmpty()) {
+                            CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
                         }
                         navController.popBackStack()
+                    },
+                    isAutoNavigationEnabled = isAutoNavigationEnabled,
+                    onExitCheckout = {
+                        callSDKPaymentResponse()
                     }
                 )
             }
 
-            composable(Routes.WalletScreen.route) {
+            composable(
+                route = "${Routes.WalletScreen.route}/{isAutoNavigationEnabled}",
+                arguments = listOf(navArgument("isAutoNavigationEnabled") { type = NavType.BoolType })
+            ) { backStackEntry ->
+                val isAutoNavigationEnabled = backStackEntry.arguments?.getBoolean("isAutoNavigationEnabled") ?: false
                 WalletScreen(
                     onBackPress = {
-                        if(!checkoutDetails.surchargeDetails.isEmpty()) {
-                            CheckoutDetailsHandler.setAmount(checkoutDetails.amountBeforeSurcharge)
+                        if(!surchargeDetails.value.isEmpty()) {
+                            CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
                         }
                         navController.popBackStack()
+                    },
+                    isAutoNavigationEnabled = isAutoNavigationEnabled,
+                    onExitCheckout = {
+                        callSDKPaymentResponse()
                     }
                 )
             }
@@ -268,12 +334,12 @@ fun AppNavHost() {
                     },
                     onClickRemove = {
                         selectedOfferCode.value = ""
-                        viewModel.removeOffer(checkoutDetails.discountAmount, checkoutDetails.amount)
+                        viewModel.removeOffer(discountAmount.value, amount.value)
                         navController.popBackStack()
                     },
                     onClickApply = {
                         selectedOfferCode.value = it
-                        val amount = checkoutDetails.amount + checkoutDetails.discountAmount
+                        val amount = amount.value + discountAmount.value
                         viewModel.applyOffer(it, amount)
                         navController.popBackStack()
                     }
@@ -292,22 +358,22 @@ fun AppNavHost() {
             shape            = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
         ) {
             SwipeToPayComponent(
-                buttonColor = checkoutDetails.buttonColor,
-                buttonTextColor = checkoutDetails.buttonTextColor,
-                amount = checkoutDetails.amount,
-                currencySymbol = checkoutDetails.currencySymbol,
+                buttonColor = buttonColor.value,
+                buttonTextColor = buttonTextColor.value,
+                amount = amount.value,
+                currencySymbol = currencySymbol,
                 lastUsedUpi = firstInstrument.displayValue,
                 logoUrl = firstInstrument.imageUrl,
-                address = buildAddressAndUserDetailsString(checkoutDetails, userDetails),
-                toShowAddress = checkoutDetails.isShippingAddressEnabled ||
-                        checkoutDetails.isFullNameEnabled ||
-                        checkoutDetails.isEmailEnabled ||
-                        checkoutDetails.isPhoneEnabled,
-                toShowPersonal = !checkoutDetails.isShippingAddressEnabled,
-                toShowOnChangeAddressClick = checkoutDetails.isShippingAddressEditable ||
-                        checkoutDetails.isFullNameEditable ||
-                        checkoutDetails.isEmailEditable ||
-                        checkoutDetails.isPhoneEditable,
+                address = buildAddressAndUserDetailsString(),
+                toShowAddress = isShippingAddressEnabled ||
+                        isFullNameEnabled ||
+                        isEmailEnabled ||
+                        isPhoneEnabled,
+                toShowPersonal = !isShippingAddressEnabled,
+                toShowOnChangeAddressClick = isShippingAddressEditable ||
+                        isFullNameEditable ||
+                        isEmailEditable ||
+                        isPhoneEditable,
                 onClickMoreOptions = {
                     // Replace swipe screen with full MainScreen in the same sheet
                     showSwipeToPay = false
@@ -331,7 +397,7 @@ fun AppNavHost() {
             )
         }
     }
-    if (checkoutDetails.isSessionExpired) {
+    if (isSessionExpired.value) {
         viewModel.stopSessionCountDown()
         viewModel.stopFetchStatusPolling()
         SessionExpire (
@@ -345,12 +411,12 @@ fun AppNavHost() {
             }
         )
     }
-    if (checkoutDetails.isPaymentSuccessful) {
+    if (isPaymentSuccessful.value) {
         viewModel.stopSessionCountDown()
         viewModel.stopFetchStatusPolling()
         PaymentSuccessful (
-            dateNTime = checkoutDetails.successfulTimeStamp,
-            paymentMethod = checkoutDetails.selectedPaymentMethod,
+            dateNTime = successTimeStamp,
+            paymentMethod = selectedPaymentMethod,
             onClick = {
                 viewModel.callUiAnalytics(
                     event = AnalyticsEvents.PAYMENT_RESULT_SCREEN_DISPLAYED.value,
@@ -361,7 +427,7 @@ fun AppNavHost() {
             }
         )
     }
-    if (checkoutDetails.isPaymentFailed) {
+    if (isPaymentFailed.value) {
         PaymentFailed(
             sheetState = failedSheetState,
             onClick = {
@@ -389,9 +455,8 @@ fun callSDKPaymentResponse() {
     SDKJobHandler.cancelAll()
 
     // ✅ Capture data BEFORE resetting
-    val status = CheckoutDetailsHandler.checkoutDetails.status
-    val transactionId = CheckoutDetailsHandler.checkoutDetails.transactionId
-    val inquiryToken = CheckoutDetailsHandler.checkoutDetails.inquiryToken
+    val (status, transactionId) = CheckoutDetailsHandler.transactionFlow.value
+    val inquiryToken = CheckoutDetailsHandler.inquiryTokenFlow.value
 
     ServiceRequest.close()
 

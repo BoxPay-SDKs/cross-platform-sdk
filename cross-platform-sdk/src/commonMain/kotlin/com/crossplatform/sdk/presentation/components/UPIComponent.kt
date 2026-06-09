@@ -38,7 +38,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.domain.model.MainScreenModel
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.presentation.getDeviceDetails
@@ -66,13 +65,20 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 fun UPIComponent(
     methodFlags: MainScreenModel.MethodFlags,
     savedUpiList : List<SelectedPaymentMethod>,
-    checkoutDetails: CheckoutDetails,
     onClickUpiCollectPayButton : (String, Boolean) -> Unit,
     onClickUpiIntentPayButton : (String) -> Unit,
     onClickUpiQRPayButton : () -> Unit,
     onClickSavedUpiPayButton : (String, String) -> Unit,
     onClickRadio : () -> Unit,
-    onErrorLoadingIntent : (String) -> Unit
+    onErrorLoadingIntent : (String) -> Unit,
+    buttonColor : String,
+    buttonTextColor : String,
+    currencySymbol : String,
+    amount : Double,
+    ctaBorderRadius : Int,
+    focusedTextInputBorderColor : String,
+    unfocusedTextInputBorderColor : String,
+    shopperToken : String?
 ) {
     val isSaveInstrumentCheckBoxClicked = remember {
         mutableStateOf(false)
@@ -148,11 +154,11 @@ fun UPIComponent(
                         onProceedForward    = { displayValue, instrumentValue ->
                             onClickSavedUpiPayButton(instrumentValue, displayValue )
                         },
-                        brandColor          = checkoutDetails.buttonColor,
-                        buttonTextColor     = checkoutDetails.buttonTextColor,
-                        currencySymbol      = checkoutDetails.currencySymbol,
-                        amount              = checkoutDetails.amount,
-                        ctaBorderRadius     = checkoutDetails.ctaBorderRadius,
+                        brandColor          = buttonColor,
+                        buttonTextColor     = buttonTextColor,
+                        currencySymbol      = currencySymbol,
+                        amount              = amount,
+                        ctaBorderRadius     = ctaBorderRadius,
                         drawableResource    = Res.drawable.ic_upi_error
                     )
                     HorizontalDivider(
@@ -176,7 +182,7 @@ fun UPIComponent(
                         label       = "GPay",
                         icon        = Res.drawable.gpay_icon,
                         isSelected  = selectedIntent == "GPay",
-                        buttonColor = checkoutDetails.buttonColor,
+                        buttonColor = buttonColor,
                         onClick     = {
                             upiCollectVisible = false
                             upiCollectError   = false
@@ -190,7 +196,7 @@ fun UPIComponent(
                         label       = "PhonePe",
                         icon        = Res.drawable.phonepe_icon,
                         isSelected  = selectedIntent == "PhonePe",
-                        buttonColor = checkoutDetails.buttonColor,
+                        buttonColor = buttonColor,
                         onClick     = {
                             upiCollectVisible = false
                             upiCollectError   = false
@@ -204,7 +210,7 @@ fun UPIComponent(
                         label       = "PayTm",
                         icon        = Res.drawable.paytm_icon,
                         isSelected  = selectedIntent == "PayTm",
-                        buttonColor = checkoutDetails.buttonColor,
+                        buttonColor = buttonColor,
                         onClick     = {
                             upiCollectVisible = false
                             upiCollectError   = false
@@ -218,7 +224,7 @@ fun UPIComponent(
                         label       = "Bhim",
                         icon        = Res.drawable.ic_bhim_upi,
                         isSelected  = selectedIntent == "Bhim",
-                        buttonColor = checkoutDetails.buttonColor,
+                        buttonColor = buttonColor,
                         onClick     = {
                             upiCollectVisible = false
                             upiCollectError   = false
@@ -232,7 +238,7 @@ fun UPIComponent(
                         label       = "Others",
                         icon        = Res.drawable.other_intent_icon,
                         isSelected  = false,
-                        buttonColor = checkoutDetails.buttonColor,
+                        buttonColor = buttonColor,
                         onClick     = {
                             upiCollectVisible = false
                             upiCollectError   = false
@@ -251,15 +257,15 @@ fun UPIComponent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(checkoutDetails.ctaBorderRadius.dp))
-                        .background(checkoutDetails.buttonColor.toComposeColor())
+                        .clip(RoundedCornerShape(ctaBorderRadius.dp))
+                        .background(buttonColor.toComposeColor())
                         .clickable {
                             onClickUpiIntentPayButton(selectedIntent)
                         },
                     text   = "Pay",
-                    amount = checkoutDetails.amount,
-                    currencySymbol = checkoutDetails.currencySymbol,
-                    buttonTextColor = checkoutDetails.buttonTextColor,
+                    amount = amount,
+                    currencySymbol = currencySymbol,
+                    buttonTextColor = buttonTextColor,
                     isValid = true
                 )
             }
@@ -278,7 +284,7 @@ fun UPIComponent(
                 icon        = Res.drawable.add_icon,
                 label       = "Add new UPI Id",
                 isExpanded  = upiCollectVisible,
-                buttonColor = checkoutDetails.buttonColor,
+                buttonColor = buttonColor,
                 onClick     = {
                     selectedIntent    = ""
                     upiCollectVisible = !upiCollectVisible
@@ -319,8 +325,8 @@ fun UPIComponent(
                     ),
                     colors = OutlinedTextFieldDefaults.colors(
                         // Border
-                        focusedBorderColor   = checkoutDetails.focusedTextInputBorderColor.toComposeColor(),
-                        unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor.toComposeColor(),
+                        focusedBorderColor   = focusedTextInputBorderColor.toComposeColor(),
+                        unfocusedBorderColor = unfocusedTextInputBorderColor.toComposeColor(),
                     )
                 )
 
@@ -333,7 +339,7 @@ fun UPIComponent(
                         modifier   = Modifier.padding(top = 4.dp, start = 12.dp, end = 12.dp)
                     )
                 }
-                if(!checkoutDetails.shopperToken.isNullOrBlank()) {
+                if(!shopperToken.isNullOrBlank()) {
                     Row(
                         modifier          = Modifier
                             .fillMaxWidth()
@@ -342,7 +348,7 @@ fun UPIComponent(
                     ) {
                         CheckboxItem(
                             isChecked   = isSaveInstrumentCheckBoxClicked.value,
-                            buttonColor = checkoutDetails.buttonColor,
+                            buttonColor = buttonColor,
                             onClick     = { isSaveInstrumentCheckBoxClicked.value = !isSaveInstrumentCheckBoxClicked.value }
                         )
                         Text(
@@ -362,16 +368,16 @@ fun UPIComponent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp)
-                        .clip(RoundedCornerShape(checkoutDetails.ctaBorderRadius.dp))
-                        .background(if (upiCollectValid) checkoutDetails.buttonColor.toComposeColor()
+                        .clip(RoundedCornerShape(ctaBorderRadius.dp))
+                        .background(if (upiCollectValid) buttonColor.toComposeColor()
                         else Color(0xFFE6E6E6))
                         .clickable(enabled = upiCollectValid) {
                             onClickUpiCollectPayButton(upiCollectTextInput, isSaveInstrumentCheckBoxClicked.value)
                         },
                     text   = "Verify & Pay",
-                    amount = checkoutDetails.amount,
-                    currencySymbol = checkoutDetails.currencySymbol,
-                    buttonTextColor = checkoutDetails.buttonTextColor,
+                    amount = amount,
+                    currencySymbol = currencySymbol,
+                    buttonTextColor = buttonTextColor,
                     isValid = upiCollectValid
                 )
             }
@@ -392,7 +398,7 @@ fun UPIComponent(
                 icon        = Res.drawable.ic_qr,
                 label       = "Pay Using QR",
                 isExpanded  = upiQRVisible,
-                buttonColor = checkoutDetails.buttonColor,
+                buttonColor = buttonColor,
                 onClick     = {
 //                        if (upiQRVisible) upiQRVisible = false
 //                        else onQRChevronClick()
@@ -422,7 +428,7 @@ fun UPIComponent(
 //                        if (qrIsExpired) {
 //                            Text(
 //                                text     = "↻ Retry",
-//                                color    = checkoutDetails.buttonColor.toComposeColor(),
+//                                color    = buttonColor.toComposeColor(),
 //                                fontFamily = defaultFontFamily,
 //                                fontWeight = FontWeight.SemiBold,
 //                                modifier = Modifier.clickable { onRetryQR() }
@@ -447,7 +453,7 @@ fun UPIComponent(
 //                        )
 //                        Text(
 //                            text       = formatTime(timeRemaining),
-//                            color      = checkoutDetails.buttonColor.toComposeColor(),
+//                            color      = buttonColor.toComposeColor(),
 //                            fontFamily = defaultFontFamily,
 //                            fontWeight = FontWeight.SemiBold,
 //                            fontSize   = 18.sp

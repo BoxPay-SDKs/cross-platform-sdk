@@ -27,7 +27,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
-import com.crossplatform.sdk.data.model.CheckoutDetails
+import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
 import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
 import com.crossplatform.sdk.presentation.toComposeColor
@@ -35,10 +35,15 @@ import com.crossplatform.sdk.presentation.toComposeColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShowUpdateAmountBottomSheet(
-    checkoutDetails: CheckoutDetails,
     selectedMethod : String,
     onClickProceed : () -> Unit,
-    onClick : () -> Unit
+    onClick : () -> Unit,
+    currencySymbol : String,
+    amount : Double,
+    surchargeDetails : List<SurchargeModel>,
+    ctaBorderRadius :Int,
+    buttonColor : String,
+    buttonTextColor : String
 ) {
     ModalBottomSheet(
         onDismissRequest = onClick,
@@ -84,14 +89,14 @@ fun ShowUpdateAmountBottomSheet(
                                 fontFamily = defaultInterFontFamily
                             )
                         ) {
-                            append(checkoutDetails.currencySymbol)
+                            append(currencySymbol)
                         }
                         withStyle(
                             style = SpanStyle(
                                 fontFamily = defaultFontFamily
                             )
                         ) {
-                            append("${checkoutDetails.amount}")
+                            append("$amount")
                         }
                     },
                     fontWeight = FontWeight.Medium,
@@ -102,7 +107,7 @@ fun ShowUpdateAmountBottomSheet(
             }
 
             // Surcharge Rows — mirrors your displaySurcharge logic
-            checkoutDetails.surchargeDetails.forEach { item ->
+            surchargeDetails.forEach { item ->
 
                 if (item.applicableOn.lowercase() == selectedMethod) {
                     Row(
@@ -126,7 +131,7 @@ fun ShowUpdateAmountBottomSheet(
                                         fontFamily = defaultInterFontFamily
                                     )
                                 ) {
-                                    append("+ ${checkoutDetails.currencySymbol}")
+                                    append("+ $currencySymbol")
                                 }
                                 withStyle(
                                     style = SpanStyle(
@@ -150,12 +155,11 @@ fun ShowUpdateAmountBottomSheet(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Total Row
-            val totalSurcharge = checkoutDetails.surchargeDetails
+            val totalSurcharge = surchargeDetails
                 .filter { it.applicableOn.equals(selectedMethod, ignoreCase = true) }
                 .sumOf { it.amount }
 
-            val baseAmount = checkoutDetails.amount
-            val totalAmount = baseAmount + totalSurcharge
+            val totalAmount = amount + totalSurcharge
 
             Row(
                 modifier = Modifier
@@ -178,7 +182,7 @@ fun ShowUpdateAmountBottomSheet(
                                 fontFamily = defaultInterFontFamily
                             )
                         ) {
-                            append(checkoutDetails.currencySymbol)
+                            append(currencySymbol)
                         }
                         withStyle(
                             style = SpanStyle(
@@ -199,8 +203,8 @@ fun ShowUpdateAmountBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)
-                    .clip(RoundedCornerShape(checkoutDetails.ctaBorderRadius.dp))
-                    .background(checkoutDetails.buttonColor.toComposeColor(), RoundedCornerShape(checkoutDetails.ctaBorderRadius.dp))
+                    .clip(RoundedCornerShape(ctaBorderRadius.dp))
+                    .background(buttonColor.toComposeColor(), RoundedCornerShape(ctaBorderRadius.dp))
                     .clickable{
                         CheckoutDetailsHandler.setAmount(totalAmount)
                         onClickProceed()
@@ -208,7 +212,7 @@ fun ShowUpdateAmountBottomSheet(
                 amount = 0.0,
                 currencySymbol= "",
                 isValid = true,
-                buttonTextColor = checkoutDetails.buttonTextColor,
+                buttonTextColor = buttonTextColor,
             )
         }
     }

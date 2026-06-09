@@ -11,12 +11,4 @@ sealed class Routes(val route: String) {
     object WalletScreen         : Routes("wallet_screen")
     object SavedAddressScreen   : Routes("saved_address_screen")
     object InstantOfferScreen   : Routes("instant_offer_screen")
-
-    // ✅ Routes with params
-    fun withArgs(vararg args: String): String {
-        return buildString {
-            append(route)
-            args.forEach { append("/$it") }
-        }
-    }
 }

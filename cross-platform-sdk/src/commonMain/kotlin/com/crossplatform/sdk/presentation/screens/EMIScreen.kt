@@ -31,6 +31,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +44,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
-import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.domain.model.Bank
 import com.crossplatform.sdk.domain.model.ChooseEmiModel
 import com.crossplatform.sdk.domain.model.EmiCardGroup
@@ -68,13 +68,22 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun EMIScreen(
-    onBackPress : () -> Unit
+    onBackPress : () -> Unit,
+    isAutoNavigationEnabled : Boolean,
+    onExitCheckout : () -> Unit
 ) {
     BackHandler(onBack = onBackPress)
     val viewModel : EMIScreenViewModel = koinViewModel()
-    val checkoutDetails by CheckoutDetailsHandler.checkoutDetailsFlow.collectAsStateWithLifecycle()
-
+    val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
+    val focusedTextInputBorderColor = CheckoutDetailsHandler.focusedBorderColorFlow.collectAsStateWithLifecycle()
+    val unfocusedTextInputBorderColor = CheckoutDetailsHandler.unfocusedBorderColorFlow.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(isAutoNavigationEnabled) {
+        if(isAutoNavigationEnabled) {
+            onExitCheckout()
+        }
+    }
 
     when(uiState) {
         is UiState.Error -> {
@@ -94,7 +103,9 @@ fun EMIScreen(
                 EmiContentScreen(
                     viewModel  = viewModel,
                     emiModel = (uiState as UiState.Success).data,
-                    checkoutDetails = checkoutDetails
+                    buttonColor = buttonColor.value,
+                    focusedTextInputBorderColor = focusedTextInputBorderColor.value,
+                    unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value
                 )
             }
         }
@@ -106,7 +117,9 @@ fun EMIScreen(
 private fun EmiContentScreen(
     viewModel : EMIScreenViewModel,
     emiModel : ChooseEmiModel,
-    checkoutDetails: CheckoutDetails
+    buttonColor : String,
+    focusedTextInputBorderColor : String,
+    unfocusedTextInputBorderColor : String
 ) {
     val (isNoCostExisted, isLowCostExisted) = emiModel.cards
         .flatMap { it.banks }
@@ -122,7 +135,7 @@ private fun EmiContentScreen(
             EmiCardTypeTabRow(
                 cards      = emiModel.cards,
                 selected   = viewModel.selectedCard.value,
-                brandColor = checkoutDetails.buttonColor.toComposeColor(),
+                brandColor = buttonColor.toComposeColor(),
                 onSelect   = { viewModel.onClickCard(it) },
             )
 
@@ -133,8 +146,8 @@ private fun EmiContentScreen(
                 value       = viewModel.searchText.value,
                 placeholder = if (viewModel.selectedCard.value == "Others") "Search for other EMI options" else "Search for bank",
                 onValueChange = { viewModel.onEditSearchText(it) },
-                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor.toComposeColor(),
-                unFocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor.toComposeColor()
+                focusedBorderColor = focusedTextInputBorderColor.toComposeColor(),
+                unFocusedBorderColor = unfocusedTextInputBorderColor.toComposeColor()
             )
 
             // ── Filter chips ──────────────────────────────────────────────────────

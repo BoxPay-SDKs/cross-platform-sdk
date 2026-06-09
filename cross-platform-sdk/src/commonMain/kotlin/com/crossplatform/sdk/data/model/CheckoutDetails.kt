@@ -1,7 +1,6 @@
 package com.crossplatform.sdk.data.model
 
 import com.crossplatform.sdk.domain.model.SurchargeModel
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -67,5 +66,9 @@ data class CheckoutDetails(
     val surchargeDetails : List<SurchargeModel>,
     val isWebViewVisible : Boolean,
     val appliedOfferId : String?,
-    val subscription : List<Pair<String, String>>?
+    val subscription : List<Pair<String, String>>?,
+
+    // -- BoxPay Elements
+    val paymentMethodList : List<String>,
+    val isBoxPayButtonVisible : Boolean
 )

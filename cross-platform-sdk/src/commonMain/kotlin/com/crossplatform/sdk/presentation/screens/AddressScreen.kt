@@ -48,16 +48,35 @@ import com.crossplatform.sdk.presentation.toComposeColor
 @Composable
 fun AddressScreen(
     onAddressSaved: () -> Unit,
-    onBackPress : () -> Unit
+    onBackPress : () -> Unit,
+    isShippingEnabled : Boolean,
+    isFullNameEnabled : Boolean,
+    isEmailEnabled : Boolean,
+    isPhoneEnabled : Boolean
 ) {
     BackHandler(onBack = onBackPress)
-    val checkoutDetails by CheckoutDetailsHandler.checkoutDetailsFlow.collectAsStateWithLifecycle()
-    val userData = UserDataHandler.userData
+    
+    val firstName = UserDataHandler.firstNameFlow.collectAsStateWithLifecycle()
+    val lastName = UserDataHandler.lastNameFlow.collectAsStateWithLifecycle()
+    val email = UserDataHandler.emailFlow.collectAsStateWithLifecycle()
+    val addressFlow = UserDataHandler.addressFlow.collectAsStateWithLifecycle()
+    val address1 = addressFlow.value.address1
+    val address2 = addressFlow.value.address2
+    val city = addressFlow.value.city
+    val state = addressFlow.value.state
+    val pincode = addressFlow.value.pincode
+    val countryCode = addressFlow.value.countryCode
+    val countryName = addressFlow.value.countryName
+    val phoneCode = UserDataHandler.phoneCodeFlow.collectAsStateWithLifecycle()
+    val completePhoneNumber = UserDataHandler.completePhoneNumberFlow.collectAsStateWithLifecycle()
+    
+    val focusedBorderColor = CheckoutDetailsHandler.focusedBorderColorFlow.collectAsStateWithLifecycle()
+    val unfocusedBorderColor = CheckoutDetailsHandler.unfocusedBorderColorFlow.collectAsStateWithLifecycle()
+    val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
+    val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
+    val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
+    val uniqueId = UserDataHandler.uniqueIdFlow.collectAsStateWithLifecycle()
 
-    val isShippingEnabled    = checkoutDetails.isShippingAddressEnabled
-    val isFullNameEnabled    = checkoutDetails.isFullNameEnabled
-    val isPhoneEnabled       = checkoutDetails.isPhoneEnabled
-    val isEmailEnabled       = checkoutDetails.isEmailEnabled
 
     // --- Field States ---
     var countryTextField             by remember { mutableStateOf("") }
@@ -95,20 +114,20 @@ fun AddressScreen(
 
     // --- Pre-fill fields ---
     LaunchedEffect(Unit) {
-        val firstName = userData.firstName ?: ""
-        val lastName  = userData.lastName ?: ""
+        val firstName = firstName.value ?: ""
+        val lastName  = lastName.value ?: ""
         fullNameTextField         = "$firstName $lastName".trim()
-        emailTextField            = userData.email ?: ""
-        mainAddressTextField      = userData.address1 ?: ""
-        secondaryAddressTextField = userData.address2 ?: ""
-        cityTextField             = userData.city ?: ""
-        stateTextField            = userData.state ?: ""
-        pinTextField              = userData.pincode ?: ""
-        selectedCountryCode       = userData.countryCode ?: "IN"
-        selectedPhoneCode = userData.phoneCode
-        countryTextField  = userData.countryName ?: "India"
+        emailTextField            = email.value ?: ""
+        mainAddressTextField      = address1 ?: ""
+        secondaryAddressTextField = address2 ?: ""
+        cityTextField             = city ?: ""
+        stateTextField            = state ?: ""
+        pinTextField              = pincode ?: ""
+        selectedCountryCode       = countryCode ?: "IN"
+        selectedPhoneCode = phoneCode.value
+        countryTextField  = countryName ?: "India"
 
-        val rawNumber = userData.completePhoneNumber
+        val rawNumber = completePhoneNumber.value
             ?.removePrefix(selectedPhoneCode) ?: ""
         phoneNumberTextField = rawNumber
     }
@@ -205,8 +224,8 @@ fun AddressScreen(
                 trailingIcon = { ChevronIcon() },
                 modifier    = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 28.dp),
                 onClick     = { showCountryPicker = true },
-                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
-                unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
+                focusedBorderColor = focusedBorderColor.value,
+                unfocusedBorderColor = unfocusedBorderColor.value
             )
         }
 
@@ -218,8 +237,8 @@ fun AddressScreen(
                 onValueChange = { fullNameTextField = it; validateFullName(it) },
                 isError       = isFullNameValid == false,
                 modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
-                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
-                unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
+                focusedBorderColor = focusedBorderColor.value,
+                unfocusedBorderColor = unfocusedBorderColor.value
             )
             if (isFullNameValid == false) ErrorText(fullNameError)
         }
@@ -238,8 +257,8 @@ fun AddressScreen(
                     trailingIcon  = { ChevronIcon() },
                     modifier      = Modifier.width(130.dp),
                     onClick       = { showCountryPicker = true },
-                    focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
-                    unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
+                    focusedBorderColor = focusedBorderColor.value,
+                    unfocusedBorderColor = unfocusedBorderColor.value
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 AddressTextField(
@@ -249,8 +268,8 @@ fun AddressScreen(
                     isError       = isPhoneValid == false,
                     keyboardType  = KeyboardType.Number,
                     modifier      = Modifier.weight(1f),
-                    focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
-                    unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
+                    focusedBorderColor = focusedBorderColor.value,
+                    unfocusedBorderColor = unfocusedBorderColor.value
                 )
             }
             if (isPhoneValid == false) ErrorText(phoneError)
@@ -265,8 +284,8 @@ fun AddressScreen(
                 isError       = isEmailValid == false,
                 keyboardType  = KeyboardType.Email,
                 modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
-                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
-                unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
+                focusedBorderColor = focusedBorderColor.value,
+                unfocusedBorderColor = unfocusedBorderColor.value
             )
             if (isEmailValid == false) ErrorText(emailError)
         }
@@ -287,8 +306,8 @@ fun AddressScreen(
                         isError       = isPinValid == false,
                         keyboardType  = KeyboardType.Number,
                         modifier      = Modifier.fillMaxWidth(),
-                        focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
-                        unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
+                        focusedBorderColor = focusedBorderColor.value,
+                        unfocusedBorderColor = unfocusedBorderColor.value
                     )
                     if (isPinValid == false) ErrorText(pinError)
                 }
@@ -300,8 +319,8 @@ fun AddressScreen(
                         onValueChange = { cityTextField = it; validateCity(it) },
                         isError       = isCityValid == false,
                         modifier      = Modifier.fillMaxWidth(),
-                        focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
-                        unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
+                        focusedBorderColor = focusedBorderColor.value,
+                        unfocusedBorderColor = unfocusedBorderColor.value
                     )
                     if (isCityValid == false) ErrorText(cityError)
                 }
@@ -314,8 +333,8 @@ fun AddressScreen(
                 onValueChange = { stateTextField = it; validateState(it) },
                 isError       = isStateValid == false,
                 modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
-                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
-                unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
+                focusedBorderColor = focusedBorderColor.value,
+                unfocusedBorderColor = unfocusedBorderColor.value
             )
             if (isStateValid == false) ErrorText(stateError)
 
@@ -326,8 +345,8 @@ fun AddressScreen(
                 onValueChange = { mainAddressTextField = it; validateMainAddress(it) },
                 isError       = isMainAddressValid == false,
                 modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
-                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
-                unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
+                focusedBorderColor = focusedBorderColor.value,
+                unfocusedBorderColor = unfocusedBorderColor.value
             )
             if (isMainAddressValid == false) ErrorText(mainAddressError)
 
@@ -337,8 +356,8 @@ fun AddressScreen(
                 label         = "Area, Colony, Street, Sector",
                 onValueChange = { secondaryAddressTextField = it },
                 modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
-                focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
-                unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor
+                focusedBorderColor = focusedBorderColor.value,
+                unfocusedBorderColor = unfocusedBorderColor.value
             )
         }
 
@@ -348,8 +367,8 @@ fun AddressScreen(
         PayButton(
             text = if (isShippingEnabled) "Save Address" else "Save Personal Details",
             modifier = Modifier.fillMaxWidth()
-                .clip(RoundedCornerShape(checkoutDetails.ctaBorderRadius.dp))
-                .background(checkoutDetails.buttonColor.toComposeColor())
+                .clip(RoundedCornerShape(ctaBorderRadius.value.dp))
+                .background(buttonColor.value.toComposeColor())
                 .clickable {
                     val (firstName, lastName) = extractNames(fullNameTextField)
                     UserDataHandler.set(
@@ -363,7 +382,7 @@ fun AddressScreen(
                         pincode             = pinTextField,
                         labelType           =  "",
                         labelName           = "",
-                        uniqueId            = userData.uniqueId,
+                        uniqueId            = uniqueId.value,
                         dob                 = null,
                         pan                 = null
                     )
@@ -378,15 +397,15 @@ fun AddressScreen(
             amount = 0.0,
             currencySymbol = "",
             isValid = isAllValid(),
-            buttonTextColor = checkoutDetails.buttonTextColor
+            buttonTextColor = buttonTextColor.value
         )
         Footer()
     }
     if (showCountryPicker) {
         CountryPickerDialog(
             onDismiss = { showCountryPicker = false },
-            focusedBorderColor = checkoutDetails.focusedTextInputBorderColor,
-            unfocusedBorderColor = checkoutDetails.unfocusedTextInputBorderColor,
+            focusedBorderColor = focusedBorderColor.value,
+            unfocusedBorderColor = unfocusedBorderColor.value,
             onSelect  = { code, isdCode, fullName, phoneLengths ->
                 selectedCountryCode            = code
                 selectedPhoneCode              = isdCode

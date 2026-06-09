@@ -56,15 +56,16 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun UpiTimerScreen(
     onBackPress : () -> Unit,
-    shopperVpa : String
+    shopperVpa : String,
+    buttonColor : String,
+    buttonTextColor : String
 ) {
     val viewModel : UpiTimerViewModel = koinViewModel()
-    val checkoutDetails by CheckoutDetailsHandler.checkoutDetailsFlow.collectAsStateWithLifecycle()
     val timeRemaining by viewModel.timeRemaining.collectAsStateWithLifecycle()
     var showCancelModal by remember { mutableStateOf(false) }
     val isUrgent      = timeRemaining <= 30
-    val progressColor = if (isUrgent) Color(0xFFFAA4A4) else checkoutDetails.buttonColor.toComposeColor()
-    val textColor     = if (isUrgent) Color(0xFFF53535) else checkoutDetails.buttonColor.toComposeColor()
+    val progressColor = if (isUrgent) Color(0xFFFAA4A4) else buttonColor.toComposeColor()
+    val textColor     = if (isUrgent) Color(0xFFF53535) else buttonColor.toComposeColor()
 
     BackHandler(onBack = onBackPress)
     Column(
@@ -147,7 +148,7 @@ fun UpiTimerScreen(
             modifier = Modifier
                 .padding(top = 32.dp)
                 .fillMaxWidth()
-                .background(checkoutDetails.buttonColor.toComposeColor().copy(alpha = 0.08f), RoundedCornerShape(8.dp))
+                .background(buttonColor.toComposeColor().copy(alpha = 0.08f), RoundedCornerShape(8.dp))
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -155,7 +156,7 @@ fun UpiTimerScreen(
                 painter = painterResource(Res.drawable.ic_info),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                colorFilter = ColorFilter.tint(checkoutDetails.buttonColor.toComposeColor())
+                colorFilter = ColorFilter.tint(buttonColor.toComposeColor())
             )
             Spacer(Modifier.width(8.dp))
             Text(
@@ -173,13 +174,13 @@ fun UpiTimerScreen(
             text = "Cancel Payment",
             modifier = Modifier
                 .fillMaxWidth()
-                .background(checkoutDetails.buttonColor.toComposeColor(), RoundedCornerShape(12.dp))
+                .background(buttonColor.toComposeColor(), RoundedCornerShape(12.dp))
                 .clickable {
                     showCancelModal = true
                 },
             amount = 0.0,
             currencySymbol = "",
-            buttonTextColor = checkoutDetails.buttonTextColor,
+            buttonTextColor = buttonTextColor,
             isValid = true
         )
         Footer()

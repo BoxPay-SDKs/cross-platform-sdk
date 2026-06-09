@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.screens.CheckboxItem
@@ -49,7 +48,13 @@ fun SavedCardComponent(
     savedCards : List<SelectedPaymentMethod>,
     onProceedForward : (instrumentRef : String, isSICheckboxChecked : Boolean) -> Unit,
     onClickAddCard : () -> Unit,
-    checkoutDetails: CheckoutDetails,
+    buttonTextColor : String,
+    buttonColor : String,
+    currencySymbol: String,
+    amount: Double,
+    ctaBorderRadius : Int,
+    isSICheckboxChecked: Boolean,
+    isSICheckboxEnabled : Boolean,
     onClickDeleteCard: (String, String) -> Unit
 ) {
     val selectedId = remember {
@@ -80,11 +85,15 @@ fun SavedCardComponent(
                     selectedId.value = it
                 },
                 onProceedForward    = onProceedForward,
-                brandColor          = checkoutDetails.buttonColor,
-                currencySymbol      = checkoutDetails.currencySymbol,
-                amount              = checkoutDetails.amount,
-                checkoutDetails = checkoutDetails,
-                onClickDeleteCard = onClickDeleteCard
+                brandColor          = buttonColor,
+                currencySymbol      = currencySymbol,
+                amount              = amount,
+                onClickDeleteCard = onClickDeleteCard,
+                buttonColor = buttonColor,
+                buttonTextColor = buttonTextColor,
+                ctaBorderRadius = ctaBorderRadius,
+                isSICheckboxChecked = isSICheckboxChecked,
+                isSICheckboxEnabled  = isSICheckboxEnabled,
             )
             HorizontalDivider(color = Color(0xFFECECED), thickness = 1.dp, modifier = Modifier.padding(horizontal = 12.dp))
         }
@@ -101,7 +110,7 @@ fun SavedCardComponent(
                 Image(
                     painter            = painterResource(Res.drawable.add_icon),
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(checkoutDetails.buttonColor.toComposeColor()),
+                    colorFilter = ColorFilter.tint(buttonColor.toComposeColor()),
                     modifier           = Modifier
                         .size(18.dp)
                 )
@@ -111,7 +120,7 @@ fun SavedCardComponent(
                     fontSize   = 14.sp,
                     fontFamily = defaultFontFamily,
                     fontWeight = FontWeight.SemiBold,
-                    color      = checkoutDetails.buttonColor.toComposeColor()
+                    color      = buttonColor.toComposeColor()
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 ChevronIcon()
@@ -134,7 +143,11 @@ private fun SavedCardRow(
     brandColor          : String,
     currencySymbol      : String,
     amount              : Double,
-    checkoutDetails: CheckoutDetails,
+    buttonTextColor : String,
+    buttonColor : String,
+    ctaBorderRadius : Int,
+    isSICheckboxChecked: Boolean,
+    isSICheckboxEnabled : Boolean,
     onClickDeleteCard : (String, String) -> Unit
 ) {
     var isSICheckBoxChecked by remember { mutableStateOf(false) }
@@ -220,7 +233,7 @@ private fun SavedCardRow(
             Image(
                 painter            = painterResource(Res.drawable.ic_trash),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(checkoutDetails.buttonColor.toComposeColor()),
+                colorFilter = ColorFilter.tint(buttonColor.toComposeColor()),
                 modifier           = Modifier
                     .size(32.dp)
                     .clickable{
@@ -230,7 +243,7 @@ private fun SavedCardRow(
         }
 
         // SI Checkbox
-        val showSI = (checkoutDetails.isSICheckboxChecked || checkoutDetails.isSICheckboxEnabled) && isSelected
+        val showSI = (isSICheckboxChecked || isSICheckboxEnabled) && isSelected
         if (showSI) {
             Row(
                 modifier          = Modifier
@@ -240,7 +253,7 @@ private fun SavedCardRow(
             ) {
                 CheckboxItem(
                     isChecked   = isSICheckBoxChecked,
-                    buttonColor = checkoutDetails.buttonColor,
+                    buttonColor = buttonColor,
                     onClick     = { isSICheckBoxChecked = !isSICheckBoxChecked }
                 )
                 Text(
@@ -264,11 +277,11 @@ private fun SavedCardRow(
                     .clickable{
                         onProceedForward(instrumentTypeValue, isSICheckBoxChecked)
                     }
-                    .background(brandColor.toComposeColor(), RoundedCornerShape(checkoutDetails.ctaBorderRadius.dp)),
+                    .background(brandColor.toComposeColor(), RoundedCornerShape(ctaBorderRadius.dp)),
                 amount = amount,
                 currencySymbol = currencySymbol,
                 isValid = true,
-                buttonTextColor = checkoutDetails.buttonTextColor
+                buttonTextColor = buttonTextColor
             )
         }
     }

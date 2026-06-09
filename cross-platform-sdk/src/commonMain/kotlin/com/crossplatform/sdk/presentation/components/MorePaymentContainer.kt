@@ -22,7 +22,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.theme.defaultFontFamily
 import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
@@ -34,9 +33,9 @@ fun MorePaymentContainer(
     title: String,
     image: DrawableResource,
     surchargeFee: Double? = null,
-    onClick : () -> Unit
+    onClick : () -> Unit,
+    currencySymbol : String
 ) {
-    val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -77,7 +76,7 @@ fun MorePaymentContainer(
                                 fontFamily = defaultInterFontFamily
                             )
                         ) {
-                            append(checkoutDetails.currencySymbol)
+                            append(currencySymbol)
                         }
                         withStyle(
                             style = SpanStyle(
