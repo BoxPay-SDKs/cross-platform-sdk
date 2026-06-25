@@ -1,6 +1,7 @@
 package com.crossplatform.sdk.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.ImageBitmap
 import com.crossplatform.sdk.data.model.BrowserData
 import com.crossplatform.sdk.data.model.DeviceDetails
 import com.crossplatform.sdk.domain.model.AppLifecycleState
@@ -28,3 +29,7 @@ expect class AppLifecycleObserver(
 
 @Composable
 expect fun BackHandler(onBack: () -> Unit)
+
+expect fun isTabletDevice(): Boolean
+
+expect fun base64ToImageBitmap(base64: String): ImageBitmap

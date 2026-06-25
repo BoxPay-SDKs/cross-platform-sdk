@@ -22,6 +22,7 @@ import com.crossplatform.sdk.data.model.UserDetails
 import com.crossplatform.sdk.data.model.requestBody.AnalyticsRequest
 import com.crossplatform.sdk.data.model.requestBody.ApplyOfferRequestBody
 import com.crossplatform.sdk.data.model.requestBody.CardPostRequestBody
+import com.crossplatform.sdk.data.model.requestBody.EmiPostRequestBody
 import com.crossplatform.sdk.data.model.requestBody.InstantOfferRequestBody
 import com.crossplatform.sdk.data.model.requestBody.SavedCardPostRequestBody
 import com.crossplatform.sdk.data.model.requestBody.SurchargeRequestBody
@@ -108,6 +109,56 @@ class ApiServiceImpl : ApiService {
             deviceDetails = getDeviceDetails(),
             oneTimePayment = isSICheckboxClicked
         )
+        return executeWithResponse {
+            client.post(urlString = "") {
+                contentType(ContentType.Application.Json)
+                setBody(requestBody)
+            }
+        }
+    }
+
+    override suspend fun emiPostRequest(
+        cardNumber: String,
+        expiryDate: String,
+        cvv: String,
+        holderName: String,
+        cardType: String?,
+        offerCode: String?,
+        duration: Int?,
+        provider : String?
+    ): ApiResponse<PaymentMethodPostResponse> {
+        val instrumentType = when {
+            cardType == null              -> "emi/cardless"
+            cardType.contains("Credit")   -> "emi/cc"
+            else                          -> "emi/dc"
+        }
+
+        val instrumentDetails = if (cardType != null) {
+            EmiPostRequestBody.InstrumentDetails(
+                type = instrumentType,
+                card = CardPostRequestBody.CardDetails(
+                    number = cardNumber.replace(" ", ""),
+                    expiry = expiryDate,
+                    cvc = cvv,
+                    holderName = holderName
+                ),
+                emi = EmiPostRequestBody.Emi(duration = duration)
+            )
+        } else {
+            EmiPostRequestBody.InstrumentDetails(
+                type = "emi/cardless",
+                emi = EmiPostRequestBody.Emi(provider = provider)
+            )
+        }
+
+        val requestBody = EmiPostRequestBody(
+            browserData = getBrowserData(),
+            instrumentDetails = instrumentDetails,
+            offers = offerCode?.takeIf { it.trim().isNotEmpty() }?.let { listOf(it) },
+            shopper = getShopperDetails(),
+            deviceDetails = getDeviceDetails()
+        )
+
         return executeWithResponse {
             client.post(urlString = "") {
                 contentType(ContentType.Application.Json)

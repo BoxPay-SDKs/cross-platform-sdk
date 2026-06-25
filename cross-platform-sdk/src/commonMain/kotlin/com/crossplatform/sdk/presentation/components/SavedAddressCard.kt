@@ -26,7 +26,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -80,7 +80,7 @@ fun SavedAddressCard(
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    fontFamily = defaultFontFamily
+                    fontFamily = LocalSDKFonts.current.primary
                 ),
                 color = Color(0xFF2D2B32),
                 modifier = Modifier.weight(1f)
@@ -111,7 +111,7 @@ fun SavedAddressCard(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color(0xFF7F7D83),
-                 fontFamily = defaultFontFamily
+                 fontFamily = LocalSDKFonts.current.primary
             )
             if (!address1.isNullOrEmpty()) append(AnnotatedString("$address1, ", addressSpan))
             if (!address2.isNullOrEmpty()) append(AnnotatedString("$address2, ", addressSpan))
@@ -120,7 +120,7 @@ fun SavedAddressCard(
             if (!pinCode.isNullOrEmpty())  append(AnnotatedString(pinCode,       addressSpan))
         }
         if (addressText.isNotEmpty()) {
-            Text(text = addressText, fontFamily = defaultFontFamily)
+            Text(text = addressText, fontFamily = LocalSDKFonts.current.primary)
         }
 
         Spacer(Modifier.height(2.dp))
@@ -131,7 +131,7 @@ fun SavedAddressCard(
             style = TextStyle(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,
-                 fontFamily = defaultFontFamily
+                 fontFamily = LocalSDKFonts.current.primary
             ),
             color = Color(0xFF7F7D83),
             modifier = Modifier.fillMaxWidth()

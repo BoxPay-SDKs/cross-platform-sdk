@@ -18,8 +18,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,7 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -44,14 +42,13 @@ fun PaymentSelectorView(
     buttonTextColor: String,
     buttonColor : String,
     drawableResource: DrawableResource,
-    onClickRadio : () -> Unit,
+    onClickRadio : (String) -> Unit,
     currencySymbol: String,
     amount: Double,
-    ctaBorderRadius: Int
+    ctaBorderRadius: Int,
+    selectedId : String,
+    isBoxPayPayButtonVisible: Boolean = true
 ) {
-    val selectedId = remember {
-        mutableStateOf("")
-    }
     Column(
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
@@ -70,12 +67,11 @@ fun PaymentSelectorView(
                 id                  = provider.id,
                 title               = provider.displayName,
                 imageUrl            = provider.imageUrl,
-                isSelected          = provider.id == selectedId.value,
+                isSelected          = provider.id == selectedId,
                 instrumentTypeValue = provider.instrumentType,
                 isLastUsed          = isLastUsed && provider.isLastUsed == true,
                 onPress             = {
-                    onClickRadio()
-                    selectedId.value = it
+                    onClickRadio(it)
                                       },
                 onProceedForward    = { displayValue, instrumentValue ->
                     onProceedForward(displayValue, instrumentValue, provider.type)
@@ -85,7 +81,8 @@ fun PaymentSelectorView(
                 currencySymbol      = currencySymbol,
                 amount              = amount,
                 ctaBorderRadius     = ctaBorderRadius,
-                drawableResource = drawableResource
+                drawableResource = drawableResource,
+                isBoxPayPayButtonVisible = isBoxPayPayButtonVisible
             )
             if (index != providerList.lastIndex) {
                 HorizontalDivider(
@@ -112,7 +109,8 @@ fun PaymentSelector(
     currencySymbol     : String,
     amount             : Double,
     ctaBorderRadius    : Int,
-    drawableResource: DrawableResource
+    drawableResource: DrawableResource,
+    isBoxPayPayButtonVisible : Boolean = true
 ) {
     Column(
         modifier = Modifier
@@ -155,7 +153,7 @@ fun PaymentSelector(
             ) {
                 Text(
                     text       = title,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize   = 14.sp,
                     color      = Color(0xFF4F4D55),
@@ -174,7 +172,7 @@ fun PaymentSelector(
                     ) {
                         Text(
                             text       = "Last Used",
-                            fontFamily = defaultFontFamily,
+                            fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Medium,
                             fontSize   = 10.sp,
                             color      = Color(0xFF1CA672)
@@ -195,7 +193,7 @@ fun PaymentSelector(
         }
 
         // --- Pay Button (when selected) ---
-        if (isSelected) {
+        if (isSelected && isBoxPayPayButtonVisible) {
             Spacer(modifier = Modifier.height(10.dp))
             PayButton(
                 modifier = Modifier.fillMaxWidth()

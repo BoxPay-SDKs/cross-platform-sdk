@@ -3,10 +3,9 @@ package com.crossplatform.sdk.presentation
 import androidx.compose.ui.graphics.Color
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
-import com.crossplatform.sdk.data.model.CheckoutDetails
 import com.crossplatform.sdk.data.model.DeliveryAddress
-import com.crossplatform.sdk.data.model.Shopper
-import com.crossplatform.sdk.data.model.UserDetails
+import com.crossplatform.sdk.data.model.requestBody.CustomFieldsRequest
+import com.crossplatform.sdk.data.model.requestBody.ShopperRequest
 import com.crossplatform.sdk.domain.model.CountryDetailsModel
 import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
@@ -30,7 +29,7 @@ fun generateRandomAlphanumericString(length: Int): String {
         .joinToString("")
 }
 
-fun getShopperDetails(): Shopper {
+fun getShopperDetails(): ShopperRequest {
     val userData = UserDataHandler.userData
 
     val deliveryAddress = DeliveryAddress(
@@ -44,7 +43,16 @@ fun getShopperDetails(): Shopper {
         labelName = userData.labelName
     )
 
-    return Shopper(
+    val customFields = userData.customFields
+        .filter { !it.fieldValue.isNullOrBlank() }
+        .map {
+            CustomFieldsRequest(
+                fieldName = it.fieldName.orEmpty(),
+                fieldValue = it.fieldValue.orEmpty()
+            )
+        }
+
+    return ShopperRequest(
         email = userData.email,
         firstName = userData.firstName,
         lastName = userData.lastName,
@@ -52,7 +60,8 @@ fun getShopperDetails(): Shopper {
         uniqueReference = userData.uniqueId,
         dateOfBirth = userData.dob,
         panNumber = userData.pan,
-        deliveryAddress = if (isDeliveryAddressEmpty(deliveryAddress)) null else deliveryAddress
+        deliveryAddress = if (isDeliveryAddressEmpty(deliveryAddress)) null else deliveryAddress,
+        customFields = customFields
     )
 }
 
@@ -301,4 +310,12 @@ fun buildAddressString(): String {
 
 fun isPresentInSurchargeModel(surchargeModel: List<SurchargeModel>, selectedMethod : String) : Boolean {
     return surchargeModel.any { it.applicableOn.equals(selectedMethod, ignoreCase = true) }
+}
+
+fun formatPercent(percent : Double) : String {
+    return  if (percent % 1.0 == 0.0) {
+        percent.toInt().toString()
+    } else {
+        percent.toString()
+    }
 }

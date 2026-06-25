@@ -1,6 +1,7 @@
 package com.crossplatform.sdk.data.handler
 
 import com.crossplatform.sdk.data.model.CheckoutDetails
+import com.crossplatform.sdk.domain.model.PaymentMethodTab
 import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import kotlinx.coroutines.CoroutineScope
@@ -36,11 +37,6 @@ object CheckoutDetailsHandler {
         isPaymentSuccessful = false,
         merchantLogo = "",
         merchantName = "",
-        ctaBorderRadius = 12,
-        buttonColor = "#1CA672",
-        buttonTextColor = "#FFFFFF",
-        headerColor = "#FFFFFF",
-        headerTextColor = "#363840",
         isTestEnv = false,
         itemsLength = 0,
         errorMessage = "",
@@ -67,16 +63,22 @@ object CheckoutDetailsHandler {
         isSuccessScreenVisible = false,
         isFailedScreenVisible = false,
         showQROnLoad = false,
-        focusedTextInputBorderColor = "#2D2B32",
-        unfocusedTextInputBorderColor = "#ADACB0",
         isMerchantLogoVisible = false,
         isSessionExpiryVisible = false,
         surchargeDetails = emptyList(),
         isWebViewVisible = false,
         appliedOfferId = null,
         subscription = null,
-        paymentMethodList = emptyList(),
-        isBoxPayButtonVisible = false
+        // UI Configuration
+        ctaBorderRadius = 0,
+        buttonColor = "",
+        buttonTextColor = "",
+        headerColor = "",
+        headerTextColor = "",
+        focusedTextInputBorderColor = "",
+        unfocusedTextInputBorderColor = "",
+        fontFamily = "",
+        ctaTextFontSize = 0
     )
 
     // ─── Source of truth ──────────────────────────────────────────────────────
@@ -116,11 +118,6 @@ object CheckoutDetailsHandler {
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    val appliedOfferFlow: StateFlow<String?> = _checkoutDetailsFlow
-        .map { it.appliedOfferId }
-        .distinctUntilChanged()
-        .stateIn(scope, SharingStarted.Eagerly, null)
-
     // -- Merchant branding
     val merchantNameFlow: StateFlow<String> = _checkoutDetailsFlow
         .map { it.merchantName }
@@ -148,16 +145,6 @@ object CheckoutDetailsHandler {
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().buttonTextColor)
 
-    val headerColorFlow: StateFlow<String> = _checkoutDetailsFlow
-        .map { it.headerColor }
-        .distinctUntilChanged()
-        .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().headerColor)
-
-    val headerTextColorFlow: StateFlow<String> = _checkoutDetailsFlow
-        .map { it.headerTextColor }
-        .distinctUntilChanged()
-        .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().headerTextColor)
-
     val ctaBorderRadiusFlow: StateFlow<Int> = _checkoutDetailsFlow
         .map { it.ctaBorderRadius }
         .distinctUntilChanged()
@@ -172,12 +159,6 @@ object CheckoutDetailsHandler {
         .map { it.unfocusedTextInputBorderColor }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().unfocusedTextInputBorderColor)
-
-    // -- Payment status
-    val paymentStatusFlow: StateFlow<Triple<Boolean, Boolean, Boolean>> = _checkoutDetailsFlow
-        .map { Triple(it.isPaymentSuccessful, it.isPaymentFailed, it.isSessionExpired) }
-        .distinctUntilChanged()
-        .stateIn(scope, SharingStarted.Eagerly, Triple(false, false, false))
 
     val isPaymentSuccessfulFlow: StateFlow<Boolean> = _checkoutDetailsFlow
         .map { it.isPaymentSuccessful }
@@ -250,6 +231,16 @@ object CheckoutDetailsHandler {
         .map { it.isTestEnv }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, false)
+
+    val fontFamilyFlow: StateFlow<String> = _checkoutDetailsFlow
+        .map { it.fontFamily }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, "")
+
+    val ctaTextFontSizeFlow: StateFlow<Int> = _checkoutDetailsFlow
+        .map { it.ctaTextFontSize }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, 0)
 
     // -- SI / Subscription
     val isSICheckboxCheckedFlow: StateFlow<Boolean> = _checkoutDetailsFlow
@@ -355,7 +346,12 @@ object CheckoutDetailsHandler {
         isSubscriptionCheckout: Boolean,
         isMerchantLogoVisible: Boolean,
         isSessionExpiryVisible: Boolean,
-        subscription: List<Pair<String, String>>?
+        subscription: List<Pair<String, String>>?,
+        fontFamily : String,
+        ctaTextFontSize : Int,
+        inputBorderColor : String,
+        inputFocusBorderColor : String,
+        ctaBorderRadius: Int
     ) {
         checkoutDetails = checkoutDetails.copy(
             currencySymbol            = currencySymbol,
@@ -386,7 +382,12 @@ object CheckoutDetailsHandler {
             isSubscriptionCheckout    = isSubscriptionCheckout,
             isSessionExpiryVisible    = isSessionExpiryVisible,
             isMerchantLogoVisible     = isMerchantLogoVisible,
-            subscription              = subscription
+            subscription              = subscription,
+            ctaTextFontSize = ctaTextFontSize,
+            fontFamily = fontFamily,
+            focusedTextInputBorderColor = inputFocusBorderColor,
+            unfocusedTextInputBorderColor = inputBorderColor,
+            ctaBorderRadius = ctaBorderRadius
         )
         _checkoutDetailsFlow.value = checkoutDetails
     }
@@ -434,8 +435,7 @@ object CheckoutDetailsHandler {
         isSICheckboxEnabled: Boolean,
         focusedTextInputBorderColor: String,
         unfocusedTextInputBorderColor: String,
-        isPayButtonVisible : Boolean,
-        paymentMethodList : List<String>
+        showQROnLoad: Boolean
     ) {
         checkoutDetails = checkoutDetails.copy(
             shopperToken                  = shopperToken,
@@ -446,8 +446,7 @@ object CheckoutDetailsHandler {
             isSICheckboxEnabled           = isSICheckboxEnabled,
             focusedTextInputBorderColor   = focusedTextInputBorderColor,
             unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
-            paymentMethodList = paymentMethodList,
-            isBoxPayButtonVisible = isPayButtonVisible
+            showQROnLoad = showQROnLoad
         )
         _checkoutDetailsFlow.value = checkoutDetails
     }

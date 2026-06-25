@@ -1,10 +1,9 @@
 package com.crossplatform.sdk
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.di.appModule
 import com.crossplatform.sdk.presentation.navigation.AppNavHost
@@ -23,14 +22,23 @@ fun BoxPayCommonCheckout(
     isSICheckBoxChecked : Boolean,
     isSICheckBoxEnabled : Boolean,
     focusedTextInputBorderColor : String,
-    unfocusedTextInputBorderColor : String
+    unfocusedTextInputBorderColor : String,
+    fontFamily: String?
 ) {
     KoinApplication(
         application = {
             modules(appModule)
         }
     ) {
-        ProvideSDKFonts {
+        val backendFont by CheckoutDetailsHandler.fontFamilyFlow.collectAsStateWithLifecycle()
+
+        ProvideSDKFonts(
+            merchantFont = fontFamily,   // priority 1
+            backendFont = backendFont,   // priority 2 (default is handled inside)
+            onUnknownFontRequested = { name ->
+                // will not be implemented for now
+            }
+        ) {
             CheckoutDetailsHandler.setCheckoutToken(
                 token = token,
                 shopperToken = shopperToken,

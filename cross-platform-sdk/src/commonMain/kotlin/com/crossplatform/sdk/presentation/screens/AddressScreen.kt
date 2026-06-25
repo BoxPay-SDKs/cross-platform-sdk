@@ -15,12 +15,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,13 +41,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
+import com.crossplatform.sdk.data.model.CustomFields
 import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.ErrorText
 import com.crossplatform.sdk.presentation.components.CountryPickerDialog
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.PayButton
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 
 @Composable
@@ -69,6 +75,7 @@ fun AddressScreen(
     val countryName = addressFlow.value.countryName
     val phoneCode = UserDataHandler.phoneCodeFlow.collectAsStateWithLifecycle()
     val completePhoneNumber = UserDataHandler.completePhoneNumberFlow.collectAsStateWithLifecycle()
+    val customFields = UserDataHandler.customFieldsFlow.collectAsStateWithLifecycle()
     
     val focusedBorderColor = CheckoutDetailsHandler.focusedBorderColorFlow.collectAsStateWithLifecycle()
     val unfocusedBorderColor = CheckoutDetailsHandler.unfocusedBorderColorFlow.collectAsStateWithLifecycle()
@@ -130,6 +137,79 @@ fun AddressScreen(
         val rawNumber = completePhoneNumber.value
             ?.removePrefix(selectedPhoneCode) ?: ""
         phoneNumberTextField = rawNumber
+    }
+
+    val customFieldValues = remember { mutableStateMapOf<String, String>() }
+    val customFieldErrors = remember { mutableStateMapOf<String, String>() }
+
+// pre-fill from whatever the backend/user already had
+    LaunchedEffect(customFields.value) {
+        customFields.value.forEach { f ->
+            val name = f.fieldName ?: return@forEach
+            if (name !in customFieldValues) {
+                customFieldValues[name] = f.fieldValue ?: ""
+            }
+        }
+    }
+
+    fun validateCustomField(field: CustomFields, raw: String): String {
+        val value = raw.trim()
+        if (field.mandatory && value.isEmpty()) return "Required"
+        if (value.isEmpty()) return ""   // optional & blank → ok
+
+        val p = field.validationParams ?: emptyMap()
+        fun n(k: String) = p[k]?.toIntOrNull()
+        val isNumeric = field.fieldType == "NUMERIC"
+
+        // NUMERIC: MIN/MAX compare the numeric VALUE
+        // TEXTUAL: MIN/MAX compare the character LENGTH
+        return when (field.validation) {
+            "RANGE" -> {
+                val min = n("MIN"); val max = n("MAX")
+                if (isNumeric) {
+                    val num = value.toIntOrNull() ?: return "Enter a valid number"
+                    when {
+                        min != null && num < min -> "Must be at least $min"
+                        max != null && num > max -> "Must be at most $max"
+                        else -> ""
+                    }
+                } else {
+                    when {
+                        min != null && value.length < min -> "Must be at least $min characters"
+                        max != null && value.length > max -> "Must be at most $max characters"
+                        else -> ""
+                    }
+                }
+            }
+
+            "MIN" -> {
+                val min = n("MIN") ?: return ""
+                if (isNumeric) {
+                    val num = value.toIntOrNull() ?: return "Enter a valid number"
+                    if (num < min) "Must be at least $min" else ""
+                } else {
+                    if (value.length < min) "Must be at least $min characters" else ""
+                }
+            }
+
+            "MAX" -> {
+                val max = n("MAX") ?: return ""
+                if (isNumeric) {
+                    val num = value.toIntOrNull() ?: return "Enter a valid number"
+                    if (num > max) "Must be at most $max" else ""
+                } else {
+                    if (value.length > max) "Must be at most $max characters" else ""
+                }
+            }
+
+            "FIXED" -> {
+                val len = n("FIXED") ?: return ""
+                // FIXED is character length for both types (e.g. Pincode = 6 digits, Referral = 8 chars)
+                if (value.length != len) "Must be exactly $len characters" else ""
+            }
+
+            else -> ""
+        }
     }
 
     // --- Validation Functions ---
@@ -206,6 +286,13 @@ fun AddressScreen(
             validateMainAddress(mainAddressTextField)
             if (isPinValid == false || isCityValid == false ||
                 isStateValid == false || isMainAddressValid == false) valid = false
+        }
+
+        customFields.value.forEach { field ->
+            val name = field.fieldName ?: return@forEach
+            val err = validateCustomField(field, customFieldValues[name] ?: "")
+            customFieldErrors[name] = err
+            if (err.isNotEmpty()) valid = false
         }
         return valid
     }
@@ -288,6 +375,46 @@ fun AddressScreen(
                 unfocusedBorderColor = unfocusedBorderColor.value
             )
             if (isEmailValid == false) ErrorText(emailError)
+        }
+
+        customFields.value.forEach { field ->
+            val name = field.fieldName ?: return@forEach
+            val value = customFieldValues[name] ?: ""
+            val error = customFieldErrors[name] ?: ""
+            val label = name + if (field.mandatory) "*" else ""
+
+            when (field.fieldType) {
+                "DROPDOWN" -> {
+                    CustomDropdownField(
+                        value = value,
+                        label = label,
+                        options = field.dropDownOptions ?: emptyList(),
+                        onSelect = {
+                            customFieldValues[name] = it
+                            customFieldErrors[name] = validateCustomField(field, it)
+                        },
+                        focusedBorderColor = focusedBorderColor.value,
+                        unfocusedBorderColor = unfocusedBorderColor.value,
+                        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp)
+                    )
+                }
+                else -> {   // TEXTUAL / NUMERIC
+                    AddressTextField(
+                        value = value,
+                        label = label,
+                        onValueChange = {
+                            customFieldValues[name] = it
+                            customFieldErrors[name] = validateCustomField(field, it)
+                        },
+                        isError = error.isNotEmpty(),
+                        keyboardType = if (field.fieldType == "NUMERIC") KeyboardType.Number else KeyboardType.Text,
+                        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
+                        focusedBorderColor = focusedBorderColor.value,
+                        unfocusedBorderColor = unfocusedBorderColor.value
+                    )
+                }
+            }
+            if (error.isNotEmpty()) ErrorText(error)
         }
 
         // --- Shipping Only Fields ---
@@ -392,6 +519,10 @@ fun AddressScreen(
                         countryCode         = selectedCountryCode,
                         countryName         = countryTextField
                     )
+                    val filled = customFields.value.map { field ->
+                        field.copy(fieldValue = customFieldValues[field.fieldName] ?: field.fieldValue)
+                    }
+                    UserDataHandler.setCustomFields(filled)
                     onAddressSaved()
                 },
             amount = 0.0,
@@ -437,12 +568,7 @@ fun AddressTextField(
             value           = value,
             onValueChange   = onValueChange,
             label           = {
-                Text(
-                    text       = label,
-                    fontFamily = defaultFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontSize   = 16.sp
-                )
+                Text(text = label, fontFamily = LocalSDKFonts.current.primary, fontWeight = FontWeight.Normal, fontSize = 16.sp)
             },
             isError         = isError,
             readOnly        = readOnly,
@@ -453,7 +579,7 @@ fun AddressTextField(
                 .fillMaxWidth()
                 .height(62.dp),
             textStyle       = TextStyle(
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
                 fontSize   = 16.sp,
                 color      = Color(0xFF0A090B)
@@ -481,4 +607,46 @@ fun AddressTextField(
 fun extractNames(fullName: String): Pair<String, String> {
     val parts = fullName.trim().split(" ", limit = 2)
     return Pair(parts.getOrElse(0) { "" }, parts.getOrElse(1) { "" })
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomDropdownField(
+    value: String,
+    label: String,
+    options: List<String>,
+    onSelect: (String) -> Unit,
+    focusedBorderColor: String,
+    unfocusedBorderColor: String,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        modifier = modifier
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(label, fontFamily = LocalSDKFonts.current.primary, fontSize = 16.sp) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            shape = RoundedCornerShape(8.dp),
+            textStyle = TextStyle(fontFamily = LocalSDKFonts.current.primary, fontSize = 16.sp, color = Color(0xFF0A090B)),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = focusedBorderColor.toComposeColor(),
+                unfocusedBorderColor = unfocusedBorderColor.toComposeColor(),
+            ),
+            modifier = Modifier.fillMaxWidth().height(62.dp).menuAnchor()
+        )
+        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option, fontFamily = LocalSDKFonts.current.primary, fontSize = 14.sp) },
+                    onClick = { onSelect(option); expanded = false }
+                )
+            }
+        }
+    }
 }

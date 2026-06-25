@@ -28,5 +28,8 @@ data class UserDetails(
     @SerialName("countryName") val countryName: String? = null,
     @SerialName("pincode") val pincode: String? = null,
     @SerialName("labelType") val labelType: String? = null,
-    @SerialName("labelName") val labelName: String? = null
+    @SerialName("labelName") val labelName: String? = null,
+
+    // Custom Fields -------------
+    @SerialName("customFields") val customFields: List<CustomFields> = emptyList()
 )

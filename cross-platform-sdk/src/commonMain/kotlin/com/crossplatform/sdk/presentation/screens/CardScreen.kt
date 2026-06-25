@@ -1,26 +1,18 @@
 package com.crossplatform.sdk.presentation.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,58 +23,34 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.BackHandler
-import com.crossplatform.sdk.presentation.ErrorText
+import com.crossplatform.sdk.presentation.components.CardComponent
 import com.crossplatform.sdk.presentation.components.CvvInfoBottomSheet
-import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.KnowMoreBottomSheet
-import com.crossplatform.sdk.presentation.components.PayButton
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
-import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.CardScreenViewModel
-import crossplatformsdk.cross_platform_sdk.generated.resources.Res
-import crossplatformsdk.cross_platform_sdk.generated.resources.ic_info
-import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class, ExperimentalResourceApi::class)
 @Composable
 fun CardScreen(
-    duration               : String? = null,
-    bankName               : String? = null,
-    bankUrl                : String? = null,
-    offerCode              : String? = null,
-    emiAmount              : String? = null,
-    percent                : String? = null,
-    cardType               : String? = null,
-    issuerBrand            : String? = null,
     isAutoNavigationEnabled: Boolean = false,
     onBackPress : () -> Unit,
     onExitCheckout : () -> Unit
@@ -114,343 +82,111 @@ fun CardScreen(
         }
     }
 
-    val isEmiFlow = !duration.isNullOrEmpty()
-
     val isSubscriptionDetailsVisible =
         isSubscriptionCheckout.value && isSiCheckBoxChecked
 
-    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).background(Color.White)) {
-        // --- EMI Bank Info ---
-        if (!bankName.isNullOrEmpty()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(1.dp, Color(0xFFE6E6E6), RoundedCornerShape(8.dp))
-                    .padding(12.dp),
-                verticalAlignment     = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    KamelImage(
-                        resource              = asyncPainterResource(data = bankUrl ?: ""),
-                        contentDescription = "Bank Logo",
-                        modifier           = Modifier.size(32.dp),
-                        onLoading = {
-                            Box(
-                                modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFFE0E0E0), CircleShape)
-                            )
-                        },
-                        onFailure = {
-                            Image(
-                                painter = painterResource(Res.drawable.ic_netbanking),
-                                contentDescription = "Back",
-                                modifier = Modifier.size(32.dp)
-                            )
-                        }
-                    )
-                    Text(
-                        text       = bankName,
-                        fontFamily = defaultFontFamily,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize   = 14.sp,
-                        modifier   = Modifier.padding(start = 8.dp)
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .border(
-                            width = 1.5.dp,
-                            color = Color(0xFFE6E6E6),
-                            shape = RoundedCornerShape(0.dp)
-                        )
-                        .padding(start = 8.dp)
-                ) {
-                    Text(
-                        text       = "$duration months x ${currencySymbol}$emiAmount",
-                        fontFamily = defaultFontFamily,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize   = 12.sp,
-                        color      = Color(0xFF2D2B32)
-                    )
-                    Text(
-                        text       = "@$percent% p.a.",
-                        fontFamily = defaultFontFamily,
-                        fontWeight = FontWeight.Normal,
-                        fontSize   = 12.sp,
-                        color      = Color(0xFF2D2B32)
-                    )
-                }
+    CardComponent(
+        isSICheckboxChecked = isSiCheckBoxChecked,
+        isSICheckboxEnabled = isSICheckboxEnabled.value,
+        isSubscriptionCheckout = isSubscriptionCheckout.value,
+        isSubscriptionDetailsVisible = isSubscriptionDetailsVisible,
+        onClickCheckBoxItem = {
+            isSiCheckBoxChecked = it
+        },
+        onClickShowKnowMoreDialog = {
+            viewModel.showKnowMoreDialog.value = true
+        },
+        onClickCVVInfo = {
+            viewModel.showCvvInfo.value = true
+        },
+        onClickSavedCardCheckBox = {
+            viewModel.isSavedCardCheckBoxClicked.value = !viewModel.isSavedCardCheckBoxClicked.value
+        },
+        shopperToken = shopperToken.value,
+        subscription = subscription.value,
+        currencySymbol = currencySymbol,
+        cardNumberText = viewModel.cardNumberText.value,
+        cardHolderNameText = viewModel.cardHolderNameText.value,
+        cardExpiryText = viewModel.cardExpiryText.value,
+        cardCvvText = viewModel.cardCvvText.value,
+        cardNickNameText = viewModel.cardNickNameText.value,
+        cardNumberError = viewModel.cardNumberError.value,
+        cardHolderNameError = viewModel.cardHolderNameError.value,
+        cardExpiryError = viewModel.cardExpiryError.value,
+        cardCvvError = viewModel.cardCvvError.value,
+        maxCardNumberLength = viewModel.maxCardNumberLength.value,
+        maxCvvLength = viewModel.maxCvvLength.value,
+        handleCardNumberChange = {
+            viewModel.handleCardNumberChange(it, isTestEnv = isTestEnv.value)
+        },
+        handleCardHolderNameChange = {
+            viewModel.cardHolderNameText.value = it; if (it.isNotBlank()) viewModel.cardHolderNameError.value = false
+            viewModel.checkCardValid(isTestEnv.value)
+        },
+        handleExpiryChange = {
+            viewModel.handleExpiryChange(it, isTestEnv.value)
+        },
+        handleCvvChange = {
+            viewModel.cardCvvText.value = it; if (it.isEmpty()) { viewModel.cardCvvError.value = true; viewModel.cardCvvErrorText.value = "Required" } else viewModel.cardCvvError.value = false
+            viewModel.checkCardValid(isTestEnv.value)
+        },
+        cardSelectedIcon = viewModel.cardSelectedIcon.value,
+        setCardNumberError = {
+            viewModel.cardNumberError.value = false
+        },
+        setCardHolderNameError = {
+            viewModel.cardHolderNameError.value = false
+        },
+        setCardExpiryError = {
+            viewModel.cardExpiryError.value = false
+        },
+        setCardCvvError = {
+            viewModel.cardCvvError.value = false
+        },
+        unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
+        focusedTextInputBorderColor = focusedTextInputBorderColor.value,
+        buttonColor = buttonColor.value,
+        onBlurCardNumber = {
+            val cleaned = viewModel.cardNumberText.value.filter { it.isDigit() }
+            viewModel.cardNumberError.value = cleaned.isEmpty() ||
+                    (!isTestEnv.value && (!viewModel.methodEnabled.value || !viewModel.cardNumberValid.value))
+            viewModel.cardNumberErrorText.value = when {
+                cleaned.isEmpty()     -> "Required"
+                !viewModel.methodEnabled.value        -> "This card is not supported for the payment"
+                !viewModel.cardNumberValid.value     -> "Invalid card number"
+                else                  -> ""
             }
-        }
-
-        // --- Card Number ---
-        CardTextField(
-            value         = viewModel.cardNumberText.value,
-            label         = "Card Number*",
-            onValueChange = { viewModel.handleCardNumberChange(it, isTestEnv.value) },
-            isError       = viewModel.cardNumberError.value,
-            keyboardType  = KeyboardType.Number,
-            maxLength     = viewModel.maxCardNumberLength.value,
-            modifier      = Modifier.padding(start = 16.dp, end = 16.dp, top = 28.dp),
-            trailingIcon  = {
-                Image(
-                    painter            = painterResource(viewModel.cardSelectedIcon.value),
-                    contentDescription = null,
-                    modifier           = Modifier.size(width = 32.dp, height = 32.dp)
-                )
-            },
-            onFocus = { viewModel.cardNumberError.value = false },
-            visualTransformation = CardNumberVisualTransformation(),
-            focusedTextInputBorderColor = focusedTextInputBorderColor.value,
-            unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
-            onBlur  = {
-                val cleaned = viewModel.cardNumberText.value.filter { it.isDigit() }
-                viewModel.cardNumberError.value = cleaned.isEmpty() ||
-                        (!isTestEnv.value && (!viewModel.methodEnabled.value || !viewModel.cardNumberValid.value || !viewModel.emiIssuerExist.value))
-                viewModel.cardNumberErrorText.value = when {
-                    cleaned.isEmpty()     -> "Required"
-                    !viewModel.methodEnabled.value        -> "This card is not supported for the payment"
-                    !viewModel.cardNumberValid.value     -> "Invalid card number"
-                    !viewModel.emiIssuerExist.value       -> "We couldn't find any EMI plans for this card"
-                    viewModel.emiIssuer.value != issuerBrand && isEmiFlow -> "The card is $viewModel.emiIssuer.value $cardType. Please enter a $issuerBrand $cardType card"
-                    else                  -> ""
-                }
+        },
+        onBlurCardName = {
+            viewModel.cardHolderNameError.value    = viewModel.cardHolderNameText.value.trim().isEmpty()
+            viewModel.cardHolderNameErrorText.value = if (viewModel.cardHolderNameError.value) "Required" else ""
+        },
+        onBlurCardExpiry = {
+            viewModel.cardExpiryError.value    = viewModel.cardExpiryText.value.length < 4 || !viewModel.cardExpiryValid.value
+            viewModel.cardExpiryErrorText.value = when {
+                viewModel.cardExpiryText.value.isEmpty() -> "Required"
+                else                     -> "Invalid Expiry"
             }
-        )
-        if (viewModel.cardNumberError.value) ErrorText(viewModel.cardNumberErrorText.value)
-
-        // --- Cardholder Name ---
-        CardTextField(
-            value         = viewModel.cardHolderNameText.value,
-            label         = "Cardholder Name*",
-            onValueChange = {
-                viewModel.cardHolderNameText.value = it; if (it.isNotBlank()) viewModel.cardHolderNameError.value = false
-                viewModel.checkCardValid(isTestEnv.value, false)
-                            },
-            isError       = viewModel.cardHolderNameError.value,
-            modifier      = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
-            onFocus       = { viewModel.cardHolderNameError.value = false },
-            focusedTextInputBorderColor = focusedTextInputBorderColor.value,
-            unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
-            onBlur        = {
-                viewModel.cardHolderNameError.value    = viewModel.cardHolderNameText.value.trim().isEmpty()
-                viewModel.cardHolderNameErrorText.value = if (viewModel.cardHolderNameError.value) "Required" else ""
-            }
-        )
-        if (viewModel.cardHolderNameError.value) ErrorText(viewModel.cardHolderNameErrorText.value)
-
-        // --- Expiry + CVV ---
-        Row(
-            modifier = Modifier.padding(top = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                CardTextField(
-                    value         = viewModel.cardExpiryText.value,
-                    label         = "Expiry (MM/YY)*",
-                    onValueChange = {
-                        viewModel.handleExpiryChange(it,isTestEnv.value) },
-                    isError       = viewModel.cardExpiryError.value,
-                    keyboardType  = KeyboardType.Number,
-                    maxLength     = 5,
-                    visualTransformation = ExpiryVisualTransformation(),
-                    modifier      = Modifier.fillMaxWidth().padding(start = 16.dp),
-                    onFocus       = { viewModel.cardExpiryError.value = false },
-                    focusedTextInputBorderColor = focusedTextInputBorderColor.value,
-                    unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
-                    onBlur        = {
-                        viewModel.cardExpiryError.value    = viewModel.cardExpiryText.value.length < 4 || !viewModel.cardExpiryValid.value
-                        viewModel.cardExpiryErrorText.value = when {
-                            viewModel.cardExpiryText.value.isEmpty() -> "Required"
-                            else                     -> "Invalid Expiry"
-                        }
-                    }
-                )
-                if (viewModel.cardExpiryError.value) ErrorText(viewModel.cardExpiryErrorText.value)
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                CardTextField(
-                    value         = viewModel.cardCvvText.value,
-                    label         = "CVV*",
-                    onValueChange =
-                        {
-                        viewModel.cardCvvText.value = it; if (it.isEmpty()) { viewModel.cardCvvError.value = true; viewModel.cardCvvErrorText.value = "Required" } else viewModel.cardCvvError.value = false
-                        viewModel.checkCardValid(isTestEnv.value, false)
-                        },
-                    isError       = viewModel.cardCvvError.value,
-                    keyboardType  = KeyboardType.NumberPassword,
-                    maxLength     = viewModel.maxCvvLength.value,
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier      = Modifier.fillMaxWidth().padding(end = 16.dp),
-                    trailingIcon  = {
-                        Image(
-                            painter            = painterResource(Res.drawable.ic_info),
-                            contentDescription = null,
-                            modifier           = Modifier
-                                .size(24.dp)
-                                .clickable { viewModel.showCvvInfo.value = true },
-                            colorFilter        = ColorFilter.tint(buttonColor.value.toComposeColor())
-                        )
-                    },
-                    onFocus = { viewModel.cardCvvError.value = false },
-                    focusedTextInputBorderColor = focusedTextInputBorderColor.value,
-                    unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
-                    onBlur  = {
-                        viewModel.cardCvvError.value    = viewModel.cardCvvText.value.length < viewModel.maxCvvLength.value
-                        viewModel.cardCvvErrorText.value = if (viewModel.cardCvvText.value.isEmpty()) "Required" else "Invalid CVV"
-                    }
-                )
-                if (viewModel.cardCvvError.value) ErrorText(viewModel.cardCvvErrorText.value)
-            }
-        }
-
-        // --- NickName + Save Card (shopper token) ---
-        if (!shopperToken.value.isNullOrEmpty()) {
-            CardTextField(
-                value         = viewModel.cardNickNameText.value,
-                label         = "Card NickName (for easy identification)",
-                onValueChange = { viewModel.cardNickNameText.value = it },
-                modifier      = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
-                focusedTextInputBorderColor = focusedTextInputBorderColor.value,
-                unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
-            )
-
-            // CVV not stored info
-            Row(
-                modifier          = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(Color(0xFFE8F6F1))
-                    .padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter            = painterResource(Res.drawable.ic_info),
-                    contentDescription = null,
-                    modifier           = Modifier.size(20.dp),
-                    colorFilter        = ColorFilter.tint(Color(0xFF2D2B32))
-                )
-                Text(
-                    text       = "CVV will not be stored",
-                    fontFamily = defaultFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontSize   = 12.sp,
-                    color      = Color(0xFF2D2B32),
-                    modifier   = Modifier.padding(start = 8.dp)
-                )
-            }
-
-            // Save card checkbox
-            Row(
-                modifier          = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CheckboxItem(
-                    isChecked   = viewModel.isSavedCardCheckBoxClicked.value,
-                    buttonColor = buttonColor.value,
-                    onClick     = { viewModel.isSavedCardCheckBoxClicked.value = !viewModel.isSavedCardCheckBoxClicked.value }
-                )
-                Text(
-                    text       = "Save this card as per RBI guidelines.",
-                    fontFamily = defaultFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontSize   = 14.sp,
-                    color      = Color(0xFF2D2B32),
-                    modifier   = Modifier.padding(start = 6.dp)
-                )
-                Text(
-                    text       = "Know more",
-                    fontFamily = defaultFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize   = 12.sp,
-                    color      = buttonColor.value.toComposeColor(),
-                    textDecoration = TextDecoration.Underline,
-                    modifier   = Modifier
-                        .padding(start = 4.dp)
-                        .clickable { viewModel.showKnowMoreDialog.value = true }
-                )
-            }
-        }
-
-        // --- SI Checkbox ---
-        if ((isSICheckboxChecked.value || isSICheckboxEnabled.value) &&
-            isSubscriptionCheckout.value
-        ) {
-            Row(
-                modifier          = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, top = 8.dp, end = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CheckboxItem(
-                    isChecked   = isSiCheckBoxChecked,
-                    buttonColor = buttonColor.value,
-                    onClick     = {
-                        if(isSICheckboxEnabled.value) {
-                            isSiCheckBoxChecked = !isSiCheckBoxChecked
-                        }
-                    }
-                )
-                Text(
-                    text       = "Set up Standing Instructions (SI) for this payment.",
-                    fontFamily = defaultFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontSize   = 14.sp,
-                    color      = Color(0xFF2D2B32),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier   = Modifier.padding(start = 6.dp)
-                )
-            }
-        }
-
-        // --- Subscription Details ---
-        if (isSubscriptionDetailsVisible) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 10.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(Color(0xFFEFF3FA))
-                    .padding(vertical = 12.dp)
-            ) {
-                subscription.value?.forEach { item ->
-                    SubscriptionRow(
-                        heading        = item.first,
-                        value          = item.second,
-                        currencySymbol = currencySymbol
-                    )
-                }
-            }
-        }
-        // --- Pay Button ---
-        Spacer(Modifier.weight(1f))
-        PayButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp)
-                .clip(RoundedCornerShape(ctaBorderRadius.value.dp))
-                .background(
-                    if (viewModel.cardValid.value) buttonColor.value.toComposeColor()
-                    else Color(0xFFE6E6E6)
-                )
-                .clickable(enabled = viewModel.cardValid.value) {
-                    viewModel.postCardRequest(isSiCheckBoxChecked)
-                },
-            amount = amount.value,
-            currencySymbol = currencySymbol,
-            isValid = viewModel.cardValid.value,
-            buttonTextColor = buttonTextColor.value,
-            text = "Pay"
-        )
-        Footer()
-    }
-
+        },
+        onBlurCardCVV = {
+            viewModel.cardCvvError.value    = viewModel.cardCvvText.value.length < viewModel.maxCvvLength.value
+            viewModel.cardCvvErrorText.value = if (viewModel.cardCvvText.value.isEmpty()) "Required" else "Invalid CVV"
+        },
+        cardNumberErrorText = viewModel.cardNumberErrorText.value,
+        cardHolderNameErrorText = viewModel.cardHolderNameErrorText.value,
+        cardExpiryErrorText = viewModel.cardExpiryErrorText.value,
+        cardCvvErrorText = viewModel.cardCvvErrorText.value,
+        amount = amount.value,
+        cardValid = viewModel.cardValid.value,
+        postCardRequest = {
+            viewModel.postCardRequest(it)
+        },
+        buttonTextColor = buttonTextColor.value,
+        ctaBorderRadius = ctaBorderRadius.value,
+        isBoxPayPayButtonVisible = true,
+        isSavedCardCheckBoxClicked = viewModel.isSavedCardCheckBoxClicked.value,
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+    )
 
     if (viewModel.showCvvInfo.value) {
         CvvInfoBottomSheet(
@@ -475,7 +211,7 @@ fun CardScreen(
     }
 
     if(isBoxPayAnimationVisible) {
-        ShowLoadingComponent()
+        ShowLoadingComponent(Modifier.fillMaxSize())
     }
 
     if(showWebView) {
@@ -490,67 +226,6 @@ fun CardScreen(
     }
 }
 
-// --- Reusable Card TextField ---
-@Composable
-private fun CardTextField(
-    value               : String,
-    label               : String,
-    onValueChange       : (String) -> Unit,
-    modifier            : Modifier = Modifier,
-    isError             : Boolean = false,
-    keyboardType        : KeyboardType = KeyboardType.Text,
-    maxLength           : Int = Int.MAX_VALUE,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    trailingIcon        : @Composable (() -> Unit)? = null,
-    onFocus             : () -> Unit = {},
-    onBlur              : () -> Unit = {},
-    focusedTextInputBorderColor : String,
-    unfocusedTextInputBorderColor : String
-) {
-    var hasBeenFocused by remember { mutableStateOf(false) }  // ← track first focus
-    OutlinedTextField(
-        value               = value,
-        onValueChange       = { if (it.length <= maxLength) onValueChange(it) },
-        label               = {
-            Text(
-                text       = label,
-                fontFamily = defaultFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize   = 16.sp
-            )
-        },
-        isError              = isError,
-        trailingIcon         = trailingIcon,
-        visualTransformation = visualTransformation,
-        keyboardOptions      = KeyboardOptions(keyboardType = keyboardType),
-        shape                = RoundedCornerShape(8.dp),
-        modifier             = modifier
-            .fillMaxWidth()
-            .height(62.dp)
-            .onFocusChanged { focusState ->
-                when {
-                    focusState.isFocused -> {
-                        hasBeenFocused = true  // ← mark as focused
-                        onFocus()
-                    }
-                    hasBeenFocused -> {        // ← only call onBlur after first focus ✅
-                        onBlur()
-                    }
-                }
-            },
-        textStyle            = TextStyle(
-            fontFamily = defaultFontFamily,
-            fontWeight = FontWeight.Normal,
-            fontSize = 16.sp,
-            color = Color(0xFF0A090B)
-        ),
-        colors = OutlinedTextFieldDefaults.colors(
-            // Border
-            focusedBorderColor   = focusedTextInputBorderColor.toComposeColor(),
-            unfocusedBorderColor = unfocusedTextInputBorderColor.toComposeColor(),
-        )
-    )
-}
 
 // --- Reusable Checkbox ---
 @Composable
@@ -569,13 +244,7 @@ fun CheckboxItem(
         contentAlignment = Alignment.Center
     ) {
         if (isChecked) {
-            Text(
-                text       = "✓",
-                color      = Color.White,
-                fontSize   = 13.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = defaultFontFamily
-            )
+            Text(text = "✓", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = LocalSDKFonts.current.primary)
         }
     }
 }
@@ -651,7 +320,7 @@ fun SubscriptionRow(
     ) {
         Text(
             text = heading,
-            fontFamily = defaultFontFamily,
+            fontFamily = LocalSDKFonts.current.primary,
             color = Color(0xFF2D2B32)
         )
         Text(
@@ -659,7 +328,7 @@ fun SubscriptionRow(
                 withStyle(
                     style = SpanStyle(
                         fontSize = 12.sp,
-                        fontFamily = defaultInterFontFamily,
+                        fontFamily = LocalSDKFonts.current.secondary,
                         color = Color(0xFF4F4D55)
                     )
                 ) {
@@ -670,7 +339,7 @@ fun SubscriptionRow(
                 withStyle(
                     style = SpanStyle(
                         fontSize = 12.sp,
-                        fontFamily = defaultFontFamily
+                        fontFamily = LocalSDKFonts.current.primary
                     )
                 ) {
                     append(value)
@@ -679,7 +348,7 @@ fun SubscriptionRow(
                 withStyle(
                     style = SpanStyle(
                         fontSize = 12.sp,
-                        fontFamily = defaultFontFamily
+                        fontFamily = LocalSDKFonts.current.primary
                     )
                 ) {
                     append(value)

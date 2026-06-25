@@ -35,8 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.formatTimer
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
-import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.arrow_left
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_timer
@@ -129,7 +128,7 @@ fun TopBar(
                 // ✅ equivalent of headerTitle Text
                 Text(
                     text = text,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                     color = Color(0xFF363840)
@@ -144,7 +143,7 @@ fun TopBar(
                             withStyle(
                                 style = SpanStyle(
                                     fontSize = 12.sp,
-                                    fontFamily = defaultFontFamily,
+                                    fontFamily = LocalSDKFonts.current.primary,
                                     color = Color(0xFF4F4D55)
                                 )
                             ) {
@@ -160,7 +159,7 @@ fun TopBar(
                             withStyle(
                                 style = SpanStyle(
                                     fontSize = 12.sp,
-                                    fontFamily = defaultFontFamily,
+                                    fontFamily = LocalSDKFonts.current.primary,
                                     color = Color(0xFF4F4D55)
                                 )
                             ) {
@@ -171,7 +170,7 @@ fun TopBar(
                             withStyle(
                                 style = SpanStyle(
                                     fontSize = 12.sp,
-                                    fontFamily = defaultInterFontFamily,
+                                    fontFamily = LocalSDKFonts.current.secondary,
                                     color = Color(0xFF4F4D55)
                                 )
                             ) {
@@ -182,7 +181,7 @@ fun TopBar(
                             withStyle(
                                 style = SpanStyle(
                                     fontSize = 12.sp,
-                                    fontFamily = defaultFontFamily,
+                                    fontFamily = LocalSDKFonts.current.primary,
                                     color = Color(0xFF4F4D55)
                                 )
                             ) {
@@ -212,7 +211,7 @@ fun TopBar(
                     Text(
                         text = formatTimer(sessionSeconds),
                         fontSize = 12.sp,
-                        fontFamily = defaultFontFamily,
+                        fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Medium,
                         color = timerTextColor
                     )

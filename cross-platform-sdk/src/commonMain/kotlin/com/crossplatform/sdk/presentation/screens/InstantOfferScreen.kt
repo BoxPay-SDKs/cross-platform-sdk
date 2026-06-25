@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,7 +28,7 @@ import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.components.OfferCard
 import com.crossplatform.sdk.presentation.components.ShimmerView
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.InstantOfferViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -56,14 +57,16 @@ fun InstantOfferScreen(
         is UiState.Error -> {
             val message = (screenState as UiState.Error).message
             Text("Welcome to error screen $message")
-            viewModel.callUiAnalytics(
-                event = AnalyticsEvents.SDK_CRASH.value,
-                screenName = "MainScreen",
-                message = "Main Screen not loaded $message"
-            )
+            LaunchedEffect(message) {
+                viewModel.callUiAnalytics(
+                    event      = AnalyticsEvents.SDK_CRASH.value,
+                    screenName = "Instant Offer Screen",
+                    message    = "Instant Offer Screen not loaded $message",
+                )
+            }
         }
         UiState.Loading -> {
-            ShimmerView()
+            ShimmerView(modifier = Modifier.fillMaxSize())
         }
         is UiState.Success -> {
             val data = (screenState as UiState.Success).data
@@ -77,7 +80,7 @@ fun InstantOfferScreen(
                             codeTextField.value = it
                         },
                         modifier = Modifier.fillMaxWidth().background(Color.White).padding(16.dp),
-                        label = { Text("Search", fontFamily = defaultFontFamily) },
+                        label = { Text("Search", fontFamily = LocalSDKFonts.current.primary) },
                         singleLine = true,
                         leadingIcon = {
                             Image(

@@ -118,7 +118,20 @@ data class OrderItem(
 data class MerchantDetails(
     @SerialName("merchantName") val merchantName : String?,
     @SerialName("logoUrl") val merchantLogo : String?,
-    @SerialName("checkoutTheme") val checkoutTheme: CheckoutTheme
+    @SerialName("checkoutTheme") val checkoutTheme: CheckoutTheme,
+    @SerialName("customFields") val customFields : List<CustomFields>
+)
+
+@Serializable
+data class CustomFields(
+    @SerialName("fieldName") val fieldName : String?,
+    @SerialName("placeHolderText") val placeHolderText : String?,
+    @SerialName("fieldType") val fieldType : String?,
+    @SerialName("validation") val validation : String?,
+    @SerialName("validationParams") val validationParams : Map<String, String>?,
+    @SerialName("dropDownOptions") val dropDownOptions : List<String>?,
+    @SerialName("mandatory") val mandatory : Boolean,
+    @SerialName("fieldValue") val fieldValue : String? = null
 )
 
 @Serializable
@@ -126,7 +139,12 @@ data class CheckoutTheme(
     @SerialName("primaryButtonColor") val primaryButtonColor: String,
     @SerialName("buttonTextColor") val buttonTextColor: String,
     @SerialName("headerColor") val headerColor: String,
-    @SerialName("headerTextColor") val headerTextColor: String
+    @SerialName("headerTextColor") val headerTextColor: String,
+    @SerialName("inputBorderColor") val focusedTextInputBorderColor: String,
+    @SerialName("inputFocusBorderColor") val unfocusedTextInputBorderColor: String,
+    @SerialName("payBtnFontSize") val payButtonFontSize : String,
+    @SerialName("font") val font : String,
+    @SerialName("payBtnBorderRadius") val payButtonBorderRadius : String
 )
 
 @Serializable

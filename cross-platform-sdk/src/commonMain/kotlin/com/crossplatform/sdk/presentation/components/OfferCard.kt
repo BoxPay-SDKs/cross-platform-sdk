@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import kotlin.math.roundToInt
 
 val DarkGrey = Color(0xFF333333)
@@ -95,7 +95,7 @@ fun OfferCard(
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    fontFamily = defaultFontFamily
+                    fontFamily = LocalSDKFonts.current.primary
                 )
             }
 

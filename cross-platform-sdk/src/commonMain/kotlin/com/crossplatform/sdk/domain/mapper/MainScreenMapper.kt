@@ -38,6 +38,14 @@ fun SessionDetails.toUiModel(): MainScreenModel {
         )
     }
 
+    val payBtnFontSizeInt: Int = merchantDetails.checkoutTheme.payButtonBorderRadius
+        .filter { it.isDigit() }
+        .toIntOrNull() ?: 16
+
+    val ctaTextSizeInt : Int = merchantDetails.checkoutTheme.payButtonFontSize
+        .filter { it.isDigit() }
+        .toIntOrNull() ?: 16
+
     CheckoutDetailsHandler.setSDKConfig(
         currencySymbol              = moneyObject.currencySymbol,
         currencyCode                = moneyObject.currencyCode,
@@ -67,7 +75,12 @@ fun SessionDetails.toUiModel(): MainScreenModel {
         isMerchantLogoVisible       = isEnabled("MERCHANT_LOGO"),
         isSubscriptionCheckout      = subscriptionDetails != null,
         errorMessage = "You may have cancelled the payment or there was a delay in response. Please retry.",
-        subscription = subscriptionDetails
+        subscription = subscriptionDetails,
+        fontFamily = merchantDetails.checkoutTheme.font,
+        ctaBorderRadius = if (CheckoutDetailsHandler.checkoutDetails.ctaBorderRadius == 0) payBtnFontSizeInt else CheckoutDetailsHandler.checkoutDetails.ctaBorderRadius,
+        inputBorderColor = CheckoutDetailsHandler.checkoutDetails.unfocusedTextInputBorderColor.ifEmpty { merchantDetails.checkoutTheme.unfocusedTextInputBorderColor },
+        inputFocusBorderColor = CheckoutDetailsHandler.checkoutDetails.focusedTextInputBorderColor.ifEmpty { merchantDetails.checkoutTheme.focusedTextInputBorderColor },
+        ctaTextFontSize = ctaTextSizeInt
     )
 
     UserDataHandler.set(
@@ -85,6 +98,8 @@ fun SessionDetails.toUiModel(): MainScreenModel {
         labelName = paymentDetails.shopper.deliveryAddress?.labelName,
         labelType = paymentDetails.shopper.deliveryAddress?.labelType
     )
+
+    UserDataHandler.setCustomFields(merchantDetails.customFields)
 
     var methodFlags = MainScreenModel.MethodFlags()
     this.configs.paymentMethods.forEach { method ->

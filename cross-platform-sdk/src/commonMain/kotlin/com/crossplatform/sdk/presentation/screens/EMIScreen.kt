@@ -23,7 +23,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -31,8 +31,12 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,11 +55,19 @@ import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
+import com.crossplatform.sdk.presentation.components.CardComponent
+import com.crossplatform.sdk.presentation.components.CvvInfoBottomSheet
 import com.crossplatform.sdk.presentation.components.EmptyListView
+import com.crossplatform.sdk.presentation.components.Footer
+import com.crossplatform.sdk.presentation.components.KnowMoreBottomSheet
+import com.crossplatform.sdk.presentation.components.PayButton
 import com.crossplatform.sdk.presentation.components.ShimmerView
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
+import com.crossplatform.sdk.presentation.formatPercent
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.EMIScreenViewModel
+import com.crossplatform.sdk.presentation.viewmodel.EmiStep
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.add_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
@@ -68,16 +80,49 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun EMIScreen(
+    modifier : Modifier = Modifier.fillMaxSize(),
     onBackPress : () -> Unit,
     isAutoNavigationEnabled : Boolean,
     onExitCheckout : () -> Unit
 ) {
-    BackHandler(onBack = onBackPress)
     val viewModel : EMIScreenViewModel = koinViewModel()
+    val handleBack = {
+        if (!viewModel.goBackStep()) onBackPress()   // exit EMI only at root
+    }
+    BackHandler(onBack = handleBack)
+    DisposableEffect(Unit) {
+        ScreenBackInterceptor.onBack = { viewModel.goBackStep() }
+        ScreenBackInterceptor.currentTitle = {
+            when (viewModel.currentStep) {
+                EmiStep.Card    -> "Pay via Card"
+                EmiStep.Tenure  -> "Select Tenure"
+                EmiStep.Content -> "Choose EMI Option"
+            }
+        }
+        onDispose {
+            ScreenBackInterceptor.onBack = null
+            ScreenBackInterceptor.currentTitle = null
+        }
+    }
     val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
+    val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
     val focusedTextInputBorderColor = CheckoutDetailsHandler.focusedBorderColorFlow.collectAsStateWithLifecycle()
     val unfocusedTextInputBorderColor = CheckoutDetailsHandler.unfocusedBorderColorFlow.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isBoxPayAnimationVisible by viewModel.isBoxPayAnimationVisible.collectAsStateWithLifecycle()
+    val showWebView by viewModel.showWebview.collectAsStateWithLifecycle()
+    val isSICheckboxChecked = CheckoutDetailsHandler.isSICheckboxCheckedFlow.collectAsStateWithLifecycle()
+    val isSICheckboxEnabled = CheckoutDetailsHandler.isSICheckboxEnabledFlow.collectAsStateWithLifecycle()
+    val isSubscriptionCheckout = CheckoutDetailsHandler.isSubscriptionCheckoutFlow.collectAsStateWithLifecycle()
+    val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
+    val (currencySymbol, _) = currencyFlow.value
+    val isTestEnv = CheckoutDetailsHandler.isTestEnvFlow.collectAsStateWithLifecycle()
+    var isSiCheckBoxChecked  by remember { mutableStateOf(isSICheckboxChecked.value) }
+    val shopperToken = CheckoutDetailsHandler.shopperTokenFlow.collectAsStateWithLifecycle()
+    val subscription = CheckoutDetailsHandler.subscriptionFlow.collectAsStateWithLifecycle()
+    val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
+    val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
+
 
     LaunchedEffect(isAutoNavigationEnabled) {
         if(isAutoNavigationEnabled) {
@@ -85,27 +130,212 @@ fun EMIScreen(
         }
     }
 
+    val isSubscriptionDetailsVisible =
+        isSubscriptionCheckout.value && isSiCheckBoxChecked
+
     when(uiState) {
         is UiState.Error -> {
             val message = (uiState as UiState.Error).message
             Text("Welcome to error screen $message")
-            viewModel.callUiAnalytics(
-                event = AnalyticsEvents.SDK_CRASH.value,
-                screenName = "BNPLScreen",
-                message = "BNPLScreen not loaded $message"
-            )
+            LaunchedEffect(message) {
+                viewModel.callUiAnalytics(
+                    event      = AnalyticsEvents.SDK_CRASH.value,
+                    screenName = "BoxPayElements",
+                    message    = "BoxPay elements not loaded $message",
+                )
+            }
         }
         UiState.Loading -> {
-            ShimmerView()
+            ShimmerView(modifier = modifier)
         }
         is UiState.Success -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                EmiContentScreen(
-                    viewModel  = viewModel,
-                    emiModel = (uiState as UiState.Success).data,
+            Column(modifier = modifier) {
+                when(viewModel.currentStep) {
+                    EmiStep.Card -> {
+                        CardComponent(
+                            duration = viewModel.selectedEmi.value.first.toString(),
+                            emiAmount = viewModel.selectedEmi.value.second,
+                            bankUrl = viewModel.selectedBank.value?.iconUrl,
+                            bankName = viewModel.selectedBank.value?.name,
+                            percent = viewModel.selectedPercent.value.toString(),
+                            isSICheckboxChecked = isSiCheckBoxChecked,
+                            isSICheckboxEnabled = isSICheckboxEnabled.value,
+                            isSubscriptionCheckout = isSubscriptionCheckout.value,
+                            isSubscriptionDetailsVisible = isSubscriptionDetailsVisible,
+                            onClickCheckBoxItem = {
+                                isSiCheckBoxChecked = it
+                            },
+                            onClickShowKnowMoreDialog = {
+                                viewModel.showKnowMoreDialog.value = true
+                            },
+                            onClickCVVInfo = {
+                                viewModel.showCvvInfo.value = true
+                            },
+                            onClickSavedCardCheckBox = {
+                                viewModel.isSavedCardCheckBoxClicked.value = !viewModel.isSavedCardCheckBoxClicked.value
+                            },
+                            shopperToken = shopperToken.value,
+                            subscription = subscription.value,
+                            currencySymbol = currencySymbol,
+                            cardNumberText = viewModel.cardNumberText.value,
+                            cardHolderNameText = viewModel.cardHolderNameText.value,
+                            cardExpiryText = viewModel.cardExpiryText.value,
+                            cardCvvText = viewModel.cardCvvText.value,
+                            cardNickNameText = viewModel.cardNickNameText.value,
+                            cardNumberError = viewModel.cardNumberError.value,
+                            cardHolderNameError = viewModel.cardHolderNameError.value,
+                            cardExpiryError = viewModel.cardExpiryError.value,
+                            cardCvvError = viewModel.cardCvvError.value,
+                            maxCardNumberLength = viewModel.maxCardNumberLength.value,
+                            maxCvvLength = viewModel.maxCvvLength.value,
+                            handleCardNumberChange = {
+                                viewModel.handleCardNumberChange(it, isTestEnv = isTestEnv.value)
+                            },
+                            handleCardHolderNameChange = {
+                                viewModel.cardHolderNameText.value = it; if (it.isNotBlank()) viewModel.cardHolderNameError.value = false
+                                viewModel.checkCardValid(isTestEnv.value)
+                            },
+                            handleExpiryChange = {
+                                viewModel.handleExpiryChange(it, isTestEnv.value)
+                            },
+                            handleCvvChange = {
+                                viewModel.cardCvvText.value = it; if (it.isEmpty()) { viewModel.cardCvvError.value = true; viewModel.cardCvvErrorText.value = "Required" } else viewModel.cardCvvError.value = false
+                                viewModel.checkCardValid(isTestEnv.value)
+                            },
+                            cardSelectedIcon = viewModel.cardSelectedIcon.value,
+                            setCardNumberError = {
+                                viewModel.cardNumberError.value = false
+                            },
+                            setCardHolderNameError = {
+                                viewModel.cardHolderNameError.value = false
+                            },
+                            setCardExpiryError = {
+                                viewModel.cardExpiryError.value = false
+                            },
+                            setCardCvvError = {
+                                viewModel.cardCvvError.value = false
+                            },
+                            unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
+                            focusedTextInputBorderColor = focusedTextInputBorderColor.value,
+                            buttonColor = buttonColor.value,
+                            onBlurCardNumber = {
+                                val cleaned = viewModel.cardNumberText.value.filter { it.isDigit() }
+                                viewModel.cardNumberError.value = cleaned.isEmpty() ||
+                                        (!isTestEnv.value && (!viewModel.methodEnabled.value || !viewModel.cardNumberValid.value))
+                                viewModel.cardNumberErrorText.value = when {
+                                    cleaned.isEmpty()     -> "Required"
+                                    !viewModel.methodEnabled.value        -> "This card is not supported for the payment"
+                                    !viewModel.cardNumberValid.value     -> "Invalid card number"
+                                    else                  -> ""
+                                }
+                            },
+                            onBlurCardName = {
+                                viewModel.cardHolderNameError.value    = viewModel.cardHolderNameText.value.trim().isEmpty()
+                                viewModel.cardHolderNameErrorText.value = if (viewModel.cardHolderNameError.value) "Required" else ""
+                            },
+                            onBlurCardExpiry = {
+                                viewModel.cardExpiryError.value    = viewModel.cardExpiryText.value.length < 4 || !viewModel.cardExpiryValid.value
+                                viewModel.cardExpiryErrorText.value = when {
+                                    viewModel.cardExpiryText.value.isEmpty() -> "Required"
+                                    else                     -> "Invalid Expiry"
+                                }
+                            },
+                            onBlurCardCVV = {
+                                viewModel.cardCvvError.value    = viewModel.cardCvvText.value.length < viewModel.maxCvvLength.value
+                                viewModel.cardCvvErrorText.value = if (viewModel.cardCvvText.value.isEmpty()) "Required" else "Invalid CVV"
+                            },
+                            cardNumberErrorText = viewModel.cardNumberErrorText.value,
+                            cardHolderNameErrorText = viewModel.cardHolderNameErrorText.value,
+                            cardExpiryErrorText = viewModel.cardExpiryErrorText.value,
+                            cardCvvErrorText = viewModel.cardCvvErrorText.value,
+                            amount = amount.value,
+                            cardValid = viewModel.cardValid.value,
+                            postCardRequest = {
+                                viewModel.postEMIRequest()
+                            },
+                            buttonTextColor = buttonTextColor.value,
+                            ctaBorderRadius = ctaBorderRadius.value,
+                            isBoxPayPayButtonVisible = true,
+                            isSavedCardCheckBoxClicked = viewModel.isSavedCardCheckBoxClicked.value,
+                            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+                        )
+                    }
+                    EmiStep.Tenure -> SelectTenureScreen(
+                        selectedBank = viewModel.selectedBank.value,
+                        cardType = viewModel.selectedCard.value,
+                        selectedEmi = viewModel.selectedEmi.value,
+                        buttonColor = buttonColor.value,
+                        buttonTextColor = buttonTextColor.value,
+                        onClickRadio = {duration, amount, code ->
+                            viewModel.onClickRadio(duration = duration, amount = amount, code = code)
+                        },
+                        onProceed = { percent, low, no, discount, netAmount ->
+                            viewModel.onProceedEmi(
+                                percent,
+                                low,
+                                no,
+                                discount,
+                                netAmount
+                            )
+                        },
+                        currencySymbol = currencySymbol,
+                        ctaBorderRadius = ctaBorderRadius.value
+                    )
+                    else -> EmiContentScreen(
+                        selectedCard = viewModel.selectedCard.value,
+                        onClickCard = {viewModel.onClickCard(it)},
+                        onClickBank = {viewModel.onClickBank(it)},
+                        searchText = viewModel.searchText.value,
+                        onEditSearchText = {viewModel.onEditSearchText(it)},
+                        emiModel = (uiState as UiState.Success).data,
+                        buttonColor = buttonColor.value,
+                        onToggleFilter = {viewModel.onToggleFilter(it)},
+                        selectedOthers = viewModel.selectedOthers.value,
+                        selectedFilter = viewModel.selectedFilter.value,
+                        onProceedOther = {viewModel.onProceedWithOther()},
+                        onSelectOthersOption = {viewModel.onSelectedOthersOption(it)},
+                        focusedTextInputBorderColor = focusedTextInputBorderColor.value,
+                        unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
+                        buttonTextColor = buttonTextColor.value,
+                        ctaBorderRadius = ctaBorderRadius.value
+                    )
+                }
+            }
+
+            if (viewModel.showCvvInfo.value) {
+                CvvInfoBottomSheet(
+                    onClick = {
+                        viewModel.showCvvInfo.value = !viewModel.showCvvInfo.value
+                    },
                     buttonColor = buttonColor.value,
-                    focusedTextInputBorderColor = focusedTextInputBorderColor.value,
-                    unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value
+                    buttonTextColor = buttonTextColor.value,
+                    borderRadius = ctaBorderRadius.value
+                )
+            }
+
+            if (viewModel.showKnowMoreDialog.value) {
+                KnowMoreBottomSheet(
+                    buttonTextColor = buttonTextColor.value,
+                    buttonColor = buttonColor.value,
+                    ctaBorderRadius = ctaBorderRadius.value,
+                    onDismiss = {
+                        viewModel.showKnowMoreDialog.value = false
+                    }
+                )
+            }
+
+            if(isBoxPayAnimationVisible) {
+                ShowLoadingComponent(Modifier.fillMaxSize())
+            }
+
+            if(showWebView) {
+                WebViewScreen(
+                    url = viewModel.url.value,
+                    html = viewModel.htmlString.value,
+                    onBackPress = {result ->
+                        viewModel.callFetchStatus(result ?: "")
+                        viewModel.setWebViewScreen(false)
+                    }
                 )
             }
         }
@@ -114,12 +344,23 @@ fun EMIScreen(
 // ─── Main content (bank list) ─────────────────────────────────────────────────
 
 @Composable
-private fun EmiContentScreen(
-    viewModel : EMIScreenViewModel,
+fun EmiContentScreen(
+    selectedCard : String,
+    onClickCard : (String) -> Unit,
+    onClickBank : (Bank) -> Unit,
     emiModel : ChooseEmiModel,
     buttonColor : String,
     focusedTextInputBorderColor : String,
-    unfocusedTextInputBorderColor : String
+    unfocusedTextInputBorderColor : String,
+    searchText : String,
+    onEditSearchText : (String) -> Unit,
+    selectedOthers : String?,
+    onToggleFilter : (String) -> Unit,
+    selectedFilter: String,
+    onSelectOthersOption : (String) -> Unit,
+    onProceedOther : () -> Unit,
+    ctaBorderRadius: Int,
+    buttonTextColor: String
 ) {
     val (isNoCostExisted, isLowCostExisted) = emiModel.cards
         .flatMap { it.banks }
@@ -134,54 +375,77 @@ private fun EmiContentScreen(
         ) {
             EmiCardTypeTabRow(
                 cards      = emiModel.cards,
-                selected   = viewModel.selectedCard.value,
+                selected   = selectedCard,
                 brandColor = buttonColor.toComposeColor(),
-                onSelect   = { viewModel.onClickCard(it) },
+                onSelect   = { onClickCard(it) },
             )
 
             HorizontalDivider(color = Color(0xFFE6E6E6))
 
             // ── Search bar ────────────────────────────────────────────────────────
             EmiSearchBar(
-                value       = viewModel.searchText.value,
-                placeholder = if (viewModel.selectedCard.value == "Others") "Search for other EMI options" else "Search for bank",
-                onValueChange = { viewModel.onEditSearchText(it) },
+                value       = searchText,
+                placeholder = if (selectedCard == "Others") "Search for other EMI options" else "Search for bank",
+                onValueChange = { onEditSearchText(it) },
                 focusedBorderColor = focusedTextInputBorderColor.toComposeColor(),
                 unFocusedBorderColor = unfocusedTextInputBorderColor.toComposeColor()
             )
 
             // ── Filter chips ──────────────────────────────────────────────────────
-            if ((isNoCostExisted ||  isLowCostExisted) && !viewModel.selectedCard.value.equals("others", true)) {
+            if ((isNoCostExisted ||  isLowCostExisted) && !selectedCard.equals("others", true)) {
                 EmiFilterRow(
                     isNoCostExisted,
                     isLowCostExisted,
-                    onToggle   = { label -> viewModel.onToggleFilter(label) },
-                    selectedFilter = viewModel.selectedFilter.value
+                    onToggle   = { label -> onToggleFilter(label) },
+                    selectedFilter = selectedFilter
                 )
             }
         }
 
         // ── Bank list ─────────────────────────────────────────────────────────
-        val cardData = emiModel.cards.find { it.cardType == viewModel.selectedCard.value }
-        SectionTitle(if (viewModel.selectedCard.value.equals("others", true)) "Others" else "All Banks")
+        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+            val cardData = emiModel.cards.find { it.cardType == selectedCard }
+            SectionTitle(if (selectedCard.equals("others", true)) "Others" else "All Banks")
 
-        when {
-            cardData == null || cardData.banks.isEmpty() -> EmptyListView(
-                heading = "Oops!! No results found",
-                subHeading = "Please try another search"
-            )
+            when {
+                cardData == null || cardData.banks.isEmpty() -> EmptyListView(
+                    heading = "Oops!! No results found",
+                    subHeading = "Please try another search"
+                )
 
-            viewModel.selectedCard.value.equals("others", true) -> OthersPaymentList(
-                banks          = cardData.banks,
-                selectedValue  = viewModel.selectedOthers.value,
-                onSelect       = { viewModel.onSelectedOthersOption(it) },
-                onProceed      = { viewModel.onProceedWithOther() },
-            )
+                selectedCard.equals("others", true) -> OthersPaymentList(
+                    banks          = cardData.banks,
+                    selectedValue  = selectedOthers,
+                    onSelect       = { onSelectOthersOption(it) },
+                    onProceed      = { onProceedOther() },
+                    ctaBorderRadius = ctaBorderRadius,
+                    buttonColor = buttonColor,
+                    buttonTextColor = buttonTextColor
+                )
 
-            else -> BankLazyList(
-                banks    = cardData.banks,
-                onSelect = { viewModel.onClickBank(it) },
-            )
+                else -> {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp).background(Color.White, RoundedCornerShape(12.dp))
+                    ) {
+                        cardData.banks.mapIndexed { index, bank ->
+                            BankCard(
+                                name          = bank.name,
+                                iconUrl       = bank.iconUrl,
+                                hasNoCostEmi  = bank.noCostApplied,
+                                hasLowCostEmi = bank.lowCostApplied,
+                                onPress       = { onClickBank(bank) },
+                                percent = bank.percent
+                            )
+                            if (index < cardData.banks.lastIndex) {
+                                HorizontalDivider(color = Color(0xFFE6E6E6))
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(Modifier.weight(1f))
+            Footer()
         }
     }
 }
@@ -208,14 +472,13 @@ private fun EmiCardTypeTabRow(
                     text       = group.cardType,
                     color      = if (isSelected) brandColor else Color(0xFF010102),
                     fontWeight = FontWeight.SemiBold,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontSize   = 14.sp,
                 )
-                Spacer(Modifier.height(4.dp))
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(2.dp)
+                        .height(10.dp)
                         .background(if (isSelected) brandColor else Color.Transparent)
                 )
             }
@@ -239,8 +502,8 @@ private fun EmiSearchBar(
         onValueChange = onValueChange,
         modifier      = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        placeholder   = { Text(placeholder, color = Color(0xFFADACB0), fontSize = 14.sp, fontFamily = defaultFontFamily) },
+            .padding(12.dp),
+        placeholder   = { Text(placeholder, color = Color(0xFFADACB0), fontSize = 14.sp, fontFamily = LocalSDKFonts.current.primary) },
         leadingIcon   = { Image(
             painter            = painterResource(Res.drawable.ic_search),
             contentDescription = null,
@@ -293,7 +556,7 @@ private fun FilterChipItem(text : String, onClick: () -> Unit, isSelected : Bool
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Text(text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2D2B32), fontFamily = defaultFontFamily)
+        Text(text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2D2B32), fontFamily = LocalSDKFonts.current.primary)
         Image(
             painter   = painterResource(if (isSelected) Res.drawable.ic_tick_arrow else Res.drawable.add_icon),
             contentDescription = "",
@@ -304,67 +567,73 @@ private fun FilterChipItem(text : String, onClick: () -> Unit, isSelected : Bool
 }
 
 
-// ─── Bank list ────────────────────────────────────────────────────────────────
-
-@Composable
-private fun BankLazyList(
-    banks: List<Bank>,
-    onSelect: (Bank) -> Unit,
-) {
-    LazyColumn {
-        itemsIndexed(banks) { index, bank ->
-            BankCard(
-                name          = bank.name,
-                iconUrl       = bank.iconUrl,
-                hasNoCostEmi  = bank.noCostApplied,
-                hasLowCostEmi = bank.lowCostApplied,
-                onPress       = { onSelect(bank) },
-            )
-            if (index < banks.lastIndex) {
-                HorizontalDivider(color = Color(0xFFE6E6E6))
-            }
-        }
-    }
-}
-
 
 // ─── Others list ─────────────────────────────────────────────────────────────
 
 @Composable
 private fun OthersPaymentList(
     banks: List<Bank>,
-    selectedValue: String,
+    selectedValue: String?,
     onSelect: (String) -> Unit,
     onProceed: () -> Unit,
+    ctaBorderRadius : Int,
+    buttonColor: String,
+    buttonTextColor : String
 ) {
-    LazyColumn {
-        itemsIndexed(banks) { _, bank ->
+    LazyColumn(
+        modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp)
+            .background(
+                color =  Color.White,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .border(
+                width = 1.dp,
+                color = Color(0xFFE6E6E6),
+                RoundedCornerShape(12.dp)
+            )
+    ) {
+        itemsIndexed(banks) { index, bank ->
 
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onSelect(bank.cardLessEmiValue) }
                     .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
             ) {
-                RadioButton(
-                    selected = selectedValue == bank.cardLessEmiValue,
-                    onClick  = { onSelect(bank.cardLessEmiValue) },
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(bank.name, fontSize = 14.sp, color = Color(0xFF2D2B32))
-            }
-        }
-        if (selectedValue.isNotBlank()) {
-            item {
-                Button(
-                    onClick   = { onProceed() },
-                    modifier  = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    shape     = RoundedCornerShape(8.dp),
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text("Proceed", color = Color.White, fontWeight = FontWeight.SemiBold)
+                    RadioButton(
+                        selected = selectedValue == bank.cardLessEmiValue,
+                        onClick  = { onSelect(bank.cardLessEmiValue) },
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(bank.name, fontSize = 14.sp, color = Color(0xFF2D2B32), fontFamily = LocalSDKFonts.current.primary)
+                }
+
+                if (selectedValue == bank.cardLessEmiValue) {
+                    PayButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                            .clip(RoundedCornerShape(ctaBorderRadius.dp))
+                            .background(
+                                buttonColor.toComposeColor()
+                            )
+                            .clickable {
+                                onProceed()
+                            },
+                        amount = 0.0,
+                        currencySymbol = "",
+                        isValid = true,
+                        buttonTextColor = buttonTextColor,
+                        text = "Pay"
+                    )
+                }
+
+                if (index != banks.lastIndex) {
+                    HorizontalDivider(color = Color(0xFFE6E6E6))
                 }
             }
         }
@@ -378,6 +647,7 @@ fun BankCard(
     hasNoCostEmi: Boolean,
     hasLowCostEmi: Boolean,
     onPress: () -> Unit,
+    percent : Double
 ) {
     Row(
         modifier = Modifier
@@ -416,6 +686,7 @@ fun BankCard(
                 text       = name,
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.SemiBold,
+                fontFamily = LocalSDKFonts.current.primary,
                 color      = Color(0xFF4F4D55),
             )
             if (hasNoCostEmi || hasLowCostEmi) {
@@ -427,6 +698,13 @@ fun BankCard(
             }
         }
 
+        Text(
+            text       = "${formatPercent(percent)}%p.a",
+            fontSize   = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = LocalSDKFonts.current.primary,
+            color      = Color(0xFF4F4D55),
+        )
         // ── Chevron ───────────────────────────────────────────────────────────
         ChevronIcon()
     }
@@ -445,8 +723,15 @@ private fun EmiTag(label: String) {
             text       = label,
             modifier   = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
             fontSize   = 10.sp,
+            fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Medium,
             color      = Color(0xFFEB2F96),
         )
     }
+}
+
+object ScreenBackInterceptor {
+    // set by whichever screen wants to consume back internally; returns true if consumed
+    var onBack: (() -> Boolean)? = null
+    var currentTitle: (() -> String)? = null
 }

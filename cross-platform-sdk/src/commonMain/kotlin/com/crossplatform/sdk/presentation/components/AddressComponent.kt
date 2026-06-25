@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.SectionTitle
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_location
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_user
@@ -86,13 +86,13 @@ fun AddressComponent(
                                 )
                             }
                         },
-                        fontFamily = defaultFontFamily,
+                        fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
                         fontSize   = 14.sp
                     )
                     Text(
                         text       = address,
-                        fontFamily = defaultFontFamily,
+                        fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.SemiBold,
                         fontSize   = 14.sp,
                         maxLines   = 1,
@@ -148,7 +148,7 @@ fun AddressComponent(
                                         append(completePhoneNumber)
                                     }
                                 },
-                                fontFamily = defaultFontFamily,
+                                fontFamily = LocalSDKFonts.current.primary,
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize   = 14.sp
                             )
@@ -157,7 +157,7 @@ fun AddressComponent(
                         if (isEmailEnabled && !email.isNullOrEmpty()) {
                             Text(
                                 text       = email,
-                                fontFamily = defaultFontFamily,
+                                fontFamily = LocalSDKFonts.current.primary,
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize   = 14.sp,
                                 maxLines   = 1,

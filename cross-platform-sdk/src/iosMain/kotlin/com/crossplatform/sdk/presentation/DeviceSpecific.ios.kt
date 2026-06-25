@@ -26,8 +26,19 @@ import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationDidBecomeActiveNotification
 import platform.UIKit.UIApplicationDidEnterBackgroundNotification
 import platform.UIKit.UIApplicationWillResignActiveNotification
+import platform.UIKit.UIUserInterfaceIdiomPad
 import kotlin.collections.component1
 import kotlin.collections.component2
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
+import org.jetbrains.skia.Image
+import platform.Foundation.NSData
+import platform.Foundation.create
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 actual fun getDeviceDetails(): DeviceDetails {
     return DeviceDetails(
@@ -161,4 +172,34 @@ actual class AppLifecycleObserver actual constructor(private val onStateChange: 
 @Composable
 actual fun BackHandler(onBack: () -> Unit) {
     // No-op on iOS — back is handled via UI button only
+}
+
+actual fun isTabletDevice(): Boolean {
+    return UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad
+}
+
+@OptIn(ExperimentalEncodingApi::class, ExperimentalForeignApi::class, BetaInteropApi::class)
+actual fun base64ToImageBitmap(base64: String): ImageBitmap {
+    // Strip data URI prefix if present — same as Android's substringAfter("base64,")
+    val cleanBase64 = base64.substringAfter("base64,", base64)
+
+    // Decode base64 → raw bytes — same kotlin stdlib Base64 as Android
+    val bytes = Base64.Default.decode(cleanBase64)
+
+    // Feed raw bytes into Skia (the rendering engine behind CMP on iOS)
+    // Skia handles PNG / JPEG / WebP automatically — same formats Android's BitmapFactory supports
+    val image = bytes.usePinned { pinned ->
+        // NSData wraps the raw bytes without copying — efficient
+        val nsData = NSData.create(bytes = pinned.addressOf(0), length = bytes.size.toULong())
+        // Skia decodes from the raw encoded bytes directly
+        Image.makeFromEncoded(
+            bytes = ByteArray(nsData.length.toInt()).also { out ->
+                out.usePinned { outPinned ->
+                    platform.posix.memcpy(outPinned.addressOf(0), nsData.bytes, nsData.length)
+                }
+            }
+        )
+    }
+
+    return image.toComposeImageBitmap()
 }

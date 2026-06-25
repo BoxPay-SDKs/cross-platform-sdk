@@ -5,10 +5,10 @@
         <package android:name="com.example.store" />
         <package android:name="com.example.services" />
 
-<!--        <intent>-->
-<!--            <action android:name="android.intent.action.VIEW" />-->
-<!--            <data android:scheme="upi" />-->
-<!--        </intent>-->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="upi" />
+        </intent>
 
         <!-- GPay -->
         <package android:name="com.google.android.apps.nbu.paisa.user" />
@@ -26,6 +26,10 @@
     <application>
         <activity
             android:name="com.crossplatform.BoxPayActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false" />
+        <activity android:name="com.crossplatform.BoxPayElementsActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />

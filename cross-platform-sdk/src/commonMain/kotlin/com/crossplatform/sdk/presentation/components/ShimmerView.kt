@@ -59,10 +59,9 @@ private val shimmerItems = listOf(
 // --- ShimmerView Composable ---
 
 @Composable
-fun ShimmerView() {
+fun ShimmerView(modifier: Modifier) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .background(Color.White)
     ) {
         shimmerItems.forEach { item ->

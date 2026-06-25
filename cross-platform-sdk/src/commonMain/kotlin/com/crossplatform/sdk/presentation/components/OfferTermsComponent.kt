@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 
 fun parseHtmlParagraphs(html: String): List<String> {
     return html
@@ -36,11 +36,11 @@ fun TermsList(
                 Text(
                     text = "•",
                     modifier = Modifier.padding(end = 8.dp),
-                    fontFamily = defaultFontFamily
+                    fontFamily = LocalSDKFonts.current.primary
                 )
                 Text(
                     text = term,
-                    fontFamily = defaultFontFamily
+                    fontFamily = LocalSDKFonts.current.primary
                 )
             }
         }

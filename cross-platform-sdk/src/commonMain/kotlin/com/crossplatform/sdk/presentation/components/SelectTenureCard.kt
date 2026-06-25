@@ -28,8 +28,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.SelectTenureCardData
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
-import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 
 @Composable
@@ -89,16 +88,16 @@ private fun SelectedTenureCard(
                         SpanStyle(
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp,
-                            fontFamily = defaultFontFamily,
+                            fontFamily = LocalSDKFonts.current.primary,
                             color = Color(0xFF2D2B32)
                         )
                     ) {
                         append("${data.duration} months x ")
                     }
-                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Color(0xFF2D2B32), fontFamily = defaultInterFontFamily)) {
+                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Color(0xFF2D2B32), fontFamily = LocalSDKFonts.current.secondary)) {
                         append(currencySymbol)
                     }
-                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Color(0xFF2D2B32), fontFamily = defaultFontFamily)) {
+                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Color(0xFF2D2B32), fontFamily = LocalSDKFonts.current.primary)) {
                         append(data.monthlyEmiAmount)
                     }
                 }
@@ -159,15 +158,15 @@ private fun SelectedTenureCard(
             modifier = Modifier.padding(horizontal = 12.dp),
             text = buildAnnotatedString {
                 append("Your card will be charged for an amount of ")
-                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontFamily = defaultFontFamily)) {
+                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontFamily = LocalSDKFonts.current.primary)) {
                     append("$currencySymbol ${data.debitedAmount}")
                 }
                 append(". You will be charged an interest of ")
-                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontFamily = defaultFontFamily)) {
+                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontFamily = LocalSDKFonts.current.primary)) {
                     append("$currencySymbol ${data.interestCharged}")
                 }
                 append(" by the bank making the total payable amount as ")
-                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontFamily = defaultFontFamily)) {
+                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontFamily = LocalSDKFonts.current.primary)) {
                     append("$currencySymbol ${data.totalAmount}")
                 }
                 append(".")
@@ -183,7 +182,7 @@ private fun SelectedTenureCard(
         Text(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
             text = buildAnnotatedString {
-                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontFamily = defaultFontFamily)) {
+                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontFamily = LocalSDKFonts.current.primary)) {
                     append("$currencySymbol ${data.processingFee}")
                 }
                 append(" + GST will be charged by HDFC bank as one-time processing fee.")
@@ -241,7 +240,7 @@ private fun UnselectedTenureCard(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = buildAnnotatedString {
-                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Color(0xFF2D2B32), fontFamily = defaultFontFamily)) {
+                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Color(0xFF2D2B32), fontFamily = LocalSDKFonts.current.primary)) {
                         append("${data.duration} months x $currencySymbol ${data.monthlyEmiAmount} | @${data.interest}% p.a.")
                     }
                 },
@@ -271,7 +270,7 @@ private fun EmiTag(label: String) {
             text = label,
             fontSize = 10.sp,
             color = Color(0xFFEB2F96),
-            fontFamily = defaultFontFamily,
+            fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
         )
@@ -286,7 +285,7 @@ private fun TableHeaderCell(text: String, modifier: Modifier = Modifier) {
         fontWeight = FontWeight.SemiBold,
         fontSize = 12.sp,
         color = Color(0xFF2D2B32),
-        fontFamily = defaultFontFamily,
+        fontFamily = LocalSDKFonts.current.primary,
         maxLines = 2,
         textAlign = androidx.compose.ui.text.style.TextAlign.Center,
     )
@@ -304,7 +303,7 @@ private fun TableValueCell(
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         color = valueColor,
-        fontFamily = defaultFontFamily,
+        fontFamily = LocalSDKFonts.current.primary,
         maxLines = 2,
         textAlign = androidx.compose.ui.text.style.TextAlign.Center,
     )

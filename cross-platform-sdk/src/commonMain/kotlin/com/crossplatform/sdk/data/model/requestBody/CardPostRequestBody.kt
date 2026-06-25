@@ -1,8 +1,8 @@
 package com.crossplatform.sdk.data.model.requestBody
 
 import com.crossplatform.sdk.data.model.BrowserData
+import com.crossplatform.sdk.data.model.DeliveryAddress
 import com.crossplatform.sdk.data.model.DeviceDetails
-import com.crossplatform.sdk.data.model.Shopper
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 data class CardPostRequestBody(
     @SerialName("browserData") val browserData: BrowserData,
     @SerialName("instrumentDetails") val instrumentDetails: InstrumentDetails,
-    @SerialName("shopper") val shopper: Shopper,
+    @SerialName("shopper") val shopper: ShopperRequest,
     @SerialName("deviceDetails") val deviceDetails: DeviceDetails,
     @SerialName("oneTimePayment") val oneTimePayment: Boolean? = null  // conditional field
 ) {
@@ -36,7 +36,7 @@ data class CardPostRequestBody(
 data class SavedCardPostRequestBody(
     @SerialName("browserData") val browserData: BrowserData,
     @SerialName("instrumentDetails") val instrumentDetails: Instrument,
-    @SerialName("shopper") val shopper: Shopper,
+    @SerialName("shopper") val shopper: ShopperRequest,
     @SerialName("deviceDetails") val deviceDetails: DeviceDetails,
     @SerialName("oneTimePayment") val oneTimePayment: Boolean? = null  // conditional field
 ) {
@@ -51,3 +51,22 @@ data class SavedCardPostRequestBody(
         @SerialName("instrumentRef") val instrumentRef: String
     )
 }
+
+@Serializable
+data class ShopperRequest(
+    @SerialName("firstName") val firstName: String? = null,
+    @SerialName("lastName") val lastName: String? = null,
+    @SerialName("phoneNumber") val phoneNumber: String? = null,
+    @SerialName("email") val email: String? = null,
+    @SerialName("uniqueReference") val uniqueReference: String,
+    @SerialName("deliveryAddress") val deliveryAddress: DeliveryAddress? = null,
+    @SerialName("dateOfBirth") val dateOfBirth: String? = null,
+    @SerialName("panNumber") val panNumber: String? = null,
+    @SerialName("customFields") val customFields : List<CustomFieldsRequest>
+)
+
+@Serializable
+data class CustomFieldsRequest(
+    @SerialName("fieldName") val fieldName : String,
+    @SerialName("fieldValue") val fieldValue : String
+)

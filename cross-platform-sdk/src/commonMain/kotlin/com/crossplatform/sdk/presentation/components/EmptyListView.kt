@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.no_results_found
 import org.jetbrains.compose.resources.painterResource
@@ -59,7 +59,7 @@ fun EmptyListView(
                 text = heading,
                 fontSize = 16.sp,
                 color = Color(0xFF212426),
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold
             )
 

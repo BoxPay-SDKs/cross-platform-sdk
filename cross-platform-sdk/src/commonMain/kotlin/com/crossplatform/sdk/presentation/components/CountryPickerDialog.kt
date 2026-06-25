@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.crossplatform.sdk.domain.model.CountryDetailsModel
 import com.crossplatform.sdk.presentation.loadCountryData
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 
 // commonMain
@@ -83,7 +83,7 @@ fun CountryPickerDialog(
                 Text(
                     text       = "Select Country",
                     fontSize   = 18.sp,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                     modifier   = Modifier.weight(1f)
                 )
@@ -105,7 +105,7 @@ fun CountryPickerDialog(
                 placeholder   = {
                     Text(
                         text       = "Search country",
-                        fontFamily = defaultFontFamily,
+                        fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
                         color      = Color(0xFFADACAD)
                     )
@@ -122,7 +122,7 @@ fun CountryPickerDialog(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 textStyle = TextStyle(
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp
                 ),
@@ -152,14 +152,14 @@ fun CountryPickerDialog(
                     ) {
                         Text(
                             text       = details.fullName,
-                            fontFamily = defaultFontFamily,
+                            fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Normal,
                             fontSize   = 14.sp,
                             modifier   = Modifier.weight(1f)
                         )
                         Text(
                             text       = details.isdCode,
-                            fontFamily = defaultFontFamily,
+                            fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Normal,
                             fontSize   = 14.sp,
                             color      = Color(0xFF888780)

@@ -37,7 +37,7 @@ fun SavedAddressScreen(
             Text("Welcome to error screen $message")
         }
         UiState.Loading -> {
-            ShimmerView()
+            ShimmerView(modifier = Modifier.fillMaxSize())
         }
         is UiState.Success ->{
             val response = (uiState as UiState.Success).data

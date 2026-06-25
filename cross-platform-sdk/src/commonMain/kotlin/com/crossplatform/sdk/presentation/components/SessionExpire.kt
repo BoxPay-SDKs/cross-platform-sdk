@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
@@ -71,7 +71,7 @@ fun SessionExpire(
             Text(
                 text       = "Payment session has expired.",
                 fontSize   = 22.sp,
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
                 color      = Color(0xFFDB7C1D),
                 modifier   = Modifier.padding(top = 8.dp)
@@ -81,7 +81,7 @@ fun SessionExpire(
             Text(
                 text       = "For your security, your session has expired due to inactivity. Please restart the payment process.",
                 fontSize   = 14.sp,
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
                 color      = Color.Black,
                 textAlign  = TextAlign.Center,

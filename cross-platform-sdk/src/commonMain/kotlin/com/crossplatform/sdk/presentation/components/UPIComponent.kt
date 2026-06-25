@@ -25,11 +25,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
@@ -40,11 +42,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.MainScreenModel
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
+import com.crossplatform.sdk.presentation.base64ToImageBitmap
 import com.crossplatform.sdk.presentation.getDeviceDetails
 import com.crossplatform.sdk.presentation.getInstalledUpiApps
 import com.crossplatform.sdk.presentation.getPlatformContext
+import com.crossplatform.sdk.presentation.isTabletDevice
 import com.crossplatform.sdk.presentation.screens.CheckboxItem
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.add_icon
@@ -56,9 +60,12 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi_error
 import crossplatformsdk.cross_platform_sdk.generated.resources.other_intent_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.paytm_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.phonepe_icon
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import kotlin.io.encoding.ExperimentalEncodingApi
+
+val upiRegex = Regex("^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{3,64}$")
 
 @OptIn(ExperimentalEncodingApi::class)
 @Composable
@@ -69,7 +76,7 @@ fun UPIComponent(
     onClickUpiIntentPayButton : (String) -> Unit,
     onClickUpiQRPayButton : () -> Unit,
     onClickSavedUpiPayButton : (String, String) -> Unit,
-    onClickRadio : () -> Unit,
+    onClickRadio : (String) -> Unit,
     onErrorLoadingIntent : (String) -> Unit,
     buttonColor : String,
     buttonTextColor : String,
@@ -78,18 +85,23 @@ fun UPIComponent(
     ctaBorderRadius : Int,
     focusedTextInputBorderColor : String,
     unfocusedTextInputBorderColor : String,
-    shopperToken : String?
+    shopperToken : String?,
+    selectedId : String,
+    qrImage : String,
+    qrTimer : Int,
+    stopFunctionCall : () -> Unit,
+    showQROnLoad : Boolean,
+    isQRLoaded : Boolean,
+    isBoxPayPayButtonVisible : Boolean = true,
+    onVpaChanged : (String) -> Unit,
+    onClickIntent : (String) -> Unit
 ) {
     val isSaveInstrumentCheckBoxClicked = remember {
         mutableStateOf(false)
     }
-
-    val selectedId = remember {
-        mutableStateOf("")
-    }
     val context = getPlatformContext()
 
-    val isTablet = false
+    val isTablet = isTabletDevice()
     var upiCollectTextInput  by remember { mutableStateOf("") }
     var upiCollectError      by remember { mutableStateOf(false) }
     var upiCollectValid      by remember { mutableStateOf(false) }
@@ -101,9 +113,6 @@ fun UPIComponent(
     var isPaytmInstalled     by remember { mutableStateOf(false) }
     var isBhimUpiInstalled by remember { mutableStateOf(false) }
 
-    val upiRegex = remember { Regex("^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{3,64}$") }
-
-
     LaunchedEffect(Unit) {
         val installed    = getInstalledUpiApps(context)
         onErrorLoadingIntent(installed.toString())
@@ -113,8 +122,48 @@ fun UPIComponent(
         isBhimUpiInstalled = installed.contains("bhim")
     }
 
+    LaunchedEffect(Unit) {
+        if(showQROnLoad && !isQRLoaded) {
+            upiQRVisible = !upiQRVisible
+            onClickUpiQRPayButton()
+        }
+    }
+
+    LaunchedEffect(upiQRVisible) {
+        if(!upiQRVisible) {
+            stopFunctionCall()
+        }
+    }
+
+    var remainingTime by remember(qrTimer) {
+        mutableIntStateOf(qrTimer)
+    }
+
+    val qrIsExpired = remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(qrTimer) {
+        qrIsExpired.value = false
+
+        while (remainingTime > 0) {
+            delay(1000)
+            remainingTime--
+        }
+
+        qrIsExpired.value = true
+        if(qrIsExpired.value) stopFunctionCall()
+    }
+
+    LaunchedEffect(upiQRVisible) {
+        if(!upiQRVisible) {
+            stopFunctionCall()
+            remainingTime = 0
+        }
+    }
 
     fun handleTextChange(text: String) {
+        onVpaChanged(text)
         upiCollectTextInput = text
         upiCollectError     = false
         if (text.trim().isNotEmpty() && upiRegex.matches(text)) {
@@ -144,12 +193,15 @@ fun UPIComponent(
                         id                  = provider.id,
                         title               = provider.displayName,
                         imageUrl            = provider.imageUrl,
-                        isSelected          = provider.id == selectedId.value,
+                        isSelected          = provider.id == selectedId,
                         instrumentTypeValue = provider.instrumentType,
                         isLastUsed          = false,
                         onPress             = {
-                            onClickRadio()
-                            selectedId.value = it
+                            onClickRadio(it)
+                            upiQRVisible = false
+                            selectedIntent = ""
+                            upiCollectVisible = false
+                            upiCollectError   = false
                                               },
                         onProceedForward    = { displayValue, instrumentValue ->
                             onClickSavedUpiPayButton(instrumentValue, displayValue )
@@ -159,7 +211,8 @@ fun UPIComponent(
                         currencySymbol      = currencySymbol,
                         amount              = amount,
                         ctaBorderRadius     = ctaBorderRadius,
-                        drawableResource    = Res.drawable.ic_upi_error
+                        drawableResource    = Res.drawable.ic_upi_error,
+                        isBoxPayPayButtonVisible = isBoxPayPayButtonVisible
                     )
                     HorizontalDivider(
                         color     = Color(0xFFECECED),
@@ -187,7 +240,9 @@ fun UPIComponent(
                             upiCollectVisible = false
                             upiCollectError   = false
                             selectedIntent    = "GPay"
-//                                resetSavedUpi()
+                            onClickRadio("")
+                            upiQRVisible = false
+                            onClickIntent(selectedIntent)
                         }
                     )
                 }
@@ -201,7 +256,9 @@ fun UPIComponent(
                             upiCollectVisible = false
                             upiCollectError   = false
                             selectedIntent    = "PhonePe"
-//                                resetSavedUpi()
+                            onClickRadio("")
+                            upiQRVisible = false
+                            onClickIntent(selectedIntent)
                         }
                     )
                 }
@@ -215,7 +272,9 @@ fun UPIComponent(
                             upiCollectVisible = false
                             upiCollectError   = false
                             selectedIntent    = "PayTm"
-//                                resetSavedUpi()
+                            onClickRadio("")
+                            upiQRVisible = false
+                            onClickIntent(selectedIntent)
                         }
                     )
                 }
@@ -229,7 +288,9 @@ fun UPIComponent(
                             upiCollectVisible = false
                             upiCollectError   = false
                             selectedIntent    = "Bhim"
-//                                resetSavedUpi()
+                            onClickRadio("")
+                            upiQRVisible = false
+                            onClickIntent(selectedIntent)
                         }
                     )
                 }
@@ -244,14 +305,15 @@ fun UPIComponent(
                             upiCollectError   = false
                             selectedIntent    = ""
                             onClickUpiIntentPayButton(selectedIntent)
-//                            resetSavedUpi()
+                            onClickRadio("")
+                            upiQRVisible = false
                         }
                     )
                 }
             }
 
             // --- Pay via Intent Button ---
-            if (selectedIntent.isNotEmpty()) {
+            if (selectedIntent.isNotEmpty() && isBoxPayPayButtonVisible) {
                 Spacer(modifier = Modifier.height(12.dp))
                 PayButton(
                     modifier = Modifier
@@ -289,7 +351,8 @@ fun UPIComponent(
                     selectedIntent    = ""
                     upiCollectVisible = !upiCollectVisible
                     upiQRVisible      = false
-//                        resetSavedUpi()
+                    onClickRadio("")
+                    onClickIntent(selectedIntent)
                 }
             )
 
@@ -302,7 +365,7 @@ fun UPIComponent(
                     label         = {
                         Text(
                             text       = "Enter UPI Id",
-                            fontFamily = defaultFontFamily,
+                            fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Normal
                         )
                     },
@@ -319,7 +382,7 @@ fun UPIComponent(
                     shape    = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                     textStyle = TextStyle(
-                        fontFamily = defaultFontFamily,
+                        fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp
                     ),
@@ -335,7 +398,7 @@ fun UPIComponent(
                         text       = "Please enter a valid UPI Id",
                         color      = Color.Red,
                         fontSize   = 12.sp,
-                        fontFamily = defaultFontFamily,
+                        fontFamily = LocalSDKFonts.current.primary,
                         modifier   = Modifier.padding(top = 4.dp, start = 12.dp, end = 12.dp)
                     )
                 }
@@ -353,7 +416,7 @@ fun UPIComponent(
                         )
                         Text(
                             text       = "Save UPI ID for future usage",
-                            fontFamily = defaultFontFamily,
+                            fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Normal,
                             fontSize   = 14.sp,
                             color      = Color(0xFF2D2B32),
@@ -364,22 +427,24 @@ fun UPIComponent(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                PayButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                        .clip(RoundedCornerShape(ctaBorderRadius.dp))
-                        .background(if (upiCollectValid) buttonColor.toComposeColor()
-                        else Color(0xFFE6E6E6))
-                        .clickable(enabled = upiCollectValid) {
-                            onClickUpiCollectPayButton(upiCollectTextInput, isSaveInstrumentCheckBoxClicked.value)
-                        },
-                    text   = "Verify & Pay",
-                    amount = amount,
-                    currencySymbol = currencySymbol,
-                    buttonTextColor = buttonTextColor,
-                    isValid = upiCollectValid
-                )
+                if(isBoxPayPayButtonVisible) {
+                    PayButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp)
+                            .clip(RoundedCornerShape(ctaBorderRadius.dp))
+                            .background(if (upiCollectValid) buttonColor.toComposeColor()
+                            else Color(0xFFE6E6E6))
+                            .clickable(enabled = upiCollectValid) {
+                                onClickUpiCollectPayButton(upiCollectTextInput, isSaveInstrumentCheckBoxClicked.value)
+                            },
+                        text   = "Verify & Pay",
+                        amount = amount,
+                        currencySymbol = currencySymbol,
+                        buttonTextColor = buttonTextColor,
+                        isValid = upiCollectValid
+                    )
+                }
             }
         }
 
@@ -390,7 +455,7 @@ fun UPIComponent(
             ) {
                 HorizontalDivider(
                     color    = Color(0xFFE6E6E6),
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                 )
             }
 
@@ -400,67 +465,64 @@ fun UPIComponent(
                 isExpanded  = upiQRVisible,
                 buttonColor = buttonColor,
                 onClick     = {
-//                        if (upiQRVisible) upiQRVisible = false
-//                        else onQRChevronClick()
+                    upiQRVisible = !upiQRVisible
+                    onClickUpiQRPayButton()
                 }
             )
         }
 
         // --- QR Image ---
-//            if (upiQRVisible && qrImage.isNotEmpty()) {
-//                Spacer(modifier = Modifier.height(12.dp))
-//                Row(
-//                    modifier          = Modifier.fillMaxWidth(),
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Box(contentAlignment = Alignment.Center) {
-//                        val imageBitmap = remember(key1=qrImage) {
-//                            val bytes = Base64.decode(qrImage, Base64.DEFAULT)
-//                            BitmapFactory.decodeByteArray(bytes, 0, bytes.size).asImageBitmap()
-//                        }
-//                        Image(
-//                            bitmap             = imageBitmap,
-//                            contentDescription = "QR Code",
-//                            modifier           = Modifier
-//                                .size(150.dp)
-//                                .alpha(if (qrIsExpired) 0.2f else 1f)
-//                        )
-//                        if (qrIsExpired) {
-//                            Text(
-//                                text     = "↻ Retry",
-//                                color    = buttonColor.toComposeColor(),
-//                                fontFamily = defaultFontFamily,
-//                                fontWeight = FontWeight.SemiBold,
-//                                modifier = Modifier.clickable { onRetryQR() }
-//                            )
-//                        }
-//                    }
-//
-//                    Spacer(modifier = Modifier.width(16.dp))
-//
-//                    Column {
-//                        Text(
-//                            text       = "Scan & Pay with UPI Application",
-//                            fontFamily = defaultFontFamily,
-//                            fontWeight = FontWeight.Normal,
-//                            fontSize   = 14.sp
-//                        )
-//                        Text(
-//                            text       = "QR code will expire in",
-//                            fontFamily = defaultFontFamily,
-//                            fontWeight = FontWeight.Normal,
-//                            fontSize   = 14.sp
-//                        )
-//                        Text(
-//                            text       = formatTime(timeRemaining),
-//                            color      = buttonColor.toComposeColor(),
-//                            fontFamily = defaultFontFamily,
-//                            fontWeight = FontWeight.SemiBold,
-//                            fontSize   = 18.sp
-//                        )
-//                    }
-//                }
-//            }
+            if (upiQRVisible && qrImage.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier          = Modifier.fillMaxWidth().padding(start = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+
+                        Image(
+                            bitmap = base64ToImageBitmap(qrImage),
+                            contentDescription = "Payment QR",
+                            modifier = Modifier
+                                .size(250.dp)
+                                .blur(if (qrIsExpired.value) 12.dp else 0.dp)
+                        )
+                        if (qrIsExpired.value) {
+                            Text(
+                                text     = "↻ Retry",
+                                color    = buttonColor.toComposeColor(),
+                                fontFamily = LocalSDKFonts.current.primary,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.clickable { onClickUpiQRPayButton() }.background(Color.White, RoundedCornerShape(12.dp)).padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column {
+                        Text(
+                            text       = "Scan & Pay with UPI Application",
+                            fontFamily = LocalSDKFonts.current.primary,
+                            fontWeight = FontWeight.Normal,
+                            fontSize   = 14.sp
+                        )
+                        Text(
+                            text       = "QR code will expire in",
+                            fontFamily = LocalSDKFonts.current.primary,
+                            fontWeight = FontWeight.Normal,
+                            fontSize   = 14.sp
+                        )
+                        Text(
+                            text       = formatTime(remainingTime),
+                            color      = buttonColor.toComposeColor(),
+                            fontFamily = LocalSDKFonts.current.primary,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize   = 18.sp
+                        )
+                    }
+                }
+            }
     }
 }
 
@@ -495,7 +557,7 @@ private fun UpiIntentItem(
         Text(
             text       = label,
             fontSize   = 12.sp,
-            fontFamily = defaultFontFamily,
+            fontFamily = LocalSDKFonts.current.primary,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
             color      = if (isSelected) buttonColor.toComposeColor() else Color.Black
         )
@@ -534,7 +596,7 @@ private fun UpiExpandableHeader(
         Text(
             text       = label,
             color      = buttonColor.toComposeColor(),
-            fontFamily = defaultFontFamily,
+            fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.SemiBold,
             fontSize   = 14.sp,
             modifier   = Modifier.weight(1f)
@@ -547,4 +609,13 @@ private fun UpiExpandableHeader(
                 .rotate(rotation)
         )
     }
+}
+
+fun formatTime(totalSeconds: Int): String {
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+
+    return minutes.toString().padStart(2, '0') +
+            ":" +
+            seconds.toString().padStart(2, '0')
 }

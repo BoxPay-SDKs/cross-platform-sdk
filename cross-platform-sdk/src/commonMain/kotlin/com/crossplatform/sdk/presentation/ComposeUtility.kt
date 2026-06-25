@@ -5,21 +5,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
-import com.crossplatform.sdk.data.model.CheckoutDetails
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -39,7 +33,7 @@ fun ChevronIcon() {
 fun SectionTitle(title: String) {
     Text(
         text       = title,
-        fontFamily = defaultFontFamily,
+        fontFamily = LocalSDKFonts.current.primary,
         fontWeight = FontWeight.SemiBold,
         fontSize   = 14.sp,
         modifier   = Modifier.padding(bottom = 8.dp, start = 16.dp, end = 16.dp, top = 16.dp)
@@ -52,7 +46,7 @@ fun ErrorText(message: String) {
         text       = message,
         fontSize   = 12.sp,
         color      = Color(0xFFE12121),
-        fontFamily = defaultFontFamily,
+        fontFamily = LocalSDKFonts.current.primary,
         fontWeight = FontWeight.Normal,
         modifier   = Modifier.padding(start = 16.dp, top = 2.dp)
     )

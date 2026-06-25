@@ -1,15 +1,18 @@
 package com.crossplatform.sdk.presentation
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import com.crossplatform.sdk.data.model.BrowserData
-
 import android.content.res.Resources
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import com.crossplatform.sdk.data.model.DeviceDetails
 import java.util.TimeZone
@@ -21,6 +24,8 @@ import com.crossplatform.sdk.domain.model.AppLifecycleState
 import java.util.Calendar
 import kotlin.collections.component1
 import kotlin.collections.component2
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 
 lateinit var appContext: Context
@@ -159,4 +164,24 @@ actual fun BackHandler(onBack: () -> Unit) {
     BackHandler {
         onBack()
     }
+}
+
+actual fun isTabletDevice(): Boolean {
+    val smallestWidthDp = Resources.getSystem().configuration.smallestScreenWidthDp
+    return smallestWidthDp >= 600
+}
+
+@OptIn(ExperimentalEncodingApi::class)
+actual fun base64ToImageBitmap(base64: String): ImageBitmap {
+    val cleanBase64 = base64.substringAfter("base64,", base64)
+
+    val bytes = Base64.Default.decode(cleanBase64)
+
+    val bitmap = BitmapFactory.decodeByteArray(
+        bytes,
+        0,
+        bytes.size
+    ) ?: error("Unable to decode image")
+
+    return bitmap.asImageBitmap()
 }

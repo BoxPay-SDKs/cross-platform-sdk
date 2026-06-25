@@ -23,8 +23,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.ChevronIcon
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
-import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -65,7 +64,7 @@ fun MorePaymentContainer(
             Text(
                 text     = title,
                 fontSize = 14.sp,
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Medium
             )
             if (surchargeFee != 0.0 && surchargeFee != null) {
@@ -73,21 +72,21 @@ fun MorePaymentContainer(
                     text       = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                fontFamily = defaultInterFontFamily
+                                fontFamily = LocalSDKFonts.current.secondary
                             )
                         ) {
                             append(currencySymbol)
                         }
                         withStyle(
                             style = SpanStyle(
-                                fontFamily = defaultFontFamily
+                                fontFamily = LocalSDKFonts.current.primary
                             )
                         ) {
                             append("$surchargeFee extra applied as surcharge")
                         }
                     },
                     fontSize   = 14.sp,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Medium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

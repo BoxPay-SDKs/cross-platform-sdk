@@ -35,4 +35,26 @@ class OtherPaymentMethodRepoImpl(
         apiService.fetchStatus()
     }
 
+    override suspend fun initiateEMIPayment(
+        cardNumber: String,
+        expiryDate: String,
+        cvv: String,
+        holderName: String,
+        cardType: String?,
+        offerCode: String?,
+        duration: Int?,
+        provider: String?
+    ): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
+        apiService.emiPostRequest(
+            cardNumber = cardNumber,
+            expiryDate = expiryDate,
+            cvv = cvv,
+            holderName = holderName,
+            cardType = cardType,
+            offerCode = offerCode,
+            duration = duration,
+            provider = provider
+        )
+    }
+
 }

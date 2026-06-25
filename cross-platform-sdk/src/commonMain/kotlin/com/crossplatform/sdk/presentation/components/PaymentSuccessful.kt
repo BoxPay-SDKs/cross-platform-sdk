@@ -30,8 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.formatTransactionTimestamp
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
-import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
@@ -100,7 +99,7 @@ fun PaymentSuccessful(
             Text(
                 text       = "Payment Successful",
                 fontSize   = 22.sp,
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
                 color      = Color(0xFF019939),
                 modifier   = Modifier.padding(top = 8.dp)
@@ -115,13 +114,13 @@ fun PaymentSuccessful(
                     Text(
                         text = item.first,
                         fontSize = 14.sp,
-                        fontFamily = defaultFontFamily,
+                        fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
                     )
                     Text(
                         text = item.second,
                         fontSize = 14.sp,
-                        fontFamily = defaultFontFamily,
+                        fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.SemiBold,
                     )
                 }
@@ -137,28 +136,28 @@ fun PaymentSuccessful(
                 Text(
                     text = "Total Amount",
                     fontSize = 14.sp,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
                     text =buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                fontFamily = defaultInterFontFamily
+                                fontFamily = LocalSDKFonts.current.secondary
                             )
                         ) {
                             append(currencySymbol)
                         }
                         withStyle(
                             style = SpanStyle(
-                                fontFamily = defaultFontFamily
+                                fontFamily = LocalSDKFonts.current.primary
                             )
                         ) {
-                            append("$amount")
+                            append("${amount.value}")
                         }
                     },
                     fontSize = 16.sp,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                 )
             }

@@ -29,8 +29,9 @@ class BoxPayActivity : ComponentActivity() {
         val ctaBorderRadius = intent.getIntExtra("ctaBorderRadius", 12)
         val isSICheckBoxChecked = intent.getBooleanExtra("isSICheckBoxChecked", false)
         val isSICheckBoxEnabled = intent.getBooleanExtra("isSICheckBoxEnabled", false)
-        val focusedTextInputBorderColor = intent.getStringExtra("focusedTextInputBorderColor") ?: "#2D2B32"
-        val unfocusedTextInputBorderColor = intent.getStringExtra("unfocusedTextInputBorderColor") ?: "#ADACB0"
+        val focusedTextInputBorderColor = intent.getStringExtra("focusedTextInputBorderColor") ?: ""
+        val unfocusedTextInputBorderColor = intent.getStringExtra("unfocusedTextInputBorderColor") ?: ""
+        val fontFamily = intent.getStringExtra("fontFamily")
         enableEdgeToEdge()
 
         CommonSDKDismissHandler.setCloseSDK { finish() }
@@ -52,7 +53,8 @@ class BoxPayActivity : ComponentActivity() {
                     isSICheckBoxChecked = isSICheckBoxChecked,
                     isSICheckBoxEnabled = isSICheckBoxEnabled,
                     focusedTextInputBorderColor = focusedTextInputBorderColor,
-                    unfocusedTextInputBorderColor = unfocusedTextInputBorderColor
+                    unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
+                    fontFamily = fontFamily
                 )
             }
         }
@@ -71,7 +73,8 @@ class BoxPayActivity : ComponentActivity() {
             isSuccessScreenVisible : Boolean ,
             ctaBorderRadius : Int ,
             focusedTextInputBorderColor : String ,
-            unfocusedTextInputBorderColor : String
+            unfocusedTextInputBorderColor : String,
+            fontFamily : String?
         ) =
             Intent(context, BoxPayActivity::class.java).apply {
                 putExtra("token", token)
@@ -85,6 +88,7 @@ class BoxPayActivity : ComponentActivity() {
                 putExtra("ctaBorderRadius", ctaBorderRadius)
                 putExtra("focusedTextInputBorderColor", focusedTextInputBorderColor)
                 putExtra("unfocusedTextInputBorderColor", unfocusedTextInputBorderColor)
+                putExtra("fontFamily", fontFamily)
             }
     }
 }

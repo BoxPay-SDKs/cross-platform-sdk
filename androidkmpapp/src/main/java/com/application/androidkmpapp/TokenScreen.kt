@@ -1,5 +1,6 @@
 package com.application.androidkmpapp
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,11 +25,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,8 +41,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
-import com.crossplatform.sdk.presentation.toComposeColor
 
 data class BoxPayConfig(
     val token: String,
@@ -56,9 +53,13 @@ data class BoxPayConfig(
     val isSICheckBoxChecked: Boolean,
     val isSICheckBoxEnabled: Boolean,
     val focusedTextInputBorderColor: String,
-    val unfocusedTextInputBorderColor: String
+    val unfocusedTextInputBorderColor: String,
+    val paymentMethodList : List<String>,
+    val isBoxPayPayButtonVisible : Boolean,
+    val fontFamily : String
 )
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun TokenScreen(onProceed: (BoxPayConfig) -> Unit) {
 
@@ -71,10 +72,30 @@ fun TokenScreen(onProceed: (BoxPayConfig) -> Unit) {
     val ctaBorderRadius             = remember { mutableIntStateOf(12) }
     val isSICheckBoxChecked         = remember { mutableStateOf(false) }
     val isSICheckBoxEnabled         = remember { mutableStateOf(false) }
+    val isBoxPayPayButtonVisible = remember { mutableStateOf(false) }
     val focusedTextInputBorderColor = remember { mutableStateOf("#2D2B32") }
     val unfocusedTextInputBorderColor = remember { mutableStateOf("#ADACB0") }
     val focusedDropdownExpanded   = remember { mutableStateOf(false) }
     val unfocusedDropdownExpanded = remember { mutableStateOf(false) }
+
+    val paymentMethods = remember {
+        mutableStateOf(
+            mutableSetOf<String>()
+        )
+    }
+
+    val paymentMethodDropdownExpanded = remember {
+        mutableStateOf(false)
+    }
+
+    val availablePaymentMethods = listOf(
+        "UPI",
+        "CARDS",
+        "WALLET",
+        "NETBANKING",
+        "BUYNOWPAYLATER",
+        "EMI"
+    )
 
     val presetColors = listOf(
         "Custom"    to null,
@@ -86,6 +107,8 @@ fun TokenScreen(onProceed: (BoxPayConfig) -> Unit) {
         "Red"       to "#E53935",
         "Purple"    to "#7B1FA2",
     )
+    val fontFamily = remember { mutableStateOf("Default") }
+    val fontDropdownExpanded = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -127,12 +150,11 @@ fun TokenScreen(onProceed: (BoxPayConfig) -> Unit) {
             value = ctaBorderRadius.intValue.toString(),
             onValueChange = { ctaBorderRadius.intValue = it.filter { c -> c.isDigit() }.toIntOrNull() ?: 0 },
             label = {
-                Text(text = "CTA Border Radius", fontFamily = defaultFontFamily, fontWeight = FontWeight.Normal, fontSize = 16.sp)
+                Text(text = "CTA Border Radius",  fontWeight = FontWeight.Normal, fontSize = 16.sp)
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth().height(62.dp),
             textStyle = TextStyle(
-                fontFamily = defaultFontFamily,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp,
                 color = Color(0xFF0A090B)
@@ -141,8 +163,27 @@ fun TokenScreen(onProceed: (BoxPayConfig) -> Unit) {
             maxLines = 1
         )
 
+        MultiSelectPaymentMethodDropdown(
+            selectedMethods = paymentMethods.value,
+            availableMethods = availablePaymentMethods,
+            expanded = paymentMethodDropdownExpanded.value,
+            onExpandedChange = {
+                paymentMethodDropdownExpanded.value = it
+            },
+            onSelectionChanged = {
+                paymentMethods.value = it.toMutableSet()
+            }
+        )
+        FontFamilyDropdown(
+            selected = fontFamily.value,
+            expanded = fontDropdownExpanded.value,
+            onExpandedChange = { fontDropdownExpanded.value = it },
+            onSelect = { fontFamily.value = it }
+        )
+
         // ── Toggle switches ────────────────────────────────────
         ToggleRow(label = "Test Environment",        checked = isTestEnv.value)              { isTestEnv.value = it }
+        ToggleRow(label = "BoxPay Pay Button Visible (Only eligible in Elements)", checked = isBoxPayPayButtonVisible.value)    { isBoxPayPayButtonVisible.value = it }
         ToggleRow(label = "Show Success Screen",     checked = isSuccessScreenVisible.value) { isSuccessScreenVisible.value = it }
         ToggleRow(label = "Show Failed Screen",      checked = isFailedScreenVisible.value)  { isFailedScreenVisible.value = it }
         ToggleRow(label = "Show QR On Load",         checked = showQROnLoad.value)           { showQROnLoad.value = it }
@@ -169,7 +210,10 @@ fun TokenScreen(onProceed: (BoxPayConfig) -> Unit) {
                             isSICheckBoxChecked         = isSICheckBoxChecked.value,
                             isSICheckBoxEnabled         = isSICheckBoxEnabled.value,
                             focusedTextInputBorderColor   = focusedTextInputBorderColor.value,
-                            unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value
+                            unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
+                            paymentMethodList = paymentMethods.value.toList(),
+                            isBoxPayPayButtonVisible = isBoxPayPayButtonVisible.value,
+                            fontFamily = if (fontFamily.value == "Default") "" else fontFamily.value
                         )
                     )
                 },
@@ -178,7 +222,6 @@ fun TokenScreen(onProceed: (BoxPayConfig) -> Unit) {
             Text(
                 text       = "Proceed",
                 fontSize   = 16.sp,
-                fontFamily = defaultFontFamily,
                 fontWeight = FontWeight.SemiBold,
                 color      = if (token.value.isNotEmpty()) Color.White else Color(0xFFADACAD),
                 modifier   = Modifier.padding(vertical = 14.dp)
@@ -195,12 +238,11 @@ private fun TokenField(label: String, value: String, onChange: (String) -> Unit)
         value         = value,
         onValueChange = onChange,
         label = {
-            Text(text = label, fontFamily = defaultFontFamily, fontWeight = FontWeight.Normal, fontSize = 16.sp)
+            Text(text = label, fontWeight = FontWeight.Normal, fontSize = 16.sp)
         },
         shape     = RoundedCornerShape(8.dp),
         modifier  = Modifier.fillMaxWidth().height(62.dp),
         textStyle = TextStyle(
-            fontFamily = defaultFontFamily,
             fontWeight = FontWeight.Normal,
             fontSize   = 16.sp,
             color      = Color(0xFF0A090B)
@@ -216,7 +258,7 @@ private fun ToggleRow(label: String, checked: Boolean, onCheckedChange: (Boolean
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = label, fontFamily = defaultFontFamily, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+        Text(text = label, fontSize = 14.sp, fontWeight = FontWeight.Medium)
         Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
@@ -234,12 +276,12 @@ private fun ColorPickerField(
     val isCustom = presetColors.none { it.second == selectedColor }
     val parsedColor = remember(selectedColor) {
         try { Color(selectedColor.toColorInt()) }
-        catch (e: Exception) { Color.Transparent }
+        catch (_: Exception) { Color.Transparent }
     }
 
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
 
-        Text(text = label, fontFamily = defaultFontFamily, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+        Text(text = label, fontSize = 14.sp, fontWeight = FontWeight.Medium)
 
         // ── Dropdown ───────────────────────────────────────────
         ExposedDropdownMenuBox(
@@ -265,7 +307,7 @@ private fun ColorPickerField(
                 },
                 shape    = RoundedCornerShape(8.dp),
                 modifier = Modifier.fillMaxWidth().menuAnchor(),
-                textStyle = TextStyle(fontFamily = defaultFontFamily, fontSize = 16.sp, color = Color(0xFF0A090B))
+                textStyle = TextStyle( fontSize = 16.sp, color = Color(0xFF0A090B))
             )
 
             ExposedDropdownMenu(
@@ -282,15 +324,15 @@ private fun ColorPickerField(
                                         .clip(CircleShape)
                                         .background(
                                             if (hex != null) {
-                                                try { Color(android.graphics.Color.parseColor(hex)) }
-                                                catch (e: Exception) { Color.Transparent }
+                                                try { Color(hex.toColorInt()) }
+                                                catch (_: Exception) { Color.Transparent }
                                             } else Color.Transparent
                                         )
                                         .border(1.dp, Color.LightGray, CircleShape)
                                 )
-                                Text(text = name, fontFamily = defaultFontFamily, fontSize = 14.sp)
+                                Text(text = name,  fontSize = 14.sp)
                                 if (hex != null) {
-                                    Text(text = hex, fontFamily = defaultFontFamily, fontSize = 12.sp, color = Color.Gray)
+                                    Text(text = hex, fontSize = 12.sp, color = Color.Gray)
                                 }
                             }
                         },
@@ -311,7 +353,7 @@ private fun ColorPickerField(
                     val clean = if (new.startsWith("#")) new else "#$new"
                     onColorChange(clean)
                 },
-                label = { Text("Hex value", fontFamily = defaultFontFamily, fontSize = 14.sp) },
+                label = { Text("Hex value",  fontSize = 14.sp) },
                 leadingIcon = {
                     Box(
                         modifier = Modifier
@@ -323,10 +365,144 @@ private fun ColorPickerField(
                 },
                 shape     = RoundedCornerShape(8.dp),
                 modifier  = Modifier.fillMaxWidth().height(62.dp),
-                textStyle = TextStyle(fontFamily = defaultFontFamily, fontSize = 16.sp, color = Color(0xFF0A090B)),
+                textStyle = TextStyle( fontSize = 16.sp, color = Color(0xFF0A090B)),
                 maxLines  = 1
             )
         }
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MultiSelectPaymentMethodDropdown(
+    selectedMethods: Set<String>,
+    availableMethods: List<String>,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    onSelectionChanged: (Set<String>) -> Unit
+) {
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = onExpandedChange
+    ) {
+
+        OutlinedTextField(
+            value = if (selectedMethods.isEmpty()) {
+                "All Payment Methods (Checkout)"
+            } else {
+                selectedMethods.joinToString(", ")
+            },
+            onValueChange = {},
+            readOnly = true,
+            label = {
+                Text(
+                    "Payment Methods",
+                )
+            },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor()
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                onExpandedChange(false)
+            }
+        ) {
+
+            availableMethods.forEach { method ->
+
+                val isSelected = method in selectedMethods
+
+                DropdownMenuItem(
+                    text = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            androidx.compose.material3.Checkbox(
+                                checked = isSelected,
+                                onCheckedChange = null
+                            )
+
+                            Spacer(
+                                modifier = Modifier.width(8.dp)
+                            )
+
+                            Text(
+                                text = method,
+                            )
+                        }
+                    },
+                    onClick = {
+
+                        val updated = selectedMethods.toMutableSet()
+
+                        if (isSelected) {
+                            updated.remove(method)
+                        } else {
+                            updated.add(method)
+                        }
+
+                        onSelectionChanged(updated)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FontFamilyDropdown(
+    selected: String,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    onSelect: (String) -> Unit
+) {
+    // Label shown to the user → value sent to the SDK (lowercase to match the catalog)
+    val options = listOf(
+        "Default" to "poppins",
+        "Arial" to "arial",
+        "NotoSans" to "notosans",
+    )
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = onExpandedChange
+    ) {
+        OutlinedTextField(
+            value = selected,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Font Family") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            shape = RoundedCornerShape(8.dp),
+            textStyle = TextStyle( fontSize = 16.sp, color = Color(0xFF0A090B)),
+            modifier = Modifier.fillMaxWidth().menuAnchor()
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { onExpandedChange(false) }
+        ) {
+            options.forEach { (label, _) ->
+                DropdownMenuItem(
+                    text = { Text(label, fontSize = 14.sp) },
+                    onClick = {
+                        onSelect(label)          // store the label for display
+                        onExpandedChange(false)
+                    }
+                )
+            }
+        }
+    }
+}

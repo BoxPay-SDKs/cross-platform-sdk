@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.screens.CheckboxItem
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.add_icon
@@ -55,7 +55,8 @@ fun SavedCardComponent(
     ctaBorderRadius : Int,
     isSICheckboxChecked: Boolean,
     isSICheckboxEnabled : Boolean,
-    onClickDeleteCard: (String, String) -> Unit
+    onClickDeleteCard: (String, String) -> Unit,
+    onClickRadio : () -> Unit
 ) {
     val selectedId = remember {
         mutableStateOf("")
@@ -83,6 +84,7 @@ fun SavedCardComponent(
                 instrumentTypeValue = card.instrumentType,
                 onPress             = {
                     selectedId.value = it
+                    onClickRadio()
                 },
                 onProceedForward    = onProceedForward,
                 brandColor          = buttonColor,
@@ -118,7 +120,7 @@ fun SavedCardComponent(
                 Text(
                     text       = "Add new Card",
                     fontSize   = 14.sp,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                     color      = buttonColor.toComposeColor()
                 )
@@ -198,7 +200,7 @@ private fun SavedCardRow(
                 if (nickName.isNotEmpty()) {
                     Text(
                         text       = nickName,
-                        fontFamily = defaultFontFamily,
+                        fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.SemiBold,
                         fontSize   = 12.sp,
                         color      = Color(0xFF4F4D55),
@@ -209,7 +211,7 @@ private fun SavedCardRow(
                 }
                 Text(
                     text       = cardNumber,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize   = 12.sp,
                     color      = Color(0xFF4F4D55),
@@ -258,7 +260,7 @@ private fun SavedCardRow(
                 )
                 Text(
                     text       = "Set up Standing Instructions (SI) for this payment.",
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize   = 14.sp,
                     color      = Color(0xFF2D2B32),

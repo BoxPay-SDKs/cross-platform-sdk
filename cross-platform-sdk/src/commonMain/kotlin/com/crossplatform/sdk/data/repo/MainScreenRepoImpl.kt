@@ -74,4 +74,10 @@ class MainScreenRepoImpl(
         apiService.deleteSavedCard(id)
     }
 
+    override suspend fun postUPIQrRequest(type: String): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
+        apiService.upiQrPostRequest(
+            type = type
+        )
+    }
+
 }

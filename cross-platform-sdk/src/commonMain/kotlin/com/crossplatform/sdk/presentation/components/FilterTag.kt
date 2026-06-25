@@ -12,14 +12,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 
 @Composable
 fun FilterTag(modifier: Modifier = Modifier, text: String) {
     Text(
         text = text,
         style = TextStyle(
-            fontFamily = defaultFontFamily,
+            fontFamily = LocalSDKFonts.current.primary,
             fontSize = 10.sp,
             fontWeight = FontWeight(500)
         ),

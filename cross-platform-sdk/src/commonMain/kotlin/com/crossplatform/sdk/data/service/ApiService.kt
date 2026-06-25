@@ -33,6 +33,17 @@ interface ApiService {
         isSICheckboxClicked : Boolean?
     ) : ApiResponse<PaymentMethodPostResponse>
 
+    suspend fun emiPostRequest(
+        cardNumber: String,
+        expiryDate: String,
+        cvv: String,
+        holderName: String,
+        cardType: String?,
+        offerCode: String?,
+        duration: Int?,
+        provider : String?
+    ): ApiResponse<PaymentMethodPostResponse>
+
     suspend fun fetchCardDetails(
         cardNumber : String
     ) : ApiResponse<FetchCardDetails>

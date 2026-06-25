@@ -12,7 +12,7 @@ fun handlePaymentResponse(
     onSetPaymentUrl: ((String) -> Unit)? = null,
     onSetPaymentHtml: ((String) -> Unit)? = null,
     onNavigateToTimer: (() -> Unit)? = null,
-    onOpenQr: ((String) -> Unit)? = null,
+    onOpenQr: ((String, Int) -> Unit)? = null,
     onOpenUpiIntent: ((String) -> Unit)? = null,
     errorMessage : String,
     setIsBoxPayAnimationVisible : (Boolean) -> Unit
@@ -43,8 +43,7 @@ fun handlePaymentResponse(
                             onOpenUpiIntent?.invoke(action.url ?: "")
                         }
                         else if (action.type == "qrCode") {
-                            setIsBoxPayAnimationVisible(false)
-                            onOpenQr?.invoke(action.content ?: "")
+                            onOpenQr?.invoke(action.content ?: "", action.expirySec ?: 0)
                         }
                         else {
                             setIsBoxPayAnimationVisible(false)
@@ -91,9 +90,14 @@ fun handlePaymentResponse(
             }
         }
         else -> {
-            CheckoutDetailsHandler.setErrorMessage(errorMessage)
-            CheckoutDetailsHandler.setSessionFailed()
-            setIsBoxPayAnimationVisible(false)
+            if(errorMessage.contains("expired", true)) {
+                CheckoutDetailsHandler.setSessionExpired()
+                setIsBoxPayAnimationVisible(false)
+            } else {
+                CheckoutDetailsHandler.setErrorMessage(errorMessage)
+                CheckoutDetailsHandler.setSessionFailed()
+                setIsBoxPayAnimationVisible(false)
+            }
         }
     }
 }

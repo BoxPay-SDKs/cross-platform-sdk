@@ -18,6 +18,7 @@ import com.crossplatform.sdk.domain.repo.MainScreenRepo
 import com.crossplatform.sdk.domain.repo.OtherPaymentMethodRepo
 import com.crossplatform.sdk.presentation.viewmodel.AddressScreenViewModel
 import com.crossplatform.sdk.presentation.viewmodel.BNPLViewModel
+import com.crossplatform.sdk.presentation.viewmodel.BoxPayElementsViewModel
 import com.crossplatform.sdk.presentation.viewmodel.CardScreenViewModel
 import com.crossplatform.sdk.presentation.viewmodel.EMIScreenViewModel
 import com.crossplatform.sdk.presentation.viewmodel.InstantOfferViewModel
@@ -53,10 +54,11 @@ val appModule = module {
 
     // ✅ ViewModels
     viewModel { MainScreenViewModel(repo = get(), analyticsRepo = get(), otherPaymentMethodRepo = get(), instantOfferRepo = get()) }
+    viewModel { BoxPayElementsViewModel(repo = get(), analyticsRepo = get(), otherPaymentMethodRepo = get(), cardRepo = get()) }
     viewModel { InstantOfferViewModel(repo = get(),analyticsRepo = get()) }
     viewModel { AddressScreenViewModel(repo = get(), analyticsRepo = get()) }
     viewModel { CardScreenViewModel(repo = get(), fetchStatusRepo = get(),analyticsRepo = get()) }
-    viewModel { EMIScreenViewModel(repo = get(),analyticsRepo = get()) }
+    viewModel { EMIScreenViewModel(repo = get(),analyticsRepo = get(), cardScreenRepo = get()) }
     viewModel { WalletViewModel(repo = get(),analyticsRepo = get()) }
     viewModel { NetBankingViewModel(repo = get(),analyticsRepo = get()) }
     viewModel { BNPLViewModel(repo = get(),analyticsRepo = get()) }

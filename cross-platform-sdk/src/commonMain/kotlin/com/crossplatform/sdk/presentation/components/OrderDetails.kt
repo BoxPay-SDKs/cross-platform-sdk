@@ -37,8 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.MainScreenModel.OrderItemUiModel
 import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.ChevronIcon
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
-import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_broken_order_image
 import io.kamel.image.KamelImage
@@ -88,7 +87,7 @@ fun OrderDetails(
                     text = "Price Details",
                     fontSize = 14.sp,
                     color = Color(0xFF363840),
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold
                 )
                 ChevronIcon()
@@ -147,7 +146,7 @@ fun OrderDetails(
                                 text = item.imageTitle ?: "",
                                 fontSize = 12.sp,
                                 color = Color(0xFF2D2B32),
-                                fontFamily = defaultFontFamily,
+                                fontFamily = LocalSDKFonts.current.primary,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -155,7 +154,7 @@ fun OrderDetails(
                                 text = "Qty: ${item.imageQty}",
                                 fontSize = 12.sp,
                                 color = Color(0xFF2D2B32),
-                                fontFamily = defaultFontFamily,
+                                fontFamily = LocalSDKFonts.current.primary,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
@@ -163,14 +162,14 @@ fun OrderDetails(
                         // Amount
                         Text(
                             text = buildAnnotatedString {
-                                withStyle(SpanStyle(fontFamily = defaultInterFontFamily)) {
+                                withStyle(SpanStyle(fontFamily = LocalSDKFonts.current.secondary)) {
                                     append(" $currencySymbol")
                                 }
                                 append("${item.amount}")
                             },
                             fontSize = 12.sp,
                             color = Color(0xFF2D2B32),
-                            fontFamily = defaultFontFamily
+                            fontFamily = LocalSDKFonts.current.primary
                         )
                     }
                 }
@@ -239,19 +238,19 @@ fun OrderDetails(
                     text = "Total",
                     fontSize = 16.sp,
                     color = Color(0xFF1D1C20),
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(SpanStyle(fontFamily = defaultInterFontFamily)) {
+                        withStyle(SpanStyle(fontFamily = LocalSDKFonts.current.secondary)) {
                             append(" $currencySymbol")
                         }
                         append("$totalAmount")
                     },
                     fontSize = 16.sp,
                     color = Color(0xFF1D1C20),
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -274,21 +273,21 @@ fun OrderDetails(
                 text = "Price Details",
                 fontSize = 14.sp,
                 color = Color(0xFF363840),
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(SpanStyle(fontFamily = defaultInterFontFamily)) {
+                        withStyle(SpanStyle(fontFamily = LocalSDKFonts.current.secondary)) {
                             append(currencySymbol)
                         }
                         append("$totalAmount")
                     },
                     fontSize = 14.sp,
                     color = Color(0xFF363840),
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(Modifier.width(6.dp))
@@ -318,18 +317,18 @@ private fun SummaryRow(
             text = label,
             fontSize = 14.sp,
             color = Color(0xFF2D2B32),
-            fontFamily = defaultFontFamily
+            fontFamily = LocalSDKFonts.current.primary
         )
         Text(
             text = buildAnnotatedString {
-                withStyle(SpanStyle(fontFamily = defaultInterFontFamily)) {
+                withStyle(SpanStyle(fontFamily = LocalSDKFonts.current.secondary)) {
                     append(" $currencySymbol")
                 }
                 append(amount)
             },
             fontSize = 14.sp,
             color = Color(0xFF2D2B32),
-            fontFamily = defaultFontFamily,
+            fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.SemiBold
         )
     }

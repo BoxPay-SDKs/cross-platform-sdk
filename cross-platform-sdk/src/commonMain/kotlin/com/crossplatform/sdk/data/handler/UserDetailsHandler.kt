@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.data.handler
 
+import com.crossplatform.sdk.data.model.CustomFields
 import com.crossplatform.sdk.data.model.UserDetails
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,8 @@ object UserDataHandler {
         pincode = null,
         labelType = null,
         labelName = null,
-        uniqueId = ""
+        uniqueId = "",
+        customFields = emptyList()
     )
 
     // ─── State ─────────────────────────────────────────────────
@@ -76,6 +78,11 @@ object UserDataHandler {
         .map { it.labelType to it.labelName }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, Pair(defaultUserData().labelType, defaultUserData().labelName))
+
+    val customFieldsFlow : StateFlow<List<CustomFields>> = _userDataFlow
+        .map { it.customFields }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, defaultUserData().customFields)
 
     val addressFlow: StateFlow<AddressConfig> = _userDataFlow
         .map {
@@ -134,6 +141,15 @@ object UserDataHandler {
             labelType = labelType,
             labelName = labelName,
             uniqueId = uniqueId
+        )
+        _userDataFlow.value = userData
+    }
+
+    fun setCustomFields(
+        fields : List<CustomFields>
+    ) {
+        userData = userData.copy(
+            customFields = fields
         )
         _userDataFlow.value = userData
     }

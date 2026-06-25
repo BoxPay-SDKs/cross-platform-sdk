@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import io.github.alexzhirkevich.compottie.Compottie
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
@@ -25,14 +25,14 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun ShowLoadingComponent() {
+fun ShowLoadingComponent(modifier: Modifier) {
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(
             Res.readBytes("files/BoxPayLogo.json").decodeToString()
         )
     }
     Column(
-        modifier            = Modifier.fillMaxSize()
+        modifier            = modifier
             .background(Color.White),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -47,7 +47,7 @@ fun ShowLoadingComponent() {
         )
         Text(
             text       = "Loading...",
-            fontFamily = defaultFontFamily,
+            fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Normal,
             fontSize   = 14.sp
         )

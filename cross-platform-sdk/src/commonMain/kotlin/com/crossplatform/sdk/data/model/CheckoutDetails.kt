@@ -20,17 +20,20 @@ data class CheckoutDetails(
     val successfulTimeStamp : String,
     val selectedPaymentMethod : String,
     val isPaymentFailed : Boolean,
+    val merchantName : String,
+    val merchantLogo : String,
     val shopperToken: String? = null,          // string | null
 
     // ─── Theme ──────────────────────────────────
-//    val fontFamily: FontConfiguration? = null,
+    val fontFamily: String,
     val ctaBorderRadius: Int,
     val buttonColor: String,
     val buttonTextColor: String,
     val headerColor: String,
     val headerTextColor: String,
-    val merchantName : String,
-    val merchantLogo : String,
+    val focusedTextInputBorderColor : String,
+    val unfocusedTextInputBorderColor : String,
+    val ctaTextFontSize : Int,
 
     // ─── Screen Visibility ───────────────────────
     val isSuccessScreenVisible: Boolean,
@@ -40,8 +43,6 @@ data class CheckoutDetails(
     val isSICheckboxEnabled : Boolean,
     val isSubscriptionCheckout: Boolean,
     val showQROnLoad : Boolean,
-    val focusedTextInputBorderColor : String,
-    val unfocusedTextInputBorderColor : String,
 
     // ─── Shopper Fields ──────────────────────────
     val isShippingAddressEnabled: Boolean,
@@ -67,8 +68,4 @@ data class CheckoutDetails(
     val isWebViewVisible : Boolean,
     val appliedOfferId : String?,
     val subscription : List<Pair<String, String>>?,
-
-    // -- BoxPay Elements
-    val paymentMethodList : List<String>,
-    val isBoxPayButtonVisible : Boolean
 )

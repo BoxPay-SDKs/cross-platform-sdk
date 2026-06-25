@@ -20,7 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.cvv_info_image
@@ -45,7 +45,7 @@ fun CvvInfoBottomSheet(onClick: () -> Unit, buttonColor : String, borderRadius :
             // --- Title ---
             Text(
                 text       = "Where to find CVV?",
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
                 fontSize   = 18.sp,
                 modifier   = Modifier.padding(bottom = 16.dp)
@@ -63,14 +63,14 @@ fun CvvInfoBottomSheet(onClick: () -> Unit, buttonColor : String, borderRadius :
             // --- Generic CVV Info ---
             Text(
                 text       = "Generic position for CVV",
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
                 fontSize   = 14.sp,
                 modifier   = Modifier.padding(top = 12.dp)
             )
             Text(
                 text       = "3 digit numeric code on the back side of card",
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
                 fontSize   = 14.sp,
                 color      = Color(0xFF888780),
@@ -95,14 +95,14 @@ fun CvvInfoBottomSheet(onClick: () -> Unit, buttonColor : String, borderRadius :
             // --- Amex CVV Info ---
             Text(
                 text       = "CVV for American Express Card",
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
                 fontSize   = 14.sp,
                 modifier   = Modifier.padding(top = 12.dp)
             )
             Text(
                 text       = "4 digit numeric code on the front side of the card, just above the card number",
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
                 fontSize   = 14.sp,
                 color      = Color(0xFF888780),

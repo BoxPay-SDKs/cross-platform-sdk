@@ -25,7 +25,8 @@ data class PaymentActions(
     @SerialName("url") val url: String? = null,
     @SerialName("type") val type: String? = null,
     @SerialName("htmlPageString") val htmlPageString: String? = null,
-    @SerialName("content") val content: String? = null
+    @SerialName("content") val content: String? = null,
+    @SerialName("expirySec") val expirySec : Int? = null
 )
 
 @Serializable

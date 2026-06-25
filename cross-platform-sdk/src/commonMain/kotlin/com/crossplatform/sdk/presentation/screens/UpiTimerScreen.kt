@@ -39,12 +39,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.PayButton
 import com.crossplatform.sdk.presentation.formatTimer
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.UpiTimerViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -84,7 +83,7 @@ fun UpiTimerScreen(
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color(0xFF1A1A1A),
-            fontFamily = defaultFontFamily
+            fontFamily = LocalSDKFonts.current.primary
         )
 
         Spacer(Modifier.height(8.dp))
@@ -94,7 +93,7 @@ fun UpiTimerScreen(
             fontSize = 14.sp,
             color = Color(0xFF666666),
             textAlign = TextAlign.Center,
-            fontFamily = defaultFontFamily
+            fontFamily = LocalSDKFonts.current.primary
         )
 
         Spacer(Modifier.height(24.dp))
@@ -118,7 +117,7 @@ fun UpiTimerScreen(
                 text = "UPI Id: $shopperVpa",
                 fontSize = 14.sp,
                 color = Color(0xFF333333),
-                fontFamily = defaultFontFamily
+                fontFamily = LocalSDKFonts.current.primary
             )
         }
 
@@ -129,7 +128,7 @@ fun UpiTimerScreen(
             fontWeight = FontWeight.Medium,
             color = Color(0xFF444444),
             modifier = Modifier.padding(bottom = 16.dp),
-            fontFamily = defaultFontFamily
+            fontFamily = LocalSDKFonts.current.primary
         )
 
         // Circular countdown
@@ -163,7 +162,7 @@ fun UpiTimerScreen(
                 text = "Kindly avoid using the back button until the transaction process is complete",
                 fontSize = 12.sp,
                 color = Color(0xFF555555),
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 lineHeight = 12.sp
             )
         }
@@ -201,13 +200,13 @@ fun UpiTimerScreen(
 fun CancelPaymentModal(onNoClick: () -> Unit, onYesClick: () -> Unit) {
     AlertDialog(
         onDismissRequest = onNoClick,
-        title = { Text("Cancel Payment?", fontFamily = defaultFontFamily) },
-        text  = { Text("Are you sure you want to cancel this payment?", fontFamily = defaultFontFamily) },
+        title = { Text("Cancel Payment?", fontFamily = LocalSDKFonts.current.primary) },
+        text  = { Text("Are you sure you want to cancel this payment?", fontFamily = LocalSDKFonts.current.primary) },
         confirmButton = {
-            TextButton(onClick = onYesClick) { Text("Yes", fontFamily = defaultFontFamily) }
+            TextButton(onClick = onYesClick) { Text("Yes", fontFamily = LocalSDKFonts.current.primary) }
         },
         dismissButton = {
-            TextButton(onClick = onNoClick)  { Text("No", fontFamily = defaultFontFamily) }
+            TextButton(onClick = onNoClick)  { Text("No", fontFamily = LocalSDKFonts.current.primary) }
         }
     )
 }
@@ -260,7 +259,7 @@ fun CircularCountdownTimer(
             fontSize   = 22.sp,
             fontWeight = FontWeight.Bold,
             color      = textColor,
-            fontFamily = defaultFontFamily
+            fontFamily = LocalSDKFonts.current.primary
         )
     }
 }

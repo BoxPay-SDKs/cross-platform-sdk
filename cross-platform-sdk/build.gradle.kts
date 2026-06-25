@@ -93,6 +93,7 @@ kotlin {
 
                 implementation("io.github.alexzhirkevich:compottie:2.0.0")
                 implementation("media.kamel:kamel-image:0.9.5")
+                implementation("io.github.alexzhirkevich:qrose:1.0.1")
             }
         }
         val androidMain by getting {

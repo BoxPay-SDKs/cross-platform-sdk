@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card_add
@@ -61,7 +61,7 @@ fun KnowMoreBottomSheet(
                 fontSize   = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = Color(0xFF2D2B32),
-                fontFamily = defaultFontFamily
+                fontFamily = LocalSDKFonts.current.primary
             )
 
             // ── Subtitle ───────────────────────────────────────
@@ -70,7 +70,7 @@ fun KnowMoreBottomSheet(
                 fontSize = 14.sp,
                 color    = Color(0xFF2D2B32),
                 modifier = Modifier.padding(top = 12.dp),
-                fontFamily = defaultFontFamily
+                fontFamily = LocalSDKFonts.current.primary
             )
 
             // ── Row 1 ──────────────────────────────────────────
@@ -124,7 +124,7 @@ private fun InfoRow(
             text     = text,
             fontSize = 14.sp,
             color    = Color(0xFF2D2B32),
-            fontFamily = defaultFontFamily
+            fontFamily = LocalSDKFonts.current.primary
         )
     }
 }

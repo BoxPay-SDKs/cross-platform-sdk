@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
@@ -39,7 +40,7 @@ import com.crossplatform.sdk.presentation.components.ShowUpdateAmountBottomSheet
 import com.crossplatform.sdk.presentation.components.UPIComponent
 import com.crossplatform.sdk.presentation.isPresentInSurchargeModel
 import com.crossplatform.sdk.presentation.launchUpiIntent
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.MainScreenViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -73,6 +74,7 @@ fun MainScreen(
     val completePhoneNumber = UserDataHandler.completePhoneNumberFlow.collectAsStateWithLifecycle()
     val addressFlow = UserDataHandler.addressFlow.collectAsStateWithLifecycle()
     val labelFlow = UserDataHandler.labelFlow.collectAsStateWithLifecycle()
+    val customFieldsFlow = UserDataHandler.customFieldsFlow.collectAsStateWithLifecycle()
 
     val focusedTextInputBorderColor = CheckoutDetailsHandler.focusedBorderColorFlow.collectAsStateWithLifecycle()
     val unfocusedTextInputBorderColor = CheckoutDetailsHandler.unfocusedBorderColorFlow.collectAsStateWithLifecycle()
@@ -88,6 +90,7 @@ fun MainScreen(
     val isSICheckboxChecked = CheckoutDetailsHandler.isSICheckboxCheckedFlow.collectAsStateWithLifecycle()
     val isSICheckboxEnabled = CheckoutDetailsHandler.isSICheckboxEnabledFlow.collectAsStateWithLifecycle()
     val isOrderItemDetailsVisible = CheckoutDetailsHandler.isOrderItemDetailsVisibleFlow.collectAsStateWithLifecycle()
+    val showQROnLoad = CheckoutDetailsHandler.showQROnLoadFlow.collectAsStateWithLifecycle()
 
     val selectedDeleteCardId = remember {
         mutableStateOf("")
@@ -107,17 +110,26 @@ fun MainScreen(
     }
     val isToastVisible by viewModel.isToastVisible.collectAsStateWithLifecycle()
 
+    val selectedRecommendedInstrumentId = remember {
+        mutableStateOf("")
+    }
+
+    val selectedUpiInstrumentId = remember {
+        mutableStateOf("")
+    }
 
     when (screenState) {
-        is UiState.Loading -> ShimmerView()
+        is UiState.Loading ->  ShimmerView(modifier = Modifier.fillMaxSize())
         is UiState.Error   -> {
             val message = (screenState as UiState.Error).message
             Text("Welcome to error screen $message")
-            viewModel.callUiAnalytics(
-                event = AnalyticsEvents.SDK_CRASH.value,
-                screenName = "MainScreen",
-                message = "Main Screen not loaded $message"
-            )
+            LaunchedEffect(message) {
+                viewModel.callUiAnalytics(
+                    event      = AnalyticsEvents.SDK_CRASH.value,
+                    screenName = "Main screen",
+                    message    = "mainscreen not loaded $message",
+                )
+            }
         }
         is UiState.Success -> {
             val response = (screenState as UiState.Success).data
@@ -138,11 +150,16 @@ fun MainScreen(
                 viewModel.startSessionCountdown(response.sessionExpiryTimer)
             }
 
+            val isMandatoryCustomFieldMissing = customFieldsFlow.value.any {
+                it.mandatory && it.fieldValue.isNullOrBlank()
+            }
+
             val isMandatoryDataMissing =
                 (shopperFlow.value.isFullNameEnabled  && shopperFlow.value.isFullNameEditable  && firstName.value.isNullOrEmpty()) ||
                         (shopperFlow.value.isEmailEnabled     && shopperFlow.value.isEmailEditable     && email.value.isNullOrEmpty()) ||
                         (shopperFlow.value.isPhoneEnabled     && shopperFlow.value.isPhoneEditable     && completePhoneNumber.value.isNullOrEmpty()) ||
-                        (shopperFlow.value.isShippingAddressEnabled && shopperFlow.value.isShippingAddressEditable && addressFlow.value.address1.isNullOrEmpty())
+                        (shopperFlow.value.isShippingAddressEnabled && shopperFlow.value.isShippingAddressEditable && addressFlow.value.address1.isNullOrEmpty()) ||
+                        isMandatoryCustomFieldMissing
 
             if (isMandatoryDataMissing) {
                 onProceedAddressScreen(true)
@@ -151,7 +168,7 @@ fun MainScreen(
                     viewModel.recommendedList.value.isNotEmpty()
 
             LaunchedEffect(Unit) {
-                if(showSwipeToPay && !viewModel.isSwipeToPayVisible.value) {
+                if(showSwipeToPay && !viewModel.isSwipeToPayVisible.value && !showQROnLoad.value) {
                     viewModel.isSwipeToPayVisible.value = true
                     onShowSwipeToPay()
                 }
@@ -214,6 +231,7 @@ fun MainScreen(
                     AddressComponent(
                         address = buildAddressString(),
                         navigateToAddressScreen = {
+                            viewModel.removeQRFromView()
                             if (isAddressComponentClickable && shopperToken.value.isNullOrBlank()) onProceedAddressScreen(false)
                             else onProceedSavedAddressScreen()
                         },
@@ -241,15 +259,18 @@ fun MainScreen(
                         selectedCode = selectedOfferCode,
                         themeColor = buttonColor.value.toComposeColor(),
                         onApply = { offer ->
+                            viewModel.removeQRFromView()
                             val amount = amount.value + discountAmount.value
                             viewModel.applyOffer(offer.code, amount)
                             onSetSelectedOfferCode(offer.code)
                         },
                         onRemove = {
+                            viewModel.removeQRFromView()
                             viewModel.removeOffer(discountAmount.value, amount.value)
                             onSetSelectedOfferCode("")
                         },
                         onViewAll = {
+                            viewModel.removeQRFromView()
                             onProceedInstantOfferScreen()
                         },
                         modifier = Modifier.padding(horizontal = 16.dp)
@@ -270,6 +291,9 @@ fun MainScreen(
                         },
                         drawableResource = Res.drawable.ic_upi,
                         onClickRadio = {
+                            viewModel.removeQRFromView()
+                            selectedRecommendedInstrumentId.value = it
+                            selectedUpiInstrumentId.value = ""
                             viewModel.callUiAnalytics(
                                 event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
                                 screenName = "MainScreen",
@@ -280,7 +304,8 @@ fun MainScreen(
                         buttonColor = buttonColor.value,
                         currencySymbol = currencySymbol,
                         amount = amount.value,
-                        ctaBorderRadius = ctaBorderRadius.value
+                        ctaBorderRadius = ctaBorderRadius.value,
+                        selectedId = selectedRecommendedInstrumentId.value
                     )
                 }
 
@@ -324,10 +349,13 @@ fun MainScreen(
                             viewModel.postUpiIntentRequest(selectedIntent = selectedIntent, type =if(response. methodFlags.isUPIOtmCollectVisible ) "upiotm/intent" else "upi/intent")
                         },
                         onClickUpiQRPayButton = {
-
+                            viewModel.isQRLoaded.value = true
+                            viewModel.postUPIQrRequest(if(response. methodFlags.isUPIOtmCollectVisible ) "upiotm/qr" else "upi/qr")
                         },
                         savedUpiList = viewModel.upiRecommendedList.value,
                         onClickRadio = {
+                            selectedUpiInstrumentId.value = it
+                            selectedRecommendedInstrumentId.value = ""
                             viewModel.callUiAnalytics(
                                 event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
                                 screenName = "MainScreen",
@@ -348,7 +376,21 @@ fun MainScreen(
                         ctaBorderRadius = ctaBorderRadius.value,
                         focusedTextInputBorderColor = focusedTextInputBorderColor.value,
                         unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
-                        shopperToken = shopperToken.value
+                        shopperToken = shopperToken.value,
+                        selectedId = selectedUpiInstrumentId.value,
+                        qrTimer = viewModel.qrTimer.value,
+                        qrImage = viewModel.qrImage.value,
+                        stopFunctionCall = {
+                            viewModel.stopFetchStatusPolling()
+                        },
+                        showQROnLoad = showQROnLoad.value,
+                        isQRLoaded = viewModel.isQRLoaded.value,
+                        onVpaChanged = {
+                            // no operation
+                        },
+                        onClickIntent = {
+                            // no operation
+                        }
                     )
                 }
 
@@ -372,6 +414,9 @@ fun MainScreen(
                                 viewModel.postSavedCardRequest(instrumentRef = instrumentRef, isSICheckboxChecked = isSICheckboxChecked)
                             },
                             onClickAddCard = {
+                                viewModel.removeQRFromView()
+                                selectedRecommendedInstrumentId.value = ""
+                                selectedUpiInstrumentId.value = ""
                                 viewModel.callUiAnalytics(
                                     event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
                                     screenName = "MainScreen",
@@ -380,8 +425,10 @@ fun MainScreen(
                                 onProceedCardScreen(false)
                             },
                             onClickDeleteCard = {id , nickname ->
+                                viewModel.removeQRFromView()
                                 selectedDeleteCardName.value = nickname
                                 selectedDeleteCardId.value = id
+                                isShowSavedCardDeleteConfirmation.value = true
                             },
                             buttonColor = buttonColor.value,
                             buttonTextColor = buttonTextColor.value,
@@ -390,6 +437,9 @@ fun MainScreen(
                             ctaBorderRadius = ctaBorderRadius.value,
                             isSICheckboxChecked = isSICheckboxChecked.value,
                             isSICheckboxEnabled = isSICheckboxEnabled.value,
+                            onClickRadio =  {
+                                viewModel.removeQRFromView()
+                            }
                         )
                     }
                     SectionTitle(
@@ -400,6 +450,7 @@ fun MainScreen(
                         methodFlags      = response.methodFlags,
                         onNavigateToCard =
                             {
+                                viewModel.removeQRFromView()
                                 viewModel.callUiAnalytics(
                                     event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
                                     screenName = "MainScreen",
@@ -414,6 +465,7 @@ fun MainScreen(
                             },
                         onNavigateToWallet      =
                             {
+                                viewModel.removeQRFromView()
                                 viewModel.callUiAnalytics(
                                     event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
                                     screenName = "MainScreen",
@@ -428,6 +480,7 @@ fun MainScreen(
                             },
                         onNavigateToNetBanking  =
                             {
+                                viewModel.removeQRFromView()
                                 viewModel.callUiAnalytics(
                                     event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
                                     screenName = "MainScreen",
@@ -442,6 +495,7 @@ fun MainScreen(
                             },
                         onNavigateToEmi         =
                             {
+                                viewModel.removeQRFromView()
                                 viewModel.callUiAnalytics(
                                     event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
                                     screenName = "MainScreen",
@@ -456,6 +510,7 @@ fun MainScreen(
                             },
                         onNavigateToBNPL        =
                             {
+                                viewModel.removeQRFromView()
                                 viewModel.callUiAnalytics(
                                     event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
                                     screenName = "MainScreen",
@@ -494,7 +549,7 @@ fun MainScreen(
     }
 
     if(boxPayAnimationVisible) {
-        ShowLoadingComponent()
+        ShowLoadingComponent(Modifier.fillMaxSize())
     }
 
     LaunchedEffect(viewModel.upiIntentUrl.value) {
@@ -526,20 +581,20 @@ fun MainScreen(
             title = {
                 Text(
                     "Unable to Remove Card",
-                    fontFamily = defaultFontFamily
+                    fontFamily = LocalSDKFonts.current.primary
                 )
             },
             text = {
                 Text(
                     "We couldn't remove your saved card due to an issue. Your card is still saved.",
-                    fontFamily = defaultFontFamily
+                    fontFamily = LocalSDKFonts.current.primary
                 )
             },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.isToastVisible.value = false
                 }) {
-                    Text("Cancel", fontFamily = defaultFontFamily)
+                    Text("Cancel", fontFamily = LocalSDKFonts.current.primary)
                 }
             }
         )
@@ -553,7 +608,8 @@ fun MainScreen(
             title = {
                 Text(
                     "Do you actually want to delete the saved Card ${selectedDeleteCardName.value}?",
-                    fontFamily = defaultFontFamily
+                    fontFamily = LocalSDKFonts.current.primary,
+                    fontSize = 14.sp
                 )
             },
             confirmButton = {
@@ -561,14 +617,14 @@ fun MainScreen(
                     isShowSavedCardDeleteConfirmation.value = false
                     viewModel.onClickDeleteSavedCard(selectedDeleteCardId.value)
                 }) {
-                    Text("Yes", fontFamily = defaultFontFamily)
+                    Text("Yes", fontFamily = LocalSDKFonts.current.primary, fontSize = 14.sp)
                 }
             },
             dismissButton = {
                 TextButton(onClick = {
                     isShowSavedCardDeleteConfirmation.value = false
                 }) {
-                    Text("No", fontFamily = defaultFontFamily)
+                    Text("No", fontFamily = LocalSDKFonts.current.primary, fontSize = 14.sp)
                 }
             }
         )
@@ -587,13 +643,27 @@ fun MainScreen(
             selectedMethod = selectedMethod.value,
             onClickProceed = {
                 showUpdatedAmountBottomSheet.value = false
-                selectedMethod.value = ""
                 when (selectedMethod.value) {
-                    "card"       -> onProceedCardScreen(false)
-                    "wallet"     -> onProceedWalletScreen(false)
-                    "netbanking" -> onProceedNetBankingScreen(false)
-                    "emi"        -> onProceedEMIScreen(false)
-                    "buynowpaylater"       -> onProceedBNPLScreen(false)
+                    "card"       -> {
+                        onProceedCardScreen(false)
+                        selectedMethod.value = ""
+                    }
+                    "wallet"     -> {
+                        onProceedWalletScreen(false)
+                        selectedMethod.value = ""
+                    }
+                    "netbanking" -> {
+                        onProceedNetBankingScreen(false)
+                        selectedMethod.value = ""
+                    }
+                    "emi"        -> {
+                        onProceedEMIScreen(false)
+                        selectedMethod.value = ""
+                    }
+                    "buynowpaylater"       -> {
+                        onProceedBNPLScreen(false)
+                        selectedMethod.value = ""
+                    }
                 }
             },
             onClick = {

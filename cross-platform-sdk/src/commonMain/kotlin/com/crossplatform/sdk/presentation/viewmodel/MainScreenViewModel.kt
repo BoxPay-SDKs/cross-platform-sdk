@@ -1,6 +1,7 @@
 package com.crossplatform.sdk.presentation.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.crossplatform.sdk.data.ApiResponse
@@ -74,12 +75,20 @@ class MainScreenViewModel(
     val cardsRecommendedList = mutableStateOf<List<SelectedPaymentMethod>>(emptyList())
     val appliedOffers = mutableStateOf<List<OfferItem>>(emptyList())
 
+    val qrTimer = mutableStateOf(0)
+    val qrImage = mutableStateOf("")
+
     private val lifecycleObserver = AppLifecycleObserver { state ->
         if (state == AppLifecycleState.Foreground && isUpiOpening.value) {
+            upiIntentUrl.value = ""
             callFetchStatus("")
         }
     }
 
+    // Elements Related Variables
+    val showUPITimerBottomSheet = mutableStateOf(false)
+
+    val isQRLoaded = mutableStateOf(false)
 
     init {
         loadSession()
@@ -302,7 +311,7 @@ class MainScreenViewModel(
                 onNavigateToTimer = {
                     proceedToTimer.value = true
                 },
-                onOpenQr = {_ ->
+                onOpenQr = {_,_ ->
                     // no operation
                 },
                 onOpenUpiIntent = {_ ->
@@ -342,7 +351,7 @@ class MainScreenViewModel(
                 onNavigateToTimer = {
                     // no operations
                 },
-                onOpenQr = {_ ->
+                onOpenQr = {_, _ ->
                     // no operations
                 },
                 onOpenUpiIntent = {url ->
@@ -389,7 +398,6 @@ class MainScreenViewModel(
     fun callUpiCollectFetchStatue(inquiryResult : String) {
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
-            isBoxPayAnimationLoading.value = true
             val response = otherPaymentMethodRepo.fetchStatus()
             handleUpiCollectFetchStatus(
                 response = response,
@@ -438,7 +446,7 @@ class MainScreenViewModel(
                 onNavigateToTimer = {
                     // no operation
                 },
-                onOpenQr = {_ ->
+                onOpenQr = {_, _ ->
                     // no operation
                 },
                 onOpenUpiIntent = {_ ->
@@ -461,9 +469,9 @@ class MainScreenViewModel(
         viewModelScope.launch {
             isBoxPayAnimationLoading.value = true
             callUiAnalytics(
-                event = AnalyticsEvents.ADDRESS_UPDATED.value,
+                event = AnalyticsEvents.PAYMENT_INSTRUMENT_PROVIDED.value,
                 screenName = "MainScreenViewModel",
-                message = "Address updated in function onClickDeleteSavedCard"
+                message = "Card deleted in function onClickDeleteSavedCard"
             )
             val response = repo.deleteSavedCard(id)
             when(response) {
@@ -598,4 +606,68 @@ class MainScreenViewModel(
             }
         }
     }
+
+    fun postUPIQrRequest(
+        type : String
+    ) {
+        viewModelScope.launch {
+            stopFetchStatusPolling()
+            isBoxPayAnimationLoading.value = true
+            callUiAnalytics(
+                event = AnalyticsEvents.PAYMENT_INITIATED.value,
+                screenName = "MainScreenViewModel",
+                message = "Payment initiated though QR method and function is postUPIQrRequest"
+            )
+            val response = repo.postUPIQrRequest(type = type)
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentUrl = {
+                    setWebViewUrl.value = it
+                    setWebViewScreen(true)
+                },
+                onSetPaymentHtml = {
+                    setWebViewHtml.value = it
+                    setWebViewScreen(true)
+                },
+                onNavigateToTimer = {
+                    // no operations
+                },
+                onOpenQr = {image, expiry ->
+                    // no operations
+                    qrImage.value = image
+                    qrTimer.value = expiry
+                    startFetchStatusPolling("")
+                    isBoxPayAnimationLoading.value = false
+                },
+                onOpenUpiIntent = {url ->
+                    val decodedUrl = decodeBase64Url(url)
+                    if (decodedUrl.isNotEmpty()) {
+                        lifecycleObserver.start()
+                        upiIntentUrl.value = decodedUrl
+                    }
+                },
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                setIsBoxPayAnimationVisible = {
+                    isBoxPayAnimationLoading.value = it
+                }
+            )
+        }
+    }
+
+    fun removeQRFromView() {
+        stopFetchStatusPolling()
+        qrTimer.value = 0
+        qrImage.value = ""
+    }
+
+    fun onWebViewDismissed() {
+        // Stop any webview-related polling or pending state
+        CheckoutDetailsHandler.setIsWebViewVisible(false)
+    }
+
+    fun onUPITimerBottomSheetDismissed() {
+        showUPITimerBottomSheet.value = false
+        upiId.value = ""
+    }
+
 }

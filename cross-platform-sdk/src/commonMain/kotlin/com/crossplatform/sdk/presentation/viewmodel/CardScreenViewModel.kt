@@ -65,8 +65,6 @@ class CardScreenViewModel(
     var maxCardNumberLength =  mutableStateOf(19)
     var cardSelectedIcon    = mutableStateOf(Res.drawable.ic_card)
 
-    var emiIssuerExist = mutableStateOf(true)
-    var emiIssuer      =  mutableStateOf("")
 
     var isSavedCardCheckBoxClicked =  mutableStateOf(false)
     var showCvvInfo                =  mutableStateOf(false)
@@ -104,7 +102,7 @@ class CardScreenViewModel(
     }
 
     // --- Card Validity Check ---
-    fun checkCardValid(isTestEnv : Boolean, isEmiFlow : Boolean) {
+    fun checkCardValid(isTestEnv : Boolean) {
         val numberLen = if (maxCardNumberLength.value == 19) 16 else 15
         val baseValid =
             !cardNumberError.value && !cardExpiryError.value && !cardCvvError.value && !cardHolderNameError.value &&
@@ -112,7 +110,7 @@ class CardScreenViewModel(
                     cardExpiryText.value.length == 4 &&
                     cardCvvText.value.length == maxCvvLength.value &&
                     cardHolderNameText.value.isNotEmpty()
-        cardValid.value = if (isEmiFlow) baseValid && emiIssuerExist.value else baseValid
+        cardValid.value = baseValid
     }
 
     // --- Handle Card Number Change ---
@@ -128,7 +126,7 @@ class CardScreenViewModel(
             return
         }
 
-        checkCardValid(isTestEnv, false)
+        checkCardValid(isTestEnv)
 
         if (cleaned.length == 16 || (cleaned.length == 15 && maxCardNumberLength.value == 15)) {
             cardNumberValid.value = isValidCardNumberByLuhn(cleaned)
@@ -184,7 +182,7 @@ class CardScreenViewModel(
                     (enteredYear == curYear && enteredMonth < curMonth)
         }
         cardExpiryValid.value = !monthError && !yearError
-        checkCardValid(isTestEnv, false)
+        checkCardValid(isTestEnv)
     }
 
     fun postCardRequest(isSICheckBoxClicked : Boolean) {
@@ -222,7 +220,7 @@ class CardScreenViewModel(
                 onNavigateToTimer = {
                     // no operations
                 },
-                onOpenQr = {
+                onOpenQr = {_,_ ->
                     // no operations
                 },
                 onSetPaymentUrl = {responseUrl ->

@@ -94,7 +94,7 @@ class BNPLViewModel (
                 onNavigateToTimer = {
                     // no operations
                 },
-                onOpenQr = {
+                onOpenQr = {_,_ ->
                     // no operations
                 },
                 onSetPaymentUrl = {responseUrl ->

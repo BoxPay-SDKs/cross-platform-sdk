@@ -44,6 +44,7 @@ import com.crossplatform.sdk.presentation.screens.InstantOfferScreen
 import com.crossplatform.sdk.presentation.screens.MainScreen
 import com.crossplatform.sdk.presentation.screens.NetBankingScreen
 import com.crossplatform.sdk.presentation.screens.SavedAddressScreen
+import com.crossplatform.sdk.presentation.screens.ScreenBackInterceptor
 import com.crossplatform.sdk.presentation.screens.UpiTimerScreen
 import com.crossplatform.sdk.presentation.screens.WalletScreen
 import com.crossplatform.sdk.presentation.viewmodel.MainScreenViewModel
@@ -63,7 +64,7 @@ fun AppNavHost() {
     val isPhoneEnabled = shopperDetails.isPhoneEnabled
     val isPhoneEditable = shopperDetails.isPhoneEditable
     val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
-    val (_, currencySymbol) = currencyFlow.value
+    val (currencySymbol, _) = currencyFlow.value
     val isWebViewVisible = CheckoutDetailsHandler.isWebViewVisibleFlow.collectAsStateWithLifecycle()
     val surchargeDetails = CheckoutDetailsHandler.surchargeDetailsFlow.collectAsStateWithLifecycle()
     val amountBeforeSurcharge = CheckoutDetailsHandler.amountBeforeSurchargeFlow.collectAsStateWithLifecycle()
@@ -98,14 +99,16 @@ fun AppNavHost() {
         }
     }
 
-    val screenTitle = when (currentRoute) {
+    val baseRoute = currentRoute?.substringBefore("/{")
+
+    val routeTitle = when (baseRoute) {
         Routes.MainScreen.route    -> "Payment Details"
         Routes.AddressScreen.route -> {
             when {
                 isShippingAddressEnabled && isNewAddress   -> "Add Address"
                 isShippingAddressEnabled && !isNewAddress  -> "Edit Address"
                 !isShippingAddressEnabled && isNewAddress  -> "Add Personal Details"
-                else                                -> "Edit Personal Details"
+                else -> "Edit Personal Details"
             }
         }
         Routes.CardScreen.route -> "Pay via Card"
@@ -113,9 +116,10 @@ fun AppNavHost() {
         Routes.WalletScreen.route -> "Select Wallet"
         Routes.SavedAddressScreen.route -> "Your Addresses"
         Routes.BNPLScreen.route -> "Select BNPL"
-        Routes.EMIScreen.route -> "Choose EMI Option"
-        else                           -> "Payment Details"
+        else -> "Payment Details"
     }
+
+    val screenTitle = ScreenBackInterceptor.currentTitle?.invoke() ?: routeTitle
 
     val selectedOfferCode = remember {
         mutableStateOf("")
@@ -127,7 +131,10 @@ fun AppNavHost() {
                 showDesc   = true,
                 text       = screenTitle,             // changes per screen
                 onBackPress = {
-                    if (!navController.popBackStack()) {
+                    if (ScreenBackInterceptor.onBack?.invoke() == true) {
+                        // no operation to be performed as it is already handled in EMI screen
+                    }
+                    else if (!navController.popBackStack()) {
                         callSDKPaymentResponse()
                     } else {
                         if(!surchargeDetails.value.isEmpty()) {
@@ -400,6 +407,7 @@ fun AppNavHost() {
     if (isSessionExpired.value) {
         viewModel.stopSessionCountDown()
         viewModel.stopFetchStatusPolling()
+        viewModel.qrTimer.value = 0
         SessionExpire (
             onClick = {
                 viewModel.callUiAnalytics(
@@ -414,6 +422,7 @@ fun AppNavHost() {
     if (isPaymentSuccessful.value) {
         viewModel.stopSessionCountDown()
         viewModel.stopFetchStatusPolling()
+        viewModel.qrTimer.value = 0
         PaymentSuccessful (
             dateNTime = successTimeStamp,
             paymentMethod = selectedPaymentMethod,
@@ -428,6 +437,7 @@ fun AppNavHost() {
         )
     }
     if (isPaymentFailed.value) {
+        viewModel.qrTimer.value = 0
         PaymentFailed(
             sheetState = failedSheetState,
             onClick = {

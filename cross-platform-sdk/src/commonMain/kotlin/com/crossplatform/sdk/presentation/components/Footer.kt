@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.splash_icon
 import org.jetbrains.compose.resources.painterResource
@@ -33,7 +33,7 @@ fun Footer() {
         Text(
             text       = "Secured by",
             fontSize   = 12.sp,
-            fontFamily = defaultFontFamily,
+            fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Medium,
             color      = Color(0xFF888888)
         )

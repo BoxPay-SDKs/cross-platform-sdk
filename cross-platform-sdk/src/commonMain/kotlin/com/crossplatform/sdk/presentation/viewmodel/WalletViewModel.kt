@@ -95,7 +95,7 @@ class WalletViewModel (
                 onNavigateToTimer = {
                     // no operations
                 },
-                onOpenQr = {
+                onOpenQr = {_,_ ->
                     // no operations
                 },
                 onSetPaymentUrl = {responseUrl ->

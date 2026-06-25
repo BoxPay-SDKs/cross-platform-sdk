@@ -37,8 +37,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.OfferItem
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
-import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_offer_tag
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_savings
@@ -137,13 +136,13 @@ fun SingleOfferCard(
                     text = if (isApplied) "${offer.code} applied!" else offer.code,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     color = if (isApplied) appliedGreenDark else Color(0xFF1A1A1A)
                 )
                 Text(
                     text = offer.description,
                     fontSize = 11.sp,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     color = if (isApplied) Color(0xFF0F6E56) else Color(0xFF888888),
                     maxLines = 1
                 )
@@ -155,7 +154,7 @@ fun SingleOfferCard(
                 text = if (isApplied) "Remove" else "Apply",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 color = if (isApplied) removeRed else themeColor,
                 modifier = Modifier.clickable { if (isApplied) onRemove() else onApply() }
             )
@@ -183,7 +182,7 @@ fun SingleOfferCard(
                 Text(
                     text = "You saved",
                     fontSize = 11.sp,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     color = appliedGreenDark
                 )
                 Spacer(Modifier.weight(1f))
@@ -191,7 +190,7 @@ fun SingleOfferCard(
                     text = "- ${offer.currencySymbol}${offer.discountAmount}",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     color = appliedGreenDark
                 )
             }
@@ -248,13 +247,13 @@ fun MultiOfferCard(
                     text = "${offers.size} offers available",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     color = Color(0xFF1A1A1A)
                 )
                 Text(
                     text = if (appliedOffer != null) "1 applied" else "Tap to apply",
                     fontSize = 10.sp,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     color = if (appliedOffer != null) appliedGreen else Color(0xFF888888)
                 )
             }
@@ -264,7 +263,7 @@ fun MultiOfferCard(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = themeColor,
-                fontFamily = defaultFontFamily,
+                fontFamily = LocalSDKFonts.current.primary,
                 modifier = Modifier.clickable { onViewAll() }
             )
         }
@@ -329,7 +328,7 @@ fun MultiOfferCard(
                         text = "${offer.code} — ${offer.description}",
                         fontSize = 10.sp,
                         color = appliedGreenDark,
-                        fontFamily = defaultFontFamily,
+                        fontFamily = LocalSDKFonts.current.primary,
                         modifier = Modifier.weight(1f),
                         maxLines = 1
                     )
@@ -338,14 +337,14 @@ fun MultiOfferCard(
                         text = buildAnnotatedString {
                             withStyle(
                                 style = SpanStyle(
-                                    fontFamily = defaultInterFontFamily
+                                    fontFamily = LocalSDKFonts.current.secondary
                                 )
                             ) {
                                 append("- ${offer.currencySymbol}")
                             }
                             withStyle(
                                 style = SpanStyle(
-                                    fontFamily = defaultFontFamily
+                                    fontFamily = LocalSDKFonts.current.primary
                                 )
                             ) {
                                 append("${offer.discountAmount}")
@@ -353,7 +352,7 @@ fun MultiOfferCard(
                         },
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Medium,
-                        fontFamily = defaultFontFamily,
+                        fontFamily = LocalSDKFonts.current.primary,
                         color = appliedGreenDark
                     )
                 }
@@ -399,7 +398,7 @@ private fun OfferChip(
         Text(
             text = code,
             fontSize = 12.sp,
-            fontFamily = defaultFontFamily,
+            fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Medium,
             color = textColor
         )
@@ -422,7 +421,7 @@ private fun MoreChip(
         Text(
             text = "+$count more",
             fontSize = 12.sp,
-            fontFamily = defaultFontFamily,
+            fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Medium,
             color = Color(0xFF888888)
         )

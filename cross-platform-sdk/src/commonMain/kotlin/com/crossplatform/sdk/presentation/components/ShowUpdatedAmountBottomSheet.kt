@@ -28,8 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.domain.model.SurchargeModel
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
-import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,7 +77,7 @@ fun ShowUpdateAmountBottomSheet(
                 Text(
                     text = "Sub Total",
                     fontWeight = FontWeight.Normal,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontSize = 12.sp,
                     color = Color(0xFF010102)
                 )
@@ -86,14 +85,14 @@ fun ShowUpdateAmountBottomSheet(
                     text  = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                fontFamily = defaultInterFontFamily
+                                fontFamily = LocalSDKFonts.current.secondary
                             )
                         ) {
                             append(currencySymbol)
                         }
                         withStyle(
                             style = SpanStyle(
-                                fontFamily = defaultFontFamily
+                                fontFamily = LocalSDKFonts.current.primary
                             )
                         ) {
                             append("$amount")
@@ -101,7 +100,7 @@ fun ShowUpdateAmountBottomSheet(
                     },
                     fontWeight = FontWeight.Medium,
                     fontSize = 12.sp,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     color = Color(0xFF010102)
                 )
             }
@@ -121,21 +120,21 @@ fun ShowUpdateAmountBottomSheet(
                             text = item.title,
                             fontWeight = FontWeight.Normal,
                             fontSize = 12.sp,
-                            fontFamily = defaultFontFamily,
+                            fontFamily = LocalSDKFonts.current.primary,
                             color = Color(0xFF010102)
                         )
                         Text(
                             text = buildAnnotatedString {
                                 withStyle(
                                     style = SpanStyle(
-                                        fontFamily = defaultInterFontFamily
+                                        fontFamily = LocalSDKFonts.current.secondary
                                     )
                                 ) {
                                     append("+ $currencySymbol")
                                 }
                                 withStyle(
                                     style = SpanStyle(
-                                        fontFamily = defaultFontFamily
+                                        fontFamily = LocalSDKFonts.current.primary
                                     )
                                 ) {
                                     append("${item.amount}")
@@ -143,7 +142,7 @@ fun ShowUpdateAmountBottomSheet(
                             },
                             fontWeight = FontWeight.Medium,
                             fontSize = 12.sp,
-                            fontFamily = defaultFontFamily,
+                            fontFamily = LocalSDKFonts.current.primary,
                             color = Color(0xFF010102)
                         )
                     }
@@ -173,27 +172,27 @@ fun ShowUpdateAmountBottomSheet(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp,
                     color = Color(0xFF010102),
-                    fontFamily = defaultFontFamily
+                    fontFamily = LocalSDKFonts.current.primary
                 )
                 Text(
                     text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                fontFamily = defaultInterFontFamily
+                                fontFamily = LocalSDKFonts.current.secondary
                             )
                         ) {
                             append(currencySymbol)
                         }
                         withStyle(
                             style = SpanStyle(
-                                fontFamily = defaultFontFamily
+                                fontFamily = LocalSDKFonts.current.primary
                             )
                         ) {
                             append("$totalAmount")
                         }
                     },
                     fontWeight = FontWeight.SemiBold,
-                    fontFamily = defaultFontFamily,
+                    fontFamily = LocalSDKFonts.current.primary,
                     fontSize = 14.sp,
                     color = Color(0xFF010102)
                 )

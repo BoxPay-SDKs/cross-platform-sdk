@@ -46,8 +46,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.ChevronIcon
-import com.crossplatform.sdk.presentation.theme.defaultFontFamily
-import com.crossplatform.sdk.presentation.theme.defaultInterFontFamily
+import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_keyboard_double_arrow
@@ -102,7 +101,7 @@ fun SwipeToPayComponent(
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
-                            fontFamily = defaultFontFamily
+                            fontFamily = LocalSDKFonts.current.primary
                         ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -115,7 +114,7 @@ fun SwipeToPayComponent(
                             style = TextStyle(
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                fontFamily = defaultFontFamily
+                                fontFamily = LocalSDKFonts.current.primary
                             ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -134,7 +133,7 @@ fun SwipeToPayComponent(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
-                        fontFamily = defaultFontFamily
+                        fontFamily = LocalSDKFonts.current.primary
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -160,7 +159,7 @@ fun SwipeToPayComponent(
                                 spanStyle = SpanStyle(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    fontFamily = defaultFontFamily
+                                    fontFamily = LocalSDKFonts.current.primary
                                 )
                             )
                         )
@@ -170,7 +169,7 @@ fun SwipeToPayComponent(
                                 spanStyle = SpanStyle(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    fontFamily = defaultInterFontFamily
+                                    fontFamily = LocalSDKFonts.current.secondary
                                 )
                             )
                         )
@@ -180,7 +179,7 @@ fun SwipeToPayComponent(
                                 spanStyle = SpanStyle(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    fontFamily = defaultFontFamily
+                                    fontFamily = LocalSDKFonts.current.primary
                                 )
                             )
                         )
@@ -197,7 +196,7 @@ fun SwipeToPayComponent(
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
-                        fontFamily = defaultFontFamily
+                        fontFamily = LocalSDKFonts.current.primary
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -216,7 +215,7 @@ fun SwipeToPayComponent(
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
-                    fontFamily = defaultFontFamily
+                    fontFamily = LocalSDKFonts.current.primary
                 ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -267,7 +266,7 @@ fun SwipeToPayComponent(
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
-                        fontFamily = defaultFontFamily
+                        fontFamily = LocalSDKFonts.current.primary
                     ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -338,7 +337,7 @@ fun SwipeToPayButtonComponent(
                         spanStyle = SpanStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
-                             fontFamily = defaultFontFamily
+                             fontFamily = LocalSDKFonts.current.primary
                         )
                     )
                 )
@@ -348,7 +347,7 @@ fun SwipeToPayButtonComponent(
                         spanStyle = SpanStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
-                             fontFamily = defaultInterFontFamily
+                             fontFamily = LocalSDKFonts.current.secondary
                         )
                     )
                 )
@@ -358,7 +357,7 @@ fun SwipeToPayButtonComponent(
                         spanStyle = SpanStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
-                             fontFamily = defaultFontFamily
+                             fontFamily = LocalSDKFonts.current.primary
                         )
                     )
                 )

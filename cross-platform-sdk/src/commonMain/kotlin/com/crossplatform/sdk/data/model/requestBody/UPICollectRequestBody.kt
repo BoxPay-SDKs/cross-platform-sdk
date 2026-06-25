@@ -2,7 +2,6 @@ package com.crossplatform.sdk.data.model.requestBody
 
 import com.crossplatform.sdk.data.model.BrowserData
 import com.crossplatform.sdk.data.model.DeviceDetails
-import com.crossplatform.sdk.data.model.Shopper
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 
@@ -10,7 +9,7 @@ import kotlinx.serialization.SerialName
 data class UPICollectRequestBody(
     @SerialName("browserData") val browserData: BrowserData,
     @SerialName("instrumentDetails") val instrumentDetails: Instrument,
-    @SerialName("shopper") val shopper: Shopper,
+    @SerialName("shopper") val shopper: ShopperRequest,
     @SerialName("deviceDetails") val deviceDetails: DeviceDetails,
 ) {
     @Serializable
