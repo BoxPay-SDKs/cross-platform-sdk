@@ -29,9 +29,5 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
-        <activity android:name="com.crossplatform.BoxPayElementsActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="false" />
     </application>
 </manifest>
