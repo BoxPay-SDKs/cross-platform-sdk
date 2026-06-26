@@ -16,7 +16,8 @@ fun BoxPayViewController(
     isSICheckBoxEnabled: Boolean,
     focusedTextInputBorderColor: String,
     unfocusedTextInputBorderColor: String,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    fontFamily : String?
 ) = ComposeUIViewController {
     CommonSDKDismissHandler.setCloseSDK { onDismiss() }
     BoxPayCommonCheckout(
@@ -30,6 +31,7 @@ fun BoxPayViewController(
         isSICheckBoxChecked = isSICheckBoxChecked,
         isSICheckBoxEnabled = isSICheckBoxEnabled,
         focusedTextInputBorderColor = focusedTextInputBorderColor,
-        unfocusedTextInputBorderColor = unfocusedTextInputBorderColor
+        unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
+        fontFamily = fontFamily
     )
 }

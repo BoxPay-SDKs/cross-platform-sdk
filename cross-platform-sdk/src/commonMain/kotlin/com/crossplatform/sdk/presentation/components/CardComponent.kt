@@ -116,6 +116,7 @@ fun CardComponent(
     modifier: Modifier,
     normalCheckout : Boolean = true
 ) {
+//    val acceptedCardList = CheckoutDetailsHandler.acceptedCardsListFlow.collectAsStateWithLifecycle()
     Column(modifier = modifier.background(Color.White)) {
         // --- EMI Bank Info ---
         if (!bankName.isNullOrEmpty()) {
@@ -448,6 +449,39 @@ fun CardComponent(
                 text = "Pay"
             )
         }
+//        if(duration.isNullOrBlank()) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp),
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.Center
+//            ) {
+//                Text(
+//                    text = "Payments powered by: ",
+//                    fontFamily = LocalSDKFonts.current.primary,
+//                    fontSize = 12.sp,
+//                    color = Color(0xFF7A7A7A)
+//                )
+//                acceptedCardList.value.forEach { logoUrl ->
+//                    KamelImage(
+//                        resource = asyncPainterResource(data = logoUrl),
+//                        contentDescription = "Card network",
+//                        modifier = Modifier.size(32.dp).border(1.dp, Color(0xFFE6E6E6), RoundedCornerShape(8.dp)),     // width auto from aspect ratio
+//                        onLoading = {
+//                            Box(modifier = Modifier.size(width = 32.dp, height = 20.dp)
+//                                .clip(RoundedCornerShape(2.dp))
+//                                .background(Color(0xFFE0E0E0)))
+//                        },
+//                        onFailure = {
+//                            Image(
+//                                painter = painterResource(Res.drawable.ic_card),
+//                                contentDescription = "Card",
+//                                modifier = Modifier.height(20.dp)
+//                            )
+//                        }
+//                    )
+//                }
+//            }
+//        }
         Footer()
     }
 }

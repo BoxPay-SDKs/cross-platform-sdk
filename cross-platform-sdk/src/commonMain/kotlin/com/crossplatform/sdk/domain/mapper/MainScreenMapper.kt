@@ -46,6 +46,55 @@ fun SessionDetails.toUiModel(): MainScreenModel {
         .filter { it.isDigit() }
         .toIntOrNull() ?: 16
 
+    UserDataHandler.set(
+        firstName = paymentDetails.shopper.firstName,
+        lastName = paymentDetails.shopper.lastName,
+        email = paymentDetails.shopper.email,
+        uniqueId = paymentDetails.shopper.uniqueReference,
+        dob = paymentDetails.shopper.dateOfBirth,
+        pan = paymentDetails.shopper.panNumber,
+        address1 = paymentDetails.shopper.deliveryAddress?.address1,
+        address2 = paymentDetails.shopper.deliveryAddress?.address2,
+        city = paymentDetails.shopper.deliveryAddress?.city,
+        state = paymentDetails.shopper.deliveryAddress?.state,
+        pincode = paymentDetails.shopper.deliveryAddress?.postalCode,
+        labelName = paymentDetails.shopper.deliveryAddress?.labelName,
+        labelType = paymentDetails.shopper.deliveryAddress?.labelType
+    )
+
+    UserDataHandler.setCustomFields(merchantDetails.customFields)
+
+    var methodFlags = MainScreenModel.MethodFlags()
+    val acceptedCardsList: List<String> = this.configs.paymentMethods
+        .filter { it.type == "Card" }
+        .map { it.logoUrl }
+    this.configs.paymentMethods.forEach { method ->
+        methodFlags = when (method.type) {
+            "Upi" -> {
+                when (method.brand) {
+                    "UpiIntent" -> methodFlags.copy(isUPIIntentVisible = true, isUPIVisible = true)
+                    "UpiCollect" -> methodFlags.copy(isUPICollectVisible = true, isUPIVisible = true)
+                    "UpiQr" -> methodFlags.copy(isUPIQRVisible = true, isUPIVisible = true)
+                    else -> methodFlags
+                }
+            }
+            "UpiOneTimeMandate" -> {
+                when (method.brand) {
+                    "UpiIntentOtm" -> methodFlags.copy(isUPIOtmIntentVisible = true, isUPIOtmVisible = true)
+                    "UpiCollectOtm" -> methodFlags.copy(isUPIOtmCollectVisible = true, isUPIOtmVisible = true)
+                    "UpiQrOtm" -> methodFlags.copy(isUPIOtmQRVisible = true, isUPIOtmVisible = true)
+                    else -> methodFlags
+                }
+            }
+            "Card"           -> methodFlags.copy(isCardsVisible      = true)
+            "Wallet"         -> methodFlags.copy(isWalletVisible     = true)
+            "NetBanking"     -> methodFlags.copy(isNetBankingVisible = true)
+            "Emi"            -> methodFlags.copy(isEMIVisible        = true)
+            "BuyNowPayLater" -> methodFlags.copy(isBNPLVisible       = true)
+            else             -> methodFlags
+        }
+    }
+
     CheckoutDetailsHandler.setSDKConfig(
         currencySymbol              = moneyObject.currencySymbol,
         currencyCode                = moneyObject.currencyCode,
@@ -80,54 +129,9 @@ fun SessionDetails.toUiModel(): MainScreenModel {
         ctaBorderRadius = if (CheckoutDetailsHandler.checkoutDetails.ctaBorderRadius == 0) payBtnFontSizeInt else CheckoutDetailsHandler.checkoutDetails.ctaBorderRadius,
         inputBorderColor = CheckoutDetailsHandler.checkoutDetails.unfocusedTextInputBorderColor.ifEmpty { merchantDetails.checkoutTheme.unfocusedTextInputBorderColor },
         inputFocusBorderColor = CheckoutDetailsHandler.checkoutDetails.focusedTextInputBorderColor.ifEmpty { merchantDetails.checkoutTheme.focusedTextInputBorderColor },
-        ctaTextFontSize = ctaTextSizeInt
+        ctaTextFontSize = ctaTextSizeInt,
+        acceptedCardList = acceptedCardsList
     )
-
-    UserDataHandler.set(
-        firstName = paymentDetails.shopper.firstName,
-        lastName = paymentDetails.shopper.lastName,
-        email = paymentDetails.shopper.email,
-        uniqueId = paymentDetails.shopper.uniqueReference,
-        dob = paymentDetails.shopper.dateOfBirth,
-        pan = paymentDetails.shopper.panNumber,
-        address1 = paymentDetails.shopper.deliveryAddress?.address1,
-        address2 = paymentDetails.shopper.deliveryAddress?.address2,
-        city = paymentDetails.shopper.deliveryAddress?.city,
-        state = paymentDetails.shopper.deliveryAddress?.state,
-        pincode = paymentDetails.shopper.deliveryAddress?.postalCode,
-        labelName = paymentDetails.shopper.deliveryAddress?.labelName,
-        labelType = paymentDetails.shopper.deliveryAddress?.labelType
-    )
-
-    UserDataHandler.setCustomFields(merchantDetails.customFields)
-
-    var methodFlags = MainScreenModel.MethodFlags()
-    this.configs.paymentMethods.forEach { method ->
-        methodFlags = when (method.type) {
-            "Upi" -> {
-                when (method.brand) {
-                    "UpiIntent" -> methodFlags.copy(isUPIIntentVisible = true, isUPIVisible = true)
-                    "UpiCollect" -> methodFlags.copy(isUPICollectVisible = true, isUPIVisible = true)
-                    "UpiQr" -> methodFlags.copy(isUPIQRVisible = true, isUPIVisible = true)
-                    else -> methodFlags
-                }
-            }
-            "UpiOneTimeMandate" -> {
-                when (method.brand) {
-                    "UpiIntentOtm" -> methodFlags.copy(isUPIOtmIntentVisible = true, isUPIOtmVisible = true)
-                    "UpiCollectOtm" -> methodFlags.copy(isUPIOtmCollectVisible = true, isUPIOtmVisible = true)
-                    "UpiQrOtm" -> methodFlags.copy(isUPIOtmQRVisible = true, isUPIOtmVisible = true)
-                    else -> methodFlags
-                }
-            }
-            "Card"           -> methodFlags.copy(isCardsVisible      = true)
-            "Wallet"         -> methodFlags.copy(isWalletVisible     = true)
-            "NetBanking"     -> methodFlags.copy(isNetBankingVisible = true)
-            "Emi"            -> methodFlags.copy(isEMIVisible        = true)
-            "BuyNowPayLater" -> methodFlags.copy(isBNPLVisible       = true)
-            else             -> methodFlags
-        }
-    }
 
     val orderDetails: MainScreenModel.OrderDetails? = this.paymentDetails.order?.let { order ->
         MainScreenModel.OrderDetails(

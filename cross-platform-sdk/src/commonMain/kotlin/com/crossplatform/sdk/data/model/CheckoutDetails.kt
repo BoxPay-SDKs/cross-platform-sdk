@@ -59,6 +59,7 @@ data class CheckoutDetails(
     val isDOBEditable: Boolean,
     val isMerchantLogoVisible : Boolean,
     val isSessionExpiryVisible : Boolean,
+    val acceptedCardsList : List<String>,
 
     // ---------Payment Current Status --------
     val status : String,

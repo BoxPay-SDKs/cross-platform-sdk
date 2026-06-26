@@ -8,7 +8,7 @@ plugins {
     kotlin("native.cocoapods")
     id("maven-publish")
     kotlin("plugin.serialization") version "1.9.24"
-    id("org.jetbrains.compose") version "1.7.3"             // ✅ CMP
+    id("org.jetbrains.compose") version "1.8.2"             // ✅ CMP
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.codingfeline.buildkonfig") version "0.15.2"
 }
@@ -84,12 +84,13 @@ kotlin {
                 implementation(compose.components.resources)
 
                 // Navigation
-                implementation(libs.navigation.compose)
+                implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha13")
 
                 // ✅ Koin
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
                 implementation(libs.koin.compose.viewmodel)
+                implementation(compose.animation)
 
                 implementation("io.github.alexzhirkevich:compottie:2.0.0")
                 implementation("media.kamel:kamel-image:0.9.5")

@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -39,6 +36,10 @@ import com.crossplatform.sdk.domain.model.CountryDetailsModel
 import com.crossplatform.sdk.presentation.loadCountryData
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_cross
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_search
+import org.jetbrains.compose.resources.painterResource
 
 // commonMain
 @Composable
@@ -88,7 +89,7 @@ fun CountryPickerDialog(
                     modifier   = Modifier.weight(1f)
                 )
                 Image(
-                    imageVector        = Icons.Default.Close,
+                    painter        = painterResource(Res.drawable.ic_cross),
                     contentDescription = "Close",
                     modifier           = Modifier
                         .size(24.dp)
@@ -112,7 +113,7 @@ fun CountryPickerDialog(
                 },
                 leadingIcon = {
                     Image(
-                        imageVector        = Icons.Default.Search,
+                        painter        = painterResource(Res.drawable.ic_search),
                         contentDescription = null,
                         colorFilter    = ColorFilter.tint(Color(0xFFADACAD))
                     )

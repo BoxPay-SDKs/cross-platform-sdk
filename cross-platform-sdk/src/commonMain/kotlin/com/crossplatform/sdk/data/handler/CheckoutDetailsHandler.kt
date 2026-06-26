@@ -78,7 +78,8 @@ object CheckoutDetailsHandler {
         focusedTextInputBorderColor = "",
         unfocusedTextInputBorderColor = "",
         fontFamily = "",
-        ctaTextFontSize = 0
+        ctaTextFontSize = 0,
+        acceptedCardsList = emptyList()
     )
 
     // ─── Source of truth ──────────────────────────────────────────────────────
@@ -123,6 +124,11 @@ object CheckoutDetailsHandler {
         .map { it.merchantName }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().merchantName)
+
+    val acceptedCardsListFlow: StateFlow<List<String>> = _checkoutDetailsFlow
+        .map { it.acceptedCardsList }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().acceptedCardsList)
 
     val merchantLogoFlow: StateFlow<String> = _checkoutDetailsFlow
         .map { it.merchantLogo }
@@ -351,7 +357,8 @@ object CheckoutDetailsHandler {
         ctaTextFontSize : Int,
         inputBorderColor : String,
         inputFocusBorderColor : String,
-        ctaBorderRadius: Int
+        ctaBorderRadius: Int,
+        acceptedCardList : List<String>
     ) {
         checkoutDetails = checkoutDetails.copy(
             currencySymbol            = currencySymbol,
@@ -387,7 +394,8 @@ object CheckoutDetailsHandler {
             fontFamily = fontFamily,
             focusedTextInputBorderColor = inputFocusBorderColor,
             unfocusedTextInputBorderColor = inputBorderColor,
-            ctaBorderRadius = ctaBorderRadius
+            ctaBorderRadius = ctaBorderRadius,
+            acceptedCardsList = acceptedCardList
         )
         _checkoutDetailsFlow.value = checkoutDetails
     }
