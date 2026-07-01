@@ -2,6 +2,7 @@ package com.crossplatform.sdk.presentation.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,7 +20,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
@@ -52,6 +55,8 @@ fun InstantOfferScreen(
     val codeTextField = remember {
         mutableStateOf("")
     }
+    val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
+    val (currencySymbol, _) = currencyFlow.value
 
     when(screenState) {
         is UiState.Error -> {
@@ -89,6 +94,17 @@ fun InstantOfferScreen(
                                 modifier           = Modifier.size(width = 32.dp, height = 32.dp)
                             )
                         },
+                        trailingIcon = {
+                            Text(
+                                text = "APPLY",
+                                fontWeight = FontWeight.Bold,
+                                color = buttonColor.value.toComposeColor(),
+                                fontSize = 16.sp,
+                                modifier = Modifier.clickable{
+                                    onClickApply(codeTextField.value)
+                                }
+                            )
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor   = focusedTextInputBorderColor.value.toComposeColor(),
@@ -104,9 +120,18 @@ fun InstantOfferScreen(
                         description = item.description,
                         terms = item.terms,
                         discountType = item.discountType,
-                        expiryDate = "",
-                        applicable = "",
-                        selectedCouponCode = selectedCode
+                        expiryDate = item.expiryDate,
+                        applicable = item.applicableOn,
+                        selectedCouponCode = selectedCode,
+                        onClickApply = {
+                            onClickApply(item.code)
+                        },
+                        onClickRemove = {
+                            onClickRemove()
+                        },
+                        discountPercent = item.discountPercent,
+                        discountAmount = item.discountAmount,
+                        currencySymbol = currencySymbol
                     )
                 }
             }

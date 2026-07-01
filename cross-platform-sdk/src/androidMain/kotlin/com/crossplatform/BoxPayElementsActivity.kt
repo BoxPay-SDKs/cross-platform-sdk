@@ -29,6 +29,7 @@ object BoxPayElementsView {
         unfocusedTextInputBorderColor: String = "#ADACB0",
         paymentMethodList: List<String> = emptyList(),
         fontFamily: String? = null,
+        isBoxPayProceedButtonVisible : Boolean
     ): View {
         val paymentMethodTabs = paymentMethodList.mapNotNull { method ->
             runCatching { PaymentMethodTab.valueOf(method.uppercase()) }.getOrNull()
@@ -43,7 +44,7 @@ object BoxPayElementsView {
                         token = token,
                         isTestEnv = isTestEnv,
                         // merchant owns the button → hide the SDK's internal one
-                        isBoxPayProceedButtonVisible = false,
+                        isBoxPayProceedButtonVisible = isBoxPayProceedButtonVisible,
                         shopperToken = shopperToken,
                         showQROnLoad = showQROnLoad,
                         ctaBorderRadius = ctaBorderRadius,

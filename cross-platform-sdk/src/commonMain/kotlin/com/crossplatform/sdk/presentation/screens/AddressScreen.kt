@@ -225,7 +225,7 @@ fun AddressScreen(
         when {
             text.isEmpty() -> { phoneError = "Required"; isPhoneValid = false }
             !phoneNumberLengthList.value.contains(text.length) -> {
-                phoneError = "Mobile number must be ${phoneNumberLengthList.value} digits"
+                phoneError = "Mobile number must be ${phoneNumberLengthList.value.joinToString(" or ")} digits"
                 isPhoneValid = false
             }
             else -> { phoneError = ""; isPhoneValid = true }
@@ -422,30 +422,33 @@ fun AddressScreen(
 
             // PIN + City
             Row(
-                modifier          = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
+                modifier          = Modifier.fillMaxWidth().padding(top = 20.dp),
                 verticalAlignment = Alignment.Top
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     AddressTextField(
                         value         = pinTextField,
                         label         = "ZIP/Postal code*",
-                        onValueChange = { pinTextField = it; validatePin(it) },
+                        onValueChange = {
+                            pinTextField = it
+                            validatePin(it)
+                                        },
                         isError       = isPinValid == false,
                         keyboardType  = KeyboardType.Number,
-                        modifier      = Modifier.fillMaxWidth(),
+                        modifier      = Modifier.fillMaxWidth().padding(start = 16.dp),
                         focusedBorderColor = focusedBorderColor.value,
                         unfocusedBorderColor = unfocusedBorderColor.value
                     )
                     if (isPinValid == false) ErrorText(pinError)
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     AddressTextField(
                         value         = cityTextField,
                         label         = "City*",
                         onValueChange = { cityTextField = it; validateCity(it) },
                         isError       = isCityValid == false,
-                        modifier      = Modifier.fillMaxWidth(),
+                        modifier      = Modifier.fillMaxWidth().padding(end = 16.dp),
                         focusedBorderColor = focusedBorderColor.value,
                         unfocusedBorderColor = unfocusedBorderColor.value
                     )
@@ -493,41 +496,43 @@ fun AddressScreen(
         // --- Bottom Button ---
         PayButton(
             text = if (isShippingEnabled) "Save Address" else "Save Personal Details",
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().padding(top = 28.dp, start = 16.dp, end = 16.dp)
                 .clip(RoundedCornerShape(ctaBorderRadius.value.dp))
                 .background(buttonColor.value.toComposeColor())
                 .clickable {
-                    val (firstName, lastName) = extractNames(fullNameTextField)
-                    UserDataHandler.set(
-                        firstName           = firstName,
-                        lastName            = lastName,
-                        email               = emailTextField,
-                        address1            = mainAddressTextField,
-                        address2            = secondaryAddressTextField,
-                        city                = cityTextField,
-                        state               = stateTextField,
-                        pincode             = pinTextField,
-                        labelType           =  "",
-                        labelName           = "",
-                        uniqueId            = uniqueId.value,
-                        dob                 = null,
-                        pan                 = null
-                    )
-                    UserDataHandler.setUserPhoneAndCountryData(
-                        completePhoneNumber = "$selectedPhoneCode$phoneNumberTextField",
-                        phoneCode           = selectedPhoneCode,
-                        countryCode         = selectedCountryCode,
-                        countryName         = countryTextField
-                    )
-                    val filled = customFields.value.map { field ->
-                        field.copy(fieldValue = customFieldValues[field.fieldName] ?: field.fieldValue)
+                    if(isAllValid()) {
+                        val (firstName, lastName) = extractNames(fullNameTextField)
+                        UserDataHandler.set(
+                            firstName           = firstName,
+                            lastName            = lastName,
+                            email               = emailTextField,
+                            address1            = mainAddressTextField,
+                            address2            = secondaryAddressTextField,
+                            city                = cityTextField,
+                            state               = stateTextField,
+                            pincode             = pinTextField,
+                            labelType           =  "",
+                            labelName           = "",
+                            uniqueId            = uniqueId.value,
+                            dob                 = null,
+                            pan                 = null
+                        )
+                        UserDataHandler.setUserPhoneAndCountryData(
+                            completePhoneNumber = "$selectedPhoneCode$phoneNumberTextField",
+                            phoneCode           = selectedPhoneCode,
+                            countryCode         = selectedCountryCode,
+                            countryName         = countryTextField
+                        )
+                        val filled = customFields.value.map { field ->
+                            field.copy(fieldValue = customFieldValues[field.fieldName] ?: field.fieldValue)
+                        }
+                        UserDataHandler.setCustomFields(filled)
+                        onAddressSaved()
                     }
-                    UserDataHandler.setCustomFields(filled)
-                    onAddressSaved()
                 },
             amount = 0.0,
             currencySymbol = "",
-            isValid = isAllValid(),
+            isValid = true,
             buttonTextColor = buttonTextColor.value
         )
         Footer()

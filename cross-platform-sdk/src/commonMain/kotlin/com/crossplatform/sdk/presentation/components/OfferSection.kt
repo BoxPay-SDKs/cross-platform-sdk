@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -125,7 +126,8 @@ fun SingleOfferCard(
                 Image(
                     painter = painterResource(Res.drawable.ic_offer_tag),
                     contentDescription = null,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(24.dp).graphicsLayer(scaleX = -1f),
+                    colorFilter = ColorFilter.tint(themeColor)
                 )
             }
 
@@ -237,7 +239,8 @@ fun MultiOfferCard(
             Image(
                 painter = painterResource(Res.drawable.ic_offer_tag),
                 contentDescription = null,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(24.dp).graphicsLayer(scaleX = -1f),
+                colorFilter = ColorFilter.tint(themeColor)
             )
 
             Spacer(Modifier.width(8.dp))

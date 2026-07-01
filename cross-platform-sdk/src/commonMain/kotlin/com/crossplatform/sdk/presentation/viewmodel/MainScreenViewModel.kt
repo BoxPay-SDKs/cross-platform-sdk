@@ -212,13 +212,27 @@ class MainScreenViewModel(
         amount: Double,
         currencyCode: String
     ) {
-        val surchargeResult = runCatching {
-            repo.getSurcharge(amount, currencyCode)
-        }.getOrNull()
-            ?.let { (it as? ApiResponse.Success)?.data?.toUiModel() }
+        when(val response = repo.getSurcharge(amount, currencyCode)) {
+            is ApiResponse.Error -> {
+                print("====error mrsshe ${response.errorBody}")
+                CheckoutDetailsHandler.setSurchargeDetails(emptyList())
+            }
+            is ApiResponse.Success -> {
+                val surcharges = response.data.toUiModel()
 
-        surchargeResult?.let {
-            CheckoutDetailsHandler.setSurchargeDetails(it)
+                // Sum surcharge fees that apply with no specific "applicableOn"
+                val applicableSurcharge = surcharges
+                    .filter { it.applicableOn.isEmpty() }
+                    .sumOf { it.amount }
+
+                val updatedAmount = amount + applicableSurcharge
+
+                CheckoutDetailsHandler.setSurchargeDetails(surcharges)
+                CheckoutDetailsHandler.setAmount(updatedAmount)
+            }
+            else -> {
+                //  no op
+            }
         }
     }
 

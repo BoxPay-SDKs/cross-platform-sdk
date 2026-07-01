@@ -110,7 +110,7 @@ fun List<PaymentMethod>.toUiModel(): ChooseEmiModel {
                     .sortedWith(
                         compareByDescending<Bank> { it.noCostApplied }
                             .thenByDescending { it.lowCostApplied }
-                            .thenBy { it.name }
+                            .thenBy { it.percent }
                     )
                     .map { bank ->
                         bank.copy(

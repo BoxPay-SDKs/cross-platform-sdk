@@ -115,11 +115,11 @@ fun OrderDetails(
                             KamelImage(
                                 resource              = asyncPainterResource(data = item.imageUrl),
                                 contentDescription = "Saved Card",
-                                modifier           = Modifier.size(32.dp),
+                                modifier           = Modifier.size(40.dp),
                                 onLoading = {
                                     Box(
                                         modifier = Modifier
-                                            .size(32.dp)
+                                            .size(40.dp)
                                             .background(
                                                 color = Color(0xFFE6E6E6),
                                                 RoundedCornerShape(12.dp)
@@ -130,7 +130,7 @@ fun OrderDetails(
                                     Image(
                                         painter = painterResource(Res.drawable.ic_broken_order_image),
                                         contentDescription = null,
-                                        modifier = Modifier.size(32.dp)
+                                        modifier = Modifier.size(40.dp)
                                     )
                                 }
                             )
@@ -196,7 +196,7 @@ fun OrderDetails(
             // Tax
             if (taxAmount != 0.0) {
                 SummaryRow(
-                    label = "Tax",
+                    label = "Taxes and Fees",
                     amount = "$taxAmount",
                     currencySymbol = currencySymbol
                 )
@@ -220,7 +220,7 @@ fun OrderDetails(
                 SummaryRow(
                     label = item.title,
                     amount = "${item.amount}",
-                    currencySymbol = currencySymbol,
+                    currencySymbol = "+ $currencySymbol",
                 )
             }
 
@@ -322,7 +322,7 @@ private fun SummaryRow(
         Text(
             text = buildAnnotatedString {
                 withStyle(SpanStyle(fontFamily = LocalSDKFonts.current.secondary)) {
-                    append(" $currencySymbol")
+                    append(currencySymbol)
                 }
                 append(amount)
             },

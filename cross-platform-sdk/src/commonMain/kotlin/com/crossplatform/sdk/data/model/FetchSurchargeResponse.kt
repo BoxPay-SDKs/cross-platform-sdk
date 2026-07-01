@@ -25,10 +25,9 @@ data class FetchSurchargeResponse(
     @Serializable
     data class SurchargeDetails(
         @SerialName("title") val title : String?,
-        @SerialName("merchantId") val merchantId : String?,
-        @SerialName("surchargeCode") val surchargeCode  : String?,
-        @SerialName("applicableOn") val applicableOn : String?,
-        @SerialName("network") val network : String?,
-        @SerialName("classification") val classification : String?
+        @SerialName("surchargeCode") val surchargeCode  : String? = null,
+        @SerialName("applicableOn") val applicableOn : String? = null,
+        @SerialName("network") val network : String? = null,
+        @SerialName("classification") val classification : String? = null
     )
 }

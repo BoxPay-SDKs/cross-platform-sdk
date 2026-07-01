@@ -5,6 +5,9 @@ data class OfferItem(
     val description: String,
     val terms : String,
     val discountType : String,
+    val discountPercent : Double,
+    val applicableOn : String,
     val discountAmount: Double,
-    val currencySymbol: String
+    val currencySymbol: String,
+    val expiryDate : String?
 )

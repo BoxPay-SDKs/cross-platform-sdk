@@ -106,20 +106,18 @@ class MainActivity : ComponentActivity() {
                         Text(
                             text = "Payment Result",
                             fontWeight = FontWeight.SemiBold,
-                            fontFamily = LocalSDKFonts.current.primary,
                             fontSize = 18.sp
                         )
                     },
                     text = {
                         Text(
                             text = result.toString(),
-                            fontFamily = LocalSDKFonts.current.primary,
                             fontSize = 14.sp
                         )
                     },
                     confirmButton = {
                         TextButton(onClick = { paymentResult.value = null }) {
-                            Text("OK", fontFamily = LocalSDKFonts.current.primary)
+                            Text("OK")
                         }
                     }
                 )

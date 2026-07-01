@@ -70,7 +70,7 @@ fun MainScreen(
     val shopperFlow = CheckoutDetailsHandler.shopperFieldsConfigFlow.collectAsStateWithLifecycle()
     val firstName = UserDataHandler.firstNameFlow.collectAsStateWithLifecycle()
     val lastName = UserDataHandler.lastNameFlow.collectAsStateWithLifecycle()
-    val email = UserDataHandler.lastNameFlow.collectAsStateWithLifecycle()
+    val email = UserDataHandler.emailFlow.collectAsStateWithLifecycle()
     val completePhoneNumber = UserDataHandler.completePhoneNumberFlow.collectAsStateWithLifecycle()
     val addressFlow = UserDataHandler.addressFlow.collectAsStateWithLifecycle()
     val labelFlow = UserDataHandler.labelFlow.collectAsStateWithLifecycle()

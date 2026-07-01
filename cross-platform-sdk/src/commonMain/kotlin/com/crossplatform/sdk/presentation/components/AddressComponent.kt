@@ -69,7 +69,7 @@ fun AddressComponent(
                 Image(
                     painter = painterResource(Res.drawable.ic_location),
                     contentDescription = null,
-                    modifier          = Modifier.size(32.dp)
+                    modifier          = Modifier.size(18.dp)
                 )
 
                 Column(modifier = Modifier

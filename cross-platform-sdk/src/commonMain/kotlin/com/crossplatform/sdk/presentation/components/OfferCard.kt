@@ -31,7 +31,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -49,10 +52,15 @@ fun OfferCard(
     offerCode: String,
     description: String,
     discountType: String,
-    expiryDate: String,
+    expiryDate: String?,
     applicable: String,
     terms: String,
-    selectedCouponCode: String
+    discountAmount : Double?,
+    discountPercent : Double?,
+    currencySymbol : String,
+    selectedCouponCode: String,
+    onClickApply : () -> Unit,
+    onClickRemove : () -> Unit
 ) {
     val showMore = remember { mutableStateOf(false) }
 
@@ -78,6 +86,23 @@ fun OfferCard(
                 .fillMaxWidth()
                 .height(IntrinsicSize.Max)
         ) {
+            val label = buildAnnotatedString {
+                when (discountType) {
+                    "Flat" -> {
+                        withStyle(SpanStyle(fontSize = 12.sp)) {
+                            append(currencySymbol)
+                        }
+                        append("$discountAmount")
+                    }
+                    "Percentage" -> {
+                        append("$discountPercent")
+                        withStyle(SpanStyle(fontSize = 12.sp)) {
+                            append("%")
+                        }
+                    }
+                    else -> append("")
+                }
+            }
             // Ticket stub left panel
             Box(
                 modifier = Modifier
@@ -120,7 +145,10 @@ fun OfferCard(
                         text = if (offerCode == selectedCouponCode) "REMOVE" else "APPLY",
                         fontWeight = FontWeight.Bold,
                         color = if (offerCode == selectedCouponCode) Color(0xFFE84142) else selectedColor,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        modifier = Modifier.clickable{
+                            if (offerCode == selectedCouponCode) onClickRemove() else onClickApply()
+                        }
                     )
                 }
 
@@ -148,7 +176,7 @@ fun OfferCard(
                     text = if (applicable.isNotEmpty())
                         "Applicable on all transactions made using $applicable"
                     else
-                        "Applicable on all transactions",
+                        description,
                     color = MediumGrey,
                     fontSize = 13.sp,
                     lineHeight = 18.sp

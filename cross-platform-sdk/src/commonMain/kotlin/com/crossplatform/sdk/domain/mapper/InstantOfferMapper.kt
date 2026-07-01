@@ -11,9 +11,12 @@ fun List<InstantOfferResponse>.toUiModel(): List<OfferItem> {
             code = item.code,
             description = item.description ?: item.title ?: "",
             terms = item.terms ?: "",
-            discountType = if(item.discount.type.equals("flat", true)) "$currencySymbol${item.discount.amount}" else "${item.discount.percentage}%",
+            discountType = item.discount.type ?: "",
             discountAmount = item.discount.amount ?: 0.0,
-            currencySymbol = currencySymbol
+            currencySymbol = currencySymbol,
+            discountPercent = item.discount.percentage ?: 0.0,
+            applicableOn = item.criteria.applicableTo.paymentMethods?.get(0)?.brand ?: "",
+            expiryDate = null
         )
     }
 }

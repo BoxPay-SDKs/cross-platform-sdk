@@ -460,7 +460,7 @@ object CheckoutDetailsHandler {
     }
 
     fun setSessionExpired() {
-        checkoutDetails = checkoutDetails.copy(isSessionExpired = !checkoutDetails.isPaymentFailed)
+        checkoutDetails = checkoutDetails.copy(isSessionExpired = !checkoutDetails.isSessionExpired)
         _checkoutDetailsFlow.value = checkoutDetails
     }
 

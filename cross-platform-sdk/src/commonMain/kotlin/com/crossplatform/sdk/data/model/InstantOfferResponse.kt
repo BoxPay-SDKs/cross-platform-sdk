@@ -15,7 +15,9 @@ data class InstantOfferResponse(
 ) {
     @Serializable
     data class InstantOfferCriteria(
-        @SerialName("applicableTo") val applicableTo : OfferApplicableTo
+        @SerialName("applicableTo") val applicableTo : OfferApplicableTo,
+        @SerialName("startDate") val startDate : String?,
+        @SerialName("endDate") val endDate : String?
     )
 
     @Serializable

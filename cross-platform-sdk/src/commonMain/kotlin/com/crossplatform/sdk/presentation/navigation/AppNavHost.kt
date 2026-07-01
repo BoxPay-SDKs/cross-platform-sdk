@@ -134,9 +134,11 @@ fun AppNavHost() {
                     if (ScreenBackInterceptor.onBack?.invoke() == true) {
                         // no operation to be performed as it is already handled in EMI screen
                     }
-                    else if (!navController.popBackStack()) {
+                    else if (!navController.popBackStack() || (isNewAddress && baseRoute == Routes.AddressScreen.route)) {
                         callSDKPaymentResponse()
-                    } else {
+                    } else if (!navController.popBackStack()) {
+                        callSDKPaymentResponse()
+                    }else {
                         if(!surchargeDetails.value.isEmpty()) {
                             CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
                         }
@@ -415,6 +417,7 @@ fun AppNavHost() {
                     screenName = "App nav host",
                     message = "Session expired button clicked"
                 )
+                CheckoutDetailsHandler.setSessionExpired()
                 callSDKPaymentResponse()
             }
         )
