@@ -1,7 +1,6 @@
 package com.crossplatform.sdk.data.handler
 
 import com.crossplatform.sdk.data.model.CheckoutDetails
-import com.crossplatform.sdk.domain.model.PaymentMethodTab
 import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import kotlinx.coroutines.CoroutineScope

@@ -44,8 +44,6 @@ import com.google.android.gms.wallet.contract.TaskResultContracts
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Calendar
-import kotlin.collections.component1
-import kotlin.collections.component2
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
