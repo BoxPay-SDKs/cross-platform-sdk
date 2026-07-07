@@ -10,6 +10,7 @@ import com.crossplatform.sdk.presentation.getStatus
 fun SessionDetails.toUiModel(): MainScreenModel {
     val moneyObject = this.paymentDetails.money
     val status = getStatus(this.status)
+    var revolutPublicKey : String? = null
 
     val enabledFields = configs.enabledFields
 
@@ -87,7 +88,17 @@ fun SessionDetails.toUiModel(): MainScreenModel {
                 }
             }
             "Card"           -> methodFlags.copy(isCardsVisible      = true)
-            "Wallet"         -> methodFlags.copy(isWalletVisible     = true)
+            "Wallet"         -> {
+                when(method.brand) {
+                    "GooglePay" -> methodFlags.copy(isGooglePayVisible = true, isWalletVisible = true)
+                    "ApplePay" -> methodFlags.copy(isApplePayVisible = true, isWalletVisible = true)
+                    "RevolutPay" -> {
+                        revolutPublicKey = method.additionalData?.publicKey
+                        methodFlags.copy(isRevolutPayVisible = true, isWalletVisible = true)
+                    }
+                    else -> methodFlags.copy(isWalletVisible = true)
+                }
+            }
             "NetBanking"     -> methodFlags.copy(isNetBankingVisible = true)
             "Emi"            -> methodFlags.copy(isEMIVisible        = true)
             "BuyNowPayLater" -> methodFlags.copy(isBNPLVisible       = true)
@@ -159,7 +170,8 @@ fun SessionDetails.toUiModel(): MainScreenModel {
         currencyCode = moneyObject.currencyCode,
         methodFlags = methodFlags,
         orderDetails = orderDetails,
-        sessionExpiryTimer = this.sessionExpiryTimestamp
+        sessionExpiryTimer = this.sessionExpiryTimestamp,
+        revolutPublicKey = revolutPublicKey
     )
 }
 

@@ -77,6 +77,8 @@ class MainScreenViewModel(
 
     val qrTimer = mutableStateOf(0)
     val qrImage = mutableStateOf("")
+    val revolutOrderToken = mutableStateOf("")
+    val revolutReturnUrl = mutableStateOf("")
 
     private val lifecycleObserver = AppLifecycleObserver { state ->
         if (state == AppLifecycleState.Foreground && isUpiOpening.value) {
@@ -674,14 +676,42 @@ class MainScreenViewModel(
         qrImage.value = ""
     }
 
-    fun onWebViewDismissed() {
-        // Stop any webview-related polling or pending state
-        CheckoutDetailsHandler.setIsWebViewVisible(false)
-    }
-
-    fun onUPITimerBottomSheetDismissed() {
-        showUPITimerBottomSheet.value = false
-        upiId.value = ""
+    fun onClickRevolutPay() {
+        viewModelScope.launch {
+            callUiAnalytics(
+                event = AnalyticsEvents.PAYMENT_INITIATED.value,
+                screenName = "WalletViewModel",
+                message = "Payment initiated"
+            )
+            isBoxPayAnimationLoading.value = true
+            val response = otherPaymentMethodRepo.initiatePayment(
+                instrumentDetails = "wallet/revolutpay"
+            )
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentHtml = {html ->
+                    // no operation
+                },
+                onOpenUpiIntent = {
+                    // no operations
+                },
+                onNavigateToTimer = {
+                    // no operations
+                },
+                onOpenQr = {_,_ ->
+                    // no operations
+                },
+                onSetPaymentUrl = {responseUrl ->
+                    // no operation
+                },
+                setIsBoxPayAnimationVisible = {isBoxPayAnimationLoading.value = it},
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                onRevolutPay = {orderToken, returnUrl ->
+                    revolutOrderToken.value = orderToken
+                    revolutReturnUrl.value = returnUrl
+                }
+            )
+        }
     }
 
 }

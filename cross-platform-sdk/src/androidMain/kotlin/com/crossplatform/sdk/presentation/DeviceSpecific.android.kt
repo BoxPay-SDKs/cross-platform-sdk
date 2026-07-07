@@ -1,7 +1,7 @@
 package com.crossplatform.sdk.presentation
 
-import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import com.crossplatform.sdk.data.model.BrowserData
@@ -9,8 +9,15 @@ import android.content.res.Resources
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -20,7 +27,22 @@ import androidx.core.net.toUri
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutConfig
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
 import com.crossplatform.sdk.domain.model.AppLifecycleState
+import com.crossplatform.sdk.payments.RevolutPaySdk
+import com.google.android.gms.common.api.CommonStatusCodes
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.wallet.PaymentData
+import com.google.android.gms.wallet.PaymentDataRequest
+import com.google.android.gms.wallet.PaymentsClient
+import com.google.android.gms.wallet.Wallet
+import com.google.android.gms.wallet.WalletConstants
+import com.google.android.gms.wallet.contract.TaskResultContracts
+import org.json.JSONArray
+import org.json.JSONObject
 import java.util.Calendar
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -55,48 +77,45 @@ actual fun getBrowserData(): BrowserData {
 }
 
 actual fun getInstalledUpiApps(context: Any?): List<String> {
-
     try {
         val knownUpiPackages: Map<String, String> = mapOf(
-            "gpay"         to "com.google.android.apps.nbu.paisa.user",
-            "paytm"        to "net.one97.paytm",
-            "phonepe"      to "com.phonepe.app",
-//            "bhim"         to "in.org.npci.upiapp",
-//            "amazon_pay"   to "com.amazon.mShop.android.shopping",
+            "gpay"       to "com.google.android.apps.nbu.paisa.user",
+            "paytm"      to "net.one97.paytm",
+            "phonepe"    to "com.phonepe.app",
+            "bhim"       to "in.org.npci.upiapp",
+            "amazon_pay" to "com.amazon.mShop.android.shopping",
+            "mobikwik"   to "com.mobikwik_new",
+            "bharatpe"   to "com.postpe.app",     // consumer app
+            "jupiter"    to "money.jupiter",
+            "pop"        to "com.popclub.android",
         )
         val pm = (context as Context).packageManager
 
-        // Step 1: Scheme-only intent — matches ALL upi:// actions (pay, mandate, collect, etc.)
-        val upiIntent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.Builder().scheme("upi").build()
-        }
+        // Step 1: Intent discovery — use upi://pay so host-specific filters are matched too
+        val upiIntent = Intent(Intent.ACTION_VIEW, "upi://pay".toUri())
         val intentDiscovered: Set<String> = pm
             .queryIntentActivities(upiIntent, PackageManager.MATCH_DEFAULT_ONLY)
             .map { it.activityInfo.packageName }
             .toSet()
 
-        // Step 2: Explicit package check — fallback for known apps with custom schemes
-        val explicitlyFound: Set<String> = knownUpiPackages
-            .filter { (_, packageName) ->
+        // Step 2: Explicit check — needs each package declared in <queries> or it throws
+        val explicitlyFound: Set<String> = knownUpiPackages.values
+            .filter { packageName ->
                 try {
-                    pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+                    pm.getPackageInfo(packageName, 0)   // 0 is enough; GET_ACTIVITIES not needed
                     true
                 } catch (_: PackageManager.NameNotFoundException) {
                     false
                 }
             }
-            .values
             .toSet()
 
-        // Step 3: Merge both sets and map back to friendly names
+        // Step 3: Merge and map back to friendly names
         val allFound = intentDiscovered + explicitlyFound
         val knownPackageToKey = knownUpiPackages.entries.associate { it.value to it.key }
-
-        return allFound.map { packageName ->
-            knownPackageToKey[packageName] ?: packageName
-        }
-    } catch (_ : Exception) {
-       return emptyList()
+        return allFound.map { knownPackageToKey[it] ?: it }
+    } catch (_: Exception) {
+        return emptyList()
     }
 }
 
@@ -175,7 +194,7 @@ actual fun isTabletDevice(): Boolean {
 actual fun base64ToImageBitmap(base64: String): ImageBitmap {
     val cleanBase64 = base64.substringAfter("base64,", base64)
 
-    val bytes = Base64.Default.decode(cleanBase64)
+    val bytes = Base64.decode(cleanBase64)
 
     val bitmap = BitmapFactory.decodeByteArray(
         bytes,
@@ -185,3 +204,174 @@ actual fun base64ToImageBitmap(base64: String): ImageBitmap {
 
     return bitmap.asImageBitmap()
 }
+
+// androidMain
+@Composable
+actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler {
+    val context = LocalContext.current
+    val activity = remember(context) { context.findActivity() }
+
+    val client = remember(activity) {
+        Wallet.getPaymentsClient(
+            activity,
+            Wallet.WalletOptions.Builder()
+                .setEnvironment(WalletConstants.ENVIRONMENT_PRODUCTION)
+                .build()
+        )
+    }
+
+    var pendingCallback by remember { mutableStateOf<((ExpressCheckoutPaymentResult) -> Unit)?>(null) }
+
+    // safe here — rememberLauncherForActivityResult registers during initial
+    // composition, before the activity can reach STARTED, unlike calling
+    // activity.registerForActivityResult() manually from a class constructor
+    val launcher = rememberLauncherForActivityResult(
+        TaskResultContracts.GetPaymentDataResult()
+    ) { taskResult ->
+        val callback = pendingCallback
+        pendingCallback = null
+        when (taskResult.status.statusCode) {
+            CommonStatusCodes.SUCCESS -> {
+                val token = taskResult.result?.toJson()
+                if (token != null) callback?.invoke(ExpressCheckoutPaymentResult.Success(token))
+                else callback?.invoke(ExpressCheckoutPaymentResult.Failure("Empty payment data"))
+            }
+            CommonStatusCodes.CANCELED -> {
+                callback?.invoke(ExpressCheckoutPaymentResult.Cancelled)
+            }
+            else -> {
+                callback?.invoke(ExpressCheckoutPaymentResult.Failure("Google Pay error"))
+            }
+        }
+    }
+
+    return remember(client, launcher, activity) {
+        AndroidPaymentHandler(
+            activity = activity,
+            client = client,
+            launcher = launcher,
+            onLaunch = {
+                pendingCallback = it
+            }
+        )
+    }
+}
+
+private fun Context.findActivity(): ComponentActivity {
+    var ctx = this
+    while (ctx is ContextWrapper) {
+        if (ctx is ComponentActivity) return ctx
+        ctx = ctx.baseContext
+    }
+    throw IllegalStateException("ExpressCheckout requires a ComponentActivity host")
+}
+
+// androidMain — Google Pay via Wallet's PaymentsClient, Revolut Pay via
+// RevolutPaySdk (registered explicitly by the merchant in their own
+// Activity.onCreate -- see RevolutPaySdk.kt -- NOT created here)
+class AndroidPaymentHandler(
+    private val activity: ComponentActivity,
+    private val client: PaymentsClient,
+    private val launcher: ActivityResultLauncher<Task<PaymentData>>,
+    private val onLaunch: ((ExpressCheckoutPaymentResult) -> Unit) -> Unit
+) : ExpressCheckoutPaymentHandler {
+
+    override fun isGooglePayAvailable(): Boolean = true
+
+    override fun isApplePayAvailable(): Boolean = false
+
+    // false if the merchant forgot to call RevolutPaySdk.register(this) in
+    // their Activity.onCreate -- hides the button rather than showing one
+    // that fails when tapped.
+    override fun isRevolutPayAvailable(): Boolean = RevolutPaySdk.isRegistered(activity)
+
+    override fun launchGooglePay(
+        request: ExpressCheckoutPaymentRequest,
+        config: ExpressCheckoutConfig,
+        onResult: (ExpressCheckoutPaymentResult) -> Unit
+    ) {
+        onLaunch(onResult)
+
+        val paymentRequest = PaymentDataRequest.fromJson(
+            buildGooglePayJson(request, config)
+        )
+
+        launcher.launch(
+            client.loadPaymentData(paymentRequest)
+        )
+    }
+
+    override fun launchApplePay(
+        request: ExpressCheckoutPaymentRequest,
+        config: ExpressCheckoutConfig,
+        onResult: (ExpressCheckoutPaymentResult) -> Unit
+    ) {
+        onResult(
+            ExpressCheckoutPaymentResult.Failure(
+                "Apple Pay is not supported on Android"
+            )
+        )
+    }
+
+    override fun launchRevolutPay(
+        request: ExpressCheckoutPaymentRequest,
+        config: ExpressCheckoutConfig,
+        merchantPublicKey : String,
+        isSandbox : Boolean,
+        onResult: (ExpressCheckoutPaymentResult) -> Unit
+    ) {
+        val orderToken = request.orderToken
+        if (orderToken == null) {
+            onResult(
+                ExpressCheckoutPaymentResult.Failure(
+                    "orderToken is required for Revolut Pay -- create the order via your backend first"
+                )
+            )
+            return
+        }
+
+        RevolutPaySdk.launch(activity, orderToken, config.revolutReturnUrl, merchantPublicKey, isSandbox , onResult)
+    }
+}
+
+private fun buildGooglePayJson(request: ExpressCheckoutPaymentRequest, config: ExpressCheckoutConfig): String {
+    val allowedCardNetworks = JSONArray(listOf("VISA", "MASTERCARD", "AMEX"))
+    val allowedCardAuthMethods = JSONArray(listOf("PAN_ONLY", "CRYPTOGRAM_3DS"))
+
+    val tokenizationSpecification = JSONObject().apply {
+        put("type", "PAYMENT_GATEWAY")
+        put("parameters", JSONObject().apply {
+            put("gateway", config.googlePayGateway)
+            put("gatewayMerchantId", config.googlePayGatewayMerchantId)
+        })
+    }
+
+    val cardPaymentMethod = JSONObject().apply {
+        put("type", "CARD")
+        put("parameters", JSONObject().apply {
+            put("allowedAuthMethods", allowedCardAuthMethods)
+            put("allowedCardNetworks", allowedCardNetworks)
+        })
+        put("tokenizationSpecification", tokenizationSpecification)
+    }
+
+    val transactionInfo = JSONObject().apply {
+        put("totalPriceStatus", "FINAL")
+        put("totalPrice", request.amount)
+        put("currencyCode", request.currencyCode)
+        put("countryCode", request.countryCode)
+    }
+
+    val merchantInfo = JSONObject().apply {
+        put("merchantName", request.merchantName)
+    }
+
+    return JSONObject().apply {
+        put("apiVersion", 2)
+        put("apiVersionMinor", 0)
+        put("allowedPaymentMethods", JSONArray(listOf(cardPaymentMethod)))
+        put("transactionInfo", transactionInfo)
+        put("merchantInfo", merchantInfo)
+    }.toString()
+}
+

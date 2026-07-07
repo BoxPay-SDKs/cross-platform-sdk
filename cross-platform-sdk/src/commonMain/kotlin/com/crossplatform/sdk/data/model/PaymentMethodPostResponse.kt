@@ -26,6 +26,7 @@ data class PaymentActions(
     @SerialName("type") val type: String? = null,
     @SerialName("htmlPageString") val htmlPageString: String? = null,
     @SerialName("content") val content: String? = null,
+    @SerialName("token") val token : String? = null,
     @SerialName("expirySec") val expirySec : Int? = null
 )
 

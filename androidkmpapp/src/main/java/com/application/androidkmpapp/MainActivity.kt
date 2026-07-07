@@ -30,7 +30,6 @@ import com.crossplatform.sdk.data.handler.BoxPayElementsHandler
 import com.crossplatform.sdk.data.handler.SDKPaymentResponseHandler
 import com.crossplatform.sdk.data.model.SDKPaymentResponse
 import com.crossplatform.sdk.domain.model.PaymentMethodTab
-import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 
 class MainActivity : ComponentActivity() {
     private val paymentResult = mutableStateOf<SDKPaymentResponse?>(null)

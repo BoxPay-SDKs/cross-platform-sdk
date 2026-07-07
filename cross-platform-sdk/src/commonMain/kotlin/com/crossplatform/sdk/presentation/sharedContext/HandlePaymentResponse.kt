@@ -9,6 +9,7 @@ import com.crossplatform.sdk.presentation.resolveErrorMessage
 
 fun handlePaymentResponse(
     response: ApiResponse<PaymentMethodPostResponse>,
+    onRevolutPay: ((String, String) -> Unit)? = null,
     onSetPaymentUrl: ((String) -> Unit)? = null,
     onSetPaymentHtml: ((String) -> Unit)? = null,
     onNavigateToTimer: (() -> Unit)? = null,
@@ -44,6 +45,10 @@ fun handlePaymentResponse(
                         }
                         else if (action.type == "qrCode") {
                             onOpenQr?.invoke(action.content ?: "", action.expirySec ?: 0)
+                        }
+                        else if (action.type == "info") {
+                            val secondAction = apiData.actions.getOrNull(1)
+                            onRevolutPay?.invoke(action.token ?: "", secondAction?.url ?: "")
                         }
                         else {
                             setIsBoxPayAnimationVisible(false)

@@ -154,9 +154,15 @@ data class PaymentMethod(
     @SerialName("brand") val brand: String,
     @SerialName("title") val title: String,
     @SerialName("logoUrl") val logoUrl: String,
+    @SerialName("additionalData") val additionalData : AdditionalData? = null,
     @SerialName("instrumentTypeValue") val instrumentTypeValue: String,
     @SerialName("applicableOffers") val applicableOffer: List<ApplicableOffer>? = null,
     @SerialName("emiMethod") val emiMethod: EmiMethod? = null
+)
+
+@Serializable
+data class AdditionalData(
+    @SerialName("publicKey") val publicKey : String? = null
 )
 
 @Serializable

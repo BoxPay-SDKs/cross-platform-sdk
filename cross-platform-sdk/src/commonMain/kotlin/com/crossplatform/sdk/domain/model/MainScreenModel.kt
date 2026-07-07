@@ -8,7 +8,8 @@ data class MainScreenModel(
     val currencyCode : String,
     val methodFlags: MethodFlags,
     val orderDetails: OrderDetails?,
-    val sessionExpiryTimer : String
+    val sessionExpiryTimer : String,
+    val revolutPublicKey : String?,
 ) {
 
     data class MethodFlags(
@@ -24,7 +25,10 @@ data class MainScreenModel(
         val isUPIOtmIntentVisible: Boolean = false,
         val isUPIOtmCollectVisible: Boolean = false,
         val isUPIOtmQRVisible: Boolean = false,
-        val isUPIOtmVisible : Boolean = false
+        val isUPIOtmVisible : Boolean = false,
+        val isGooglePayVisible : Boolean = false,
+        val isApplePayVisible : Boolean = false,
+        val isRevolutPayVisible : Boolean = false
     )
 
     data class OrderDetails(

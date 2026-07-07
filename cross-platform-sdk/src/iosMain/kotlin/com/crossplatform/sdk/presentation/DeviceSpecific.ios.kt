@@ -31,12 +31,31 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutConfig
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
+import com.crossplatform.sdk.payments.BoxPayRevolut
+import com.crossplatform.sdk.payments.RevolutOrderParams
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import org.jetbrains.skia.Image
 import platform.Foundation.NSData
+import platform.Foundation.NSDecimalNumber
 import platform.Foundation.create
+import platform.PassKit.PKMerchantCapability3DS
+import platform.PassKit.PKPayment
+import platform.PassKit.PKPaymentAuthorizationController
+import platform.PassKit.PKPaymentAuthorizationControllerDelegateProtocol
+import platform.PassKit.PKPaymentAuthorizationResult
+import platform.PassKit.PKPaymentAuthorizationStatus
+import platform.PassKit.PKPaymentNetworkAmex
+import platform.PassKit.PKPaymentNetworkMasterCard
+import platform.PassKit.PKPaymentNetworkVisa
+import platform.PassKit.PKPaymentRequest
+import platform.PassKit.PKPaymentSummaryItem
+import platform.darwin.NSObject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -71,18 +90,24 @@ actual fun getBrowserData(): BrowserData {
 }
 
 actual fun getInstalledUpiApps(context: Any?): List<String> {
-    val knownUpiSchemes: Map<String, String> = mapOf(
-        "gpay"         to "gpay://",
-        "phonepe"      to "phonepe://",
-        "tez"          to "tez://",
-        "paytm"        to "paytmmp://",
-//        "bhim"         to "bhim://",
-//        "amazon_pay"   to "amzn://"
+    // friendly name -> candidate schemes; any hit means installed
+    val knownUpiSchemes: Map<String, List<String>> = mapOf(
+        "gpay"       to listOf("tez://", "gpay://"),
+        "phonepe"    to listOf("phonepe://"),
+        "paytm"      to listOf("paytmmp://", "paytm://"),
+        "bhim"       to listOf("bhim://"),
+        "amazon_pay" to listOf("amazonpay://"),
+        "mobikwik"   to listOf("mobikwik://"),
+        "bharatpe"   to listOf("postpe://"),
+        "jupiter"    to listOf("jupiter://"),
+        "pop"        to listOf("popclubapp://"),
     )
 
-    return knownUpiSchemes.filter { (_, scheme) ->
-        val nsUrl = NSURL.URLWithString(scheme) ?: return@filter false
-        UIApplication.sharedApplication.canOpenURL(nsUrl)
+    return knownUpiSchemes.filter { (_, schemes) ->
+        schemes.any { scheme ->
+            val nsUrl = NSURL.URLWithString(scheme) ?: return@any false
+            UIApplication.sharedApplication.canOpenURL(nsUrl)
+        }
     }.keys.toList()
 }
 
@@ -184,7 +209,7 @@ actual fun base64ToImageBitmap(base64: String): ImageBitmap {
     val cleanBase64 = base64.substringAfter("base64,", base64)
 
     // Decode base64 → raw bytes — same kotlin stdlib Base64 as Android
-    val bytes = Base64.Default.decode(cleanBase64)
+    val bytes = Base64.decode(cleanBase64)
 
     // Feed raw bytes into Skia (the rendering engine behind CMP on iOS)
     // Skia handles PNG / JPEG / WebP automatically — same formats Android's BitmapFactory supports
@@ -202,4 +227,116 @@ actual fun base64ToImageBitmap(base64: String): ImageBitmap {
     }
 
     return image.toComposeImageBitmap()
+}
+
+// iosMain
+@Composable
+actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler {
+    return IosPaymentHandler()
+}
+
+class IosPaymentHandler() : ExpressCheckoutPaymentHandler {
+    private var activeDelegate: PaymentDelegate? = null
+
+    override fun isApplePayAvailable() =
+        PKPaymentAuthorizationController.canMakePayments()
+
+    override fun isGooglePayAvailable() = false
+
+    override fun isRevolutPayAvailable(): Boolean = true
+
+    override fun launchApplePay(
+        request: ExpressCheckoutPaymentRequest,
+        config: ExpressCheckoutConfig,
+        onResult: (ExpressCheckoutPaymentResult) -> Unit
+    ) {
+        val pkRequest = PKPaymentRequest().apply {
+            merchantIdentifier = config.applePayMerchantIdentifier
+            supportedNetworks = listOf(PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkAmex)
+            merchantCapabilities = PKMerchantCapability3DS
+            countryCode = request.countryCode
+            currencyCode = request.currencyCode
+            paymentSummaryItems = listOf(
+                PKPaymentSummaryItem.summaryItemWithLabel(
+                    label = request.merchantName,
+                    amount = NSDecimalNumber(string = request.amount)
+                )
+            )
+        }
+
+        val controller = PKPaymentAuthorizationController(pkRequest)
+        val delegate = PaymentDelegate(
+            onResult = { result ->
+                activeDelegate = null
+                onResult(result)
+            }
+        )
+        activeDelegate = delegate
+        controller.delegate = delegate
+        controller.presentWithCompletion { success ->
+            if (!success) {
+                activeDelegate = null
+                onResult(ExpressCheckoutPaymentResult.Failure("Could not present Apple Pay sheet"))
+            }
+        }
+    }
+
+    override fun launchGooglePay(
+        request: ExpressCheckoutPaymentRequest,
+        config: ExpressCheckoutConfig,
+        onResult: (ExpressCheckoutPaymentResult) -> Unit
+    ) = onResult(ExpressCheckoutPaymentResult.Failure("Google Pay unavailable on iOS"))
+
+    override fun launchRevolutPay(
+        request: ExpressCheckoutPaymentRequest,
+        config: ExpressCheckoutConfig,
+        merchantPublicKey : String,
+        isSandbox : Boolean,
+        onResult: (ExpressCheckoutPaymentResult) -> Unit
+    ) {
+        val orderToken = request.orderToken
+        if (orderToken == null) {
+            onResult(
+                ExpressCheckoutPaymentResult.Failure(
+                    "orderToken is required for Revolut Pay -- create the order via your backend first"
+                )
+            )
+            return
+        }
+
+        BoxPayRevolut.pay(RevolutOrderParams(orderToken = orderToken)) { outcome ->
+            val mapped = when {
+                outcome.isSuccess -> ExpressCheckoutPaymentResult.Success(orderToken)
+                outcome.isUserAbandoned -> ExpressCheckoutPaymentResult.Cancelled
+                else -> ExpressCheckoutPaymentResult.Failure(
+                    outcome.failureReason ?: "Revolut Pay error"
+                )
+            }
+            onResult(mapped)
+        }
+    }
+}
+
+private class PaymentDelegate(
+    private val onResult: (ExpressCheckoutPaymentResult) -> Unit
+) : NSObject(), PKPaymentAuthorizationControllerDelegateProtocol {
+
+    override fun paymentAuthorizationController(
+        controller: PKPaymentAuthorizationController,
+        didAuthorizePayment: PKPayment,
+        handler: (PKPaymentAuthorizationResult?) -> Unit
+    ) {
+        val token = didAuthorizePayment.token.paymentData.let { /* base64 / send raw to backend */ "" }
+        onResult(ExpressCheckoutPaymentResult.Success(token))
+        handler(
+            PKPaymentAuthorizationResult(
+                status = PKPaymentAuthorizationStatus.PKPaymentAuthorizationStatusSuccess,
+                errors = null
+            )
+        )
+    }
+
+    override fun paymentAuthorizationControllerDidFinish(controller: PKPaymentAuthorizationController) {
+        controller.dismissWithCompletion { }
+    }
 }

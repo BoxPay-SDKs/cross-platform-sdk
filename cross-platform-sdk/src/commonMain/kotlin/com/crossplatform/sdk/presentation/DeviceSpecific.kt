@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 import com.crossplatform.sdk.data.model.BrowserData
 import com.crossplatform.sdk.data.model.DeviceDetails
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutConfig
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
 import com.crossplatform.sdk.domain.model.AppLifecycleState
 
 expect fun getBrowserData(): BrowserData
@@ -33,3 +35,7 @@ expect fun BackHandler(onBack: () -> Unit)
 expect fun isTabletDevice(): Boolean
 
 expect fun base64ToImageBitmap(base64: String): ImageBitmap
+
+// commonMain
+@Composable
+expect fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler

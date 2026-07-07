@@ -18,8 +18,14 @@
 
         <!-- Paytm -->
         <package android:name="net.one97.paytm" />
-<!--        <package android:name="in.org.npci.upiapp" />                     &lt;!&ndash; BHIM &ndash;&gt;-->
-<!--        <package android:name="com.amazon.mShop.android.shopping" />      &lt;!&ndash; Amazon Pay &ndash;&gt;-->
+        <package android:name="in.org.npci.upiapp" />                     <!-- BHIM -->
+        <package android:name="com.amazon.mShop.android.shopping" />      <!-- Amazon Pay -->
+
+        <package android:name="com.mobikwik_new" />        <!-- MobiKwik -->
+        <package android:name="com.postpe.app" />          <!-- BharatPe (consumer UPI) -->
+        <!-- <package android:name="com.bharatpe.app" /> --> <!-- BharatPe for Business (optional) -->
+        <package android:name="money.jupiter" />           <!-- Jupiter -->
+        <package android:name="com.popclub.android" />     <!-- POP UPI -->
     </queries>
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -30,4 +36,8 @@
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
     </application>
+
+    <meta-data
+        android:name="com.google.android.gms.wallet.api.enabled"
+        android:value="true" />
 </manifest>

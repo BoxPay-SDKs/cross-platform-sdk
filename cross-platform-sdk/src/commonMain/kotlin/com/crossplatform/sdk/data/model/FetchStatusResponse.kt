@@ -10,6 +10,7 @@ data class FetchStatusResponse(
     @SerialName("reasonCode") val reasonCode: String,
     @SerialName("statusReason") val reason: String,
     @SerialName("transactionTimestampLocale") val transactionTimestampLocale: String,
+    @SerialName("retryable") val retryable : Boolean,
     @SerialName("paymentMethod") val paymentMethod : PaymentMethod
 ) {
     @Serializable

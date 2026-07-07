@@ -23,11 +23,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutConfig
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.buildAddressString
 import com.crossplatform.sdk.presentation.components.AddressComponent
+import com.crossplatform.sdk.presentation.components.ExpressCheckout
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.MorePaymentMethods
 import com.crossplatform.sdk.presentation.components.OfferSection
@@ -40,6 +43,7 @@ import com.crossplatform.sdk.presentation.components.ShowUpdateAmountBottomSheet
 import com.crossplatform.sdk.presentation.components.UPIComponent
 import com.crossplatform.sdk.presentation.isPresentInSurchargeModel
 import com.crossplatform.sdk.presentation.launchUpiIntent
+import com.crossplatform.sdk.presentation.rememberExpressCheckoutPaymentHandler
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.MainScreenViewModel
@@ -81,7 +85,7 @@ fun MainScreen(
     val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
     val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
     val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
-    val (currencySymbol, _) = currencyFlow.value
+    val (currencySymbol, currencyCode) = currencyFlow.value
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
     val shopperToken = CheckoutDetailsHandler.shopperTokenFlow.collectAsStateWithLifecycle()
@@ -91,6 +95,9 @@ fun MainScreen(
     val isSICheckboxEnabled = CheckoutDetailsHandler.isSICheckboxEnabledFlow.collectAsStateWithLifecycle()
     val isOrderItemDetailsVisible = CheckoutDetailsHandler.isOrderItemDetailsVisibleFlow.collectAsStateWithLifecycle()
     val showQROnLoad = CheckoutDetailsHandler.showQROnLoadFlow.collectAsStateWithLifecycle()
+    val merchantName = CheckoutDetailsHandler.merchantNameFlow.collectAsStateWithLifecycle()
+    val isTestEnv = CheckoutDetailsHandler.isTestEnvFlow.collectAsStateWithLifecycle()
+
 
     val selectedDeleteCardId = remember {
         mutableStateOf("")
@@ -250,6 +257,50 @@ fun MainScreen(
                         labelType = labelFlow.value.first,
                         labelName = labelFlow.value.second
                     )
+                }
+
+                val isExpressCheckoutVisible = response.methodFlags.isApplePayVisible || response.methodFlags.isGooglePayVisible || response.methodFlags.isRevolutPayVisible
+
+                if (isExpressCheckoutVisible) {
+                    fun buildConfigForRevolut(revolutReturnUrl : String) = ExpressCheckoutConfig(
+                        applePayMerchantIdentifier = "",
+                        googlePayGateway = "Revolut",
+                        googlePayGatewayMerchantId = merchantName.value,
+                        revolutReturnUrl = revolutReturnUrl
+                    )
+                    fun buildRequestForRevolut(orderToken: String) = ExpressCheckoutPaymentRequest(
+                        amount = amount.value.toString(),
+                        currencyCode = currencyCode,
+                        merchantName = merchantName.value,
+                        countryCode = addressFlow.value.countryCode ?: "IN",
+                        orderToken = orderToken
+                    )
+                    val paymentHandler = rememberExpressCheckoutPaymentHandler()
+
+                    SectionTitle("Express Checkout")
+                    ExpressCheckout(
+                        paymentHandler = paymentHandler,
+                        onClickRevolut = {
+                            viewModel.onClickRevolutPay()
+                        },
+                        onClickApplePay = {
+                            // will perform with apple pay
+                        },
+                        onClickGooglePay = {
+                            // will perform with google pay
+                        }
+                    )
+
+                    LaunchedEffect(viewModel.revolutOrderToken.value) {
+                        if(viewModel.revolutOrderToken.value.isNotBlank()) {
+                            paymentHandler.launchRevolutPay(buildRequestForRevolut(orderToken = viewModel.revolutOrderToken.value), config = buildConfigForRevolut(viewModel.revolutReturnUrl.value), merchantPublicKey = response.revolutPublicKey ?: "", isSandbox = isTestEnv
+                                .value) { result ->
+                                println("====result $result")
+                                // handle result: update UI, then reconcile with your backend/
+                                // webhook before treating it as final -- same caveat as always.
+                            }
+                        }
+                    }
                 }
 
                 if(viewModel.appliedOffers.value.isNotEmpty()) {
