@@ -9,8 +9,6 @@ import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
@@ -28,9 +26,6 @@ object ServiceRequest {
                     ignoreUnknownKeys = true
                     isLenient = true
                 })
-            }
-            install(Logging) {
-                level = LogLevel.BODY
             }
             install(HttpTimeout) {
                 requestTimeoutMillis = 60_000
@@ -62,9 +57,6 @@ object ServiceRequest {
                     ignoreUnknownKeys = true
                     isLenient = true
                 })
-            }
-            install(Logging) {
-                level = LogLevel.BODY
             }
             install(DefaultRequest) {
                 url("${getEndpoint(isTestEnv)}$token/")
