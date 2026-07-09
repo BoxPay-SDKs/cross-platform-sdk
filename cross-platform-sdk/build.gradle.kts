@@ -91,9 +91,13 @@ kotlin {
                 implementation(libs.koin.compose.viewmodel)
                 implementation(compose.animation)
 
-                implementation("io.github.alexzhirkevich:compottie:2.0.0")
+                implementation("io.github.alexzhirkevich:compottie:2.0.0") {
+                    exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
+                }
                 implementation("media.kamel:kamel-image:0.9.5")
-                implementation("io.github.alexzhirkevich:qrose:1.0.1")
+                implementation("io.github.alexzhirkevich:qrose:1.0.1") {
+                    exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
+                }
             }
         }
         val androidMain by getting {
