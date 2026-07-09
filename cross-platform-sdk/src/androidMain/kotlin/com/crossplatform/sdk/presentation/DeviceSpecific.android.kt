@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import com.crossplatform.sdk.data.model.BrowserData
 import android.content.res.Resources
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -81,7 +80,7 @@ actual fun getInstalledUpiApps(context: Any?): List<String> {
             "paytm"      to "net.one97.paytm",
             "phonepe"    to "com.phonepe.app",
             "bhim"       to "in.org.npci.upiapp",
-            "amazon_pay" to "com.amazon.mShop.android.shopping",
+            "amazon_pay" to "in.amazon.mShop.android.shopping",
             "mobikwik"   to "com.mobikwik_new",
             "bharatpe"   to "com.postpe.app",     // consumer app
             "jupiter"    to "money.jupiter",

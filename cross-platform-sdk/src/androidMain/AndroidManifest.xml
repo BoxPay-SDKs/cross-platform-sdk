@@ -19,7 +19,7 @@
         <!-- Paytm -->
         <package android:name="net.one97.paytm" />
         <package android:name="in.org.npci.upiapp" />                     <!-- BHIM -->
-        <package android:name="com.amazon.mShop.android.shopping" />      <!-- Amazon Pay -->
+        <package android:name="in.amazon.mShop.android.shopping" />      <!-- Amazon Pay -->
 
         <package android:name="com.mobikwik_new" />        <!-- MobiKwik -->
         <package android:name="com.postpe.app" />          <!-- BharatPe (consumer UPI) -->
