@@ -64,7 +64,7 @@ fun AppNavHost() {
     val isPhoneEnabled = shopperDetails.isPhoneEnabled
     val isPhoneEditable = shopperDetails.isPhoneEditable
     val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
-    val (currencySymbol, _) = currencyFlow.value
+    val (_, currencyCode) = currencyFlow.value
     val isWebViewVisible = CheckoutDetailsHandler.isWebViewVisibleFlow.collectAsStateWithLifecycle()
     val surchargeDetails = CheckoutDetailsHandler.surchargeDetailsFlow.collectAsStateWithLifecycle()
     val amountBeforeSurcharge = CheckoutDetailsHandler.amountBeforeSurchargeFlow.collectAsStateWithLifecycle()
@@ -370,7 +370,7 @@ fun AppNavHost() {
                 buttonColor = buttonColor.value,
                 buttonTextColor = buttonTextColor.value,
                 amount = amount.value,
-                currencySymbol = currencySymbol,
+                currencySymbol = currencyCode,
                 lastUsedUpi = firstInstrument.displayValue,
                 logoUrl = firstInstrument.imageUrl,
                 address = buildAddressAndUserDetailsString(),

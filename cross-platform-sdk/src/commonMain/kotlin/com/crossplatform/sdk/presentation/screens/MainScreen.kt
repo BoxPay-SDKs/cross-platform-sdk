@@ -85,7 +85,7 @@ fun MainScreen(
     val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
     val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
     val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
-    val (currencySymbol, currencyCode) = currencyFlow.value
+    val (_, currencyCode) = currencyFlow.value
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
     val shopperToken = CheckoutDetailsHandler.shopperTokenFlow.collectAsStateWithLifecycle()
@@ -353,7 +353,7 @@ fun MainScreen(
                         },
                         buttonTextColor = buttonTextColor.value,
                         buttonColor = buttonColor.value,
-                        currencySymbol = currencySymbol,
+                        currencySymbol = currencyCode,
                         amount = amount.value,
                         ctaBorderRadius = ctaBorderRadius.value,
                         selectedId = selectedRecommendedInstrumentId.value
@@ -422,7 +422,7 @@ fun MainScreen(
                         },
                         buttonTextColor = buttonTextColor.value,
                         buttonColor = buttonColor.value,
-                        currencySymbol = currencySymbol,
+                        currencySymbol = currencyCode,
                         amount = amount.value,
                         ctaBorderRadius = ctaBorderRadius.value,
                         focusedTextInputBorderColor = focusedTextInputBorderColor.value,
@@ -483,7 +483,7 @@ fun MainScreen(
                             },
                             buttonColor = buttonColor.value,
                             buttonTextColor = buttonTextColor.value,
-                            currencySymbol = currencySymbol,
+                            currencySymbol = currencyCode,
                             amount = amount.value,
                             ctaBorderRadius = ctaBorderRadius.value,
                             isSICheckboxChecked = isSICheckboxChecked.value,
@@ -576,7 +576,7 @@ fun MainScreen(
                             },
                         savedCardsList = viewModel.cardsRecommendedList.value,
                         surchargeList = surchargeDetails.value,
-                        currencySymbol = currencySymbol
+                        currencySymbol = currencyCode
                     )
                 }
 
@@ -590,7 +590,7 @@ fun MainScreen(
                         taxAmount = response.orderDetails?.taxAmount ?: 0.0,
                         surchargeDetails = surchargeDetails.value,
                         selectedPaymentMethod = "Upi",
-                        currencySymbol = currencySymbol
+                        currencySymbol = currencyCode
                     )
                 }
                 Spacer(Modifier.weight(1f))
@@ -722,7 +722,7 @@ fun MainScreen(
                 selectedMethod.value = ""
             },
             surchargeDetails = surchargeDetails.value,
-            currencySymbol = currencySymbol,
+            currencySymbol = currencyCode,
             amount = amount.value,
             ctaBorderRadius = ctaBorderRadius.value,
             buttonColor = buttonColor.value,

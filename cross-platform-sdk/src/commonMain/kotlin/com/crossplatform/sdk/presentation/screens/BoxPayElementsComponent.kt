@@ -52,7 +52,7 @@ fun BoxPayElementsComponent(
     val focusedBorder    by CheckoutDetailsHandler.focusedBorderColorFlow.collectAsStateWithLifecycle()
     val unfocusedBorder  by CheckoutDetailsHandler.unfocusedBorderColorFlow.collectAsStateWithLifecycle()
     val currencyFlow   by CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
-    val (currencySymbol, _) = currencyFlow
+    val (_, currencyCode) = currencyFlow
     val amount           by CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val showQROnLoad = CheckoutDetailsHandler.showQROnLoadFlow.collectAsStateWithLifecycle()
 
@@ -109,7 +109,7 @@ fun BoxPayElementsComponent(
                     buttonTextColor      = buttonTextColor,
                     focusedBorderColor   = focusedBorder,
                     unfocusedBorderColor = unfocusedBorder,
-                    currencySymbol       = currencySymbol,
+                    currencySymbol       = currencyCode,
                     amount               = amount,
                 ),
 

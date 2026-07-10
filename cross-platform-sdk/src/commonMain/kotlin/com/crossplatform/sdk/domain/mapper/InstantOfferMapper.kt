@@ -5,7 +5,7 @@ import com.crossplatform.sdk.data.model.InstantOfferResponse
 import com.crossplatform.sdk.domain.model.OfferItem
 
 fun List<InstantOfferResponse>.toUiModel(): List<OfferItem> {
-    val (currencySymbol, _) = CheckoutDetailsHandler.currencyFlow.value
+    val (_, currencyCode) = CheckoutDetailsHandler.currencyFlow.value
     return this.map { item ->
         OfferItem(
             code = item.code,
@@ -13,7 +13,7 @@ fun List<InstantOfferResponse>.toUiModel(): List<OfferItem> {
             terms = item.terms ?: "",
             discountType = item.discount.type ?: "",
             discountAmount = item.discount.amount ?: 0.0,
-            currencySymbol = currencySymbol,
+            currencySymbol = currencyCode,
             discountPercent = item.discount.percentage ?: 0.0,
             applicableOn = item.criteria.applicableTo.paymentMethods?.get(0)?.brand ?: "",
             expiryDate = null

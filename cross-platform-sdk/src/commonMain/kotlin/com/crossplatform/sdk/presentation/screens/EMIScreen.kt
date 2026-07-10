@@ -115,7 +115,7 @@ fun EMIScreen(
     val isSICheckboxEnabled = CheckoutDetailsHandler.isSICheckboxEnabledFlow.collectAsStateWithLifecycle()
     val isSubscriptionCheckout = CheckoutDetailsHandler.isSubscriptionCheckoutFlow.collectAsStateWithLifecycle()
     val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
-    val (currencySymbol, _) = currencyFlow.value
+    val (_, currencyCode) = currencyFlow.value
     val isTestEnv = CheckoutDetailsHandler.isTestEnvFlow.collectAsStateWithLifecycle()
     var isSiCheckBoxChecked  by remember { mutableStateOf(isSICheckboxChecked.value) }
     val shopperToken = CheckoutDetailsHandler.shopperTokenFlow.collectAsStateWithLifecycle()
@@ -176,7 +176,7 @@ fun EMIScreen(
                             },
                             shopperToken = shopperToken.value,
                             subscription = subscription.value,
-                            currencySymbol = currencySymbol,
+                            currencySymbol = currencyCode,
                             cardNumberText = viewModel.cardNumberText.value,
                             cardHolderNameText = viewModel.cardHolderNameText.value,
                             cardExpiryText = viewModel.cardExpiryText.value,
@@ -278,7 +278,7 @@ fun EMIScreen(
                                 netAmount
                             )
                         },
-                        currencySymbol = currencySymbol,
+                        currencySymbol = currencyCode,
                         ctaBorderRadius = ctaBorderRadius.value
                     )
                     else -> EmiContentScreen(

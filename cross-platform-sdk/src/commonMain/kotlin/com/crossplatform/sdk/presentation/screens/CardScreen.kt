@@ -63,7 +63,7 @@ fun CardScreen(
     val isSICheckboxEnabled = CheckoutDetailsHandler.isSICheckboxEnabledFlow.collectAsStateWithLifecycle()
     val isSubscriptionCheckout = CheckoutDetailsHandler.isSubscriptionCheckoutFlow.collectAsStateWithLifecycle()
     val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
-    val (currencySymbol, _) = currencyFlow.value
+    val (_, currencyCode) = currencyFlow.value
     val isTestEnv = CheckoutDetailsHandler.isTestEnvFlow.collectAsStateWithLifecycle()
     val focusedTextInputBorderColor = CheckoutDetailsHandler.focusedBorderColorFlow.collectAsStateWithLifecycle()
     val unfocusedTextInputBorderColor = CheckoutDetailsHandler.unfocusedBorderColorFlow.collectAsStateWithLifecycle()
@@ -104,7 +104,7 @@ fun CardScreen(
         },
         shopperToken = shopperToken.value,
         subscription = subscription.value,
-        currencySymbol = currencySymbol,
+        currencySymbol = currencyCode,
         cardNumberText = viewModel.cardNumberText.value,
         cardHolderNameText = viewModel.cardHolderNameText.value,
         cardExpiryText = viewModel.cardExpiryText.value,

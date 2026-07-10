@@ -56,7 +56,7 @@ fun InstantOfferScreen(
         mutableStateOf("")
     }
     val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
-    val (currencySymbol, _) = currencyFlow.value
+    val (_, currencyCode) = currencyFlow.value
 
     when(screenState) {
         is UiState.Error -> {
@@ -131,7 +131,7 @@ fun InstantOfferScreen(
                         },
                         discountPercent = item.discountPercent,
                         discountAmount = item.discountAmount,
-                        currencySymbol = currencySymbol
+                        currencySymbol = currencyCode
                     )
                 }
             }

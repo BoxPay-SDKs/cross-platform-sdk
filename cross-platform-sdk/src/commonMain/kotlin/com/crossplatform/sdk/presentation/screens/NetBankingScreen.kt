@@ -35,7 +35,7 @@ fun NetBankingScreen(
     val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
     val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
     val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
-    val (currencySymbol, _) = currencyFlow.value
+    val (_, currencyCode) = currencyFlow.value
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
     val isBoxPayAnimationVisible by viewModel.isBoxPayAnimationVisible.collectAsStateWithLifecycle()
@@ -92,7 +92,7 @@ fun NetBankingScreen(
                     viewModel.postNetBankingRequest(it)
                 },
                 amount = amount.value,
-                currencySymbol = currencySymbol,
+                currencySymbol = currencyCode,
                 ctaBorderRadius = ctaBorderRadius.value,
                 title = "All Banks"
             )

@@ -70,20 +70,8 @@ fun MorePaymentContainer(
             if (surchargeFee != 0.0 && surchargeFee != null) {
                 Text(
                     text       = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontFamily = LocalSDKFonts.current.secondary
-                            )
-                        ) {
-                            append(currencySymbol)
-                        }
-                        withStyle(
-                            style = SpanStyle(
-                                fontFamily = LocalSDKFonts.current.primary
-                            )
-                        ) {
-                            append("$surchargeFee extra applied as surcharge")
-                        }
+                        append(currencySymbol)
+                        append("$surchargeFee extra applied as surcharge")
                     },
                     fontSize   = 14.sp,
                     fontFamily = LocalSDKFonts.current.primary,

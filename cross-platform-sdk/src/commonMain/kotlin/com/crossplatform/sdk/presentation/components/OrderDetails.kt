@@ -162,9 +162,7 @@ fun OrderDetails(
                         // Amount
                         Text(
                             text = buildAnnotatedString {
-                                withStyle(SpanStyle(fontFamily = LocalSDKFonts.current.secondary)) {
-                                    append(" $currencySymbol")
-                                }
+                                append(" $currencySymbol")
                                 append("${item.amount}")
                             },
                             fontSize = 12.sp,

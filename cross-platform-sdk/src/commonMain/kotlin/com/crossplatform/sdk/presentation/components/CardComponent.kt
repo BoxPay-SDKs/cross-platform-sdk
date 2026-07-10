@@ -169,10 +169,7 @@ fun CardComponent(
                             )
                             append(
                                 AnnotatedString(
-                                    text = currencySymbol,
-                                    spanStyle = SpanStyle(
-                                        fontFamily = LocalSDKFonts.current.secondary
-                                    )
+                                    text = currencySymbol
                                 )
                             )
                             append(

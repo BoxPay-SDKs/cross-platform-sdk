@@ -111,7 +111,7 @@ fun UPIComponent(
     var isGpayInstalled      by remember { mutableStateOf(false) }
     var isPhonePeInstalled   by remember { mutableStateOf(false) }
     var isPaytmInstalled     by remember { mutableStateOf(false) }
-    var isBhimUpiInstalled by remember { mutableStateOf(false) }
+    var isBhimUpiInstalled   by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         val installed    = getInstalledUpiApps(context)

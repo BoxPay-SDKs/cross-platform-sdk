@@ -338,20 +338,8 @@ fun MultiOfferCard(
                     Spacer(Modifier.width(4.dp))
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    fontFamily = LocalSDKFonts.current.secondary
-                                )
-                            ) {
-                                append("- ${offer.currencySymbol}")
-                            }
-                            withStyle(
-                                style = SpanStyle(
-                                    fontFamily = LocalSDKFonts.current.primary
-                                )
-                            ) {
-                                append("${offer.discountAmount}")
-                            }
+                            append("- ${offer.currencySymbol}")
+                            append("${offer.discountAmount}")
                         },
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Medium,
