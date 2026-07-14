@@ -148,14 +148,16 @@ fun CardScreen(
         buttonColor = buttonColor.value,
         onBlurCardNumber = {
             val cleaned = viewModel.cardNumberText.value.filter { it.isDigit() }
-            viewModel.cardNumberError.value = cleaned.isEmpty() ||
+            viewModel.cardNumberError.value = cleaned.isEmpty() || viewModel.cardNumberText.value.startsWith("0") ||
                     (!isTestEnv.value && (!viewModel.methodEnabled.value || !viewModel.cardNumberValid.value))
             viewModel.cardNumberErrorText.value = when {
                 cleaned.isEmpty()     -> "Required"
                 !viewModel.methodEnabled.value        -> "This card is not supported for the payment"
-                !viewModel.cardNumberValid.value     -> "Invalid card number"
+                !viewModel.cardNumberValid.value   -> "Invalid card number"
+                viewModel.cardNumberText.value.startsWith("0") -> "Invalid card number"
                 else                  -> ""
             }
+            viewModel.checkCardValid(isTestEnv.value)
         },
         onBlurCardName = {
             viewModel.cardHolderNameError.value    = viewModel.cardHolderNameText.value.trim().isEmpty()

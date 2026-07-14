@@ -73,13 +73,23 @@ class CardScreenViewModel(
     fun fetchCardDetails(cardNumber : String, isTestEnv: Boolean) {
         viewModelScope.launch {
             when(val response = repo.getCardDetails(cardNumber)) {
-                is ApiResponse.Success<*> -> {
-                    val data = response.data as FetchCardDetails
+                is ApiResponse.Success -> {
+                    val data = response.data
                     updateCardIcon(isTestEnv, data.paymentMethod.brand)
                     _cardDetails.value = UiState.Success(data)
                 }
+                is ApiResponse.Error -> {
+                    callUiAnalytics(
+                        AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
+                        message = "BIN failure ${response.errorBody}",
+                        screenName = "CardScreenViewModel;l"
+                    )
+                }
                 else -> {
                     // no instructions to be performed
+                    cardSelectedIcon.value = Res.drawable.ic_card
+                    maxCvvLength.value = 3
+                    maxCardNumberLength.value = 19
                 }
             }
 
@@ -107,6 +117,7 @@ class CardScreenViewModel(
         val baseValid =
             !cardNumberError.value && !cardExpiryError.value && !cardCvvError.value && !cardHolderNameError.value &&
                     (cardNumberText.value.replace(" ", "").length == numberLen || isTestEnv) &&
+                    !cardNumberText.value.startsWith('0') &&
                     cardExpiryText.value.length == 4 &&
                     cardCvvText.value.length == maxCvvLength.value &&
                     cardHolderNameText.value.isNotEmpty()
@@ -141,6 +152,8 @@ class CardScreenViewModel(
             maxCvvLength.value        = 3
             maxCardNumberLength.value = 19
         }
+        cardNumberError.value = cleaned.isEmpty() || cardNumberText.value.startsWith("0") ||
+                (!isTestEnv && (!methodEnabled.value || !cardNumberValid.value))
     }
 
     // --- Update icon from API ---
