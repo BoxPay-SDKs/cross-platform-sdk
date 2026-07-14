@@ -342,7 +342,7 @@ fun SubscriptionRow(
                         fontFamily = LocalSDKFonts.current.primary
                     )
                 ) {
-                    append(value)
+                    append(" $value")
                 }
             }} else buildAnnotatedString {
                 withStyle(

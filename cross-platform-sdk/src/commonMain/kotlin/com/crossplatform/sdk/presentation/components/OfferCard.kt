@@ -92,7 +92,7 @@ fun OfferCard(
                         withStyle(SpanStyle(fontSize = 12.sp)) {
                             append(currencySymbol)
                         }
-                        append("$discountAmount")
+                        append(" $discountAmount")
                     }
                     "Percentage" -> {
                         append("$discountPercent")

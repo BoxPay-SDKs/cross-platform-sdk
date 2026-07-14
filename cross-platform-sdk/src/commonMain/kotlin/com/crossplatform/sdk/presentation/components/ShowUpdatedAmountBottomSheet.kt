@@ -95,7 +95,7 @@ fun ShowUpdateAmountBottomSheet(
                                 fontFamily = LocalSDKFonts.current.primary
                             )
                         ) {
-                            append("$amount")
+                            append(" $amount")
                         }
                     },
                     fontWeight = FontWeight.Medium,
@@ -137,7 +137,7 @@ fun ShowUpdateAmountBottomSheet(
                                         fontFamily = LocalSDKFonts.current.primary
                                     )
                                 ) {
-                                    append("${item.amount}")
+                                    append(" ${item.amount}")
                                 }
                             },
                             fontWeight = FontWeight.Medium,
@@ -188,7 +188,7 @@ fun ShowUpdateAmountBottomSheet(
                                 fontFamily = LocalSDKFonts.current.primary
                             )
                         ) {
-                            append("$totalAmount")
+                            append(" $totalAmount")
                         }
                     },
                     fontWeight = FontWeight.SemiBold,

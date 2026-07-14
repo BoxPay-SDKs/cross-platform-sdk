@@ -71,7 +71,7 @@ fun MorePaymentContainer(
                 Text(
                     text       = buildAnnotatedString {
                         append(currencySymbol)
-                        append("$surchargeFee extra applied as surcharge")
+                        append(" $surchargeFee extra applied as surcharge")
                     },
                     fontSize   = 14.sp,
                     fontFamily = LocalSDKFonts.current.primary,

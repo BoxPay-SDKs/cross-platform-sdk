@@ -174,7 +174,7 @@ fun CardComponent(
                             )
                             append(
                                 AnnotatedString(
-                                    text = "$emiAmount",
+                                    text = " $emiAmount",
                                     spanStyle = SpanStyle(
                                         fontFamily = LocalSDKFonts.current.primary
                                     )

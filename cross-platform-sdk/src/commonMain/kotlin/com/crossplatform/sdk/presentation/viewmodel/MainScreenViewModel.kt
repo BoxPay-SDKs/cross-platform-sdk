@@ -1,7 +1,6 @@
 package com.crossplatform.sdk.presentation.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.crossplatform.sdk.data.ApiResponse
@@ -80,15 +79,12 @@ class MainScreenViewModel(
     val revolutOrderToken = mutableStateOf("")
     val revolutReturnUrl = mutableStateOf("")
 
-    private val lifecycleObserver = AppLifecycleObserver { state ->
+    val lifecycleObserver = AppLifecycleObserver { state ->
         if (state == AppLifecycleState.Foreground && isUpiOpening.value) {
             upiIntentUrl.value = ""
             callFetchStatus("")
         }
     }
-
-    // Elements Related Variables
-    val showUPITimerBottomSheet = mutableStateOf(false)
 
     val isQRLoaded = mutableStateOf(false)
 
@@ -389,8 +385,8 @@ class MainScreenViewModel(
     @OptIn(ExperimentalEncodingApi::class)
     fun decodeBase64Url(base64String: String): String {
         try {
-            val decodedBytes = Base64.decode(base64String)
-            return decodedBytes.decodeToString()
+            val decodedBytes = Base64.decode(base64String).decodeToString()
+            return decodedBytes
         } catch (error : Exception) {
             CheckoutDetailsHandler.setSessionFailed()
             return error.toString()

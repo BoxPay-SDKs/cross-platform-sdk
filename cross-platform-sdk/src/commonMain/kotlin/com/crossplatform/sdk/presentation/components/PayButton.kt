@@ -57,7 +57,7 @@ fun PayButton(
                             fontFamily = LocalSDKFonts.current.primary
                         )
                     ) {
-                        append("$amount")
+                        append(" $amount")
                     }
                 }
             },

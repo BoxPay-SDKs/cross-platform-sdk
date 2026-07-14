@@ -608,6 +608,7 @@ fun MainScreen(
             launchUpiIntent(
                 url = viewModel.upiIntentUrl.value,
                 onFailure = {error ->
+                    viewModel.lifecycleObserver.stop()
                     viewModel.callUiAnalytics(
                         event = AnalyticsEvents.FAILED_TO_LAUNCH_UPI_INTENT.value,
                         screenName = "MainScreen",

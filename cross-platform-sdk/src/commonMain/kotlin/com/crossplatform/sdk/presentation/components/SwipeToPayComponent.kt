@@ -175,7 +175,7 @@ fun SwipeToPayComponent(
                         )
                         append(
                             AnnotatedString(
-                                text = "$amount",
+                                text = " $amount",
                                 spanStyle = SpanStyle(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.SemiBold,

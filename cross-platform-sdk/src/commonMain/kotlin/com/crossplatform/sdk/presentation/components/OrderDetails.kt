@@ -163,7 +163,7 @@ fun OrderDetails(
                         Text(
                             text = buildAnnotatedString {
                                 append(" $currencySymbol")
-                                append("${item.amount}")
+                                append(" ${item.amount}")
                             },
                             fontSize = 12.sp,
                             color = Color(0xFF2D2B32),
@@ -244,7 +244,7 @@ fun OrderDetails(
                         withStyle(SpanStyle(fontFamily = LocalSDKFonts.current.secondary)) {
                             append(" $currencySymbol")
                         }
-                        append("$totalAmount")
+                        append(" $totalAmount")
                     },
                     fontSize = 16.sp,
                     color = Color(0xFF1D1C20),
@@ -281,7 +281,7 @@ fun OrderDetails(
                         withStyle(SpanStyle(fontFamily = LocalSDKFonts.current.secondary)) {
                             append(currencySymbol)
                         }
-                        append("$totalAmount")
+                        append(" $totalAmount")
                     },
                     fontSize = 14.sp,
                     color = Color(0xFF363840),
@@ -322,7 +322,7 @@ private fun SummaryRow(
                 withStyle(SpanStyle(fontFamily = LocalSDKFonts.current.secondary)) {
                     append(currencySymbol)
                 }
-                append(amount)
+                append(" $amount")
             },
             fontSize = 14.sp,
             color = Color(0xFF2D2B32),

@@ -220,17 +220,15 @@ class ApiServiceImpl : ApiService {
     }
 
     override suspend fun upiIntentPostRequest(type: String,upiApp: String): ApiResponse<PaymentMethodPostResponse> {
-        val supportedApps = setOf("GPay", "PhonePe", "PayTm")
-        val resolvedUpiApp = upiApp.takeIf { it in supportedApps }
         val requestBody = UPIIntentRequestBody(
             browserData = getBrowserData(),
             shopper = getShopperDetails(),
             deviceDetails = getDeviceDetails(),
             instrumentDetails = UPIIntentRequestBody.Instrument(
                 type = type,
-                upiAppDetails = resolvedUpiApp?.let {
-                    UPIIntentRequestBody.UPIAppDetails(upiApp = it)
-                }
+                upiAppDetails = if (upiApp.isNotBlank()) {
+                    UPIIntentRequestBody.UPIAppDetails(upiApp = upiApp)
+                } else null
             )
         )
         return executeWithResponse {

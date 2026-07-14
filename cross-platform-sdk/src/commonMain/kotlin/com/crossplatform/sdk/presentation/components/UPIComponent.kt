@@ -54,7 +54,10 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.add_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
 import crossplatformsdk.cross_platform_sdk.generated.resources.gpay_icon
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_bharat_pe
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_bhim_upi
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_jupiter_pay
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_mobikwik_pay
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_qr
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi_error
 import crossplatformsdk.cross_platform_sdk.generated.resources.other_intent_icon
@@ -112,6 +115,11 @@ fun UPIComponent(
     var isPhonePeInstalled   by remember { mutableStateOf(false) }
     var isPaytmInstalled     by remember { mutableStateOf(false) }
     var isBhimUpiInstalled   by remember { mutableStateOf(false) }
+    var isAmazonInstalled    by remember { mutableStateOf(false) }
+    var isMobikwikInstalled  by remember { mutableStateOf(false) }
+    var isJupiterInstalled   by remember { mutableStateOf(false) }
+    var isPopUpiInstalled    by remember { mutableStateOf(false) }
+    var isBharatPeInstalled  by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         val installed    = getInstalledUpiApps(context)
@@ -120,6 +128,11 @@ fun UPIComponent(
         isPhonePeInstalled = installed.contains("phonepe")
         isPaytmInstalled   = installed.contains("paytm")
         isBhimUpiInstalled = installed.contains("bhim")
+        isAmazonInstalled = installed.contains("amazon_pay")
+        isMobikwikInstalled = installed.contains("mobikwik")
+        isJupiterInstalled = installed.contains("jupiter")
+        isPopUpiInstalled = installed.contains("pop")
+        isBharatPeInstalled = installed.contains("bharatpe")
     }
 
     LaunchedEffect(Unit) {
@@ -282,18 +295,98 @@ fun UPIComponent(
                     UpiIntentItem(
                         label       = "Bhim",
                         icon        = Res.drawable.ic_bhim_upi,
-                        isSelected  = selectedIntent == "Bhim",
+                        isSelected  = selectedIntent == "BHIM",
                         buttonColor = buttonColor,
                         onClick     = {
                             upiCollectVisible = false
                             upiCollectError   = false
-                            selectedIntent    = "Bhim"
+                            selectedIntent    = "BHIM"
                             onClickRadio("")
                             upiQRVisible = false
                             onClickIntent(selectedIntent)
                         }
                     )
                 }
+//                if (isAmazonInstalled) {
+//                    UpiIntentItem(
+//                        label       = "AmazonPay",
+//                        icon        = Res.drawable.ic_amazon_pay,
+//                        isSelected  = selectedIntent == "AmazonPay",
+//                        buttonColor = buttonColor,
+//                        onClick     = {
+//                            upiCollectVisible = false
+//                            upiCollectError   = false
+//                            selectedIntent    = "AmazonPay"
+//                            onClickRadio("")
+//                            upiQRVisible = false
+//                            onClickIntent(selectedIntent)
+//                        }
+//                    )
+//                }
+                if (isMobikwikInstalled) {
+                    UpiIntentItem(
+                        label       = "Mobikwik",
+                        icon        = Res.drawable.ic_mobikwik_pay,
+                        isSelected  = selectedIntent == "Mobikwik",
+                        buttonColor = buttonColor,
+                        onClick     = {
+                            upiCollectVisible = false
+                            upiCollectError   = false
+                            selectedIntent    = "Mobikwik"
+                            onClickRadio("")
+                            upiQRVisible = false
+                            onClickIntent(selectedIntent)
+                        }
+                    )
+                }
+                if (isBharatPeInstalled) {
+                    UpiIntentItem(
+                        label       = "BharatPe",
+                        icon        = Res.drawable.ic_bharat_pe,
+                        isSelected  = selectedIntent == "BharatPe",
+                        buttonColor = buttonColor,
+                        onClick     = {
+                            upiCollectVisible = false
+                            upiCollectError   = false
+                            selectedIntent    = "BharatPe"
+                            onClickRadio("")
+                            upiQRVisible = false
+                            onClickIntent(selectedIntent)
+                        }
+                    )
+                }
+                if (isJupiterInstalled) {
+                    UpiIntentItem(
+                        label       = "Jupiter",
+                        icon        = Res.drawable.ic_jupiter_pay,
+                        isSelected  = selectedIntent == "Jupiter",
+                        buttonColor = buttonColor,
+                        onClick     = {
+                            upiCollectVisible = false
+                            upiCollectError   = false
+                            selectedIntent    = "Jupiter"
+                            onClickRadio("")
+                            upiQRVisible = false
+                            onClickIntent(selectedIntent)
+                        }
+                    )
+                }
+//                if (isPopUpiInstalled) {
+//                    UpiIntentItem(
+//                        label       = "Pop UPI",
+//                        icon        = Res.drawable.ic_amazon_pay,
+//                        isSelected  = selectedIntent == "pop",
+//                        buttonColor = buttonColor,
+//                        onClick     = {
+//                            upiCollectVisible = false
+//                            upiCollectError   = false
+//                            selectedIntent    = "Pop"
+//                            onClickRadio("")
+//                            upiQRVisible = false
+//                            onClickIntent(selectedIntent)
+//                        }
+//                    )
+//                }
                 if(!getDeviceDetails().browser.equals("ios", true)) {
                     UpiIntentItem(
                         label       = "Others",

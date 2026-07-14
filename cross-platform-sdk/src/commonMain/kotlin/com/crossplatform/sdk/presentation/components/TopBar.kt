@@ -57,7 +57,7 @@ fun TopBar(
     val merchantName = CheckoutDetailsHandler.merchantNameFlow.collectAsStateWithLifecycle()
     val itemsLength = CheckoutDetailsHandler.itemsLengthFlow.collectAsStateWithLifecycle()
     val currency = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
-    val (currencySymbol, _) = currency.value
+    val (_, currencyCode) = currency.value
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val isSessionExpiryVisible = CheckoutDetailsHandler.isSessionExpiryVisibleFlow.collectAsStateWithLifecycle()
     // Timer urgency threshold — turns red under 2 minutes
@@ -174,7 +174,7 @@ fun TopBar(
                                     color = Color(0xFF4F4D55)
                                 )
                             ) {
-                                append(" $currencySymbol")
+                                append(" $currencyCode")
                             }
 
                             // ✅ equivalent of amount Text
@@ -185,7 +185,7 @@ fun TopBar(
                                     color = Color(0xFF4F4D55)
                                 )
                             ) {
-                                append("${amount.value}")
+                                append(" ${amount.value}")
                             }
                         },
                         fontSize = 12.sp,
