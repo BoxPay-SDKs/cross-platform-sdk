@@ -35,8 +35,7 @@ import com.crossplatform.sdk.domain.handler.ExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
-import com.crossplatform.sdk.payments.BoxPayRevolut
-import com.crossplatform.sdk.payments.RevolutOrderParams
+import com.crossplatform.sdk.payments.RevolutPayBridgeRegistry
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -252,7 +251,8 @@ class IosPaymentHandler() : ExpressCheckoutPaymentHandler {
     ) {
         val pkRequest = PKPaymentRequest().apply {
             merchantIdentifier = config.applePayMerchantIdentifier
-            supportedNetworks = listOf(PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkAmex)
+            supportedNetworks =
+                listOf(PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkAmex)
             merchantCapabilities = PKMerchantCapability3DS
             countryCode = request.countryCode
             currencyCode = request.currencyCode
@@ -290,33 +290,25 @@ class IosPaymentHandler() : ExpressCheckoutPaymentHandler {
     override fun launchRevolutPay(
         request: ExpressCheckoutPaymentRequest,
         config: ExpressCheckoutConfig,
-        merchantPublicKey : String,
-        isSandbox : Boolean,
+        merchantPublicKey: String,
+        isSandbox: Boolean,
         onResult: (ExpressCheckoutPaymentResult) -> Unit
     ) {
-        val orderToken = request.orderToken
-        if (orderToken == null) {
-            onResult(
-                ExpressCheckoutPaymentResult.Failure(
-                    "orderToken is required for Revolut Pay -- create the order via your backend first"
-                )
-            )
-            return
-        }
+        val executor = RevolutPayBridgeRegistry.executor
+            ?: return onResult(ExpressCheckoutPaymentResult.Failure("RevolutPayExecutor not registered"))
 
-        BoxPayRevolut.pay(RevolutOrderParams(orderToken = orderToken)) { outcome ->
-            val mapped = when {
-                outcome.isSuccess -> ExpressCheckoutPaymentResult.Success(orderToken)
-                outcome.isUserAbandoned -> ExpressCheckoutPaymentResult.Cancelled
-                else -> ExpressCheckoutPaymentResult.Failure(
-                    outcome.failureReason ?: "Revolut Pay error"
-                )
-            }
-            onResult(mapped)
+        executor.launch(
+            orderToken = request.orderToken ?: "",
+            merchantPublicKey = merchantPublicKey,
+            isSandbox = isSandbox
+        ) { success, error ->
+            onResult(
+                if (success) ExpressCheckoutPaymentResult.Success
+                else ExpressCheckoutPaymentResult.Failure(error ?: "Unknown error")
+            )
         }
     }
 }
-
 private class PaymentDelegate(
     private val onResult: (ExpressCheckoutPaymentResult) -> Unit
 ) : NSObject(), PKPaymentAuthorizationControllerDelegateProtocol {
@@ -326,8 +318,7 @@ private class PaymentDelegate(
         didAuthorizePayment: PKPayment,
         handler: (PKPaymentAuthorizationResult?) -> Unit
     ) {
-        val token = didAuthorizePayment.token.paymentData.let { /* base64 / send raw to backend */ "" }
-        onResult(ExpressCheckoutPaymentResult.Success(token))
+        onResult(ExpressCheckoutPaymentResult.Success)
         handler(
             PKPaymentAuthorizationResult(
                 status = PKPaymentAuthorizationStatus.PKPaymentAuthorizationStatusSuccess,

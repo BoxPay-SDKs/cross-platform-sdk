@@ -25,6 +25,7 @@ import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
+import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
@@ -97,6 +98,7 @@ fun MainScreen(
     val showQROnLoad = CheckoutDetailsHandler.showQROnLoadFlow.collectAsStateWithLifecycle()
     val merchantName = CheckoutDetailsHandler.merchantNameFlow.collectAsStateWithLifecycle()
     val isTestEnv = CheckoutDetailsHandler.isTestEnvFlow.collectAsStateWithLifecycle()
+    val errorMessage = CheckoutDetailsHandler.errorMessageFlow.collectAsStateWithLifecycle()
 
 
     val selectedDeleteCardId = remember {
@@ -293,11 +295,24 @@ fun MainScreen(
 
                     LaunchedEffect(viewModel.revolutOrderToken.value) {
                         if(viewModel.revolutOrderToken.value.isNotBlank()) {
-                            paymentHandler.launchRevolutPay(buildRequestForRevolut(orderToken = viewModel.revolutOrderToken.value), config = buildConfigForRevolut(viewModel.revolutReturnUrl.value), merchantPublicKey = response.revolutPublicKey ?: "", isSandbox = isTestEnv
-                                .value) { result ->
+                            paymentHandler.launchRevolutPay(buildRequestForRevolut(orderToken = viewModel.revolutOrderToken.value), config = buildConfigForRevolut(viewModel.revolutReturnUrl.value), merchantPublicKey = response.revolutPublicKey ?: "", isSandbox = isTestEnv.value) { result ->
                                 println("====result $result")
-                                // handle result: update UI, then reconcile with your backend/
-                                // webhook before treating it as final -- same caveat as always.
+                                when (result) {
+                                    is ExpressCheckoutPaymentResult.Cancelled -> {
+                                        viewModel.isBoxPayAnimationLoading.value = false
+                                        CheckoutDetailsHandler.setErrorMessage(errorMessage.value)
+                                        CheckoutDetailsHandler.setSessionFailed()
+                                    }
+                                    is ExpressCheckoutPaymentResult.Failure -> {
+                                        viewModel.isBoxPayAnimationLoading.value = false
+                                        CheckoutDetailsHandler.setStatus(TransactionStatusEnum.FAILED.name)
+                                        CheckoutDetailsHandler.setErrorMessage(errorMessage.value)
+                                        CheckoutDetailsHandler.setSessionFailed()
+                                    }
+                                    is ExpressCheckoutPaymentResult.Success -> {
+                                        viewModel.startFetchStatusPolling("")
+                                    }
+                                }
                             }
                         }
                     }

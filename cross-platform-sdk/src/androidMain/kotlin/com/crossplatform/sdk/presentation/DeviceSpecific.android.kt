@@ -31,7 +31,7 @@ import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
 import com.crossplatform.sdk.domain.model.AppLifecycleState
-import com.crossplatform.sdk.payments.RevolutPaySdk
+import com.crossplatform.sdk.payments.RevolutPaySDK
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.PaymentData
@@ -212,7 +212,7 @@ actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandle
         Wallet.getPaymentsClient(
             activity,
             Wallet.WalletOptions.Builder()
-                .setEnvironment(WalletConstants.ENVIRONMENT_PRODUCTION)
+                .setEnvironment(WalletConstants.ENVIRONMENT_TEST)
                 .build()
         )
     }
@@ -229,9 +229,7 @@ actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandle
         pendingCallback = null
         when (taskResult.status.statusCode) {
             CommonStatusCodes.SUCCESS -> {
-                val token = taskResult.result?.toJson()
-                if (token != null) callback?.invoke(ExpressCheckoutPaymentResult.Success(token))
-                else callback?.invoke(ExpressCheckoutPaymentResult.Failure("Empty payment data"))
+                callback?.invoke(ExpressCheckoutPaymentResult.Success)
             }
             CommonStatusCodes.CANCELED -> {
                 callback?.invoke(ExpressCheckoutPaymentResult.Cancelled)
@@ -280,7 +278,7 @@ class AndroidPaymentHandler(
     // false if the merchant forgot to call RevolutPaySdk.register(this) in
     // their Activity.onCreate -- hides the button rather than showing one
     // that fails when tapped.
-    override fun isRevolutPayAvailable(): Boolean = RevolutPaySdk.isRegistered(activity)
+    override fun isRevolutPayAvailable(): Boolean = RevolutPaySDK.isAvailable(activity)
 
     override fun launchGooglePay(
         request: ExpressCheckoutPaymentRequest,
@@ -327,7 +325,18 @@ class AndroidPaymentHandler(
             return
         }
 
-        RevolutPaySdk.launch(activity, orderToken, config.revolutReturnUrl, merchantPublicKey, isSandbox , onResult)
+        RevolutPaySDK.configure(
+            merchantPublicKey = merchantPublicKey,
+            isSandbox = false
+        )
+
+        RevolutPaySDK.pay(
+            activity = activity,
+            orderToken = orderToken,
+            returnUrl = config.revolutReturnUrl
+        ) { result ->
+            onResult(result)
+        }
     }
 }
 

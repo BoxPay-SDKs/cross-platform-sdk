@@ -19,7 +19,7 @@ data class ExpressCheckoutPaymentRequest(
 )
 
 sealed class ExpressCheckoutPaymentResult {
-    data class Success(val token: String) : ExpressCheckoutPaymentResult()
+    data object Success : ExpressCheckoutPaymentResult()
     data class Failure(val message: String) : ExpressCheckoutPaymentResult()
     data object Cancelled : ExpressCheckoutPaymentResult()
 }

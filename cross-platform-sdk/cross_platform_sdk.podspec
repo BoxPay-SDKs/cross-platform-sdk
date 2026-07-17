@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
     spec.summary                  = 'BoxPayBridge Shared SDK'
     spec.vendored_frameworks      = 'build/cocoapods/framework/cross_platform_sdk.framework'
     spec.libraries                = 'c++'
-    spec.ios.deployment_target    = '14.1'
+    spec.ios.deployment_target    = '15.0'
                 
                 
     if !Dir.exist?('build/cocoapods/framework/cross_platform_sdk.framework') || Dir.empty?('build/cocoapods/framework/cross_platform_sdk.framework')

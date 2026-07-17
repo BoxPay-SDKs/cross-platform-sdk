@@ -317,6 +317,11 @@ object CheckoutDetailsHandler {
         _checkoutDetailsFlow.value = checkoutDetails
     }
 
+    fun setStatus(status : String) {
+        checkoutDetails = checkoutDetails.copy(status = status)
+        _checkoutDetailsFlow.value = checkoutDetails
+    }
+
     fun setInquiryToken(inquiryToken: String) {
         checkoutDetails = checkoutDetails.copy(inquiryToken = inquiryToken)
         _checkoutDetailsFlow.value = checkoutDetails

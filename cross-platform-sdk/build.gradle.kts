@@ -7,7 +7,7 @@ plugins {
     id("com.android.library")
     kotlin("native.cocoapods")
     id("maven-publish")
-    kotlin("plugin.serialization") version "1.9.24"
+    alias(libs.plugins.kotlin.serialization)
     id("org.jetbrains.compose") version "1.8.2"             // ✅ CMP
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.codingfeline.buildkonfig") version "0.15.2"
@@ -54,7 +54,7 @@ kotlin {
         version = sdkVersion
         summary = "BoxPayBridge Shared SDK"
         homepage = "https://developers.boxpay.tech/"
-        ios.deploymentTarget = "14.1"
+        ios.deploymentTarget = "15.0" // ⬅️ changed from 14.1 — docs state minimum iOS 15.0 for Revolut Pay
         framework {
             baseName = "cross-platform-sdk"
             isStatic = true
