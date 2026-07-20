@@ -9,7 +9,8 @@ import com.crossplatform.sdk.presentation.resolveErrorMessage
 
 fun handleFetchStatus(
     response : ApiResponse<FetchStatusResponse>,
-    setIsBoxPayAnimationVisible : (Boolean) -> Unit
+    setIsBoxPayAnimationVisible : (Boolean) -> Unit,
+    onAutoRetry : () -> Unit
 ) {
     when(response) {
         is ApiResponse.Error -> {
@@ -51,6 +52,10 @@ fun handleFetchStatus(
                     setIsBoxPayAnimationVisible(false)
                 }
                 else -> {
+                    if(response.data.retryable) {
+                        onAutoRetry()
+                        return
+                    }
                     CheckoutDetailsHandler.setSessionFailed()
                     setIsBoxPayAnimationVisible(false)
                 }

@@ -43,6 +43,7 @@ data class CheckoutDetails(
     val isSICheckboxEnabled : Boolean,
     val isSubscriptionCheckout: Boolean,
     val showQROnLoad : Boolean,
+    val showRetryBottomDown : Boolean,
 
     // ─── Shopper Fields ──────────────────────────
     val isShippingAddressEnabled: Boolean,
@@ -69,4 +70,6 @@ data class CheckoutDetails(
     val isWebViewVisible : Boolean,
     val appliedOfferId : String?,
     val subscription : List<Pair<String, String>>?,
+
+    val proceedAutoRetryPayment : () -> Unit
 )

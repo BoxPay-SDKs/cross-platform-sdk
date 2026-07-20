@@ -78,7 +78,9 @@ object CheckoutDetailsHandler {
         unfocusedTextInputBorderColor = "",
         fontFamily = "",
         ctaTextFontSize = 0,
-        acceptedCardsList = emptyList()
+        acceptedCardsList = emptyList(),
+        showRetryBottomDown = false,
+        proceedAutoRetryPayment = {}
     )
 
     // ─── Source of truth ──────────────────────────────────────────────────────
@@ -123,6 +125,16 @@ object CheckoutDetailsHandler {
         .map { it.merchantName }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().merchantName)
+
+    val proceedAutoRetryFunctionFlow : StateFlow<Function<Unit>> = _checkoutDetailsFlow
+        .map { it.proceedAutoRetryPayment }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().proceedAutoRetryPayment)
+
+    val showRetryBottomDownFlow: StateFlow<Boolean> = _checkoutDetailsFlow
+        .map { it.showRetryBottomDown }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().showRetryBottomDown)
 
     val acceptedCardsListFlow: StateFlow<List<String>> = _checkoutDetailsFlow
         .map { it.acceptedCardsList }
@@ -482,6 +494,16 @@ object CheckoutDetailsHandler {
         message: String = "You may have cancelled the payment or there was a delay in response. Please retry."
     ) {
         checkoutDetails = checkoutDetails.copy(errorMessage = message)
+        _checkoutDetailsFlow.value = checkoutDetails
+    }
+
+    fun showAutoRetryDropDown(proceedAutoRetry : () -> Unit) {
+        checkoutDetails = checkoutDetails.copy(showRetryBottomDown = true, proceedAutoRetryPayment = proceedAutoRetry)
+        _checkoutDetailsFlow.value = checkoutDetails
+    }
+
+    fun hideAutoRetryDropDown() {
+        checkoutDetails = checkoutDetails.copy(showRetryBottomDown = false)
         _checkoutDetailsFlow.value = checkoutDetails
     }
 

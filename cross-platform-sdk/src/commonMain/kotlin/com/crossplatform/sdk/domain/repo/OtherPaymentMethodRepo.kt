@@ -13,8 +13,6 @@ interface OtherPaymentMethodRepo {
 
     suspend fun initiatePayment(instrumentDetails: String) : ApiResponse<PaymentMethodPostResponse>
 
-    suspend fun fetchStatus() : ApiResponse<FetchStatusResponse>
-
     suspend fun initiateEMIPayment(
         cardNumber: String,
         expiryDate: String,

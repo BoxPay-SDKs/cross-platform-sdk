@@ -379,4 +379,14 @@ class ApiServiceImpl : ApiService {
             }
         }
     }
+
+    override suspend fun autoRetryInitiatePayment(
+        transactionId : String
+    ): ApiResponse<PaymentMethodPostResponse> {
+        return executeWithResponse{
+            client.post(urlString = "transactions/${transactionId}/clones") {
+                contentType(ContentType.Application.Json)
+            }
+        }
+    }
 }

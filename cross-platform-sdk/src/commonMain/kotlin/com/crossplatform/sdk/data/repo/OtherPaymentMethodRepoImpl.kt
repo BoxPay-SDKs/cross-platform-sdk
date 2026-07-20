@@ -31,10 +31,6 @@ class OtherPaymentMethodRepoImpl(
         apiService.methodsPostRequest(instrumentDetails)
     }
 
-    override suspend fun fetchStatus(): ApiResponse<FetchStatusResponse> = withContext(ioDispatcher)  {
-        apiService.fetchStatus()
-    }
-
     override suspend fun initiateEMIPayment(
         cardNumber: String,
         expiryDate: String,

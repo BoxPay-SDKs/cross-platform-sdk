@@ -53,15 +53,15 @@ val appModule = module {
     factory { FetchStatusRepoImpl(apiService = get()) }
 
     // ✅ ViewModels
-    viewModel { MainScreenViewModel(repo = get(), analyticsRepo = get(), otherPaymentMethodRepo = get(), instantOfferRepo = get()) }
-    viewModel { BoxPayElementsViewModel(repo = get(), analyticsRepo = get(), otherPaymentMethodRepo = get(), cardRepo = get()) }
+    viewModel { MainScreenViewModel(repo = get(), analyticsRepo = get(), otherPaymentMethodRepo = get(), instantOfferRepo = get(), fetchStatusRepo = get()) }
+    viewModel { BoxPayElementsViewModel(repo = get(), analyticsRepo = get(), otherPaymentMethodRepo = get(), cardRepo = get(), fetchStatusRepo = get()) }
     viewModel { InstantOfferViewModel(repo = get(),analyticsRepo = get()) }
     viewModel { AddressScreenViewModel(repo = get(), analyticsRepo = get()) }
     viewModel { CardScreenViewModel(repo = get(), fetchStatusRepo = get(),analyticsRepo = get()) }
-    viewModel { EMIScreenViewModel(repo = get(),analyticsRepo = get(), cardScreenRepo = get()) }
-    viewModel { WalletViewModel(repo = get(),analyticsRepo = get()) }
-    viewModel { NetBankingViewModel(repo = get(),analyticsRepo = get()) }
-    viewModel { BNPLViewModel(repo = get(),analyticsRepo = get()) }
+    viewModel { EMIScreenViewModel(repo = get(),analyticsRepo = get(), cardScreenRepo = get(), fetchStatusRepo = get()) }
+    viewModel { WalletViewModel(repo = get(),analyticsRepo = get(), fetchStatusRepo = get()) }
+    viewModel { NetBankingViewModel(repo = get(),analyticsRepo = get(), fetchStatusRepo = get()) }
+    viewModel { BNPLViewModel(repo = get(),analyticsRepo = get(), fetchStatusRepo = get()) }
     viewModel { UpiTimerViewModel() }
 
 }

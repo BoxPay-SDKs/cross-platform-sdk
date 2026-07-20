@@ -32,6 +32,7 @@ import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.data.model.SDKPaymentResponse
 import com.crossplatform.sdk.presentation.buildAddressAndUserDetailsString
 import com.crossplatform.sdk.presentation.components.PaymentFailed
+import com.crossplatform.sdk.presentation.components.PaymentRetryBottomSheet
 import com.crossplatform.sdk.presentation.components.PaymentSuccessful
 import com.crossplatform.sdk.presentation.components.SessionExpire
 import com.crossplatform.sdk.presentation.components.SwipeToPayComponent
@@ -72,10 +73,13 @@ fun AppNavHost() {
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
     val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
+    val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
     val isPaymentFailed = CheckoutDetailsHandler.isPaymentFailedFlow.collectAsStateWithLifecycle()
+    val showAutoRetryDropDown = CheckoutDetailsHandler.showRetryBottomDownFlow.collectAsStateWithLifecycle()
     val isPaymentSuccessful = CheckoutDetailsHandler.isPaymentSuccessfulFlow.collectAsStateWithLifecycle()
     val isSessionExpired = CheckoutDetailsHandler.isSessionExpiredFlow.collectAsStateWithLifecycle()
     val successDetails = CheckoutDetailsHandler.successfulTimestampFlow.collectAsStateWithLifecycle()
+    val proceedAutoRetryPayment = CheckoutDetailsHandler.proceedAutoRetryFunctionFlow.collectAsStateWithLifecycle()
     val (successTimeStamp , selectedPaymentMethod) = successDetails.value
 
     val navController = rememberNavController()
@@ -90,6 +94,7 @@ fun AppNavHost() {
         currentEntry?.arguments?.getBoolean("isNewAddress") ?: false
 
     val failedSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val autoRetrySheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope            = rememberCoroutineScope()
 
     fun hideFailedSheet() {
@@ -98,6 +103,14 @@ fun AppNavHost() {
             failedSheetState.hide()
         }
     }
+
+    fun hideAutoRetrySheet() {
+        scope.launch {
+            CheckoutDetailsHandler.hideAutoRetryDropDown()
+            autoRetrySheetState.hide()
+        }
+    }
+
 
     val baseRoute = currentRoute?.substringBefore("/{")
 
@@ -459,6 +472,22 @@ fun AppNavHost() {
                 )
                 callSDKPaymentResponse()
             }
+        )
+    }
+
+    if (showAutoRetryDropDown.value) {
+        viewModel.qrTimer.value = 0
+        PaymentRetryBottomSheet(
+            sheetState = autoRetrySheetState,
+            onTimeout = {
+                hideAutoRetrySheet()
+            },
+            buttonColor = buttonColor.value,
+            buttonTextColor = buttonTextColor.value,
+            onProceedForward = {
+                proceedAutoRetryPayment.value
+            },
+            ctaBorderRadius = ctaBorderRadius.value
         )
     }
 }

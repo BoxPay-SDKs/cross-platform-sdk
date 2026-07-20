@@ -253,7 +253,43 @@ class CardScreenViewModel(
             val response = fetchStatusRepo.fetchStatus()
             handleFetchStatus(
                 response = response,
-                setIsBoxPayAnimationVisible = {isBoxPayAnimationVisible.value = it}
+                setIsBoxPayAnimationVisible = {isBoxPayAnimationVisible.value = it},
+                onAutoRetry = {
+                    CheckoutDetailsHandler.showAutoRetryDropDown { autoRetryInitiatePayment() }
+                    isBoxPayAnimationVisible.value = false
+                }
+            )
+        }
+    }
+
+    fun autoRetryInitiatePayment() {
+        viewModelScope.launch {
+            isBoxPayAnimationVisible.value = true
+            val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+            val response = fetchStatusRepo.autoRetryInitiatePayment(checkoutDetails.transactionId)
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentUrl = {
+                    url.value = it
+                    setWebViewScreen(true)
+                },
+                onSetPaymentHtml = {
+                    htmlString.value = it
+                    setWebViewScreen(true)
+                },
+                onNavigateToTimer = {
+                    // no operation
+                },
+                onOpenQr = {_, _ ->
+                    // no operation
+                },
+                onOpenUpiIntent = {_ ->
+                    // no operation
+                },
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                setIsBoxPayAnimationVisible = {
+                    isBoxPayAnimationVisible.value = it
+                }
             )
         }
     }

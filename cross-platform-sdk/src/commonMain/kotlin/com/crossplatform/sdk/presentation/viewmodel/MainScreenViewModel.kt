@@ -16,6 +16,7 @@ import com.crossplatform.sdk.domain.model.MainScreenModel
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
+import com.crossplatform.sdk.domain.repo.FetchStatusRepo
 import com.crossplatform.sdk.domain.repo.InstantOfferRepo
 import com.crossplatform.sdk.domain.repo.MainScreenRepo
 import com.crossplatform.sdk.domain.repo.OtherPaymentMethodRepo
@@ -42,7 +43,8 @@ class MainScreenViewModel(
     private val repo: MainScreenRepo,
     private val analyticsRepo : CallUIAnalyticsRepo,
     private val otherPaymentMethodRepo: OtherPaymentMethodRepo,
-    private val instantOfferRepo: InstantOfferRepo
+    private val instantOfferRepo: InstantOfferRepo,
+    private val fetchStatusRepo: FetchStatusRepo
 ): ViewModel() {
 
     private val _state = MutableStateFlow<UiState<MainScreenModel>>(UiState.Loading)
@@ -397,11 +399,15 @@ class MainScreenViewModel(
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
             isBoxPayAnimationLoading.value = true
-            val response = otherPaymentMethodRepo.fetchStatus()
+            val response = fetchStatusRepo.fetchStatus()
             handleFetchStatus(
                 response = response,
                 setIsBoxPayAnimationVisible = {
                     isBoxPayAnimationLoading.value = it
+                },
+                onAutoRetry = {
+                    CheckoutDetailsHandler.showAutoRetryDropDown{autoRetryInitiatePayment()}
+                    isBoxPayAnimationLoading.value = false
                 }
             )
         }
@@ -410,9 +416,42 @@ class MainScreenViewModel(
     fun callUpiCollectFetchStatue(inquiryResult : String) {
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
-            val response = otherPaymentMethodRepo.fetchStatus()
+            val response = fetchStatusRepo.fetchStatus()
             handleUpiCollectFetchStatus(
                 response = response,
+                setIsBoxPayAnimationVisible = {
+                    stopFetchStatusPolling()
+                    isBoxPayAnimationLoading.value = it
+                }
+            )
+        }
+    }
+
+    fun autoRetryInitiatePayment() {
+        viewModelScope.launch {
+            isBoxPayAnimationLoading.value = true
+            val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+            val response = fetchStatusRepo.autoRetryInitiatePayment(checkoutDetails.transactionId)
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentUrl = {
+                    setWebViewUrl.value = it
+                    setWebViewScreen(true)
+                },
+                onSetPaymentHtml = {
+                    setWebViewHtml.value = it
+                    setWebViewScreen(true)
+                },
+                onNavigateToTimer = {
+                    // no operation
+                },
+                onOpenQr = {_, _ ->
+                    // no operation
+                },
+                onOpenUpiIntent = {_ ->
+                    // no operation
+                },
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
                 setIsBoxPayAnimationVisible = {
                     stopFetchStatusPolling()
                     isBoxPayAnimationLoading.value = it

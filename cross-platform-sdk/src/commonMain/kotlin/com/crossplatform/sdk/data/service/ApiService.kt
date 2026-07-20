@@ -102,4 +102,8 @@ interface ApiService {
         minAmount: Double
     ) : ApiResponse<AppliedOfferResponse>
 
+    suspend fun autoRetryInitiatePayment(
+        transactionId : String
+    ) : ApiResponse<PaymentMethodPostResponse>
+
 }

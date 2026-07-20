@@ -9,6 +9,7 @@ import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.domain.mapper.toUiModel
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
+import com.crossplatform.sdk.domain.repo.FetchStatusRepo
 import com.crossplatform.sdk.domain.repo.OtherPaymentMethodRepo
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.sharedContext.handleFetchStatus
@@ -19,7 +20,8 @@ import kotlinx.coroutines.launch
 
 class NetBankingViewModel (
     private val repo : OtherPaymentMethodRepo,
-    private val analyticsRepo : CallUIAnalyticsRepo
+    private val analyticsRepo : CallUIAnalyticsRepo,
+    private val fetchStatusRepo: FetchStatusRepo
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<List<SelectedPaymentMethod>>>(UiState.Loading)
@@ -112,10 +114,46 @@ class NetBankingViewModel (
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
             isBoxPayAnimationVisible.value = true
-            val response = repo.fetchStatus()
+            val response = fetchStatusRepo.fetchStatus()
             handleFetchStatus(
                 response = response,
-                setIsBoxPayAnimationVisible = {isBoxPayAnimationVisible.value = it}
+                setIsBoxPayAnimationVisible = {isBoxPayAnimationVisible.value = it},
+                onAutoRetry = {
+                    CheckoutDetailsHandler.showAutoRetryDropDown { autoRetryInitiatePayment()}
+                    isBoxPayAnimationVisible.value = false
+                }
+            )
+        }
+    }
+
+    fun autoRetryInitiatePayment() {
+        viewModelScope.launch {
+            isBoxPayAnimationVisible.value = true
+            val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+            val response = fetchStatusRepo.autoRetryInitiatePayment(checkoutDetails.transactionId)
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentUrl = {
+                    url.value = it
+                    setWebViewScreen(true)
+                },
+                onSetPaymentHtml = {
+                    htmlString.value = it
+                    setWebViewScreen(true)
+                },
+                onNavigateToTimer = {
+                    // no operation
+                },
+                onOpenQr = {_, _ ->
+                    // no operation
+                },
+                onOpenUpiIntent = {_ ->
+                    // no operation
+                },
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                setIsBoxPayAnimationVisible = {
+                    isBoxPayAnimationVisible.value = it
+                }
             )
         }
     }
