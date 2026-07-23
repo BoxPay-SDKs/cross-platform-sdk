@@ -1,15 +1,21 @@
 package com.crossplatform.sdk.domain.model
 
+import com.crossplatform.sdk.data.model.AllowedPaymentMethods
+
 data class MainScreenModel(
     val status: TransactionStatusEnum,
     val transactionId: String,
     val totalAmount : Double,
+    val successfulTimeStamp : String,
+    val successfulPaymentMethod : String,
     val currencySymbol : String,
     val currencyCode : String,
     val methodFlags: MethodFlags,
     val orderDetails: OrderDetails?,
     val sessionExpiryTimer : String,
     val revolutPublicKey : String?,
+    val googlePayAdditionData : GooglePayAdditionData?,
+    val applePayAdditionData : ApplePayAdditionData?
 ) {
 
     data class MethodFlags(
@@ -44,6 +50,22 @@ data class MainScreenModel(
         val imageTitle: String?,
         val imageQty: Int?,
         val amount: Double?
+    )
+
+    data class GooglePayAdditionData(
+        val merchantId : String?,
+        val merchantName : String?,
+        val gateway : String?,
+        val siteReference : String?,
+        val allowedPaymentMethods : List<AllowedPaymentMethods>?
+    )
+
+    data class ApplePayAdditionData(
+        val merchantName : String?,
+        val gateway : String?,
+        val siteReference : String?,
+        val merchantCapabilities : List<String>?,
+        val supportedNetworks : List<String>?
     )
 
 }

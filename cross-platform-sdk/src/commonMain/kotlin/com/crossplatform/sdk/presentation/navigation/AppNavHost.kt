@@ -145,15 +145,15 @@ fun AppNavHost() {
                 text       = screenTitle,             // changes per screen
                 onBackPress = {
                     if (ScreenBackInterceptor.onBack?.invoke() == true) {
-                        // no operation to be performed as it is already handled in EMI screen
-                    }
-                    else if (!navController.popBackStack() || (isNewAddress && baseRoute == Routes.AddressScreen.route)) {
-                        callSDKPaymentResponse()
-                    } else if (!navController.popBackStack()) {
-                        callSDKPaymentResponse()
-                    }else {
-                        if(!surchargeDetails.value.isEmpty()) {
-                            CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
+                        // handled in EMI screen
+                    } else {
+                        val popped = navController.popBackStack()
+                        if (!popped || (isNewAddress && baseRoute == Routes.AddressScreen.route)) {
+                            callSDKPaymentResponse()
+                        } else {
+                            if (!surchargeDetails.value.isEmpty()) {
+                                CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
+                            }
                         }
                     }
                 },    // from API via ViewModel

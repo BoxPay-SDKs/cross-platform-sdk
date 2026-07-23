@@ -31,10 +31,12 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import com.crossplatform.sdk.domain.handler.ExpressCheckoutConfig
+import com.crossplatform.sdk.domain.handler.ApplePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
+import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
+import com.crossplatform.sdk.domain.handler.RevolutPayExpressCheckoutConfig
 import com.crossplatform.sdk.payments.RevolutPayBridgeRegistry
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.addressOf
@@ -240,17 +242,17 @@ class IosPaymentHandler() : ExpressCheckoutPaymentHandler {
     override fun isApplePayAvailable() =
         PKPaymentAuthorizationController.canMakePayments()
 
-    override fun isGooglePayAvailable() = false
+    override suspend fun isGooglePayAvailable(config: GooglePayExpressCheckoutConfig) = false
 
     override fun isRevolutPayAvailable(): Boolean = true
 
     override fun launchApplePay(
         request: ExpressCheckoutPaymentRequest,
-        config: ExpressCheckoutConfig,
+        config: ApplePayExpressCheckoutConfig,
         onResult: (ExpressCheckoutPaymentResult) -> Unit
     ) {
         val pkRequest = PKPaymentRequest().apply {
-            merchantIdentifier = config.applePayMerchantIdentifier
+            merchantIdentifier = config.merchantName
             supportedNetworks =
                 listOf(PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkAmex)
             merchantCapabilities = PKMerchantCapability3DS
@@ -258,7 +260,7 @@ class IosPaymentHandler() : ExpressCheckoutPaymentHandler {
             currencyCode = request.currencyCode
             paymentSummaryItems = listOf(
                 PKPaymentSummaryItem.summaryItemWithLabel(
-                    label = request.merchantName,
+                    label = config.merchantName,
                     amount = NSDecimalNumber(string = request.amount)
                 )
             )
@@ -283,14 +285,13 @@ class IosPaymentHandler() : ExpressCheckoutPaymentHandler {
 
     override fun launchGooglePay(
         request: ExpressCheckoutPaymentRequest,
-        config: ExpressCheckoutConfig,
+        config: GooglePayExpressCheckoutConfig,
         onResult: (ExpressCheckoutPaymentResult) -> Unit
     ) = onResult(ExpressCheckoutPaymentResult.Failure("Google Pay unavailable on iOS"))
 
     override fun launchRevolutPay(
         request: ExpressCheckoutPaymentRequest,
-        config: ExpressCheckoutConfig,
-        merchantPublicKey: String,
+        config: RevolutPayExpressCheckoutConfig,
         isSandbox: Boolean,
         onResult: (ExpressCheckoutPaymentResult) -> Unit
     ) {
@@ -298,12 +299,12 @@ class IosPaymentHandler() : ExpressCheckoutPaymentHandler {
             ?: return onResult(ExpressCheckoutPaymentResult.Failure("RevolutPayExecutor not registered"))
 
         executor.launch(
-            orderToken = request.orderToken ?: "",
-            merchantPublicKey = merchantPublicKey,
+            orderToken = config.orderToken,
+            merchantPublicKey = config.merchantPublicKey,
             isSandbox = isSandbox
         ) { success, error ->
             onResult(
-                if (success) ExpressCheckoutPaymentResult.Success
+                if (success) ExpressCheckoutPaymentResult.Success()
                 else ExpressCheckoutPaymentResult.Failure(error ?: "Unknown error")
             )
         }
@@ -318,7 +319,7 @@ private class PaymentDelegate(
         didAuthorizePayment: PKPayment,
         handler: (PKPaymentAuthorizationResult?) -> Unit
     ) {
-        onResult(ExpressCheckoutPaymentResult.Success)
+        onResult(ExpressCheckoutPaymentResult.Success())
         handler(
             PKPaymentAuthorizationResult(
                 status = PKPaymentAuthorizationStatus.PKPaymentAuthorizationStatusSuccess,

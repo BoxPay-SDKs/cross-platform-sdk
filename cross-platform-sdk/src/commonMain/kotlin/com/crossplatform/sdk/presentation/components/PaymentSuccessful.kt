@@ -51,7 +51,7 @@ fun PaymentSuccessful(
     val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val currencyDetails = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
-    val (currencySymbol, _) = currencyDetails.value
+    val (_, currencyCode) = currencyDetails.value
     val transactionDetail = CheckoutDetailsHandler.transactionFlow.collectAsStateWithLifecycle()
     val (_, transactionId) = transactionDetail.value
     LaunchedEffect(Unit) {
@@ -146,7 +146,7 @@ fun PaymentSuccessful(
                                 fontFamily = LocalSDKFonts.current.secondary
                             )
                         ) {
-                            append(currencySymbol)
+                            append(currencyCode)
                         }
                         withStyle(
                             style = SpanStyle(

@@ -72,7 +72,7 @@ fun MorePaymentMethods(
         }
         if(methodFlags.isNetBankingVisible) {
             MorePaymentContainer(
-                title = "Net Banking",
+                title = "Bank Transfers",
                 image = Res.drawable.ic_netbanking,
                 onClick = onNavigateToNetBanking,
                 surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "netbanking" }?.amount,

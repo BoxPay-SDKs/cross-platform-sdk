@@ -11,7 +11,14 @@ data class SessionDetails(
     @SerialName("sessionExpiryTimestamp") val sessionExpiryTimestamp: String,
     @SerialName("status") val status: String,
     @SerialName("lastPaidAtTimestamp") val lastPaidAtTimestamp: String?,
-    @SerialName("lastTransactionId") val lastTransactionId: String?
+    @SerialName("lastTransactionId") val lastTransactionId: String?,
+    @SerialName("lastTransactionDetails") val lastTransactionDetails : LastTransactionDetails?
+)
+
+@Serializable
+data class LastTransactionDetails(
+    @SerialName("paymentMethod") val paymentMethod: PaymentMethod,
+    @SerialName("timestampLocale") val timeStampLocale : String
 )
 
 @Serializable
@@ -152,17 +159,36 @@ data class PaymentMethod(
     @SerialName("id") val id: String,
     @SerialName("type") val type: String,
     @SerialName("brand") val brand: String,
-    @SerialName("title") val title: String,
-    @SerialName("logoUrl") val logoUrl: String,
+    @SerialName("title") val title: String? = null,
+    @SerialName("logoUrl") val logoUrl: String? = null,
     @SerialName("additionalData") val additionalData : AdditionalData? = null,
-    @SerialName("instrumentTypeValue") val instrumentTypeValue: String,
+    @SerialName("instrumentTypeValue") val instrumentTypeValue: String? = null,
     @SerialName("applicableOffers") val applicableOffer: List<ApplicableOffer>? = null,
     @SerialName("emiMethod") val emiMethod: EmiMethod? = null
 )
 
 @Serializable
 data class AdditionalData(
-    @SerialName("publicKey") val publicKey : String? = null
+    @SerialName("publicKey") val publicKey : String? = null,
+    @SerialName("merchantId") val merchantId : String? = null,
+    @SerialName("merchantName") val merchantName : String? = null,
+    @SerialName("gateway") val gateway : String? = null,
+    @SerialName("siteReference") val siteReference : String? = null,
+    @SerialName("allowedPaymentMethods") val allowedPaymentMethods : List<AllowedPaymentMethods>? = null,
+    @SerialName("merchantCapabilities") val merchantCapabilities : List<String>? = null,
+    @SerialName("supportedNetworks") val supportedNetworks : List<String>? = null,
+)
+
+@Serializable
+data class AllowedPaymentMethods (
+    @SerialName("type") val type : String? = null,
+    @SerialName("parameters") val parameters : AllowedPaymentMethodsParameters? = null
+)
+
+@Serializable
+data class AllowedPaymentMethodsParameters(
+    @SerialName("allowedAuthMethods") val allowedAuthMethods : List<String>? = null,
+    @SerialName("allowedCardNetworks") val allowedCardNetworks : List<String>? = null
 )
 
 @Serializable

@@ -1,7 +1,6 @@
 package com.crossplatform.sdk.domain.repo
 
 import com.crossplatform.sdk.data.ApiResponse
-import com.crossplatform.sdk.data.model.FetchStatusResponse
 import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 
@@ -11,7 +10,7 @@ interface OtherPaymentMethodRepo {
         offerId: String?
     ) : ApiResponse<List<PaymentMethod>>
 
-    suspend fun initiatePayment(instrumentDetails: String) : ApiResponse<PaymentMethodPostResponse>
+    suspend fun initiatePayment(instrumentDetails: String, paymentType : String, token : String) : ApiResponse<PaymentMethodPostResponse>
 
     suspend fun initiateEMIPayment(
         cardNumber: String,

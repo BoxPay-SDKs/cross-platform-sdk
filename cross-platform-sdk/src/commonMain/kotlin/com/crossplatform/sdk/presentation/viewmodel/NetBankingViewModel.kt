@@ -83,7 +83,9 @@ class NetBankingViewModel (
             )
             isBoxPayAnimationVisible.value = true
             val response = repo.initiatePayment(
-                instrumentDetails = instrumentValue
+                instrumentDetails = instrumentValue,
+                paymentType = "netbanking",
+                token = CheckoutDetailsHandler.checkoutDetails.token
             )
             handlePaymentResponse(
                 response = response,

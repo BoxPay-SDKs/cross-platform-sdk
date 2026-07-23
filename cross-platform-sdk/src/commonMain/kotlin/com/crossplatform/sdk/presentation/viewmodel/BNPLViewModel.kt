@@ -82,7 +82,9 @@ class BNPLViewModel (
             )
             isBoxPayAnimationVisible.value = true
             val response = repo.initiatePayment(
-                instrumentDetails = instrumentValue
+                instrumentDetails = instrumentValue,
+                paymentType = "buynowpaylater",
+                token = CheckoutDetailsHandler.checkoutDetails.token
             )
             handlePaymentResponse(
                 response = response,

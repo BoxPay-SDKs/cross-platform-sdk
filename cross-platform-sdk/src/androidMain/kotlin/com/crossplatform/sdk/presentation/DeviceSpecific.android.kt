@@ -26,20 +26,25 @@ import androidx.core.net.toUri
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.crossplatform.sdk.domain.handler.ExpressCheckoutConfig
+import com.crossplatform.sdk.data.model.GooglePayExpressCheckoutResponse
+import com.crossplatform.sdk.domain.handler.ApplePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
+import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
+import com.crossplatform.sdk.domain.handler.RevolutPayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.model.AppLifecycleState
 import com.crossplatform.sdk.payments.RevolutPaySDK
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.wallet.IsReadyToPayRequest
 import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.Wallet
-import com.google.android.gms.wallet.WalletConstants
 import com.google.android.gms.wallet.contract.TaskResultContracts
+import kotlinx.coroutines.tasks.await
+import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Calendar
@@ -208,14 +213,12 @@ actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandle
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
 
-    val client = remember(activity) {
-        Wallet.getPaymentsClient(
-            activity,
-            Wallet.WalletOptions.Builder()
-                .setEnvironment(WalletConstants.ENVIRONMENT_TEST)
-                .build()
-        )
-    }
+    val client =  Wallet.getPaymentsClient(
+        context,
+        Wallet.WalletOptions.Builder()
+            .setEnvironment(3)
+            .build()
+    )
 
     var pendingCallback by remember { mutableStateOf<((ExpressCheckoutPaymentResult) -> Unit)?>(null) }
 
@@ -226,16 +229,29 @@ actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandle
         TaskResultContracts.GetPaymentDataResult()
     ) { taskResult ->
         val callback = pendingCallback
-        pendingCallback = null
+        println("====status code ${taskResult.status.statusCode}")
         when (taskResult.status.statusCode) {
             CommonStatusCodes.SUCCESS -> {
-                callback?.invoke(ExpressCheckoutPaymentResult.Success)
+                if(taskResult.result != null) {
+                    val json = taskResult.result!!.toJson()
+                    val paymentData = Json.decodeFromString<GooglePayExpressCheckoutResponse>(json)
+                    val token = paymentData.paymentMethodData.tokenizationData.token
+                    callback?.invoke(ExpressCheckoutPaymentResult.Success(token))
+                } else {
+                    callback?.invoke(ExpressCheckoutPaymentResult.Success())
+                }
             }
             CommonStatusCodes.CANCELED -> {
                 callback?.invoke(ExpressCheckoutPaymentResult.Cancelled)
             }
+            CommonStatusCodes.DEVELOPER_ERROR -> {
+                callback?.invoke(ExpressCheckoutPaymentResult.Failure(taskResult?.result?.toString() ?: ""))
+            }
+            CommonStatusCodes.INTERNAL_ERROR -> {
+                callback?.invoke(ExpressCheckoutPaymentResult.Failure(taskResult?.result?.toString() ?: ""))
+            }
             else -> {
-                callback?.invoke(ExpressCheckoutPaymentResult.Failure("Google Pay error"))
+                callback?.invoke(ExpressCheckoutPaymentResult.Failure(taskResult?.result?.toString() ?: ""))
             }
         }
     }
@@ -271,7 +287,10 @@ class AndroidPaymentHandler(
     private val onLaunch: ((ExpressCheckoutPaymentResult) -> Unit) -> Unit
 ) : ExpressCheckoutPaymentHandler {
 
-    override fun isGooglePayAvailable(): Boolean = true
+    override suspend fun isGooglePayAvailable(config: GooglePayExpressCheckoutConfig,): Boolean {
+        val request = IsReadyToPayRequest.fromJson(buildGooglePayConfigJson(config))
+        return client.isReadyToPay(request).await()
+    }
 
     override fun isApplePayAvailable(): Boolean = false
 
@@ -282,23 +301,22 @@ class AndroidPaymentHandler(
 
     override fun launchGooglePay(
         request: ExpressCheckoutPaymentRequest,
-        config: ExpressCheckoutConfig,
+        config: GooglePayExpressCheckoutConfig,
         onResult: (ExpressCheckoutPaymentResult) -> Unit
     ) {
         onLaunch(onResult)
 
         val paymentRequest = PaymentDataRequest.fromJson(
-            buildGooglePayJson(request, config)
+            buildGooglePayRequestJson(request, config)
         )
 
-        launcher.launch(
-            client.loadPaymentData(paymentRequest)
-        )
+        client.loadPaymentData(paymentRequest)
+            .addOnCompleteListener(launcher::launch)
     }
 
     override fun launchApplePay(
         request: ExpressCheckoutPaymentRequest,
-        config: ExpressCheckoutConfig,
+        config: ApplePayExpressCheckoutConfig,
         onResult: (ExpressCheckoutPaymentResult) -> Unit
     ) {
         onResult(
@@ -310,24 +328,14 @@ class AndroidPaymentHandler(
 
     override fun launchRevolutPay(
         request: ExpressCheckoutPaymentRequest,
-        config: ExpressCheckoutConfig,
-        merchantPublicKey : String,
+        config: RevolutPayExpressCheckoutConfig,
         isSandbox : Boolean,
         onResult: (ExpressCheckoutPaymentResult) -> Unit
     ) {
-        val orderToken = request.orderToken
-        if (orderToken == null) {
-            onResult(
-                ExpressCheckoutPaymentResult.Failure(
-                    "orderToken is required for Revolut Pay -- create the order via your backend first"
-                )
-            )
-            return
-        }
+        val orderToken = config.orderToken
 
         RevolutPaySDK.configure(
-            merchantPublicKey = merchantPublicKey,
-            isSandbox = false
+            merchantPublicKey = config.merchantPublicKey
         )
 
         RevolutPaySDK.pay(
@@ -340,37 +348,58 @@ class AndroidPaymentHandler(
     }
 }
 
-private fun buildGooglePayJson(request: ExpressCheckoutPaymentRequest, config: ExpressCheckoutConfig): String {
-    val allowedCardNetworks = JSONArray(listOf("VISA", "MASTERCARD", "AMEX"))
-    val allowedCardAuthMethods = JSONArray(listOf("PAN_ONLY", "CRYPTOGRAM_3DS"))
+private fun buildGooglePayConfigJson(config: GooglePayExpressCheckoutConfig): String {
+    val cardPaymentMethod = config.allowedPaymentMethods
+        .firstOrNull { it.type.equals("CARD", ignoreCase = true) }
+        ?.let { method ->
+            JSONObject().apply {
+                put("type", "CARD") // normalize to what Google expects, regardless of backend casing
+                put("parameters", JSONObject().apply {
+                    put("allowedCardNetworks", JSONArray(method.parameters?.allowedCardNetworks))
+                    put("allowedAuthMethods", JSONArray(method.parameters?.allowedAuthMethods))
+                })
+            }
+        } ?: throw IllegalStateException(
+        "No CARD entry found in allowedPaymentMethods: ${config.allowedPaymentMethods}"
+    )
 
-    val tokenizationSpecification = JSONObject().apply {
-        put("type", "PAYMENT_GATEWAY")
-        put("parameters", JSONObject().apply {
-            put("gateway", config.googlePayGateway)
-            put("gatewayMerchantId", config.googlePayGatewayMerchantId)
-        })
-    }
+    return JSONObject().apply {
+        put("apiVersion", 2)
+        put("apiVersionMinor", 0)
+        put("allowedPaymentMethods", JSONArray(listOf(cardPaymentMethod)))
+    }.toString()
+}
 
-    val cardPaymentMethod = JSONObject().apply {
-        put("type", "CARD")
-        put("parameters", JSONObject().apply {
-            put("allowedAuthMethods", allowedCardAuthMethods)
-            put("allowedCardNetworks", allowedCardNetworks)
-        })
-        put("tokenizationSpecification", tokenizationSpecification)
-    }
+private fun buildGooglePayRequestJson(request: ExpressCheckoutPaymentRequest, config: GooglePayExpressCheckoutConfig): String {
+    val tokenizationSpecification = JSONObject()
+        .put("type", "PAYMENT_GATEWAY")
+        .put("parameters", JSONObject()
+            .put("gateway", "boxpay")
+            .put("gatewayMerchantId", "googletest")
+        )
+    val cardPaymentMethod = config.allowedPaymentMethods
+        .firstOrNull { it.type.equals("CARD", ignoreCase = true) }
+        ?.let { method ->
+            JSONObject().apply {
+                put("type", "CARD") // normalize to what Google expects, regardless of backend casing
+                put("parameters", JSONObject().apply {
+                    put("allowedCardNetworks", JSONArray(method.parameters?.allowedCardNetworks))
+                    put("allowedAuthMethods", JSONArray(method.parameters?.allowedAuthMethods))
+                })
+                put("tokenizationSpecification", tokenizationSpecification)
+            }
+        } ?: throw IllegalStateException(
+        "No CARD entry found in allowedPaymentMethods: ${config.allowedPaymentMethods}"
+    )
 
-    val transactionInfo = JSONObject().apply {
-        put("totalPriceStatus", "FINAL")
-        put("totalPrice", request.amount)
-        put("currencyCode", request.currencyCode)
-        put("countryCode", request.countryCode)
-    }
+    val transactionInfo = JSONObject()
+        .put("totalPrice", request.amount)
+        .put("totalPriceStatus", "FINAL")
+        .put("currencyCode", "USD")
+        .put("countryCode", "US")
 
-    val merchantInfo = JSONObject().apply {
-        put("merchantName", request.merchantName)
-    }
+    val merchantInfo = JSONObject()
+        .put("merchantName", "Boxpay Test Merchant")
 
     return JSONObject().apply {
         put("apiVersion", 2)

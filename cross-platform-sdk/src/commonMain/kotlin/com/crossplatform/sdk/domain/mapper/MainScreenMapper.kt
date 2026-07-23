@@ -10,7 +10,6 @@ import com.crossplatform.sdk.presentation.getStatus
 fun SessionDetails.toUiModel(): MainScreenModel {
     val moneyObject = this.paymentDetails.money
     val status = getStatus(this.status)
-    var revolutPublicKey : String? = null
 
     val enabledFields = configs.enabledFields
 
@@ -66,43 +65,62 @@ fun SessionDetails.toUiModel(): MainScreenModel {
     UserDataHandler.setCustomFields(merchantDetails.customFields)
 
     var methodFlags = MainScreenModel.MethodFlags()
+    var revolutPublicKey: String? = null
+    var googlePayAdditionData: MainScreenModel.GooglePayAdditionData? = null
+    var applePayAdditionData: MainScreenModel.ApplePayAdditionData? = null
+
     val acceptedCardsList: List<String> = this.configs.paymentMethods
         .filter { it.type == "Card" }
-        .map { it.logoUrl }
+        .map { it.logoUrl ?: "" }
+
     this.configs.paymentMethods.forEach { method ->
         methodFlags = when (method.type) {
-            "Upi" -> {
-                when (method.brand) {
-                    "UpiIntent" -> methodFlags.copy(isUPIIntentVisible = true, isUPIVisible = true)
-                    "UpiCollect" -> methodFlags.copy(isUPICollectVisible = true, isUPIVisible = true)
-                    "UpiQr" -> methodFlags.copy(isUPIQRVisible = true, isUPIVisible = true)
-                    else -> methodFlags
-                }
+            "Upi" -> when (method.brand) {
+                "UpiIntent" -> methodFlags.copy(isUPIIntentVisible = true, isUPIVisible = true)
+                "UpiCollect" -> methodFlags.copy(isUPICollectVisible = true, isUPIVisible = true)
+                "UpiQr" -> methodFlags.copy(isUPIQRVisible = true, isUPIVisible = true)
+                else -> methodFlags
             }
-            "UpiOneTimeMandate" -> {
-                when (method.brand) {
-                    "UpiIntentOtm" -> methodFlags.copy(isUPIOtmIntentVisible = true, isUPIOtmVisible = true)
-                    "UpiCollectOtm" -> methodFlags.copy(isUPIOtmCollectVisible = true, isUPIOtmVisible = true)
-                    "UpiQrOtm" -> methodFlags.copy(isUPIOtmQRVisible = true, isUPIOtmVisible = true)
-                    else -> methodFlags
-                }
+            "UpiOneTimeMandate" -> when (method.brand) {
+                "UpiIntentOtm" -> methodFlags.copy(isUPIOtmIntentVisible = true, isUPIOtmVisible = true)
+                "UpiCollectOtm" -> methodFlags.copy(isUPIOtmCollectVisible = true, isUPIOtmVisible = true)
+                "UpiQrOtm" -> methodFlags.copy(isUPIOtmQRVisible = true, isUPIOtmVisible = true)
+                else -> methodFlags
             }
-            "Card"           -> methodFlags.copy(isCardsVisible      = true)
-            "Wallet"         -> {
-                when(method.brand) {
-                    "GooglePay" -> methodFlags.copy(isGooglePayVisible = true, isWalletVisible = true)
-                    "ApplePay" -> methodFlags.copy(isApplePayVisible = true, isWalletVisible = true)
-                    "RevolutPay" -> {
-                        revolutPublicKey = method.additionalData?.publicKey
-                        methodFlags.copy(isRevolutPayVisible = true, isWalletVisible = true)
-                    }
-                    else -> methodFlags.copy(isWalletVisible = true)
+            "Card" -> methodFlags.copy(isCardsVisible = true)
+            "Wallet" -> when (method.brand) {
+                "GooglePay" -> {
+                    val data = method.additionalData
+                    googlePayAdditionData = MainScreenModel.GooglePayAdditionData(
+                        merchantId = data?.merchantId,
+                        merchantName = data?.merchantName,
+                        gateway = data?.gateway,
+                        siteReference = data?.siteReference,
+                        allowedPaymentMethods = data?.allowedPaymentMethods
+                    )
+                    methodFlags.copy(isGooglePayVisible = true)
                 }
+                "ApplePay" -> {
+                    val data = method.additionalData
+                    applePayAdditionData = MainScreenModel.ApplePayAdditionData(
+                        merchantName = data?.merchantName,
+                        gateway = data?.gateway,
+                        siteReference = data?.siteReference,
+                        merchantCapabilities = data?.merchantCapabilities,
+                        supportedNetworks = data?.supportedNetworks
+                    )
+                    methodFlags.copy(isApplePayVisible = true)
+                }
+                "RevolutPay" -> {
+                    revolutPublicKey = method.additionalData?.publicKey
+                    methodFlags.copy(isRevolutPayVisible = true)
+                }
+                else -> methodFlags.copy(isWalletVisible = true)
             }
-            "NetBanking"     -> methodFlags.copy(isNetBankingVisible = true)
-            "Emi"            -> methodFlags.copy(isEMIVisible        = true)
-            "BuyNowPayLater" -> methodFlags.copy(isBNPLVisible       = true)
-            else             -> methodFlags
+            "NetBanking" -> methodFlags.copy(isNetBankingVisible = true)
+            "Emi" -> methodFlags.copy(isEMIVisible = true)
+            "BuyNowPayLater" -> methodFlags.copy(isBNPLVisible = true)
+            else -> methodFlags
         }
     }
 
@@ -166,12 +184,16 @@ fun SessionDetails.toUiModel(): MainScreenModel {
         status = status,
         transactionId = this.lastTransactionId ?: "",
         totalAmount = moneyObject.amount,
+        successfulPaymentMethod = this.lastTransactionDetails?.paymentMethod?.brand ?: "",
+        successfulTimeStamp = this.lastTransactionDetails?.timeStampLocale ?: "",
         currencySymbol = moneyObject.currencySymbol,
         currencyCode = moneyObject.currencyCode,
         methodFlags = methodFlags,
         orderDetails = orderDetails,
         sessionExpiryTimer = this.sessionExpiryTimestamp,
-        revolutPublicKey = revolutPublicKey
+        revolutPublicKey = revolutPublicKey,
+        googlePayAdditionData = googlePayAdditionData,
+        applePayAdditionData = applePayAdditionData
     )
 }
 

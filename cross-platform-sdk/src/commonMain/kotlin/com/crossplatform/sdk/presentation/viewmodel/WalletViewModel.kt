@@ -83,7 +83,9 @@ class WalletViewModel (
             )
             isBoxPayAnimationVisible.value = true
             val response = repo.initiatePayment(
-               instrumentDetails = instrumentValue
+                instrumentDetails = instrumentValue,
+                paymentType = "wallet",
+                token = CheckoutDetailsHandler.checkoutDetails.token
             )
             handlePaymentResponse(
                 response = response,

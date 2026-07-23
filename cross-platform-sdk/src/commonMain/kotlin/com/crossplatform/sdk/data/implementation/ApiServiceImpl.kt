@@ -7,6 +7,7 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsResponse
 import com.crossplatform.sdk.data.model.AppliedOfferResponse
+import com.crossplatform.sdk.data.model.Details
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.data.model.FetchStatusResponse
@@ -180,16 +181,21 @@ class ApiServiceImpl : ApiService {
     }
 
     override suspend fun methodsPostRequest(
-        instrumentDetails: String
+        instrumentDetails: String,
+        token : String,
+        paymentType : String
     ): ApiResponse<PaymentMethodPostResponse> {
         val requestBody = MethodsPostRequest(
             browserData = getBrowserData(),
             instrumentDetails = MethodInstrumentDetails(
-                type = instrumentDetails
+                type = instrumentDetails,
+                paymentType = paymentType,
+                details = Details(token = token)
             ),
             shopper = getShopperDetails(),
             deviceDetails = getDeviceDetails()
         )
+        println("request body $requestBody")
         return executeWithResponse {
             client.post(urlString = "") {
                 contentType(ContentType.Application.Json)

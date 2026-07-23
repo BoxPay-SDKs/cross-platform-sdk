@@ -15,12 +15,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
+import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_apple_pay
@@ -30,13 +33,16 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun ExpressCheckout(
+    config : GooglePayExpressCheckoutConfig,
     paymentHandler: ExpressCheckoutPaymentHandler,
     onClickRevolut : () -> Unit,
     onClickGooglePay : () -> Unit,
     onClickApplePay : () -> Unit
 ) {
     val showApplePay = paymentHandler.isApplePayAvailable()
-    val showGooglePay = paymentHandler.isGooglePayAvailable()
+    val showGooglePay by produceState(initialValue = false, key1 = config) {
+        value = paymentHandler.isGooglePayAvailable(config)
+    }
     val showRevolutPay = paymentHandler.isRevolutPayAvailable()
 
 
@@ -94,7 +100,7 @@ private fun RevolutPay(
         Image(
             painter = painterResource(Res.drawable.ic_revolut_pay),
             modifier = Modifier.width(180.dp),
-            contentDescription = "google pay "
+            contentDescription = "revolut pay "
         )
     }
 }
@@ -115,7 +121,7 @@ private fun GooglePayButton(
             modifier = Modifier.size(32.dp),
             contentDescription = "google pay "
         )
-        Text("Pay", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, fontFamily = LocalSDKFonts.current.primary)
+        Text("Pay", color = Color.White, fontWeight = FontWeight.Medium, fontSize = 16.sp, fontFamily = LocalSDKFonts.current.primary)
     }
 }
 

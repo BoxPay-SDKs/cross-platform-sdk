@@ -823,7 +823,9 @@ class BoxPayElementsViewModel (
             )
             isBoxPayAnimationLoading.value = true
             val response = otherPaymentMethodRepo.initiatePayment(
-                instrumentDetails = instrumentValue
+                instrumentDetails = instrumentValue,
+                paymentType = type,
+                token = CheckoutDetailsHandler.checkoutDetails.token
             )
             handlePaymentResponse(
                 response = response,

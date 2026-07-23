@@ -227,6 +227,8 @@ class MainScreenViewModel(
 
                 val updatedAmount = amount + applicableSurcharge
 
+                println("====result of surcharge ${surcharges}")
+
                 CheckoutDetailsHandler.setSurchargeDetails(surcharges)
                 CheckoutDetailsHandler.setAmount(updatedAmount)
             }
@@ -288,12 +290,18 @@ class MainScreenViewModel(
     }
 
     fun callCheckoutSessionSuccessModal(
-        transactionId : String
+        transactionId : String,
+        dateNTime : String,
+        paymentMethod : String
     ) {
         callUiAnalytics(
             event = AnalyticsEvents.PAYMENT_RESULT_SCREEN_DISPLAYED.value,
             screenName = "MainScreenViewModel",
             message = "Checkout session successful in function callCheckoutSessionSuccessModal"
+        )
+        CheckoutDetailsHandler.setTimeAndPaymentMethod(
+            timeStamp = dateNTime,
+            paymentMethod = paymentMethod
         )
         CheckoutDetailsHandler.setStatusAndTransID(
             status = TransactionStatusEnum.SUCCESS.name,
@@ -715,16 +723,18 @@ class MainScreenViewModel(
         viewModelScope.launch {
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_INITIATED.value,
-                screenName = "WalletViewModel",
+                screenName = "MainScreenViewModel",
                 message = "Payment initiated"
             )
             isBoxPayAnimationLoading.value = true
             val response = otherPaymentMethodRepo.initiatePayment(
-                instrumentDetails = "wallet/revolutpay"
+                instrumentDetails = "wallet/revolutpay",
+                paymentType = "wallet",
+                token = CheckoutDetailsHandler.checkoutDetails.token
             )
             handlePaymentResponse(
                 response = response,
-                onSetPaymentHtml = {html ->
+                onSetPaymentHtml = {_ ->
                     // no operation
                 },
                 onOpenUpiIntent = {
@@ -736,7 +746,7 @@ class MainScreenViewModel(
                 onOpenQr = {_,_ ->
                     // no operations
                 },
-                onSetPaymentUrl = {responseUrl ->
+                onSetPaymentUrl = {_ ->
                     // no operation
                 },
                 setIsBoxPayAnimationVisible = {isBoxPayAnimationLoading.value = it},
@@ -744,6 +754,47 @@ class MainScreenViewModel(
                 onRevolutPay = {orderToken, returnUrl ->
                     revolutOrderToken.value = orderToken
                     revolutReturnUrl.value = returnUrl
+                }
+            )
+        }
+    }
+
+    fun onProceedGooglePay(googlePayToken : String) {
+        viewModelScope.launch {
+            callUiAnalytics(
+                event = AnalyticsEvents.PAYMENT_INITIATED.value,
+                screenName = "MainScreenViewModel",
+                message = "Payment initiated"
+            )
+            isBoxPayAnimationLoading.value = true
+            val response = otherPaymentMethodRepo.initiatePayment(
+                instrumentDetails = "wallet/googlepay-direct",
+                paymentType = "wallet",
+                token = googlePayToken
+            )
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentHtml = {html ->
+                    setWebViewHtml.value = html
+                    setWebViewScreen(true)
+                },
+                onOpenUpiIntent = {
+                    // no operations
+                },
+                onNavigateToTimer = {
+                    // no operations
+                },
+                onOpenQr = {_,_ ->
+                    // no operations
+                },
+                onSetPaymentUrl = {responseUrl ->
+                    setWebViewUrl.value = responseUrl
+                    setWebViewScreen(true)
+                },
+                setIsBoxPayAnimationVisible = {isBoxPayAnimationLoading.value = it},
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                onRevolutPay = {_, _ ->
+                    // no operation
                 }
             )
         }

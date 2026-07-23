@@ -108,6 +108,7 @@ kotlin {
                 implementation("androidx.lifecycle:lifecycle-process:2.8.7")
                 implementation("com.google.android.gms:play-services-wallet:20.0.0")
                 implementation("com.google.pay.button:compose-pay-button:1.2.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
                 implementation("com.revolut.payments:revolutpay:3.2.1") {
                     exclude(group = "com.squareup.okhttp3", module = "logging-interceptor")
                 }

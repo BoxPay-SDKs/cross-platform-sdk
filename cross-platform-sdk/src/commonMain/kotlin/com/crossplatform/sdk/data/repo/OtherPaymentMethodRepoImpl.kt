@@ -2,7 +2,6 @@ package com.crossplatform.sdk.data.repo
 
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.implementation.ApiServiceImpl
-import com.crossplatform.sdk.data.model.FetchStatusResponse
 import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 import com.crossplatform.sdk.data.service.ApiService
@@ -27,8 +26,8 @@ class OtherPaymentMethodRepoImpl(
         )
     }
 
-    override suspend fun initiatePayment(instrumentDetails: String): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
-        apiService.methodsPostRequest(instrumentDetails)
+    override suspend fun initiatePayment(instrumentDetails: String, paymentType : String, token : String): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
+        apiService.methodsPostRequest(instrumentDetails, token, paymentType)
     }
 
     override suspend fun initiateEMIPayment(

@@ -35,7 +35,6 @@ object RevolutPaySDK {
             RevolutPaymentsSDK.revolutPay.createController(activity) { result ->
 
                 val callback = state.callback
-                val token = state.orderToken
 
 
                 state.callback = null
@@ -46,7 +45,7 @@ object RevolutPaySDK {
 
                     is PaymentResult.Success -> {
                         callback?.invoke(
-                            ExpressCheckoutPaymentResult.Success
+                            ExpressCheckoutPaymentResult.Success()
                         )
                     }
 
@@ -75,8 +74,7 @@ object RevolutPaySDK {
 
 
     fun configure(
-        merchantPublicKey: String,
-        isSandbox: Boolean
+        merchantPublicKey: String
     ) {
 
         RevolutPaymentsSDK.configure(

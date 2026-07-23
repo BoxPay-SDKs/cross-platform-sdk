@@ -96,6 +96,8 @@ private object PaymentTypes {
     const val UPI_OTM_INTENT   = "upiotm/intent"
     const val UPI_OTM_QR       = "upiotm/qr"
     const val NET_BANKING      = "netBanking"
+
+    const val BUY_NOW_PAY_LATER = "buynowpaylater"
     const val WALLET           = "wallet"
 }
 
@@ -219,7 +221,7 @@ fun ElementsContent(
                             analyticsScreenName  = "BoxPayElements BNPL",
                             errorMessage         = "BNPL elements not loaded",
                             title                = "All Banks",
-                            paymentType          = PaymentTypes.NET_BANKING,
+                            paymentType          = PaymentTypes.BUY_NOW_PAY_LATER,
                             uiConfig             = uiConfig,
                             selectedInstrumentId = selectedBnplInstrumentId,
                             onSelectId           = { selectedBnplInstrumentId = it },

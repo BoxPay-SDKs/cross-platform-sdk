@@ -53,7 +53,9 @@ interface ApiService {
     ) : ApiResponse<FetchSavedAddress>
 
     suspend fun methodsPostRequest(
-        instrumentDetails : String
+        instrumentDetails : String,
+        token : String,
+        paymentType : String
     ) : ApiResponse<PaymentMethodPostResponse>
 
     suspend fun fetchPaymentMethods(

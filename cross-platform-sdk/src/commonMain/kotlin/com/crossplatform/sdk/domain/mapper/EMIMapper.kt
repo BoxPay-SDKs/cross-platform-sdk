@@ -16,15 +16,15 @@ fun List<PaymentMethod>.toUiModel(): ChooseEmiModel {
 
         // ── Resolve card type ─────────────────────────────────────────────
         val cardType = when {
-            paymentMethod.title.contains("Credit", ignoreCase = true) -> "Credit Card"
-            paymentMethod.title.contains("Debit", ignoreCase = true)  -> "Debit Card"
+            paymentMethod.title?.contains("Credit", ignoreCase = true) == true -> "Credit Card"
+            paymentMethod.title?.contains("Debit", ignoreCase = true) == true  -> "Debit Card"
             else                                                        -> "Others"
         }
 
         // ── Resolve logo URL ──────────────────────────────────────────────
         val logoUrl = paymentMethod.logoUrl.let {
-            if (it.startsWith("/assets")) "https://checkout.boxpay.in$it" else it
-        }
+            if (it?.startsWith("/assets") == true) "https://checkout.boxpay.in$it" else it
+        } ?: ""
 
         // ── Resolve offer flags ───────────────────────────────────────────
         val discountType   = paymentMethod.applicableOffer?.firstOrNull()?.discount?.type
@@ -67,7 +67,7 @@ fun List<PaymentMethod>.toUiModel(): ChooseEmiModel {
 
         // ── Build Bank ────────────────────────────────────────────────────
         val bank = Bank(
-            iconUrl          = logoUrl,
+            iconUrl          = logoUrl ,
             name             = bankName,
             percent          = percent,
             noCostApplied    = isNoCostOffer,

@@ -4,9 +4,12 @@ import com.crossplatform.sdk.data.model.FetchSurchargeResponse
 import com.crossplatform.sdk.domain.model.SurchargeModel
 
 fun FetchSurchargeResponse.toUiModel() : List<SurchargeModel> {
+    val expressCheckout = listOf("googlepay", "applepay", "revolutpay")
     return appliedCharges?.map { applied ->
         SurchargeModel(
-            applicableOn   = applied.surchargeDetails?.applicableOn?.lowercase() ?: "",
+            applicableOn   =
+                if(expressCheckout.contains(applied.surchargeDetails?.network?.lowercase())) applied.surchargeDetails?.network?.lowercase() ?: ""
+                else applied.surchargeDetails?.applicableOn?.lowercase() ?: "",
             title          = applied.surchargeDetails?.title ?: "",
             surchargeCode  = applied.surchargeDetails?.surchargeCode ?: "",
             network        = applied.surchargeDetails?.network ?: "",

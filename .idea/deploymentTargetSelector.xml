@@ -7,11 +7,11 @@
       </SelectionState>
       <SelectionState runConfigName="androidkmpapp">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-05-06T11:50:06.818751Z">
+        <DropdownSelection timestamp="2026-07-22T07:20:42.144704Z">
           <Target type="DEFAULT_BOOT">
-            <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/ishikabansal/.android/avd/Pixel_9_Pro_Fold.avd" />
-            </handle>
+            <template>
+              <DeviceId pluginId="FirebaseDirectAccess" type="TEMPLATE" identifier="model_id=rango/36" />
+            </template>
           </Target>
         </DropdownSelection>
         <DialogSelection />
