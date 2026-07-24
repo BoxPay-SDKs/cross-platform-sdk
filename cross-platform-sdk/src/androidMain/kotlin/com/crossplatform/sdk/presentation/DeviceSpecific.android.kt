@@ -229,7 +229,6 @@ actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandle
         TaskResultContracts.GetPaymentDataResult()
     ) { taskResult ->
         val callback = pendingCallback
-        println("====status code ${taskResult.status.statusCode}")
         when (taskResult.status.statusCode) {
             CommonStatusCodes.SUCCESS -> {
                 if(taskResult.result != null) {
@@ -374,8 +373,8 @@ private fun buildGooglePayRequestJson(request: ExpressCheckoutPaymentRequest, co
     val tokenizationSpecification = JSONObject()
         .put("type", "PAYMENT_GATEWAY")
         .put("parameters", JSONObject()
-            .put("gateway", "boxpay")
-            .put("gatewayMerchantId", "googletest")
+            .put("gateway", config.gateway)
+            .put("gatewayMerchantId", config.merchantId)
         )
     val cardPaymentMethod = config.allowedPaymentMethods
         .firstOrNull { it.type.equals("CARD", ignoreCase = true) }
@@ -395,11 +394,11 @@ private fun buildGooglePayRequestJson(request: ExpressCheckoutPaymentRequest, co
     val transactionInfo = JSONObject()
         .put("totalPrice", request.amount)
         .put("totalPriceStatus", "FINAL")
-        .put("currencyCode", "USD")
-        .put("countryCode", "US")
+        .put("currencyCode", request.currencyCode)
+        .put("countryCode", request.countryCode)
 
     val merchantInfo = JSONObject()
-        .put("merchantName", "Boxpay Test Merchant")
+        .put("merchantName", config.merchantName)
 
     return JSONObject().apply {
         put("apiVersion", 2)
