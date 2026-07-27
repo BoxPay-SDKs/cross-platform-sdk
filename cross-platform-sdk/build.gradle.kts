@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
-val sdkVersion = "1.0.2-beta3"
+val sdkVersion = "1.0.2-beta4"
 
 plugins {
     kotlin("multiplatform")
@@ -134,7 +134,7 @@ kotlin {
 
 android {
     namespace = "com.crossplatform.sdk"
-    compileSdk = 34
+    compileSdk = 36
     buildFeatures.buildConfig  = true
     defaultConfig {
         minSdk = 21

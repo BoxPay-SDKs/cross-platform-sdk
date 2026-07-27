@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.payments
 
+import android.os.Build
 import androidx.activity.ComponentActivity
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
 import com.revolut.payments.RevolutPaymentsSDK
@@ -135,4 +136,8 @@ object RevolutPaySDK {
 
         var orderToken: String? = null
     }
+}
+
+internal object RevolutPaySupport {
+    fun isAvailable(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P // 28
 }

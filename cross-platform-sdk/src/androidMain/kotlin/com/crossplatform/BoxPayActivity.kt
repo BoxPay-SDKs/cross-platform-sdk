@@ -15,13 +15,16 @@ import androidx.core.bundle.Bundle
 import com.crossplatform.sdk.BoxPayCommonCheckout
 import com.crossplatform.sdk.data.handler.CommonSDKDismissHandler
 import com.crossplatform.sdk.payments.RevolutPaySDK
+import com.crossplatform.sdk.payments.RevolutPaySupport
 
 // New activity inside your SDK
 class BoxPayActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        RevolutPaySDK.register(this)
+        if(RevolutPaySupport.isAvailable()) {
+            RevolutPaySDK.register(this)
+        }
         val token = intent.getStringExtra("token") ?: return finish()
         val env   = intent.getBooleanExtra("isTestEnv", false)
         val shopperToken = intent.getStringExtra("shopperToken")

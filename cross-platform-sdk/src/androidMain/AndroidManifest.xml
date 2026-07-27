@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-sdk tools:overrideLibrary="com.revolut.revolutpay" />
     <queries>
         <!-- Example Store and Services (existing entries) -->
         <package android:name="com.example.store" />
@@ -35,9 +37,8 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
     </application>
-
-    <meta-data
-        android:name="com.google.android.gms.wallet.api.enabled"
-        android:value="true" />
 </manifest>

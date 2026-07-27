@@ -35,6 +35,7 @@ import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.RevolutPayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.model.AppLifecycleState
 import com.crossplatform.sdk.payments.RevolutPaySDK
+import com.crossplatform.sdk.payments.RevolutPaySupport
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.IsReadyToPayRequest
@@ -296,7 +297,7 @@ class AndroidPaymentHandler(
     // false if the merchant forgot to call RevolutPaySdk.register(this) in
     // their Activity.onCreate -- hides the button rather than showing one
     // that fails when tapped.
-    override fun isRevolutPayAvailable(): Boolean = RevolutPaySDK.isAvailable(activity)
+    override fun isRevolutPayAvailable(): Boolean =  RevolutPaySupport.isAvailable() && RevolutPaySDK.isAvailable(activity)
 
     override fun launchGooglePay(
         request: ExpressCheckoutPaymentRequest,
