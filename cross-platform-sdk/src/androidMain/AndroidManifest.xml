@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-sdk tools:overrideLibrary="com.revolut.revolutpay" />
+    <uses-sdk tools:overrideLibrary="com.revolut.revolutpay, com.revolut.revolutpayments" />
     <queries>
         <!-- Example Store and Services (existing entries) -->
         <package android:name="com.example.store" />
