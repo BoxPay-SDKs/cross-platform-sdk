@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
-val sdkVersion = "1.0.2-beta5"
+val sdkVersion = "1.0.2-beta6"
 
 plugins {
     kotlin("multiplatform")
@@ -22,29 +22,17 @@ kotlin {
 
     val xcf = XCFramework() // ✅ Create XCFramework
 
-    iosX64 {
-        binaries.framework {
-            baseName = "cross-platform-sdk"
-            freeCompilerArgs += listOf(
-                "-Xbinary=bundleId=com.boxpay.crossplatformsdk"
-            )
-            xcf.add(this)
-        }
-    }
     iosArm64 {
         binaries.framework {
             baseName = "cross-platform-sdk"
             freeCompilerArgs += listOf(
-                "-Xbinary=bundleId=com.boxpay.crossplatformsdk"
+                "-Xbinary=bundleId=com.boxpay.crossplatformsdk",
+                "-Xg0",
+                "-Xadd-light-debug=disable"
             )
-            xcf.add(this)
-        }
-    }
-    iosSimulatorArm64 {
-        binaries.framework {
-            baseName = "cross-platform-sdk"
-            freeCompilerArgs += listOf(
-                "-Xbinary=bundleId=com.boxpay.crossplatformsdk"
+            linkerOpts += listOf(
+                "-dead_strip",
+                "-Wl,-x"
             )
             xcf.add(this)
         }
@@ -120,13 +108,7 @@ kotlin {
                 implementation(libs.ktor.client.darwin)
             }
         }
-        val iosX64Main by getting {
-            dependsOn(iosMain)
-        }
         val iosArm64Main by getting {
-            dependsOn(iosMain)
-        }
-        val iosSimulatorArm64Main by getting {
             dependsOn(iosMain)
         }
     }
