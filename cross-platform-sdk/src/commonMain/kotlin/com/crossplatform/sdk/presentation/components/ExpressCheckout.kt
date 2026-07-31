@@ -32,7 +32,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_revolut_pay
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun ExpressCheckout(
+internal fun ExpressCheckout(
     config : GooglePayExpressCheckoutConfig,
     paymentHandler: ExpressCheckoutPaymentHandler,
     onClickRevolut : () -> Unit,

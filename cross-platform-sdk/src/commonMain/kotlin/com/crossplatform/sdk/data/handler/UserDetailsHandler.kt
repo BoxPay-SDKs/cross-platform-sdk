@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-object UserDataHandler {
+internal object UserDataHandler {
 
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -183,7 +183,7 @@ object UserDataHandler {
     }
 }
 
-data class AddressConfig(
+internal data class AddressConfig(
     val address1: String?,
     val address2: String?,
     val city: String?,

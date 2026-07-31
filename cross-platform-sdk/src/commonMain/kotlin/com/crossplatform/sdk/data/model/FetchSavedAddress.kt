@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FetchSavedAddress(
+internal data class FetchSavedAddress(
     @SerialName("address1") val address1: String,
     @SerialName("address2") val address2: String? = null,       // string | null
     @SerialName("city") val city: String,

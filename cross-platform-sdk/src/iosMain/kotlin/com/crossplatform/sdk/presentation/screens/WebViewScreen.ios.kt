@@ -23,7 +23,7 @@ import platform.WebKit.WKWebView
 import platform.darwin.NSObject
 
 @Composable
-actual fun WebViewScreen(
+internal actual fun WebViewScreen(
     url: String?,
     html: String?,
     onBackPress: (redirectionResult: String?) -> Unit

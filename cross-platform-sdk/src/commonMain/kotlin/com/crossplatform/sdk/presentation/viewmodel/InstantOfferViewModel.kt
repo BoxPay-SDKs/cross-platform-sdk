@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class InstantOfferViewModel(
+internal class InstantOfferViewModel(
     private val repo: InstantOfferRepo,
     private val analyticsRepo : CallUIAnalyticsRepo
 ) : ViewModel() {

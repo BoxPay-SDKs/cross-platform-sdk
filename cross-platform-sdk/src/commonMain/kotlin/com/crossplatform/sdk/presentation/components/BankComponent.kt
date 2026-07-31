@@ -26,7 +26,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_search
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun BankComponent(
+internal fun BankComponent(
     modifier : Modifier,
     searchQuery : String,
     onSetSearchQuery : (String) -> Unit,

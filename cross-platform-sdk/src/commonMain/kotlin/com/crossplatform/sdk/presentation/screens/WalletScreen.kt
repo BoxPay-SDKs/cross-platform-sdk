@@ -22,7 +22,7 @@ import com.crossplatform.sdk.presentation.viewmodel.WalletViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun WalletScreen(
+internal fun WalletScreen(
     onBackPress : () -> Unit,
     isAutoNavigationEnabled : Boolean,
     onExitCheckout : () -> Unit

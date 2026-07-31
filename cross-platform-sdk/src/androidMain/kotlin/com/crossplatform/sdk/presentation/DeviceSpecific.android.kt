@@ -54,7 +54,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 
 lateinit var appContext: Context
-actual fun getDeviceDetails(): DeviceDetails {
+internal actual fun getDeviceDetails(): DeviceDetails {
     return DeviceDetails(
         browser = "android",
         platformVersion = Build.VERSION.SDK_INT.toString(),
@@ -64,7 +64,7 @@ actual fun getDeviceDetails(): DeviceDetails {
     )
 }
 
-actual fun getBrowserData(): BrowserData {
+internal actual fun getBrowserData(): BrowserData {
     return BrowserData(
         screenHeight = Resources.getSystem().displayMetrics.heightPixels.toString(),
         screenWidth = Resources.getSystem().displayMetrics.widthPixels.toString(),
@@ -79,7 +79,7 @@ actual fun getBrowserData(): BrowserData {
     )
 }
 
-actual fun getInstalledUpiApps(context: Any?): List<String> {
+internal actual fun getInstalledUpiApps(context: Any?): List<String> {
     try {
         val knownUpiPackages: Map<String, String> = mapOf(
             "gpay"       to "com.google.android.apps.nbu.paisa.user",
@@ -123,24 +123,24 @@ actual fun getInstalledUpiApps(context: Any?): List<String> {
 }
 
 @Composable
-actual fun getPlatformContext(): Any? {
+internal actual fun getPlatformContext(): Any? {
     appContext = LocalContext.current
     return  LocalContext.current
 }
 
-actual fun currentTimeMillis(): Long {
+internal actual fun currentTimeMillis(): Long {
     return System.currentTimeMillis()
 }
 
-actual fun currentYear(): Int {
+internal actual fun currentYear(): Int {
     return Calendar.getInstance().get(Calendar.YEAR) % 100
 }
 
-actual fun currentMonth(): Int {
+internal actual fun currentMonth(): Int {
     return Calendar.getInstance().get(Calendar.MONTH) + 1
 }
 
-actual fun launchUpiIntent(url: String, onFailure: (Throwable) -> Unit, onSuccess: () -> Unit) {
+internal actual fun launchUpiIntent(url: String, onFailure: (Throwable) -> Unit, onSuccess: () -> Unit) {
     try {
         val uri    = url.toUri()
         val intent = Intent(Intent.ACTION_VIEW, uri).apply {
@@ -162,7 +162,7 @@ actual fun launchUpiIntent(url: String, onFailure: (Throwable) -> Unit, onSucces
     }
 }
 
-actual class AppLifecycleObserver actual constructor(onStateChange: (AppLifecycleState) -> Unit) {
+internal actual class AppLifecycleObserver actual constructor(onStateChange: (AppLifecycleState) -> Unit) {
     private val observer = object : DefaultLifecycleObserver {
         override fun onStart(owner: LifecycleOwner) {
             onStateChange(AppLifecycleState.Foreground)
@@ -182,19 +182,19 @@ actual class AppLifecycleObserver actual constructor(onStateChange: (AppLifecycl
 }
 
 @Composable
-actual fun BackHandler(onBack: () -> Unit) {
+internal actual fun BackHandler(onBack: () -> Unit) {
     BackHandler {
         onBack()
     }
 }
 
-actual fun isTabletDevice(): Boolean {
+internal actual fun isTabletDevice(): Boolean {
     val smallestWidthDp = Resources.getSystem().configuration.smallestScreenWidthDp
     return smallestWidthDp >= 600
 }
 
 @OptIn(ExperimentalEncodingApi::class)
-actual fun base64ToImageBitmap(base64: String): ImageBitmap {
+internal actual fun base64ToImageBitmap(base64: String): ImageBitmap {
     val cleanBase64 = base64.substringAfter("base64,", base64)
 
     val bytes = Base64.decode(cleanBase64)
@@ -210,7 +210,7 @@ actual fun base64ToImageBitmap(base64: String): ImageBitmap {
 
 // androidMain
 @Composable
-actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler {
+internal actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
 
@@ -280,7 +280,7 @@ private fun Context.findActivity(): ComponentActivity {
 // androidMain — Google Pay via Wallet's PaymentsClient, Revolut Pay via
 // RevolutPaySdk (registered explicitly by the merchant in their own
 // Activity.onCreate -- see RevolutPaySdk.kt -- NOT created here)
-class AndroidPaymentHandler(
+internal class AndroidPaymentHandler(
     private val activity: ComponentActivity,
     private val client: PaymentsClient,
     private val launcher: ActivityResultLauncher<Task<PaymentData>>,

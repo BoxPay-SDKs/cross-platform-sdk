@@ -35,7 +35,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun PaymentSelectorView(
+internal fun PaymentSelectorView(
     providerList     : List<SelectedPaymentMethod>,
     onProceedForward : (instrumentType: String, instrumentValue: String, type: String) -> Unit,
     isLastUsed       : Boolean = false,
@@ -95,7 +95,7 @@ fun PaymentSelectorView(
 }
 
 @Composable
-fun PaymentSelector(
+internal fun PaymentSelector(
     id                 : String,
     title              : String,
     imageUrl           : String,

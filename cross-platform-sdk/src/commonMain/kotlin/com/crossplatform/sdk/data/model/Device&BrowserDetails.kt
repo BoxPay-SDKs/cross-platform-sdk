@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class BrowserData(
+internal data class BrowserData(
     @SerialName("screenHeight") val screenHeight: String,
     @SerialName("screenWidth") val screenWidth: String,
     @SerialName("acceptHeader") val acceptHeader: String,
@@ -18,7 +18,7 @@ data class BrowserData(
 )
 
 @Serializable
-data class DeviceDetails(
+internal data class DeviceDetails(
     @SerialName("browser") val browser: String,
     @SerialName("platformVersion") val platformVersion: String,
     @SerialName("deviceType") val deviceType: String,

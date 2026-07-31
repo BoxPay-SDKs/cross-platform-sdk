@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
-class CallUIAnalyticsRepoImpl (
+internal class CallUIAnalyticsRepoImpl (
     private val apiService: ApiService = ApiServiceImpl(),
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO // Injectable dispatcher
 ) : CallUIAnalyticsRepo {

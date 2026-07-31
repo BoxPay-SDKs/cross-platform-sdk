@@ -6,7 +6,7 @@ import com.crossplatform.sdk.domain.model.ChooseEmiModel
 import com.crossplatform.sdk.domain.model.Emi
 import com.crossplatform.sdk.domain.model.EmiCardGroup
 
-fun List<PaymentMethod>.toUiModel(): ChooseEmiModel {
+internal fun List<PaymentMethod>.toUiModel(): ChooseEmiModel {
     val cardOrder = mapOf("Credit Card" to 0, "Debit Card" to 1, "Others" to 2)
     val groupedCards = mutableMapOf<String, MutableList<Bank>>()
 

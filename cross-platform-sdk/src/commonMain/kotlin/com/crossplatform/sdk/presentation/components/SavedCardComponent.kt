@@ -44,7 +44,7 @@ import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun SavedCardComponent(
+internal fun SavedCardComponent(
     savedCards : List<SelectedPaymentMethod>,
     onProceedForward : (instrumentRef : String, isSICheckboxChecked : Boolean) -> Unit,
     onClickAddCard : () -> Unit,

@@ -17,19 +17,19 @@ private const val TEST_API_URL = "https://test-apis.boxpay.tech/"
 private const val PROD_API_URL = "https://apis.boxpay.in/"
 private const val ROUTE = "v0/checkout/sessions/"
 
-fun getEndpoint(isTestEnv: Boolean) : String {
+internal fun getEndpoint(isTestEnv: Boolean) : String {
     val baseUrl = if (isTestEnv) TEST_API_URL else PROD_API_URL
     return "${baseUrl}${ROUTE}"
 }
 
-fun generateRandomAlphanumericString(length: Int): String {
+internal fun generateRandomAlphanumericString(length: Int): String {
     val charPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     return (1..length)
         .map { charPool.random() }
         .joinToString("")
 }
 
-fun getShopperDetails(): ShopperRequest {
+internal fun getShopperDetails(): ShopperRequest {
     val userData = UserDataHandler.userData
 
     val deliveryAddress = DeliveryAddress(
@@ -78,7 +78,7 @@ private fun isDeliveryAddressEmpty(address: DeliveryAddress): Boolean {
     ).all { it.isNullOrEmpty() }
 }
 
-fun String.toComposeColor(): Color {
+internal fun String.toComposeColor(): Color {
     val hex = this.trimStart('#')
     return when (hex.length) {
         6 -> Color(
@@ -97,13 +97,13 @@ fun String.toComposeColor(): Color {
 }
 
 @OptIn(ExperimentalResourceApi::class)
-suspend fun loadCountryData(): Map<String, CountryDetailsModel> {
+internal suspend fun loadCountryData(): Map<String, CountryDetailsModel> {
     val bytes = Res.readBytes("files/countryCodes.json")
     val jsonString = bytes.decodeToString()
     return Json.decodeFromString(jsonString)
 }
 
-fun parseIso8601ToMillis(timestamp: String): Long {
+internal fun parseIso8601ToMillis(timestamp: String): Long {
     // "2026-05-07T07:13:41.225323198Z"
     return try {
         val parts     = timestamp.removeSuffix("Z").split("T")
@@ -132,7 +132,7 @@ fun parseIso8601ToMillis(timestamp: String): Long {
     }
 }
 
-fun formatTimer(seconds: Long): String {
+internal fun formatTimer(seconds: Long): String {
     val totalSeconds = seconds.coerceAtLeast(0)
 
     val hours = totalSeconds / 3600
@@ -148,7 +148,7 @@ fun formatTimer(seconds: Long): String {
     }
 }
 
-fun formatTransactionTimestamp(
+internal fun formatTransactionTimestamp(
     transactionTimestampLocale: String
 ): Pair<String, String>? {
 
@@ -221,7 +221,7 @@ private fun Long.toTwoDigits(): String {
     return if (this < 10) "0$this" else this.toString()
 }
 
-fun resolveErrorMessage(
+internal fun resolveErrorMessage(
     reasonCode: String?,
     reason: String?,
     fallback: String
@@ -236,7 +236,7 @@ fun resolveErrorMessage(
     }
 }
 
-fun getStatus(status : String) : TransactionStatusEnum {
+internal fun getStatus(status : String) : TransactionStatusEnum {
     return when (status.uppercase()) {
         in listOf("APPROVED", "SUCCESS", "PAID") -> TransactionStatusEnum.SUCCESS
         "EXPIRED"                                 -> TransactionStatusEnum.EXPIRED
@@ -246,7 +246,7 @@ fun getStatus(status : String) : TransactionStatusEnum {
     }
 }
 
-fun buildAddressAndUserDetailsString(): String {
+internal fun buildAddressAndUserDetailsString(): String {
     val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
     val userDetails = UserDataHandler.userData
 
@@ -291,7 +291,7 @@ fun buildAddressAndUserDetailsString(): String {
     }.trim()
 }
 
-fun buildAddressString(): String {
+internal fun buildAddressString(): String {
     val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
     val userDetails = UserDataHandler.userData
     if (!checkoutDetails.isShippingAddressEnabled) return ""
@@ -308,11 +308,11 @@ fun buildAddressString(): String {
         "$address1, $city, $state, $postalCode"
 }
 
-fun isPresentInSurchargeModel(surchargeModel: List<SurchargeModel>, selectedMethod : String) : Boolean {
+internal fun isPresentInSurchargeModel(surchargeModel: List<SurchargeModel>, selectedMethod : String) : Boolean {
     return surchargeModel.any { it.applicableOn.equals(selectedMethod, ignoreCase = true) }
 }
 
-fun formatPercent(percent : Double) : String {
+internal fun formatPercent(percent : Double) : String {
     return  if (percent % 1.0 == 0.0) {
         percent.toInt().toString()
     } else {

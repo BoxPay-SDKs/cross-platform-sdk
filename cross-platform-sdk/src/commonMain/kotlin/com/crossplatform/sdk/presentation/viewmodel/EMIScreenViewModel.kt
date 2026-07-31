@@ -31,9 +31,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-enum class EmiStep { Content, Tenure, Card }
+internal enum class EmiStep { Content, Tenure, Card }
 
-class EMIScreenViewModel(
+internal class EMIScreenViewModel(
     private val repo : OtherPaymentMethodRepo,
     private val cardScreenRepo: CardScreenRepo,
     private val analyticsRepo : CallUIAnalyticsRepo,

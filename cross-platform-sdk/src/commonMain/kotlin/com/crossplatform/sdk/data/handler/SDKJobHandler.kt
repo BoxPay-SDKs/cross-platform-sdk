@@ -3,7 +3,7 @@ package com.crossplatform.sdk.data.handler
 import kotlinx.coroutines.Job
 
 // commonMain
-object SDKJobHandler {
+internal object SDKJobHandler {
     private val jobs = mutableListOf<Job>()
 
     fun register(job: Job) {

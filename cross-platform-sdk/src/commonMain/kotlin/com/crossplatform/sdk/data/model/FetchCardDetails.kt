@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FetchCardDetails(
+internal data class FetchCardDetails(
     @SerialName("paymentMethod") val paymentMethod: CardPaymentMethod,
     @SerialName("methodEnabled") val methodEnabled: Boolean,
     @SerialName("issuerName") val issuerName: String? = null,
@@ -12,7 +12,7 @@ data class FetchCardDetails(
 )
 
 @Serializable
-data class CardPaymentMethod(
+internal data class CardPaymentMethod(
     @SerialName("id") val id: String,
     @SerialName("type") val type: String,
     @SerialName("brand") val brand: String,

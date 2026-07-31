@@ -22,7 +22,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.splash_icon
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun Footer() {
+internal fun Footer() {
     Row(
         modifier          = Modifier
             .fillMaxWidth()

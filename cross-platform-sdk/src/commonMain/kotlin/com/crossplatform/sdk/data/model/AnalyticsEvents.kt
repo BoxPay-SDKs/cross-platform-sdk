@@ -1,6 +1,6 @@
 package com.crossplatform.sdk.data.model
 
-enum class AnalyticsEvents(val value: String) {
+internal enum class AnalyticsEvents(val value: String) {
     CHECKOUT_LOADED("CHECKOUT_LOADED"),
     ADDRESS_UPDATED("ADDRESS_UPDATED"),
     PAYMENT_CATEGORY_SELECTED("PAYMENT_CATEGORY_SELECTED"),

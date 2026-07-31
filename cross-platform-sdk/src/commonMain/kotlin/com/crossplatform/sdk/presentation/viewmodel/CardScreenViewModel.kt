@@ -25,7 +25,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_visa
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class CardScreenViewModel(
+internal class CardScreenViewModel(
     private val repo : CardScreenRepo,
     private val fetchStatusRepo : FetchStatusRepo,
     private val analyticsRepo : CallUIAnalyticsRepo

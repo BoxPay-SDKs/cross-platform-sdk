@@ -11,7 +11,7 @@ import com.revolut.revolutpay.api.revolutPay
 import java.util.WeakHashMap
 import androidx.core.net.toUri
 
-object RevolutPaySDK {
+internal object RevolutPaySDK {
 
     private val controllers =
         WeakHashMap<ComponentActivity, RevolutPaymentController>()

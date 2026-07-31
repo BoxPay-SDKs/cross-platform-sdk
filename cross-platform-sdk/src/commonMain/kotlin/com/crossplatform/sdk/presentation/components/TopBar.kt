@@ -45,7 +45,7 @@ import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun TopBar(
+internal fun TopBar(
     showDesc: Boolean,
     text: String,
     onBackPress: () -> Unit,

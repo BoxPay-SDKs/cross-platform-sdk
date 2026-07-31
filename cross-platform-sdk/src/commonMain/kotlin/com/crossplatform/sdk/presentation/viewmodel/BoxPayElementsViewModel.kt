@@ -51,7 +51,7 @@ import kotlinx.coroutines.supervisorScope
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-class BoxPayElementsViewModel (
+internal class BoxPayElementsViewModel (
     private val repo: MainScreenRepo,
     private val cardRepo : CardScreenRepo,
     private val analyticsRepo : CallUIAnalyticsRepo,

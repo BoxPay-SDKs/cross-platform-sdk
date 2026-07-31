@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AddressScreenViewModel(
+internal class AddressScreenViewModel(
     private val repo: AddressScreenRepo,
     private val analyticsRepo : CallUIAnalyticsRepo
 ) : ViewModel() {

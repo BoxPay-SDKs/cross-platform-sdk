@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
-class MainScreenRepoImpl(
+internal class MainScreenRepoImpl(
     private val apiService: ApiService = ApiServiceImpl(),
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO // Injectable dispatcher
 ) : MainScreenRepo {

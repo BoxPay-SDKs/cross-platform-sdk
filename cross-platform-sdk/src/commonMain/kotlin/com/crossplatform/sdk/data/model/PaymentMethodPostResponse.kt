@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PaymentMethodPostResponse(
+internal data class PaymentMethodPostResponse(
     @SerialName("transactionId") val transactionId: String,
     @SerialName("transactionTimestampLocale") val transactionTimestampLocale: String,
     @SerialName("status") val status: TransactionStatus,
@@ -13,14 +13,14 @@ data class PaymentMethodPostResponse(
 )
 
 @Serializable
-data class TransactionStatus(
+internal data class TransactionStatus(
     @SerialName("status") val status: String,
     @SerialName("reason") val reason: String,
     @SerialName("reasonCode") val reasonCode: String
 )
 
 @Serializable
-data class PaymentActions(
+internal data class PaymentActions(
     @SerialName("method") val method: String? = null,
     @SerialName("url") val url: String? = null,
     @SerialName("type") val type: String? = null,
@@ -31,7 +31,7 @@ data class PaymentActions(
 )
 
 @Serializable
-data class Method(
+internal data class Method(
     @SerialName("type") val type: String?,
     @SerialName("brand") val brand : String?
 )

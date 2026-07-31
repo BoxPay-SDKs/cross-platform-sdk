@@ -64,7 +64,7 @@ import com.crossplatform.sdk.presentation.viewmodel.BoxPayElementsViewModel
 /**
  * Visual/theming configuration shared by all payment method tabs.
  */
-data class ElementsUiConfig(
+internal data class ElementsUiConfig(
     val ctaBorderRadius: Int,
     val buttonColor: String,
     val buttonTextColor: String,
@@ -77,7 +77,7 @@ data class ElementsUiConfig(
 /**
  * All state related to the UPI QR code flow.
  */
-data class QrState(
+internal data class QrState(
     val showQROnLoad: Boolean,
     val isQRLoaded: Boolean,
     val qrImage: String,
@@ -106,7 +106,7 @@ private object PaymentTypes {
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
-fun ElementsContent(
+internal fun ElementsContent(
     viewModel                : BoxPayElementsViewModel,
     availableMethods         : List<PaymentMethodTab>,
     upiMethodFlags           : MainScreenModel.MethodFlags,

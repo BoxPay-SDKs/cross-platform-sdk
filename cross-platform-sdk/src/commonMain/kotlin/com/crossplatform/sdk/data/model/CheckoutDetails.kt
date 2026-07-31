@@ -4,7 +4,7 @@ import com.crossplatform.sdk.domain.model.SurchargeModel
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CheckoutDetails(
+internal data class CheckoutDetails(
     // ─── Payment Info ───────────────────────────
     val currencySymbol: String,
     val currencyCode: String,

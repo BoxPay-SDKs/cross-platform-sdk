@@ -4,13 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -22,14 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.application.androidkmpapp.ui.theme.CrossplatformsdkTheme
 import com.crossplatform.BoxPayActivity
-import com.crossplatform.sdk.BoxPayCommonElements
+import com.crossplatform.BoxPayElementsView
 import com.crossplatform.sdk.data.handler.BoxPayElementsHandler
 import com.crossplatform.sdk.data.handler.SDKPaymentResponseHandler
 import com.crossplatform.sdk.data.model.SDKPaymentResponse
-import com.crossplatform.sdk.domain.model.PaymentMethodTab
 
 class MainActivity : ComponentActivity() {
     private val paymentResult = mutableStateOf<SDKPaymentResponse?>(null)
@@ -61,27 +59,29 @@ class MainActivity : ComponentActivity() {
                         val isPayable by handler.isPayable.collectAsStateWithLifecycle()
 
                         Column(modifier = Modifier.fillMaxSize()) {
-                            Box(modifier = Modifier.fillMaxWidth().wrapContentHeight()) {
-                                BoxPayCommonElements(
-                                    paymentMethodList = config.paymentMethodList.mapNotNull {
-                                        runCatching { PaymentMethodTab.valueOf(it.uppercase()) }.getOrNull()
-                                    },
-                                    token = config.token,
-                                    isTestEnv = config.isTestEnv,
-                                    isBoxPayProceedButtonVisible = config.isBoxPayPayButtonVisible,
-                                    shopperToken = config.shopperToken,
-                                    showQROnLoad = config.showQROnLoad,
-                                    ctaBorderRadius = config.ctaBorderRadius,
-                                    isSICheckBoxChecked = config.isSICheckBoxChecked,
-                                    isSICheckBoxEnabled = config.isSICheckBoxEnabled,
-                                    focusedTextInputBorderColor = config.focusedTextInputBorderColor,
-                                    unfocusedTextInputBorderColor = config.unfocusedTextInputBorderColor,
-                                    fontFamily = config.fontFamily,
-                                    handler = handler,
-                                )
-                            }
+                            AndroidView(
+                                modifier = Modifier.fillMaxWidth(),
+                                factory = { context ->
+                                    BoxPayElementsView.create(
+                                        context = context,
+                                        handler = handler,
+                                        token = config.token,
+                                        isTestEnv = config.isTestEnv,
+                                        shopperToken = config.shopperToken,
+                                        showQROnLoad = config.showQROnLoad,
+                                        isSICheckBoxChecked = config.isSICheckBoxChecked,
+                                        isSICheckBoxEnabled = config.isSICheckBoxEnabled,
+                                        ctaBorderRadius = config.ctaBorderRadius,
+                                        focusedTextInputBorderColor = config.focusedTextInputBorderColor,
+                                        unfocusedTextInputBorderColor = config.unfocusedTextInputBorderColor,
+                                        paymentMethodList = config.paymentMethodList,
+                                        fontFamily = config.fontFamily,
+                                        isBoxPayProceedButtonVisible = config.isBoxPayPayButtonVisible
+                                    )
+                                }
+                            )
 
-                            if(!config.isBoxPayPayButtonVisible) {
+                            if (!config.isBoxPayPayButtonVisible) {
                                 Button(
                                     onClick = { handler.pay() },
                                     enabled = isPayable,

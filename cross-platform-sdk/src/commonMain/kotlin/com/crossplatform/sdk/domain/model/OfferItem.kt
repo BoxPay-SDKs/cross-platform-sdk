@@ -1,6 +1,6 @@
 package com.crossplatform.sdk.domain.model
 
-data class OfferItem(
+internal data class OfferItem(
     val code: String,
     val description: String,
     val terms : String,

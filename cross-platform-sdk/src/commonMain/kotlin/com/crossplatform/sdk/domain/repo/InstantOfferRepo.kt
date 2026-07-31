@@ -4,7 +4,7 @@ import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.model.AppliedOfferResponse
 import com.crossplatform.sdk.data.model.InstantOfferResponse
 
-interface InstantOfferRepo  {
+internal interface InstantOfferRepo  {
     suspend fun getOffers(
         minAmount: Double,
         maxAmount : Double

@@ -13,7 +13,7 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-object ServiceRequest {
+internal object ServiceRequest {
 
     private var _client: HttpClient? = null
     private var _plainClient: HttpClient? = null  // ✅ client without base URL

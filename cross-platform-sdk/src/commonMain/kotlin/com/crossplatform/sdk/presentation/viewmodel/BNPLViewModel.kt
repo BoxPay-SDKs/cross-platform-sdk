@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class BNPLViewModel (
+internal class BNPLViewModel (
     private val repo: OtherPaymentMethodRepo,
     private val fetchStatusRepo : FetchStatusRepo,
     private val analyticsRepo : CallUIAnalyticsRepo,

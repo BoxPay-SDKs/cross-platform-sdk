@@ -4,12 +4,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SurchargeRequestBody(
+internal data class SurchargeRequestBody(
     @SerialName("discountedMoney") val discountedMoney : DiscountedMoney
 ) {
 
     @Serializable
-    data class DiscountedMoney(
+    internal data class DiscountedMoney(
         @SerialName("amount") val amount : Double,
         @SerialName("currencyCode") val currencyCode : String
     )

@@ -6,21 +6,21 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 
 @Serializable
-data class UPICollectRequestBody(
+internal data class UPICollectRequestBody(
     @SerialName("browserData") val browserData: BrowserData,
     @SerialName("instrumentDetails") val instrumentDetails: Instrument,
     @SerialName("shopper") val shopper: ShopperRequest,
     @SerialName("deviceDetails") val deviceDetails: DeviceDetails,
 ) {
     @Serializable
-    data class Instrument(
+    internal data class Instrument(
         @SerialName("type") val type : String, // 'upi/collect' | 'upiotm/collect'
         @SerialName("upi") val upi : UPIDetails,
         @SerialName("saveInstrument") val saveInstrument: Boolean?,
     )
 
     @Serializable
-    data class UPIDetails(
+    internal data class UPIDetails(
         @SerialName("instrumentRef") val instrumentRef: String? = null,
         @SerialName("shopperVpa") val shopperVpa: String? = null
     )

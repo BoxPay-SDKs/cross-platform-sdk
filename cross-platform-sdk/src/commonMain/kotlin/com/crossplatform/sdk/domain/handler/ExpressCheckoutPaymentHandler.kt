@@ -3,7 +3,7 @@ package com.crossplatform.sdk.domain.handler
 import com.crossplatform.sdk.data.model.AllowedPaymentMethods
 
 // commonMain
-interface ExpressCheckoutPaymentHandler {
+internal interface ExpressCheckoutPaymentHandler {
     suspend fun isGooglePayAvailable(config: GooglePayExpressCheckoutConfig): Boolean
     fun isApplePayAvailable(): Boolean
     fun isRevolutPayAvailable(): Boolean
@@ -12,25 +12,25 @@ interface ExpressCheckoutPaymentHandler {
     fun launchRevolutPay(request: ExpressCheckoutPaymentRequest, config: RevolutPayExpressCheckoutConfig, isSandbox : Boolean, onResult: (ExpressCheckoutPaymentResult) -> Unit)
 }
 
-data class ExpressCheckoutPaymentRequest(
+internal data class ExpressCheckoutPaymentRequest(
     val amount: String,
     val currencyCode: String,
     val countryCode: String
 )
 
-sealed class ExpressCheckoutPaymentResult {
+internal sealed class ExpressCheckoutPaymentResult {
     data class Success(val googleToken : String? = null) : ExpressCheckoutPaymentResult()
     data class Failure(val message: String) : ExpressCheckoutPaymentResult()
     data object Cancelled : ExpressCheckoutPaymentResult()
 }
 
-data class RevolutPayExpressCheckoutConfig(
+internal data class RevolutPayExpressCheckoutConfig(
     val revolutReturnUrl: String,
     val orderToken : String,
     val merchantPublicKey : String
 )
 
-data class GooglePayExpressCheckoutConfig(
+internal data class GooglePayExpressCheckoutConfig(
     val gateway: String,
     val merchantId: String,
     val merchantName : String,
@@ -38,7 +38,7 @@ data class GooglePayExpressCheckoutConfig(
     val siteReference : String
 )
 
-data class ApplePayExpressCheckoutConfig(
+internal data class ApplePayExpressCheckoutConfig(
     val gateway : String,
     val merchantName : String,
     val siteReference : String,

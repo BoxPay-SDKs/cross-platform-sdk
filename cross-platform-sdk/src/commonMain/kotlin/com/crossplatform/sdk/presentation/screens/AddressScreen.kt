@@ -52,7 +52,7 @@ import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 
 @Composable
-fun AddressScreen(
+internal fun AddressScreen(
     onAddressSaved: () -> Unit,
     onBackPress : () -> Unit,
     isShippingEnabled : Boolean,
@@ -555,7 +555,7 @@ fun AddressScreen(
 
 // --- Reusable TextField ---
 @Composable
-fun AddressTextField(
+internal fun AddressTextField(
     value        : String,
     label        : String,
     onValueChange: (String) -> Unit,
@@ -609,14 +609,14 @@ fun AddressTextField(
 }
 
 // --- Extract Names ---
-fun extractNames(fullName: String): Pair<String, String> {
+internal fun extractNames(fullName: String): Pair<String, String> {
     val parts = fullName.trim().split(" ", limit = 2)
     return Pair(parts.getOrElse(0) { "" }, parts.getOrElse(1) { "" })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomDropdownField(
+internal fun CustomDropdownField(
     value: String,
     label: String,
     options: List<String>,

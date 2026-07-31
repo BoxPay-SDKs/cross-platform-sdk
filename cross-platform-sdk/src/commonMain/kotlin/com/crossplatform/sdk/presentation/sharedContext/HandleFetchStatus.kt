@@ -7,7 +7,7 @@ import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.getStatus
 import com.crossplatform.sdk.presentation.resolveErrorMessage
 
-fun handleFetchStatus(
+internal fun handleFetchStatus(
     response : ApiResponse<FetchStatusResponse>,
     setIsBoxPayAnimationVisible : (Boolean) -> Unit,
     onAutoRetry : () -> Unit
@@ -68,7 +68,7 @@ fun handleFetchStatus(
     }
 }
 
-fun handleUpiCollectFetchStatus(
+internal fun handleUpiCollectFetchStatus(
     response : ApiResponse<FetchStatusResponse>,
     setIsBoxPayAnimationVisible : (Boolean) -> Unit
 ) {

@@ -3,7 +3,7 @@ package com.crossplatform.sdk.domain.mapper
 import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 
-fun List<PaymentMethod>.toUiModel(type: String): List<SelectedPaymentMethod> {
+internal fun List<PaymentMethod>.toUiModel(type: String): List<SelectedPaymentMethod> {
     return this
         .filter { it.type.equals(type, ignoreCase = true) } // ✅ filter by type
         .mapNotNull { item ->
