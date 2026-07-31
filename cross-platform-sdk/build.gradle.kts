@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
-val sdkVersion = "1.0.2-beta8"
+val sdkVersion = "1.0.2-beta9"
 
 plugins {
     kotlin("multiplatform")
@@ -20,7 +20,8 @@ kotlin {
         publishAllLibraryVariants()
     }
 
-    val xcf = XCFramework() // ✅ Create XCFramework
+    val realDeviceXcf = XCFramework("cross-platform-sdk-real-device")
+    val simulatorXcf = XCFramework("cross-platform-sdk-simulator-device")
 
     iosArm64 {
         binaries.framework {
@@ -34,7 +35,7 @@ kotlin {
                 "-dead_strip",
                 "-Wl,-x"
             )
-            xcf.add(this)
+            realDeviceXcf.add(this)
         }
     }
 
@@ -47,7 +48,7 @@ kotlin {
                 "-Xadd-light-debug=disable"
             )
             linkerOpts += listOf("-dead_strip", "-Wl,-x")
-            xcf.add(this)
+            simulatorXcf.add(this)
         }
     }
 
