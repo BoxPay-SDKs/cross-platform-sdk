@@ -20,7 +20,7 @@ import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 
 @Composable
-fun PayButton(
+internal fun PayButton(
     text : String,
     modifier : Modifier,
     amount : Double,

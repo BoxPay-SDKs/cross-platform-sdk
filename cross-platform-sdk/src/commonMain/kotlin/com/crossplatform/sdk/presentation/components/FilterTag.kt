@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 
 @Composable
-fun FilterTag(modifier: Modifier = Modifier, text: String) {
+internal fun FilterTag(modifier: Modifier = Modifier, text: String) {
     Text(
         text = text,
         style = TextStyle(

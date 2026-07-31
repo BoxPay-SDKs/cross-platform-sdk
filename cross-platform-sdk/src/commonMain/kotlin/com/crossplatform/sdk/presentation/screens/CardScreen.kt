@@ -50,7 +50,7 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class, ExperimentalResourceApi::class)
 @Composable
-fun CardScreen(
+internal fun CardScreen(
     isAutoNavigationEnabled: Boolean = false,
     onBackPress : () -> Unit,
     onExitCheckout : () -> Unit
@@ -231,7 +231,7 @@ fun CardScreen(
 
 // --- Reusable Checkbox ---
 @Composable
-fun CheckboxItem(
+internal fun CheckboxItem(
     isChecked  : Boolean,
     buttonColor: String,
     onClick    : () -> Unit
@@ -251,7 +251,7 @@ fun CheckboxItem(
     }
 }
 
-class CardNumberVisualTransformation : VisualTransformation {
+internal class CardNumberVisualTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val trimmed = text.text.take(16)
 
@@ -277,7 +277,7 @@ class CardNumberVisualTransformation : VisualTransformation {
 }
 
 
-class ExpiryVisualTransformation : VisualTransformation {
+internal class ExpiryVisualTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val trimmed = text.text.take(4)  // raw digits only "MMYY"
 
@@ -309,7 +309,7 @@ class ExpiryVisualTransformation : VisualTransformation {
 }
 
 @Composable
-fun SubscriptionRow(
+internal fun SubscriptionRow(
     heading: String,
     value: String,
     currencySymbol : String

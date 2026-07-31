@@ -32,7 +32,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_user
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun AddressComponent(
+internal fun AddressComponent(
     address: String,
     navigateToAddressScreen: () -> Unit,
     isShippingAddressEnabled: Boolean,

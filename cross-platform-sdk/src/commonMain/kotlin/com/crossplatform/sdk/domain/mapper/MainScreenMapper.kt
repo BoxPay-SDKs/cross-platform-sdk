@@ -7,7 +7,7 @@ import com.crossplatform.sdk.domain.model.MainScreenModel
 import com.crossplatform.sdk.domain.model.MainScreenModel.OrderItemUiModel
 import com.crossplatform.sdk.presentation.getStatus
 
-fun SessionDetails.toUiModel(): MainScreenModel {
+internal fun SessionDetails.toUiModel(): MainScreenModel {
     val moneyObject = this.paymentDetails.money
     val status = getStatus(this.status)
 
@@ -197,11 +197,11 @@ fun SessionDetails.toUiModel(): MainScreenModel {
     )
 }
 
-fun formatWords(text: String): String {
+internal fun formatWords(text: String): String {
     return text.replace(Regex("([a-z])([A-Z])"), "$1 $2")
 }
 
-fun formatDate(dateStr: String): String {
+internal fun formatDate(dateStr: String): String {
     val datePart = dateStr.split(" ").firstOrNull() ?: return ""
     val parts = datePart.split("/")
     if (parts.size < 3) return ""

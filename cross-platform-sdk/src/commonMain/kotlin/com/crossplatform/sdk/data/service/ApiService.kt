@@ -13,7 +13,7 @@ import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
 import com.crossplatform.sdk.data.model.SessionDetails
 
-interface ApiService {
+internal interface ApiService {
     suspend fun getSessionDetails() : ApiResponse<SessionDetails>
 
     suspend fun callUiAnalytics(

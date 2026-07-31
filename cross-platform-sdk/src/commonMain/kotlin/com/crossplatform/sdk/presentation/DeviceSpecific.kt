@@ -7,21 +7,21 @@ import com.crossplatform.sdk.data.model.DeviceDetails
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
 import com.crossplatform.sdk.domain.model.AppLifecycleState
 
-expect fun getBrowserData(): BrowserData
-expect fun getDeviceDetails(): DeviceDetails
+internal expect fun getBrowserData(): BrowserData
+internal expect fun getDeviceDetails(): DeviceDetails
 
-expect fun getInstalledUpiApps(context: Any?): List<String>
+internal expect fun getInstalledUpiApps(context: Any?): List<String>
 
 @Composable
-expect fun getPlatformContext(): Any?
+internal expect fun getPlatformContext(): Any?
 
-expect fun currentTimeMillis(): Long
-expect fun currentYear(): Int
-expect fun currentMonth(): Int
+internal expect fun currentTimeMillis(): Long
+internal expect fun currentYear(): Int
+internal expect fun currentMonth(): Int
 
-expect fun launchUpiIntent(url: String, onFailure: (Throwable) -> Unit, onSuccess : ()-> Unit)
+internal expect fun launchUpiIntent(url: String, onFailure: (Throwable) -> Unit, onSuccess : ()-> Unit)
 
-expect class AppLifecycleObserver(
+internal expect class AppLifecycleObserver(
     onStateChange: (AppLifecycleState) -> Unit
 ) {
     fun start()
@@ -29,12 +29,12 @@ expect class AppLifecycleObserver(
 }
 
 @Composable
-expect fun BackHandler(onBack: () -> Unit)
+internal expect fun BackHandler(onBack: () -> Unit)
 
-expect fun isTabletDevice(): Boolean
+internal expect fun isTabletDevice(): Boolean
 
-expect fun base64ToImageBitmap(base64: String): ImageBitmap
+internal expect fun base64ToImageBitmap(base64: String): ImageBitmap
 
 // commonMain
 @Composable
-expect fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler
+internal expect fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler

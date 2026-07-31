@@ -4,7 +4,7 @@ import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 
-interface CardScreenRepo {
+internal interface CardScreenRepo {
     suspend fun getCardDetails(cardNumber: String) : ApiResponse<FetchCardDetails>
 
     suspend fun postCardDetails(

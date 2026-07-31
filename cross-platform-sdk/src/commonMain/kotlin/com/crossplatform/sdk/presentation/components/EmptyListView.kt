@@ -26,7 +26,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.no_results_found
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun EmptyListView(
+internal fun EmptyListView(
     heading: String,
     subHeading: String
 ) {

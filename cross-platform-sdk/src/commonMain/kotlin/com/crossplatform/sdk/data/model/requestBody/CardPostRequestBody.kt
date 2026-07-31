@@ -7,7 +7,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CardPostRequestBody(
+internal data class CardPostRequestBody(
     @SerialName("browserData") val browserData: BrowserData,
     @SerialName("instrumentDetails") val instrumentDetails: InstrumentDetails,
     @SerialName("shopper") val shopper: ShopperRequest,
@@ -15,14 +15,14 @@ data class CardPostRequestBody(
     @SerialName("oneTimePayment") val oneTimePayment: Boolean? = null  // conditional field
 ) {
     @Serializable
-    data class InstrumentDetails(
+    internal data class InstrumentDetails(
         @SerialName("type") val type: String,
         @SerialName("card") val card: CardDetails,
         @SerialName("saveInstrument") val saveInstrument: Boolean? = null  // conditional field
     )
 
     @Serializable
-    data class CardDetails(
+    internal data class CardDetails(
         @SerialName("number") val number: String,
         @SerialName("expiry") val expiry: String,
         @SerialName("cvc") val cvc: String,
@@ -33,7 +33,7 @@ data class CardPostRequestBody(
 
 
 @Serializable
-data class SavedCardPostRequestBody(
+internal data class SavedCardPostRequestBody(
     @SerialName("browserData") val browserData: BrowserData,
     @SerialName("instrumentDetails") val instrumentDetails: Instrument,
     @SerialName("shopper") val shopper: ShopperRequest,
@@ -41,19 +41,19 @@ data class SavedCardPostRequestBody(
     @SerialName("oneTimePayment") val oneTimePayment: Boolean? = null  // conditional field
 ) {
     @Serializable
-    data class Instrument(
+    internal data class Instrument(
         @SerialName("type") val type : String, // 'card/token'
         @SerialName("card") val card : SavedCard
     )
 
     @Serializable
-    data class SavedCard(
+    internal data class SavedCard(
         @SerialName("instrumentRef") val instrumentRef: String
     )
 }
 
 @Serializable
-data class ShopperRequest(
+internal data class ShopperRequest(
     @SerialName("firstName") val firstName: String? = null,
     @SerialName("lastName") val lastName: String? = null,
     @SerialName("phoneNumber") val phoneNumber: String? = null,
@@ -66,7 +66,7 @@ data class ShopperRequest(
 )
 
 @Serializable
-data class CustomFieldsRequest(
+internal data class CustomFieldsRequest(
     @SerialName("fieldName") val fieldName : String,
     @SerialName("fieldValue") val fieldValue : String
 )

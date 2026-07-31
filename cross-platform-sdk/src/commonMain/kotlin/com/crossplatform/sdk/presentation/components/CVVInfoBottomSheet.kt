@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CvvInfoBottomSheet(onClick: () -> Unit, buttonColor : String, borderRadius : Int, buttonTextColor : String) {
+internal fun CvvInfoBottomSheet(onClick: () -> Unit, buttonColor : String, borderRadius : Int, buttonTextColor : String) {
     ModalBottomSheet(
         onDismissRequest = onClick,
         dragHandle       = null,

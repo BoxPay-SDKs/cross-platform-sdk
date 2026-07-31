@@ -17,7 +17,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun ChevronIcon() {
+internal fun ChevronIcon() {
     Image(
         painter = painterResource(Res.drawable.chervon_down),
         contentDescription = null,
@@ -30,7 +30,7 @@ fun ChevronIcon() {
 }
 
 @Composable
-fun SectionTitle(title: String) {
+internal fun SectionTitle(title: String) {
     Text(
         text       = title,
         fontFamily = LocalSDKFonts.current.primary,
@@ -41,7 +41,7 @@ fun SectionTitle(title: String) {
 }
 
 @Composable
-fun ErrorText(message: String) {
+internal fun ErrorText(message: String) {
     Text(
         text       = message,
         fontSize   = 12.sp,

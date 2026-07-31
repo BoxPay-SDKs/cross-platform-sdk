@@ -23,7 +23,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_wallet
 
 @Composable
-fun MorePaymentMethods(
+internal fun MorePaymentMethods(
     methodFlags: MainScreenModel.MethodFlags,
     onNavigateToCard: () -> Unit,
     onNavigateToWallet: () -> Unit,

@@ -40,7 +40,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun PaymentSuccessful(
+internal fun PaymentSuccessful(
     dateNTime : String,
     paymentMethod : String,
     onClick: () -> Unit,

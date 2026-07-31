@@ -43,7 +43,7 @@ import org.jetbrains.compose.resources.painterResource
 
 // commonMain
 @Composable
-fun CountryPickerDialog(
+internal fun CountryPickerDialog(
     onDismiss : () -> Unit,
     focusedBorderColor : String,
     unfocusedBorderColor : String,

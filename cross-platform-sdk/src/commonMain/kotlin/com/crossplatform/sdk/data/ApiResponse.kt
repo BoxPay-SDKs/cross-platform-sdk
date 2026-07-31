@@ -7,7 +7,7 @@ import io.ktor.http.isSuccess
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.CancellationException
 
-sealed class ApiResponse<out T> {
+internal sealed class ApiResponse<out T> {
     data object Loading : ApiResponse<Nothing>()
 
     data class Success<T>(
@@ -26,7 +26,7 @@ sealed class ApiResponse<out T> {
  * Executes a network call and wraps the result in [ApiResponse].
  * Marked as inline/reified so Ktor can deserialize the body into type T.
  */
-suspend inline fun <reified T> executeWithResponse(
+internal suspend inline fun <reified T> executeWithResponse(
     apiCall: () -> HttpResponse
 ): ApiResponse<T> {
     return try {

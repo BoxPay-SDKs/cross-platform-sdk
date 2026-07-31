@@ -22,7 +22,7 @@ import com.crossplatform.sdk.presentation.viewmodel.BNPLViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun BNPLScreen(
+internal fun BNPLScreen(
     onBackPress : () -> Unit,
     isAutoNavigationEnabled : Boolean,
     onExitCheckout : () -> Unit

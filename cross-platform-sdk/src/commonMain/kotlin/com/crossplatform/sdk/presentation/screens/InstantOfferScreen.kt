@@ -40,7 +40,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun InstantOfferScreen(
+internal fun InstantOfferScreen(
     selectedCode : String,
     onBackPress : () -> Unit,
     onClickApply : (String) -> Unit,

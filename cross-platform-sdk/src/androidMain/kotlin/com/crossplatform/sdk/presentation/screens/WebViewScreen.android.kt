@@ -17,7 +17,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.crossplatform.sdk.domain.model.WebViewState
 
 @Composable
-actual fun WebViewScreen(
+internal actual fun WebViewScreen(
     url: String?,
     html: String?,
     onBackPress: (redirectionResult: String?) -> Unit

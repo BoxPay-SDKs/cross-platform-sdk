@@ -46,7 +46,7 @@ val DarkGrey = Color(0xFF333333)
 val MediumGrey = Color(0xFF616161)
 
 @Composable
-fun OfferCard(
+internal fun OfferCard(
     modifier: Modifier = Modifier,
     selectedColor: Color,
     offerCode: String,
@@ -209,7 +209,7 @@ fun OfferCard(
 }
 
 // TicketShape — unchanged, already pure Compose geometry
-class TicketShape(private val circleRadius: Float) : Shape {
+internal class TicketShape(private val circleRadius: Float) : Shape {
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,

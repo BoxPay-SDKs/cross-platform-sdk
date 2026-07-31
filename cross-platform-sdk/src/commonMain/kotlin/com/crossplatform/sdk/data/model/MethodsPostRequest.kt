@@ -17,7 +17,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 @Serializable
-data class MethodsPostRequest(
+internal data class MethodsPostRequest(
     @SerialName("browserData") val browserData: BrowserData,
     @SerialName("instrumentDetails") val instrumentDetails: MethodInstrumentDetails,
     @SerialName("shopper") val shopper: ShopperRequest,
@@ -25,18 +25,18 @@ data class MethodsPostRequest(
 )
 
 @Serializable(with = MethodInstrumentDetailsSerializer::class)
-data class MethodInstrumentDetails(
+internal data class MethodInstrumentDetails(
     val type: String,
     val paymentType : String,
     val details: Details
 )
 
 @Serializable
-data class Details(
+internal data class Details(
     @SerialName("token") val token: String
 )
 
-object MethodInstrumentDetailsSerializer : KSerializer<MethodInstrumentDetails> {
+internal object MethodInstrumentDetailsSerializer : KSerializer<MethodInstrumentDetails> {
 
     override val descriptor: SerialDescriptor =
         buildClassSerialDescriptor("MethodInstrumentDetails")

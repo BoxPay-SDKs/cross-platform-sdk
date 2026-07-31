@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class InstantOfferRequestBody(
+internal data class InstantOfferRequestBody(
     @SerialName("currency") val currencyCode : String,
     @SerialName("minAmount") val minAmount : Double,
     @SerialName("maxAmount") val maxAmount : Double

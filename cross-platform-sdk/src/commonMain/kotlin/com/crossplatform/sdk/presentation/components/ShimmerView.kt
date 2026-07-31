@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 
 // --- Shimmer Effect Modifier ---
 
-fun Modifier.shimmerEffect(): Modifier = composed {
+internal fun Modifier.shimmerEffect(): Modifier = composed {
     val transition = rememberInfiniteTransition(label = "shimmer")
     val translateAnim by transition.animateFloat(
         initialValue = 0f,
@@ -46,7 +46,7 @@ fun Modifier.shimmerEffect(): Modifier = composed {
 
 // --- Shimmer Item Data ---
 
-data class ShimmerItem(val height: Dp, val marginTop: Dp, val cornerRadius: Dp)
+internal data class ShimmerItem(val height: Dp, val marginTop: Dp, val cornerRadius: Dp)
 
 private val shimmerItems = listOf(
     ShimmerItem(height = 90.dp, marginTop = 10.dp, cornerRadius = 0.dp),
@@ -59,7 +59,7 @@ private val shimmerItems = listOf(
 // --- ShimmerView Composable ---
 
 @Composable
-fun ShimmerView(modifier: Modifier) {
+internal fun ShimmerView(modifier: Modifier) {
     Column(
         modifier = modifier
             .background(Color.White)

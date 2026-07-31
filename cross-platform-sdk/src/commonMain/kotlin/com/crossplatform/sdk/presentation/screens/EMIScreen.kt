@@ -79,7 +79,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun EMIScreen(
+internal fun EMIScreen(
     modifier : Modifier = Modifier.fillMaxSize(),
     onBackPress : () -> Unit,
     isAutoNavigationEnabled : Boolean,
@@ -344,7 +344,7 @@ fun EMIScreen(
 // ─── Main content (bank list) ─────────────────────────────────────────────────
 
 @Composable
-fun EmiContentScreen(
+internal fun EmiContentScreen(
     selectedCard : String,
     onClickCard : (String) -> Unit,
     onClickBank : (Bank) -> Unit,
@@ -641,7 +641,7 @@ private fun OthersPaymentList(
 }
 
 @Composable
-fun BankCard(
+internal fun BankCard(
     name: String,
     iconUrl: String,
     hasNoCostEmi: Boolean,
@@ -730,7 +730,7 @@ private fun EmiTag(label: String) {
     }
 }
 
-object ScreenBackInterceptor {
+internal object ScreenBackInterceptor {
     // set by whichever screen wants to consume back internally; returns true if consumed
     var onBack: (() -> Boolean)? = null
     var currentTitle: (() -> String)? = null

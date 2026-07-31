@@ -29,7 +29,7 @@ import com.crossplatform.sdk.presentation.viewmodel.WalletViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val appModule = module {
+internal val appModule = module {
 
     // ✅ Endpoint
     single<ApiService> { ApiServiceImpl() }

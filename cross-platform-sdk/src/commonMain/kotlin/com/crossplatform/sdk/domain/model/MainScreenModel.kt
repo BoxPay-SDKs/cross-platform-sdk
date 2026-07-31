@@ -2,7 +2,7 @@ package com.crossplatform.sdk.domain.model
 
 import com.crossplatform.sdk.data.model.AllowedPaymentMethods
 
-data class MainScreenModel(
+internal data class MainScreenModel(
     val status: TransactionStatusEnum,
     val transactionId: String,
     val totalAmount : Double,
@@ -18,7 +18,7 @@ data class MainScreenModel(
     val applePayAdditionData : ApplePayAdditionData?
 ) {
 
-    data class MethodFlags(
+    internal data class MethodFlags(
         val isUPIIntentVisible: Boolean = false,
         val isUPICollectVisible: Boolean = false,
         val isUPIQRVisible: Boolean = false,
@@ -37,7 +37,7 @@ data class MainScreenModel(
         val isRevolutPayVisible : Boolean = false
     )
 
-    data class OrderDetails(
+    internal data class OrderDetails(
         val totalItems: Int,
         val shippingAmount: Double,
         val taxAmount: Double,
@@ -45,14 +45,14 @@ data class MainScreenModel(
         val items: List<OrderItemUiModel>
     )
 
-    data class OrderItemUiModel(
+    internal data class OrderItemUiModel(
         val imageUrl: String?,
         val imageTitle: String?,
         val imageQty: Int?,
         val amount: Double?
     )
 
-    data class GooglePayAdditionData(
+    internal data class GooglePayAdditionData(
         val merchantId : String?,
         val merchantName : String?,
         val gateway : String?,
@@ -60,12 +60,11 @@ data class MainScreenModel(
         val allowedPaymentMethods : List<AllowedPaymentMethods>?
     )
 
-    data class ApplePayAdditionData(
+    internal data class ApplePayAdditionData(
         val merchantName : String?,
         val gateway : String?,
         val siteReference : String?,
         val merchantCapabilities : List<String>?,
         val supportedNetworks : List<String>?
     )
-
 }

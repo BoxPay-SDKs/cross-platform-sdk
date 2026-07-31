@@ -22,7 +22,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_work
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SavedAddressScreen(
+internal fun SavedAddressScreen(
     onBackPress : () -> Unit,
     buttonColor : String
 ) {

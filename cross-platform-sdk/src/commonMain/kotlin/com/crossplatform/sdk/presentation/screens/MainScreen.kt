@@ -56,7 +56,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun MainScreen(
+internal fun MainScreen(
     viewModel : MainScreenViewModel,
     onProceedCardScreen: (isAutoNavigationEnabled: Boolean) -> Unit,
     onProceedEMIScreen: (isAutoNavigationEnabled: Boolean) -> Unit,

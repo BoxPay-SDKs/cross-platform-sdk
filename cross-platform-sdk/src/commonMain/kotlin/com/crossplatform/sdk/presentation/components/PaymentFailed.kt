@@ -35,7 +35,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun PaymentFailed(
+internal fun PaymentFailed(
     sheetState: SheetState,
     onClick: () -> Unit,
     onDismiss: () -> Unit

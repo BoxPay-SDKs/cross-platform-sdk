@@ -22,7 +22,7 @@ import com.crossplatform.sdk.presentation.viewmodel.NetBankingViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun NetBankingScreen(
+internal fun NetBankingScreen(
     onBackPress : () -> Unit,
     isAutoNavigationEnabled : Boolean,
     onExitCheckout : () -> Unit

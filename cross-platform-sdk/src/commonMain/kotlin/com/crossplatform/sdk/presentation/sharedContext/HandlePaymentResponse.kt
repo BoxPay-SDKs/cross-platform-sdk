@@ -7,7 +7,7 @@ import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.getStatus
 import com.crossplatform.sdk.presentation.resolveErrorMessage
 
-fun handlePaymentResponse(
+internal fun handlePaymentResponse(
     response: ApiResponse<PaymentMethodPostResponse>,
     onRevolutPay: ((String, String) -> Unit)? = null,
     onSetPaymentUrl: ((String) -> Unit)? = null,

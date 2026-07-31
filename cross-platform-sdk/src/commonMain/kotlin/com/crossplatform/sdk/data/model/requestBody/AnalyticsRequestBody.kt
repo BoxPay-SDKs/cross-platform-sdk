@@ -6,7 +6,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AnalyticsRequest(
+internal data class AnalyticsRequest(
     @SerialName("browserData") val browserData: BrowserData,
     @SerialName("callerToken") val callerToken: String,
     @SerialName("uiEvent") val uiEvent: String,
@@ -14,7 +14,7 @@ data class AnalyticsRequest(
     @SerialName("deviceDetails") val deviceDetails: DeviceDetails
 ) {
     @Serializable
-    data class EventAttrs(
+    internal data class EventAttrs(
         @SerialName("errorMessage") val errorMessage: String,
         @SerialName("screenName") val screenName: String
     )

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SessionDetails(
+internal data class SessionDetails(
     @SerialName("configs") val configs: Configs,
     @SerialName("paymentDetails") val paymentDetails: PaymentDetails,
     @SerialName("merchantDetails") val merchantDetails: MerchantDetails,
@@ -16,26 +16,26 @@ data class SessionDetails(
 )
 
 @Serializable
-data class LastTransactionDetails(
+internal data class LastTransactionDetails(
     @SerialName("paymentMethod") val paymentMethod: PaymentMethod,
     @SerialName("timestampLocale") val timeStampLocale : String
 )
 
 @Serializable
-data class Configs(
+internal data class Configs(
     @SerialName("paymentMethods") val paymentMethods: List<PaymentMethod>,
     @SerialName("enabledFields") val enabledFields: List<EnabledFields>
 )
 
 @Serializable
-data class EnabledFields(
+internal data class EnabledFields(
     @SerialName("field") val field: String,
     @SerialName("editable") val editable: Boolean,
     @SerialName("mandatory") val mandatory: Boolean
 )
 
 @Serializable
-data class PaymentDetails(
+internal data class PaymentDetails(
     @SerialName("context") val context: PaymentContext,
     @SerialName("money") val money: Money,
     @SerialName("shopper") val shopper: Shopper,
@@ -44,20 +44,20 @@ data class PaymentDetails(
 )
 
 @Serializable
-data class PaymentContext(
+internal data class PaymentContext(
     @SerialName("countryCode") val countryCode: String,
     @SerialName("localeCode") val localeCode: String
 )
 
 @Serializable
-data class Money(
+internal data class Money(
     @SerialName("currencySymbol") val currencySymbol: String,
     @SerialName("currencyCode") val currencyCode: String,
     @SerialName("amount") val amount: Double
 )
 
 @Serializable
-data class Shopper(
+internal data class Shopper(
     @SerialName("firstName") val firstName: String? = null,
     @SerialName("lastName") val lastName: String? = null,
     @SerialName("phoneNumber") val phoneNumber: String? = null,
@@ -69,7 +69,7 @@ data class Shopper(
 )
 
 @Serializable
-data class DeliveryAddress(
+internal data class DeliveryAddress(
     @SerialName("address1") val address1: String? = null,
     @SerialName("address2") val address2: String? = null,
     @SerialName("city") val city: String? = null,
@@ -81,7 +81,7 @@ data class DeliveryAddress(
 )
 
 @Serializable
-data class SubscriptionDetails(
+internal data class SubscriptionDetails(
     @SerialName("type") val type: String?,
     @SerialName("billingCycle") val billingCycle : SubscriptionBillingCycle?,
     @SerialName("billingDuration") val billingDuration : SubscriptionBillingDuration?,
@@ -92,20 +92,20 @@ data class SubscriptionDetails(
 )
 
 @Serializable
-data class SubscriptionBillingCycle(
+internal data class SubscriptionBillingCycle(
     @SerialName("billingTimeUnit") val billingTimeUnit : String,
     @SerialName("count") val count : Int,
     @SerialName("billingCycleValue") val billingCycleValue : String
 )
 
 @Serializable
-data class SubscriptionBillingDuration(
+internal data class SubscriptionBillingDuration(
     @SerialName("type") val type : String,
     @SerialName("noOfCycles") val noOfCycles : Int
 )
 
 @Serializable
-data class OrderDetails(
+internal data class OrderDetails(
     @SerialName("shippingAmount") val shippingAmount: Double? = null,
     @SerialName("taxAmount") val taxAmount: Double? = null,
     @SerialName("originalAmount") val originalAmount: Double? = null,
@@ -113,7 +113,7 @@ data class OrderDetails(
 )
 
 @Serializable
-data class OrderItem(
+internal data class OrderItem(
     @SerialName("id") val id : String? = null,
     @SerialName("itemName") val itemName: String? = null,
     @SerialName("quantity") val quantity: Int? = null,
@@ -122,7 +122,7 @@ data class OrderItem(
 )
 
 @Serializable
-data class MerchantDetails(
+internal data class MerchantDetails(
     @SerialName("merchantName") val merchantName : String?,
     @SerialName("logoUrl") val merchantLogo : String?,
     @SerialName("checkoutTheme") val checkoutTheme: CheckoutTheme,
@@ -130,7 +130,7 @@ data class MerchantDetails(
 )
 
 @Serializable
-data class CustomFields(
+internal data class CustomFields(
     @SerialName("fieldName") val fieldName : String?,
     @SerialName("placeHolderText") val placeHolderText : String?,
     @SerialName("fieldType") val fieldType : String?,
@@ -142,7 +142,7 @@ data class CustomFields(
 )
 
 @Serializable
-data class CheckoutTheme(
+internal data class CheckoutTheme(
     @SerialName("primaryButtonColor") val primaryButtonColor: String,
     @SerialName("buttonTextColor") val buttonTextColor: String,
     @SerialName("headerColor") val headerColor: String,
@@ -155,7 +155,7 @@ data class CheckoutTheme(
 )
 
 @Serializable
-data class PaymentMethod(
+internal data class PaymentMethod(
     @SerialName("id") val id: String,
     @SerialName("type") val type: String,
     @SerialName("brand") val brand: String,
@@ -168,7 +168,7 @@ data class PaymentMethod(
 )
 
 @Serializable
-data class AdditionalData(
+internal data class AdditionalData(
     @SerialName("publicKey") val publicKey : String? = null,
     @SerialName("merchantId") val merchantId : String? = null,
     @SerialName("merchantName") val merchantName : String? = null,
@@ -180,19 +180,19 @@ data class AdditionalData(
 )
 
 @Serializable
-data class AllowedPaymentMethods (
+internal data class AllowedPaymentMethods (
     @SerialName("type") val type : String? = null,
     @SerialName("parameters") val parameters : AllowedPaymentMethodsParameters? = null
 )
 
 @Serializable
-data class AllowedPaymentMethodsParameters(
+internal data class AllowedPaymentMethodsParameters(
     @SerialName("allowedAuthMethods") val allowedAuthMethods : List<String>? = null,
     @SerialName("allowedCardNetworks") val allowedCardNetworks : List<String>? = null
 )
 
 @Serializable
-data class EmiMethod(
+internal data class EmiMethod(
     @SerialName("brand") val brand: String? = null,
     @SerialName("issuer") val issuer: String? = null,
     @SerialName("duration") val duration: Int? = null,
@@ -211,18 +211,18 @@ data class EmiMethod(
 )
 
 @Serializable
-data class ProcessingFee(
+internal data class ProcessingFee(
     @SerialName("amountLocaleFull") val amountLocaleFull : String?
 )
 
 @Serializable
-data class ApplicableOffer(
+internal data class ApplicableOffer(
     @SerialName("code") val code: String,
     @SerialName("title") val title: String,
     @SerialName("discount") val discount : Discount?
 )
 
 @Serializable
-data class Discount(
+internal data class Discount(
     @SerialName("type") val type : String?
 )

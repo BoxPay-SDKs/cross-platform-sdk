@@ -33,7 +33,7 @@ import com.crossplatform.sdk.presentation.toComposeColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShowUpdateAmountBottomSheet(
+internal fun ShowUpdateAmountBottomSheet(
     selectedMethod : String,
     onClickProceed : () -> Unit,
     onClick : () -> Unit,

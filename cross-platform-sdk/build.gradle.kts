@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
-val sdkVersion = "1.0.2-beta7"
+val sdkVersion = "1.0.2-beta8"
 
 plugins {
     kotlin("multiplatform")
@@ -69,12 +69,10 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
-                implementation(libs.ktor.client.auth)
 
                 // Kotlinx
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)
-                implementation(libs.kotlinx.datetime)
 
                 // Compose
                 implementation(compose.runtime)
@@ -96,9 +94,6 @@ kotlin {
                     exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
                 }
                 implementation("media.kamel:kamel-image:0.9.5")
-                implementation("io.github.alexzhirkevich:qrose:1.0.1") {
-                    exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
-                }
             }
         }
         val androidMain by getting {

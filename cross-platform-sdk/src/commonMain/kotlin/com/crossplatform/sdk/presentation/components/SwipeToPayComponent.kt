@@ -58,7 +58,7 @@ import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
 
 @Composable
-fun SwipeToPayComponent(
+internal fun SwipeToPayComponent(
     buttonColor: String,
     buttonTextColor: String,
     amount: Double,
@@ -300,7 +300,7 @@ fun SwipeToPayComponent(
 }
 
 @Composable
-fun SwipeToPayButtonComponent(
+internal fun SwipeToPayButtonComponent(
     onSwipeComplete: () -> Unit,
     modifier: Modifier = Modifier,
     buttonColor: String,

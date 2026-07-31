@@ -54,7 +54,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavHost() {
+internal fun AppNavHost() {
     val shopperDetails by CheckoutDetailsHandler.shopperFieldsConfigFlow.collectAsStateWithLifecycle()
     val isShippingAddressEnabled = shopperDetails.isShippingAddressEnabled
     val isShippingAddressEditable = shopperDetails.isShippingAddressEditable
@@ -493,7 +493,7 @@ fun AppNavHost() {
 }
 
 
-fun callSDKPaymentResponse() {
+internal fun callSDKPaymentResponse() {
     SDKJobHandler.cancelAll()
 
     // ✅ Capture data BEFORE resetting

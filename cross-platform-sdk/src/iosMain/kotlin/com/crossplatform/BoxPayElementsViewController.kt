@@ -9,22 +9,26 @@ import com.crossplatform.sdk.domain.model.PaymentMethodTab
 fun BoxPayElementsViewController(
     token : String,
     isTestEnv: Boolean,
-    shopperToken: String?,
-    showQROnLoad: Boolean,
-    ctaBorderRadius: Int,
-    isSICheckBoxChecked: Boolean,
-    isSICheckBoxEnabled: Boolean,
-    focusedTextInputBorderColor: String,
-    unfocusedTextInputBorderColor: String,
-    onDismiss: () -> Unit,
-    paymentMethodList : List<PaymentMethodTab>,
-    isBoxPayPayButtonVisible : Boolean,
-    fontFamily : String?,
-    handler: BoxPayElementsHandler?
+    shopperToken: String? = null,
+    showQROnLoad: Boolean = false,
+    ctaBorderRadius: Int = 12,
+    isSICheckBoxChecked: Boolean = false,
+    isSICheckBoxEnabled: Boolean = false,
+    focusedTextInputBorderColor: String = "#2D2B32",
+    unfocusedTextInputBorderColor: String = "#ADACB0",
+    paymentMethodList: List<String> = emptyList(),
+    isBoxPayProceedButtonVisible: Boolean,
+    fontFamily: String? = null,
+    handler: BoxPayElementsHandler?,
+    onDismiss: () -> Unit
 ) = ComposeUIViewController {
+    val paymentMethodTabs = paymentMethodList.mapNotNull { method ->
+        runCatching { PaymentMethodTab.valueOf(method.uppercase()) }.getOrNull()
+    }
+
     CommonSDKDismissHandler.setCloseSDK { onDismiss() }
     BoxPayCommonElements(
-        paymentMethodList = paymentMethodList,
+        paymentMethodList = paymentMethodTabs,
         token = token,
         isTestEnv = isTestEnv,
         shopperToken = shopperToken,
@@ -34,7 +38,7 @@ fun BoxPayElementsViewController(
         isSICheckBoxEnabled = isSICheckBoxEnabled,
         focusedTextInputBorderColor = focusedTextInputBorderColor,
         unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
-        isBoxPayProceedButtonVisible = isBoxPayPayButtonVisible,
+        isBoxPayProceedButtonVisible = isBoxPayProceedButtonVisible,
         fontFamily = fontFamily,
         handler = handler
     )

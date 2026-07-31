@@ -1,6 +1,6 @@
 package com.crossplatform.sdk.presentation.navigation
 
-sealed class Routes(val route: String) {
+internal sealed class Routes(val route: String) {
     object MainScreen           : Routes("main_screen")
     object CardScreen           : Routes("card_screen")
     object EMIScreen            : Routes("emi_screen")

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class InstantOfferResponse(
+internal data class InstantOfferResponse(
     @SerialName("title") val title : String?,
     @SerialName("description") val description : String?,
     @SerialName("terms") val terms : String?,
@@ -14,25 +14,25 @@ data class InstantOfferResponse(
     @SerialName("criteria") val criteria : InstantOfferCriteria
 ) {
     @Serializable
-    data class InstantOfferCriteria(
+    internal data class InstantOfferCriteria(
         @SerialName("applicableTo") val applicableTo : OfferApplicableTo,
         @SerialName("startDate") val startDate : String?,
         @SerialName("endDate") val endDate : String?
     )
 
     @Serializable
-    data class OfferApplicableTo(
+    internal data class OfferApplicableTo(
         @SerialName("paymentMethods") val paymentMethods : List<OfferPaymentMethod>?
     )
 
     @Serializable
-    data class OfferPaymentMethod(
+    internal data class OfferPaymentMethod(
         @SerialName("type") val type : String? = null,
         @SerialName("brand") val brand : String? = null
     )
 
     @Serializable
-    data class Discount(
+    internal data class Discount(
         @SerialName("amount") val amount : Double? = null,
         @SerialName("percentage") val percentage : Double? = null,
         @SerialName("type") val type : String? = null

@@ -46,7 +46,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_tick_arrow
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun OfferSection(
+internal fun OfferSection(
     offers: List<OfferItem>,
     selectedCode: String,
     themeColor: Color,
@@ -80,7 +80,7 @@ fun OfferSection(
 // ─── Single offer ─────────────────────────────────────────────────────────────
 
 @Composable
-fun SingleOfferCard(
+internal fun SingleOfferCard(
     offer: OfferItem,
     isApplied: Boolean,
     themeColor: Color,
@@ -205,7 +205,7 @@ fun SingleOfferCard(
 private const val MAX_VISIBLE_CHIPS = 3
 
 @Composable
-fun MultiOfferCard(
+internal fun MultiOfferCard(
     offers: List<OfferItem>,
     selectedCode: String,
     themeColor: Color,
