@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
-val sdkVersion = "1.0.2-beta7"
+val sdkVersion = "1.0.2-beta9"
 
 plugins {
     kotlin("multiplatform")
@@ -20,7 +20,8 @@ kotlin {
         publishAllLibraryVariants()
     }
 
-    val xcf = XCFramework() // ✅ Create XCFramework
+    val realDeviceXcf = XCFramework("cross-platform-sdk-real-device")
+    val simulatorXcf = XCFramework("cross-platform-sdk-simulator-device")
 
     iosArm64 {
         binaries.framework {
@@ -34,7 +35,7 @@ kotlin {
                 "-dead_strip",
                 "-Wl,-x"
             )
-            xcf.add(this)
+            realDeviceXcf.add(this)
         }
     }
 
@@ -47,7 +48,7 @@ kotlin {
                 "-Xadd-light-debug=disable"
             )
             linkerOpts += listOf("-dead_strip", "-Wl,-x")
-            xcf.add(this)
+            simulatorXcf.add(this)
         }
     }
 
@@ -69,12 +70,10 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
-                implementation(libs.ktor.client.auth)
 
                 // Kotlinx
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)
-                implementation(libs.kotlinx.datetime)
 
                 // Compose
                 implementation(compose.runtime)
@@ -96,9 +95,6 @@ kotlin {
                     exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
                 }
                 implementation("media.kamel:kamel-image:0.9.5")
-                implementation("io.github.alexzhirkevich:qrose:1.0.1") {
-                    exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
-                }
             }
         }
         val androidMain by getting {
