@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.authors = { 'BoxPay' => 'ishika.bansal@boxpay.tech' }
 
   s.source = {
-    :http => 'https://github.com/BoxPay-SDKs/cross-platform-sdk/releases/download/1.0.2-beta13/cross_platform_sdk.xcframework.zip'
+    :http => 'https://github.com/BoxPay-SDKs/cross-platform-sdk/releases/download/1.0.2-beta14/cross_platform_sdk.xcframework.zip'
   }
 
   s.vendored_frameworks = 'cross_platform_sdk.xcframework'
