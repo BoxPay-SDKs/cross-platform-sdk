@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
-val sdkVersion = "1.0.2-beta12"
+val sdkVersion = "1.0.2-beta13"
 
 plugins {
     kotlin("multiplatform")
