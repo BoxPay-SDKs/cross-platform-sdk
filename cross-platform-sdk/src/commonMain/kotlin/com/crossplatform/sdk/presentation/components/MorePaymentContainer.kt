@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun MorePaymentContainer(
+internal fun MorePaymentContainer(
     title: String,
     image: DrawableResource,
     surchargeFee: Double? = null,

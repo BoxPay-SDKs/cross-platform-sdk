@@ -42,7 +42,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
-class ApiServiceImpl : ApiService {
+internal class ApiServiceImpl : ApiService {
 
     private val client get() = ServiceRequest.buildClient()
     private val plainClient get() = ServiceRequest.buildPlainClient()

@@ -4,7 +4,7 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.InstantOfferResponse
 import com.crossplatform.sdk.domain.model.OfferItem
 
-fun List<InstantOfferResponse>.toUiModel(): List<OfferItem> {
+internal fun List<InstantOfferResponse>.toUiModel(): List<OfferItem> {
     val (_, currencyCode) = CheckoutDetailsHandler.currencyFlow.value
     return this.map { item ->
         OfferItem(

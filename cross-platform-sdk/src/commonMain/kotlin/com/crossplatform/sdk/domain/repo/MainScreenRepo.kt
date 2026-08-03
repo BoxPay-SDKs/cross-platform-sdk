@@ -8,7 +8,7 @@ import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
 import com.crossplatform.sdk.data.model.SessionDetails
 
-interface MainScreenRepo {
+internal interface MainScreenRepo {
     suspend fun getSessionDetails() : ApiResponse<SessionDetails>
 
     suspend fun postUpiIntentRequest(

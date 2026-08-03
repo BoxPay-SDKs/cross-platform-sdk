@@ -45,7 +45,7 @@ import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun OrderDetails(
+internal fun OrderDetails(
     totalAmount: Double,
     itemsArray: List<OrderItemUiModel>,
     subTotalAmount: Double,

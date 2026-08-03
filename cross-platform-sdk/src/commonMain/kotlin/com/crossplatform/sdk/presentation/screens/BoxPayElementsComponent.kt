@@ -33,7 +33,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BoxPayElementsComponent(
+internal fun BoxPayElementsComponent(
     paymentMethodList : List<PaymentMethodTab>,
     isBoxPayProceedButtonVisible : Boolean,
     shopperToken : String,

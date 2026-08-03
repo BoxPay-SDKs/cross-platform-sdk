@@ -72,7 +72,7 @@ val upiRegex = Regex("^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{3,64}$")
 
 @OptIn(ExperimentalEncodingApi::class)
 @Composable
-fun UPIComponent(
+internal fun UPIComponent(
     methodFlags: MainScreenModel.MethodFlags,
     savedUpiList : List<SelectedPaymentMethod>,
     onClickUpiCollectPayButton : (String, Boolean) -> Unit,
@@ -704,7 +704,7 @@ private fun UpiExpandableHeader(
     }
 }
 
-fun formatTime(totalSeconds: Int): String {
+internal fun formatTime(totalSeconds: Int): String {
     val minutes = totalSeconds / 60
     val seconds = totalSeconds % 60
 

@@ -24,7 +24,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun ShowLoadingComponent(modifier: Modifier) {
+internal fun ShowLoadingComponent(modifier: Modifier) {
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(
             Res.readBytes("files/BoxPayLogo.json").decodeToString()

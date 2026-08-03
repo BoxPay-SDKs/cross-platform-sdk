@@ -3,16 +3,16 @@ package com.crossplatform.sdk.domain.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ChooseEmiModel(val cards: List<EmiCardGroup> = emptyList())
+internal data class ChooseEmiModel(val cards: List<EmiCardGroup> = emptyList())
 
 @Serializable
-data class EmiCardGroup(
+internal data class EmiCardGroup(
     val cardType: String,
     val banks: List<Bank> = emptyList(),
 )
 
 @Serializable
-data class Bank(
+internal data class Bank(
     val iconUrl: String,
     val name: String,
     val percent: Double,
@@ -24,7 +24,7 @@ data class Bank(
 )
 
 @Serializable
-data class Emi(
+internal data class Emi(
     val duration: Int,
     val percent: Double,
     val amount: String,

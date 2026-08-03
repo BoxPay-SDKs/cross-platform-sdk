@@ -60,7 +60,7 @@ import platform.darwin.NSObject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-actual fun getDeviceDetails(): DeviceDetails {
+internal actual fun getDeviceDetails(): DeviceDetails {
     return DeviceDetails(
         browser = "ios",
         platformVersion = UIDevice.currentDevice.systemVersion,
@@ -71,7 +71,7 @@ actual fun getDeviceDetails(): DeviceDetails {
 }
 
 @OptIn(ExperimentalForeignApi::class)
-actual fun getBrowserData(): BrowserData {
+internal actual fun getBrowserData(): BrowserData {
     return BrowserData(
         screenHeight = UIScreen.mainScreen.bounds.useContents {
             size.height.toInt().toString()
@@ -90,7 +90,7 @@ actual fun getBrowserData(): BrowserData {
     )
 }
 
-actual fun getInstalledUpiApps(context: Any?): List<String> {
+internal actual fun getInstalledUpiApps(context: Any?): List<String> {
     // friendly name -> candidate schemes; any hit means installed
     val knownUpiSchemes: Map<String, List<String>> = mapOf(
         "gpay"       to listOf("tez://", "gpay://"),
@@ -113,29 +113,29 @@ actual fun getInstalledUpiApps(context: Any?): List<String> {
 }
 
 @Composable
-actual fun getPlatformContext(): Any? {
+internal actual fun getPlatformContext(): Any? {
     return null
 }
 
-actual fun currentTimeMillis(): Long {
+internal actual fun currentTimeMillis(): Long {
     return (NSDate().timeIntervalSince1970 * 1000).toLong()
 }
 
-actual fun currentYear(): Int {
+internal actual fun currentYear(): Int {
     val components = NSCalendar.currentCalendar.components(
         NSCalendarUnitYear, NSDate()
     )
     return (components.year % 100).toInt()
 }
 
-actual fun currentMonth(): Int {
+internal actual fun currentMonth(): Int {
     val components = NSCalendar.currentCalendar.components(
         NSCalendarUnitMonth, NSDate()
     )
     return components.month.toInt()
 }
 
-actual fun launchUpiIntent(url: String, onFailure: (Throwable) -> Unit, onSuccess: () -> Unit) {
+internal actual fun launchUpiIntent(url: String, onFailure: (Throwable) -> Unit, onSuccess: () -> Unit) {
     val nsUrl = NSURL.URLWithString(url)
         ?: run {
             onFailure(IllegalArgumentException("Could not create NSURL from: $url"))
@@ -164,7 +164,7 @@ actual fun launchUpiIntent(url: String, onFailure: (Throwable) -> Unit, onSucces
     )
 }
 
-actual class AppLifecycleObserver actual constructor(private val onStateChange: (AppLifecycleState) -> Unit) {
+internal actual class AppLifecycleObserver actual constructor(private val onStateChange: (AppLifecycleState) -> Unit) {
     private val center = NSNotificationCenter.defaultCenter
     private val tokens = mutableListOf<Any>()
 
@@ -196,16 +196,16 @@ actual class AppLifecycleObserver actual constructor(private val onStateChange: 
 }
 
 @Composable
-actual fun BackHandler(onBack: () -> Unit) {
+internal actual fun BackHandler(onBack: () -> Unit) {
     // No-op on iOS — back is handled via UI button only
 }
 
-actual fun isTabletDevice(): Boolean {
+internal actual fun isTabletDevice(): Boolean {
     return UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad
 }
 
 @OptIn(ExperimentalEncodingApi::class, ExperimentalForeignApi::class, BetaInteropApi::class)
-actual fun base64ToImageBitmap(base64: String): ImageBitmap {
+internal actual fun base64ToImageBitmap(base64: String): ImageBitmap {
     // Strip data URI prefix if present — same as Android's substringAfter("base64,")
     val cleanBase64 = base64.substringAfter("base64,", base64)
 
@@ -232,11 +232,11 @@ actual fun base64ToImageBitmap(base64: String): ImageBitmap {
 
 // iosMain
 @Composable
-actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler {
+internal actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler {
     return IosPaymentHandler()
 }
 
-class IosPaymentHandler() : ExpressCheckoutPaymentHandler {
+internal class IosPaymentHandler() : ExpressCheckoutPaymentHandler {
     private var activeDelegate: PaymentDelegate? = null
 
     override fun isApplePayAvailable() =

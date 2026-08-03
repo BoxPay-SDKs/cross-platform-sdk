@@ -1,6 +1,6 @@
 package com.crossplatform.sdk.domain.model
 
-enum class TransactionStatusEnum {
+internal enum class TransactionStatusEnum {
     NOACTION,
     SUCCESS,
     FAILED,

@@ -17,14 +17,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-expect fun WebViewScreen(
+internal expect fun WebViewScreen(
     url: String?,
     html: String?,
     onBackPress: (redirectionResult: String?) -> Unit,
 )
 
 @Composable
-fun WebViewUrlBar(currentUrl: String) {
+internal fun WebViewUrlBar(currentUrl: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -37,7 +37,7 @@ fun WebViewUrlBar(currentUrl: String) {
 
 /** Full-screen semi-transparent loader — mirrors the RN loaderOverlay */
 @Composable
-fun WebViewLoader() {
+internal fun WebViewLoader() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -59,7 +59,7 @@ fun WebViewLoader() {
 // null otherwise. Mirrors the JS `checkUrl` function exactly.
 // ---------------------------------------------------------------------------
 
-fun parseRedirectionResult(navUrl: String): String? {
+internal fun parseRedirectionResult(navUrl: String): String? {
     // Only act when both markers are present — mirrors:
     // navUrl.includes('payment-completion-handler') && navUrl.includes('boxpay')
     if (!navUrl.contains("payment-completion-handler") && !navUrl.contains("boxpay")) {

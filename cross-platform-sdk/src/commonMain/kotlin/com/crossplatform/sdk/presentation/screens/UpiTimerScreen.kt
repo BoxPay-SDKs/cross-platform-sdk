@@ -53,7 +53,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun UpiTimerScreen(
+internal fun UpiTimerScreen(
     onBackPress : () -> Unit,
     shopperVpa : String,
     buttonColor : String,
@@ -197,7 +197,7 @@ fun UpiTimerScreen(
 }
 
 @Composable
-fun CancelPaymentModal(onNoClick: () -> Unit, onYesClick: () -> Unit) {
+internal fun CancelPaymentModal(onNoClick: () -> Unit, onYesClick: () -> Unit) {
     AlertDialog(
         onDismissRequest = onNoClick,
         title = { Text("Cancel Payment?", fontFamily = LocalSDKFonts.current.primary) },
@@ -212,7 +212,7 @@ fun CancelPaymentModal(onNoClick: () -> Unit, onYesClick: () -> Unit) {
 }
 
 @Composable
-fun CircularCountdownTimer(
+internal fun CircularCountdownTimer(
     size: Dp,
     strokeWidth: Dp,
     progress: Int,

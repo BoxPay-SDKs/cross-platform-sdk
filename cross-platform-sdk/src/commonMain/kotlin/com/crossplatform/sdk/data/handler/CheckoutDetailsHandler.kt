@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 
-object CheckoutDetailsHandler {
+internal object CheckoutDetailsHandler {
 
     // ─── Scope ────────────────────────────────────────────────────────────────
     // SupervisorJob: one child failing doesn't cancel siblings
@@ -541,7 +541,7 @@ object CheckoutDetailsHandler {
 
 // ─── Shopper fields config — grouped data class ───────────────────────────────
 // Keeps shopperFieldsConfigFlow clean instead of 12 separate flows
-data class ShopperFieldsConfig(
+internal data class ShopperFieldsConfig(
     val isShippingAddressEnabled  : Boolean = false,
     val isShippingAddressEditable : Boolean = false,
     val isFullNameEnabled         : Boolean = false,

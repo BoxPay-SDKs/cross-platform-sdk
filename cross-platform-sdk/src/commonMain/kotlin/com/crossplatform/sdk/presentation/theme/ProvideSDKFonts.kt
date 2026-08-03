@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.Font
 
 @Composable
-fun ProvideSDKFonts(
+internal fun ProvideSDKFonts(
     merchantFont: String? = null,
     backendFont: String? = null,
     onUnknownFontRequested: ((String) -> Unit)? = null,

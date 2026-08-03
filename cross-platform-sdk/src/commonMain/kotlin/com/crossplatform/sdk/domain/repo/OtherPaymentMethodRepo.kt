@@ -4,7 +4,7 @@ import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 
-interface OtherPaymentMethodRepo {
+internal interface OtherPaymentMethodRepo {
     suspend fun getPaymentMethods(
         amount: Double?,
         offerId: String?

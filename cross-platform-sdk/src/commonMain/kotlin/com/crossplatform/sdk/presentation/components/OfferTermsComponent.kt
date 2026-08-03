@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 
-fun parseHtmlParagraphs(html: String): List<String> {
+internal fun parseHtmlParagraphs(html: String): List<String> {
     return html
         .replace("\n", " ")
         .split(Regex("<p>|</p>"))
@@ -21,7 +21,7 @@ fun parseHtmlParagraphs(html: String): List<String> {
 }
 
 @Composable
-fun TermsList(
+internal fun TermsList(
     html: String,
     modifier: Modifier = Modifier
 ) {

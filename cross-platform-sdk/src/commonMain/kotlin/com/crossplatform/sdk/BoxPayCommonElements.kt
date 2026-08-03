@@ -17,7 +17,7 @@ import com.crossplatform.sdk.presentation.theme.ProvideSDKFonts
 import org.koin.compose.KoinApplication
 
 @Composable
-fun BoxPayCommonElements(
+internal fun BoxPayCommonElements(
     paymentMethodList : List<PaymentMethodTab>,
     token : String,
     isTestEnv : Boolean,

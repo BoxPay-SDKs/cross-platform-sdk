@@ -39,7 +39,7 @@ import kotlinx.coroutines.supervisorScope
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-class MainScreenViewModel(
+internal class MainScreenViewModel(
     private val repo: MainScreenRepo,
     private val analyticsRepo : CallUIAnalyticsRepo,
     private val otherPaymentMethodRepo: OtherPaymentMethodRepo,

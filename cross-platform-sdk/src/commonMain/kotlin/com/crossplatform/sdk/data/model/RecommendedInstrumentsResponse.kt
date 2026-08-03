@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RecommendedInstrumentsResponse(
+internal data class RecommendedInstrumentsResponse(
     @SerialName("type") val type : String?,
     @SerialName("brand") val brand : String?,
     @SerialName("instrumentRef") val instrumentRef : String?,

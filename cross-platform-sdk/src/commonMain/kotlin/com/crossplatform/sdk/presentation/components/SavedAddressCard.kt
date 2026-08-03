@@ -32,7 +32,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun SavedAddressCard(
+internal fun SavedAddressCard(
     modifier: Modifier = Modifier,
     address1: String?,
     address2: String?,

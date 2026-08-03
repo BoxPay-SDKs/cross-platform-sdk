@@ -50,7 +50,7 @@ import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun SelectTenureScreen(
+internal fun SelectTenureScreen(
     selectedBank: Bank?,
     cardType: String,
     selectedEmi: Pair<Int?, String?>,
@@ -156,7 +156,7 @@ fun SelectTenureScreen(
 
 
 @Composable
-fun EmiAmountDetails(
+internal fun EmiAmountDetails(
     modifier: Modifier = Modifier,
     isSelected: Boolean,
     onClickRadio: () -> Unit,
@@ -331,7 +331,7 @@ fun EmiAmountDetails(
 }
 
 @Composable
-fun TableDetails(
+internal fun TableDetails(
     modifier: Modifier = Modifier,
     amount: String,
     interest: String,

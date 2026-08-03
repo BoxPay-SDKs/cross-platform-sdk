@@ -58,7 +58,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun CardComponent(
+internal fun CardComponent(
     duration               : String? = null,
     bankName               : String? = null,
     bankUrl                : String? = null,

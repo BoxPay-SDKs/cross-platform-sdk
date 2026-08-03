@@ -41,7 +41,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PaymentRetryBottomSheet(
+internal fun PaymentRetryBottomSheet(
     sheetState : SheetState,
     totalSeconds: Int = 5,
     onTimeout: () -> Unit = {},

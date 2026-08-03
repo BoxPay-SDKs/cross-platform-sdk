@@ -33,7 +33,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KnowMoreBottomSheet(
+internal fun KnowMoreBottomSheet(
     buttonColor: String,
     buttonTextColor : String,
     ctaBorderRadius: Int,

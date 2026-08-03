@@ -1,6 +1,6 @@
 package com.crossplatform.sdk.domain.model
 
-data class SelectedPaymentMethod(
+internal data class SelectedPaymentMethod(
     val type : String,
     val id: String,
     val displayName: String,
