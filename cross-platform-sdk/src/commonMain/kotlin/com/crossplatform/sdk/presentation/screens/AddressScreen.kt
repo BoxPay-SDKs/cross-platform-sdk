@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
@@ -33,8 +34,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -568,6 +572,8 @@ internal fun AddressTextField(
     focusedBorderColor : String,
     unfocusedBorderColor : String
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     Box(modifier = modifier) {
         OutlinedTextField(
             value           = value,
@@ -578,7 +584,7 @@ internal fun AddressTextField(
             isError         = isError,
             readOnly        = readOnly,
             trailingIcon    = trailingIcon,
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
             shape           = RoundedCornerShape(8.dp),
             modifier        = Modifier
                 .fillMaxWidth()
@@ -594,7 +600,11 @@ internal fun AddressTextField(
                 // Border
                 focusedBorderColor   = focusedBorderColor.toComposeColor(),
                 unfocusedBorderColor = unfocusedBorderColor.toComposeColor(),
-            )
+            ),
+            keyboardActions = KeyboardActions( onDone = {
+                focusManager.clearFocus()
+                keyboardController?.hide()
+            }),
         )
 
         // ← transparent overlay captures clicks ✅

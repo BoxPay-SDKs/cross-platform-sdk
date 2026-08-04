@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -36,8 +38,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.MainScreenModel
@@ -103,6 +108,8 @@ internal fun UPIComponent(
         mutableStateOf(false)
     }
     val context = getPlatformContext()
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val isTablet = isTabletDevice()
     var upiCollectTextInput  by remember { mutableStateOf("") }
@@ -120,19 +127,22 @@ internal fun UPIComponent(
     var isJupiterInstalled   by remember { mutableStateOf(false) }
     var isPopUpiInstalled    by remember { mutableStateOf(false) }
     var isBharatPeInstalled  by remember { mutableStateOf(false) }
+    val installed = remember {
+        mutableStateOf<List<String>>(emptyList())
+    }
 
     LaunchedEffect(Unit) {
-        val installed    = getInstalledUpiApps(context)
+        installed.value    = getInstalledUpiApps(context)
         onErrorLoadingIntent(installed.toString())
-        isGpayInstalled    = installed.contains("gpay")
-        isPhonePeInstalled = installed.contains("phonepe")
-        isPaytmInstalled   = installed.contains("paytm")
-        isBhimUpiInstalled = installed.contains("bhim")
-        isAmazonInstalled = installed.contains("amazon_pay")
-        isMobikwikInstalled = installed.contains("mobikwik")
-        isJupiterInstalled = installed.contains("jupiter")
-        isPopUpiInstalled = installed.contains("pop")
-        isBharatPeInstalled = installed.contains("bharatpe")
+        isGpayInstalled    = installed.value.contains("gpay")
+        isPhonePeInstalled = installed.value.contains("phonepe")
+        isPaytmInstalled   = installed.value.contains("paytm")
+        isBhimUpiInstalled = installed.value.contains("bhim")
+        isAmazonInstalled = installed.value.contains("amazon_pay")
+        isMobikwikInstalled = installed.value.contains("mobikwik")
+        isJupiterInstalled = installed.value.contains("jupiter")
+        isPopUpiInstalled = installed.value.contains("pop")
+        isBharatPeInstalled = installed.value.contains("bharatpe")
     }
 
     LaunchedEffect(Unit) {
@@ -428,7 +438,8 @@ internal fun UPIComponent(
 
         // --- UPI Collect ---
         if (methodFlags.isUPICollectVisible || methodFlags.isUPIOtmCollectVisible) {
-            if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) {
+            val showDivider = (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) && (installed.value.isNotEmpty() || !getDeviceDetails().browser.equals("ios", true))
+            if (showDivider) {
                 HorizontalDivider(
                     color    = Color(0xFFE6E6E6),
                     modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
@@ -483,7 +494,12 @@ internal fun UPIComponent(
                         // Border
                         focusedBorderColor   = focusedTextInputBorderColor.toComposeColor(),
                         unfocusedBorderColor = unfocusedTextInputBorderColor.toComposeColor(),
-                    )
+                    ),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions( onDone = {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                    }),
                 )
 
                 if (upiCollectError) {

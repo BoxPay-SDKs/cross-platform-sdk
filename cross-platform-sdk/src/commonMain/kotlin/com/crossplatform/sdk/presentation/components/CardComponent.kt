@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -514,8 +516,13 @@ private fun CardTextField(
         isError              = isError,
         trailingIcon         = trailingIcon,
         visualTransformation = visualTransformation,
-        keyboardOptions      = KeyboardOptions(keyboardType = keyboardType),
+        keyboardOptions      = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
         shape                = RoundedCornerShape(8.dp),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                onBlur()
+            }
+        ),
         modifier             = modifier
             .fillMaxWidth()
             .height(62.dp)

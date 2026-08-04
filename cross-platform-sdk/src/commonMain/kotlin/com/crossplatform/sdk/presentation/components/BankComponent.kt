@@ -9,12 +9,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.presentation.SectionTitle
@@ -44,6 +49,8 @@ internal fun BankComponent(
     title : String,
     isBoxPayPayButtonVisible : Boolean = true
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     Column (
         modifier = modifier
     ) {
@@ -62,6 +69,15 @@ internal fun BankComponent(
                     modifier           = Modifier.size(width = 32.dp, height = 32.dp)
                 )
             },
+            keyboardOptions      = KeyboardOptions(
+                imeAction = ImeAction.Done          // ← shows "Done" on iOS keyboard
+            ),
+            keyboardActions      = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()          // ← dismisses keyboard on iOS
+                    keyboardController?.hide()         // ← belt-and-suspenders for Android/iOS parity
+                }
+            ),
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 // Border
