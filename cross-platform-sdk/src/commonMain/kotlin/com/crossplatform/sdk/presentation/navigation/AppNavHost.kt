@@ -31,6 +31,7 @@ import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.data.model.SDKPaymentResponse
 import com.crossplatform.sdk.presentation.buildAddressAndUserDetailsString
+import com.crossplatform.sdk.presentation.components.ExitCheckoutConfirmation
 import com.crossplatform.sdk.presentation.components.PaymentFailed
 import com.crossplatform.sdk.presentation.components.PaymentRetryBottomSheet
 import com.crossplatform.sdk.presentation.components.PaymentSuccessful
@@ -82,6 +83,8 @@ internal fun AppNavHost() {
     val proceedAutoRetryPayment = CheckoutDetailsHandler.proceedAutoRetryFunctionFlow.collectAsStateWithLifecycle()
     val (successTimeStamp , selectedPaymentMethod) = successDetails.value
 
+    val showExitCheckoutConfirmation = remember { mutableStateOf(false) }
+
     val navController = rememberNavController()
     val viewModel: MainScreenViewModel = koinViewModel()
     var showSwipeToPay by remember { mutableStateOf(false) }
@@ -111,6 +114,34 @@ internal fun AppNavHost() {
         }
     }
 
+    fun callSDKPaymentResponse() {
+        if(!showExitCheckoutConfirmation.value) {
+            showExitCheckoutConfirmation.value = true
+            return
+        }
+        SDKJobHandler.cancelAll()
+
+        // ✅ Capture data BEFORE resetting
+        val (status, transactionId) = CheckoutDetailsHandler.transactionFlow.value
+        val inquiryToken = CheckoutDetailsHandler.inquiryTokenFlow.value
+
+        ServiceRequest.close()
+
+        // ✅ Reset first so UI clears immediately
+        CheckoutDetailsHandler.resetToDefault()
+        UserDataHandler.resetToDefault()
+
+        // ✅ Notify after reset
+        SDKPaymentResponseHandler.notifyResult(
+            result = SDKPaymentResponse(
+                status = status,
+                transactionId = transactionId,
+                inquiryToken = inquiryToken
+            )
+        )
+
+        CommonSDKDismissHandler.notifyToCloseSDK()
+    }
 
     val baseRoute = currentRoute?.substringBefore("/{")
 
@@ -474,7 +505,6 @@ internal fun AppNavHost() {
             }
         )
     }
-
     if (showAutoRetryDropDown.value) {
         viewModel.qrTimer.value = 0
         PaymentRetryBottomSheet(
@@ -490,30 +520,18 @@ internal fun AppNavHost() {
             ctaBorderRadius = ctaBorderRadius.value
         )
     }
-}
-
-
-internal fun callSDKPaymentResponse() {
-    SDKJobHandler.cancelAll()
-
-    // ✅ Capture data BEFORE resetting
-    val (status, transactionId) = CheckoutDetailsHandler.transactionFlow.value
-    val inquiryToken = CheckoutDetailsHandler.inquiryTokenFlow.value
-
-    ServiceRequest.close()
-
-    // ✅ Reset first so UI clears immediately
-    CheckoutDetailsHandler.resetToDefault()
-    UserDataHandler.resetToDefault()
-
-    // ✅ Notify after reset
-    SDKPaymentResponseHandler.notifyResult(
-        result = SDKPaymentResponse(
-            status = status,
-            transactionId = transactionId,
-            inquiryToken = inquiryToken
+    if(showExitCheckoutConfirmation.value) {
+        ExitCheckoutConfirmation(
+            onConfirmExit = {
+                showExitCheckoutConfirmation.value = false
+                callSDKPaymentResponse()
+            },
+            onStay = {
+                showExitCheckoutConfirmation.value = false
+            },
+            ctaBorderRadius = ctaBorderRadius.value,
+            buttonColor = buttonColor.value,
+            buttonTextColor = buttonTextColor.value
         )
-    )
-
-    CommonSDKDismissHandler.notifyToCloseSDK()
+    }
 }
