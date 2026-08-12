@@ -179,6 +179,9 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
         )
     }
 
+    val walletList = this.configs.paymentMethods.toUiModel("wallet")
+    val netBankingList = this.configs.paymentMethods.toUiModel("netbanking")
+
 
     return MainScreenModel(
         status = status,
@@ -193,7 +196,9 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
         sessionExpiryTimer = this.sessionExpiryTimestamp,
         revolutPublicKey = revolutPublicKey,
         googlePayAdditionData = googlePayAdditionData,
-        applePayAdditionData = applePayAdditionData
+        applePayAdditionData = applePayAdditionData,
+        walletPaymentMethod = walletList,
+        netBankingPaymentMethod = netBankingList
     )
 }
 

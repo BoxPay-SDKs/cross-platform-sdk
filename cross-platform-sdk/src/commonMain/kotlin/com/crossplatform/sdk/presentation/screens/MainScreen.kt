@@ -547,6 +547,13 @@ internal fun MainScreen(
                     )
                     MorePaymentMethods(
                         methodFlags      = response.methodFlags,
+                        currencySymbol = currencyCode,
+                        amount = amount.value,
+                        ctaBorderRadius = ctaBorderRadius.value,
+                        buttonTextColor = buttonTextColor.value,
+                        buttonColor = buttonColor.value,
+                        walletList = response.walletPaymentMethod,
+                        netBankingList = response.netBankingPaymentMethod,
                         onNavigateToCard =
                             {
                                 viewModel.removeQRFromView()
@@ -624,7 +631,10 @@ internal fun MainScreen(
                             },
                         savedCardsList = viewModel.cardsRecommendedList.value,
                         surchargeList = surchargeDetails.value,
-                        currencySymbol = currencyCode
+                        onProceedForward = {  _,instrumentValue,type ->
+                            viewModel.postWalletOrNetBakingRequest(instrumentValue, type)
+                        },
+
                     )
                 }
 

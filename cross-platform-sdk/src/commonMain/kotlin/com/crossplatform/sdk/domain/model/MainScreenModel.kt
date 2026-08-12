@@ -15,7 +15,9 @@ internal data class MainScreenModel(
     val sessionExpiryTimer : String,
     val revolutPublicKey : String?,
     val googlePayAdditionData : GooglePayAdditionData?,
-    val applePayAdditionData : ApplePayAdditionData?
+    val applePayAdditionData : ApplePayAdditionData?,
+    val walletPaymentMethod : List<SelectedPaymentMethod>,
+    val netBankingPaymentMethod : List<SelectedPaymentMethod>
 ) {
 
     internal data class MethodFlags(
