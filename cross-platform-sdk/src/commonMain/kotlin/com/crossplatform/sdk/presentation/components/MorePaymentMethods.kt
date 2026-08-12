@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -32,8 +34,21 @@ internal fun MorePaymentMethods(
     onNavigateToBNPL: () -> Unit,
     savedCardsList : List<SelectedPaymentMethod>,
     surchargeList : List<SurchargeModel>,
-    currencySymbol : String
+    currencySymbol : String,
+    walletList : List<SelectedPaymentMethod>,
+    netBankingList : List<SelectedPaymentMethod>,
+    amount : Double,
+    buttonColor : String,
+    buttonTextColor : String,
+    ctaBorderRadius : Int,
+    onProceedForward : (instrumentType: String, instrumentValue: String, type: String) -> Unit
 ) {
+    val selectedWalletId = remember {
+        mutableStateOf("")
+    }
+    val selectedBankId = remember {
+        mutableStateOf("")
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -59,24 +74,44 @@ internal fun MorePaymentMethods(
             }
         }
         if(methodFlags.isWalletVisible) {
-            MorePaymentContainer(
+            ExpandablePaymentSection(
                 title = "Wallet",
                 image = Res.drawable.ic_wallet,
-                onClick = onNavigateToWallet,
+                onViewMore = onNavigateToWallet,
                 surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "wallet" }?.amount,
-                currencySymbol = currencySymbol
+                currencySymbol = currencySymbol,
+                providerList = walletList,
+                amount = amount,
+                selectedId = selectedWalletId.value,
+                buttonTextColor = buttonTextColor,
+                buttonColor = buttonColor,
+                ctaBorderRadius = ctaBorderRadius,
+                onClickRadio = {
+                    selectedWalletId.value = it
+                },
+                onProceedForward = onProceedForward
             )
             if(methodFlags.isNetBankingVisible || methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
                 HorizontalDivider()
             }
         }
         if(methodFlags.isNetBankingVisible) {
-            MorePaymentContainer(
+            ExpandablePaymentSection(
                 title = "Bank Transfers",
                 image = Res.drawable.ic_netbanking,
-                onClick = onNavigateToNetBanking,
+                onViewMore = onNavigateToNetBanking,
                 surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "netbanking" }?.amount,
-                currencySymbol = currencySymbol
+                currencySymbol = currencySymbol,
+                providerList = netBankingList,
+                amount = amount,
+                selectedId = selectedBankId.value,
+                buttonTextColor = buttonTextColor,
+                buttonColor = buttonColor,
+                ctaBorderRadius = ctaBorderRadius,
+                onClickRadio = {
+                    selectedBankId.value = it
+                },
+                onProceedForward = onProceedForward
             )
             if(methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
                 HorizontalDivider()

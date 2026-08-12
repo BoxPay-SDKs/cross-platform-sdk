@@ -800,4 +800,42 @@ internal class MainScreenViewModel(
         }
     }
 
+    fun postWalletOrNetBakingRequest(instrumentValue: String, type : String) {
+        viewModelScope.launch {
+            callUiAnalytics(
+                event = AnalyticsEvents.PAYMENT_INITIATED.value,
+                screenName = "MainScreenViewModel",
+                message = "Payment initiated"
+            )
+            isBoxPayAnimationLoading.value = true
+            val response = otherPaymentMethodRepo.initiatePayment(
+                instrumentDetails = instrumentValue,
+                paymentType = type,
+                token = CheckoutDetailsHandler.checkoutDetails.token
+            )
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentHtml = {html ->
+                    setWebViewHtml.value = html
+                    setWebViewScreen(true)
+                },
+                onOpenUpiIntent = {
+                    // no operations
+                },
+                onNavigateToTimer = {
+                    // no operations
+                },
+                onOpenQr = {_,_ ->
+                    // no operations
+                },
+                onSetPaymentUrl = {responseUrl ->
+                    setWebViewUrl.value = responseUrl
+                    setWebViewScreen(true)
+                },
+                setIsBoxPayAnimationVisible = {isBoxPayAnimationLoading.value = it},
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage
+            )
+        }
+    }
+
 }
