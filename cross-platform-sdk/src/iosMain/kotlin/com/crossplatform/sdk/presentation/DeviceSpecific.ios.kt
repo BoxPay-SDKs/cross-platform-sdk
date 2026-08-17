@@ -44,6 +44,9 @@ import kotlinx.cinterop.usePinned
 import org.jetbrains.skia.Image
 import platform.Foundation.NSData
 import platform.Foundation.NSDecimalNumber
+import platform.Foundation.NSNumber
+import platform.Foundation.NSNumberFormatter
+import platform.Foundation.NSNumberFormatterStyle
 import platform.Foundation.create
 import platform.PassKit.PKMerchantCapability3DS
 import platform.PassKit.PKPayment
@@ -331,4 +334,18 @@ private class PaymentDelegate(
     override fun paymentAuthorizationControllerDidFinish(controller: PKPaymentAuthorizationController) {
         controller.dismissWithCompletion { }
     }
+}
+
+internal actual fun formatAmount(
+    amount: Double,
+    minDecimals: Int,
+    maxDecimals: Int
+): String {
+    val formatter = NSNumberFormatter().apply {
+        numberStyle = 1uL
+        locale = NSLocale.currentLocale
+        minimumFractionDigits = minDecimals.toULong()
+        maximumFractionDigits = maxDecimals.toULong()
+    }
+    return formatter.stringFromNumber(NSNumber(amount)) ?: amount.toString()
 }

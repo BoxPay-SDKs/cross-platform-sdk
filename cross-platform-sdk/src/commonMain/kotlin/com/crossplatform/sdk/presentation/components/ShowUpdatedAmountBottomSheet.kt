@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.domain.model.SurchargeModel
+import com.crossplatform.sdk.presentation.formatAmount
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 
@@ -95,7 +96,7 @@ internal fun ShowUpdateAmountBottomSheet(
                                 fontFamily = LocalSDKFonts.current.primary
                             )
                         ) {
-                            append(" $amount")
+                            append(" ${formatAmount(amount)}")
                         }
                     },
                     fontWeight = FontWeight.Medium,
@@ -137,7 +138,7 @@ internal fun ShowUpdateAmountBottomSheet(
                                         fontFamily = LocalSDKFonts.current.primary
                                     )
                                 ) {
-                                    append(" ${item.amount}")
+                                    append(" ${formatAmount(item.amount)}")
                                 }
                             },
                             fontWeight = FontWeight.Medium,
@@ -188,7 +189,7 @@ internal fun ShowUpdateAmountBottomSheet(
                                 fontFamily = LocalSDKFonts.current.primary
                             )
                         ) {
-                            append(" $totalAmount")
+                            append(" ${formatAmount(totalAmount)}")
                         }
                     },
                     fontWeight = FontWeight.SemiBold,

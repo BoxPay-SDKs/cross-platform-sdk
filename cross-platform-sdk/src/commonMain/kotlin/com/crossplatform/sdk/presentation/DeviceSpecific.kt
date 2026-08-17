@@ -38,3 +38,5 @@ internal expect fun base64ToImageBitmap(base64: String): ImageBitmap
 // commonMain
 @Composable
 internal expect fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler
+
+internal expect fun formatAmount(amount: Double, minDecimals: Int = 0, maxDecimals: Int = 2): String

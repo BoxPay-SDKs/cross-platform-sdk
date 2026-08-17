@@ -98,7 +98,7 @@ fun TokenScreen(onProceed: (BoxPayConfig) -> Unit) {
     )
 
     val presetColors = listOf(
-        "Custom"    to null,
+        "None"    to "",
         "Charcoal"  to "#2D2B32",
         "Grey"      to "#ADACB0",
         "Black"     to "#000000",
@@ -107,7 +107,7 @@ fun TokenScreen(onProceed: (BoxPayConfig) -> Unit) {
         "Red"       to "#E53935",
         "Purple"    to "#7B1FA2",
     )
-    val fontFamily = remember { mutableStateOf("Default") }
+    val fontFamily = remember { mutableStateOf("None") }
     val fontDropdownExpanded = remember { mutableStateOf(false) }
 
     Column(
@@ -470,6 +470,7 @@ private fun FontFamilyDropdown(
 ) {
     // Label shown to the user → value sent to the SDK (lowercase to match the catalog)
     val options = listOf(
+        "None" to "",
         "Default" to "poppins",
         "Arial" to "arial",
         "NotoSans" to "notosans",

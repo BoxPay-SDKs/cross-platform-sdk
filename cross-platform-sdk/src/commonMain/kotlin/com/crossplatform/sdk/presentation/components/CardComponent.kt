@@ -510,7 +510,7 @@ private fun CardTextField(
                 text       = label,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
-                fontSize   = 16.sp
+                fontSize   = 12.sp
             )
         },
         isError              = isError,

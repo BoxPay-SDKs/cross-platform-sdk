@@ -48,7 +48,9 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONObject
+import java.text.NumberFormat
 import java.util.Calendar
+import java.util.Locale
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -288,8 +290,19 @@ internal class AndroidPaymentHandler(
 ) : ExpressCheckoutPaymentHandler {
 
     override suspend fun isGooglePayAvailable(config: GooglePayExpressCheckoutConfig,): Boolean {
-        val request = IsReadyToPayRequest.fromJson(buildGooglePayConfigJson(config))
-        return client.isReadyToPay(request).await()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return false
+        }
+
+        return try {
+            val request = IsReadyToPayRequest.fromJson(
+                buildGooglePayConfigJson(config)
+            )
+
+            client.isReadyToPay(request).await()
+        } catch (e: Exception) {
+            false
+        }
     }
 
     override fun isApplePayAvailable(): Boolean = false
@@ -410,3 +423,13 @@ private fun buildGooglePayRequestJson(request: ExpressCheckoutPaymentRequest, co
     }.toString()
 }
 
+internal actual fun formatAmount(
+    amount: Double,
+    minDecimals: Int,
+    maxDecimals: Int
+): String {
+    val nf = NumberFormat.getNumberInstance(Locale.getDefault())
+    nf.minimumFractionDigits = minDecimals
+    nf.maximumFractionDigits = maxDecimals
+    return nf.format(amount)
+}

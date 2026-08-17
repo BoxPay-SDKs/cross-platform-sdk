@@ -104,7 +104,6 @@ kotlin {
                 implementation(libs.koin.android)
                 implementation("androidx.lifecycle:lifecycle-process:2.8.7")
                 implementation("com.google.android.gms:play-services-wallet:20.0.0")
-                implementation("com.google.pay.button:compose-pay-button:1.2.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
                 implementation("com.revolut.payments:revolutpay:3.2.1") {
                     exclude(group = "com.squareup.okhttp3", module = "logging-interceptor")
@@ -121,6 +120,38 @@ kotlin {
             dependsOn(iosMain)
         }
         val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
+
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.turbine)
+                implementation(libs.koin.core)
+            }
+        }
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(libs.junit)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.turbine)
+                implementation(libs.mockk)
+
+                implementation(libs.robolectric)
+                implementation(libs.androidx.core.testing)
+
+                implementation(libs.androidx.ui.test.junit4)
+                implementation(libs.androidx.ui.test.manifest)
+            }
+        }
+        val iosTest by creating {
+            dependsOn(commonTest)
+        }
+        val iosArm64Test by getting {
+            dependsOn(iosTest)
+        }
+        val iosSimulatorArm64Test by getting {
+            dependsOn(iosTest)
+        }
     }
 }
 
@@ -136,6 +167,11 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 }
 

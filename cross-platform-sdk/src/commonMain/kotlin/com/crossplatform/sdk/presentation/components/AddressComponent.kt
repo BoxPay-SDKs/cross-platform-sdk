@@ -149,7 +149,7 @@ internal fun AddressComponent(
                                     }
                                 },
                                 fontFamily = LocalSDKFonts.current.primary,
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Medium,
                                 fontSize   = 14.sp
                             )
                         }
@@ -158,7 +158,7 @@ internal fun AddressComponent(
                             Text(
                                 text       = email,
                                 fontFamily = LocalSDKFonts.current.primary,
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Medium,
                                 fontSize   = 14.sp,
                                 maxLines   = 1,
                                 overflow   = TextOverflow.Ellipsis

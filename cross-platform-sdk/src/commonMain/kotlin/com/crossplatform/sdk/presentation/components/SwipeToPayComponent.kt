@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.ChevronIcon
+import com.crossplatform.sdk.presentation.formatAmount
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -175,7 +176,7 @@ internal fun SwipeToPayComponent(
                         )
                         append(
                             AnnotatedString(
-                                text = " $amount",
+                                text = " ${formatAmount(amount)}",
                                 spanStyle = SpanStyle(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.SemiBold,
@@ -353,7 +354,7 @@ internal fun SwipeToPayButtonComponent(
                 )
                 append(
                     AnnotatedString(
-                        text = "$amount",
+                        text = formatAmount(amount),
                         spanStyle = SpanStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,

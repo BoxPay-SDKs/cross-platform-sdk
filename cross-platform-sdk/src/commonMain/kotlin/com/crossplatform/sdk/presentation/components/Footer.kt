@@ -51,7 +51,14 @@ internal fun Footer() {
             modifier           = Modifier.size(50.dp)
         )
         Text(
-            text       = "· Terms & Conditions",
+            text       = "· ",
+            fontSize   = 12.sp,
+            fontFamily = LocalSDKFonts.current.primary,
+            fontWeight = FontWeight.Medium,
+            color      = Color(0xFF888888)
+        )
+        Text(
+            text       = "Terms & Conditions",
             fontSize   = 12.sp,
             fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Medium,

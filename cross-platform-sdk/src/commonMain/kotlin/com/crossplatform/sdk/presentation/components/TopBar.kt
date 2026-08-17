@@ -5,7 +5,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
@@ -23,25 +21,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.presentation.formatAmount
 import com.crossplatform.sdk.presentation.formatTimer
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.arrow_left
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_timer
-import crossplatformsdk.cross_platform_sdk.generated.resources.splash_icon
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -52,9 +48,9 @@ internal fun TopBar(
     sessionSeconds: Long? = null
 ) {
 
-    val isMerchantLogoVisible = CheckoutDetailsHandler.isMerchantLogoVisibleFlow.collectAsStateWithLifecycle()
-    val merchantLogo = CheckoutDetailsHandler.merchantLogoFlow.collectAsStateWithLifecycle()
-    val merchantName = CheckoutDetailsHandler.merchantNameFlow.collectAsStateWithLifecycle()
+//    val isMerchantLogoVisible = CheckoutDetailsHandler.isMerchantLogoVisibleFlow.collectAsStateWithLifecycle()
+//    val merchantLogo = CheckoutDetailsHandler.merchantLogoFlow.collectAsStateWithLifecycle()
+//    val merchantName = CheckoutDetailsHandler.merchantNameFlow.collectAsStateWithLifecycle()
     val itemsLength = CheckoutDetailsHandler.itemsLengthFlow.collectAsStateWithLifecycle()
     val currency = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
     val (_, currencyCode) = currency.value
@@ -85,7 +81,7 @@ internal fun TopBar(
         ) {
 
             // ✅ equivalent of Pressable + arrow-left image
-            if(isMerchantLogoVisible.value) {
+//            if(isMerchantLogoVisible.value) {
                 IconButton(
                     onClick = onBackPress,
                     modifier = Modifier.size(24.dp)
@@ -96,31 +92,31 @@ internal fun TopBar(
                         modifier = Modifier.size(24.dp)
                     )
                 }
-
+//
                 Spacer(modifier = Modifier.width(8.dp))
-            }
-
-            if(merchantLogo.value.isNotEmpty()) {
-                KamelImage(
-                    resource              = asyncPainterResource(data = merchantLogo.value),
-                    contentDescription = merchantName.value,
-                    modifier           = Modifier.size(32.dp),
-                    onLoading = {
-                        Box(
-                            modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFFE0E0E0), CircleShape)
-                        )
-                    },
-                    onFailure = {
-                        Image(
-                            painter = painterResource(Res.drawable.splash_icon),
-                            contentDescription = "Back",
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-            }
+//            }
+//
+//            if(merchantLogo.value.isNotEmpty()) {
+//                KamelImage(
+//                    resource              = asyncPainterResource(data = merchantLogo.value),
+//                    contentDescription = merchantName.value,
+//                    modifier           = Modifier.size(32.dp),
+//                    onLoading = {
+//                        Box(
+//                            modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFFE0E0E0), CircleShape)
+//                        )
+//                    },
+//                    onFailure = {
+//                        Image(
+//                            painter = painterResource(Res.drawable.splash_icon),
+//                            contentDescription = "Back",
+//                            modifier = Modifier.size(32.dp)
+//                        )
+//                    }
+//                )
+//
+//                Spacer(modifier = Modifier.width(8.dp))
+//            }
 
             // ✅ equivalent of <View style={styles.headerColumn}>
             Column(modifier = Modifier.weight(1f)) {
@@ -131,7 +127,9 @@ internal fun TopBar(
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
-                    color = Color(0xFF363840)
+                    color = Color(0xFF363840),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 // ✅ equivalent of showDesc &&
@@ -185,7 +183,7 @@ internal fun TopBar(
                                     color = Color(0xFF4F4D55)
                                 )
                             ) {
-                                append(" ${amount.value}")
+                                append(" ${formatAmount(amount.value)}")
                             }
                         },
                         fontSize = 12.sp,
