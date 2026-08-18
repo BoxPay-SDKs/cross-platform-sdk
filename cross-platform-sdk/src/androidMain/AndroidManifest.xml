@@ -13,19 +13,43 @@
         </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="tez" />
+            <data android:scheme="tez" />                    <!-- GPay -->
         </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="phonepe" />
+            <data android:scheme="gpay" />                    <!-- GPay -->
         </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="paytmmp" />
+            <data android:scheme="phonepe" />                <!-- PhonePe -->
         </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="bhim" />
+            <data android:scheme="paytmmp" />                <!-- Paytm -->
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="bhim" />                   <!-- BHIM -->
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="amazon" />                 <!-- Amazon Pay -->
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="amazonmandate" />          <!-- Amazon Pay mandate -->
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="jupiter" />                <!-- Jupiter -->
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="postpe" />                 <!-- BharatPe -->
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="mobikwik" />                <!-- MobiKwik -->
         </intent>
 
         <!-- GPay -->
