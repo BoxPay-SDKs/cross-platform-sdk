@@ -160,7 +160,7 @@ android {
     compileSdk = 36
     buildFeatures.buildConfig  = true
     defaultConfig {
-        minSdk = 23
+        minSdk = 21
         buildConfigField("String", "SDK_VERSION", "\"$sdkVersion\"")  // Android
     }
 
