@@ -45,11 +45,14 @@ import com.crossplatform.sdk.presentation.screens.EMIScreen
 import com.crossplatform.sdk.presentation.screens.InstantOfferScreen
 import com.crossplatform.sdk.presentation.screens.MainScreen
 import com.crossplatform.sdk.presentation.screens.NetBankingScreen
+import com.crossplatform.sdk.presentation.screens.PayNowScreen
 import com.crossplatform.sdk.presentation.screens.SavedAddressScreen
 import com.crossplatform.sdk.presentation.screens.ScreenBackInterceptor
 import com.crossplatform.sdk.presentation.screens.UpiTimerScreen
 import com.crossplatform.sdk.presentation.screens.WalletScreen
 import com.crossplatform.sdk.presentation.viewmodel.MainScreenViewModel
+import io.ktor.http.decodeURLPart
+import io.ktor.http.encodeURLParameter
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -115,11 +118,8 @@ internal fun AppNavHost() {
     }
 
     fun callSDKPaymentResponse() {
-        if(!showExitCheckoutConfirmation.value) {
-            showExitCheckoutConfirmation.value = true
-            return
-        }
         SDKJobHandler.cancelAll()
+        showExitCheckoutConfirmation.value = false
 
         // ✅ Capture data BEFORE resetting
         val (status, transactionId) = CheckoutDetailsHandler.transactionFlow.value
@@ -160,6 +160,7 @@ internal fun AppNavHost() {
         Routes.WalletScreen.route -> "Select Wallet"
         Routes.SavedAddressScreen.route -> "Your Addresses"
         Routes.BNPLScreen.route -> "Select BNPL"
+        Routes.PayNowScreen.route -> "PayNow"
         else -> "Payment Details"
     }
 
@@ -180,7 +181,7 @@ internal fun AppNavHost() {
                     } else {
                         val popped = navController.popBackStack()
                         if (!popped || (isNewAddress && baseRoute == Routes.AddressScreen.route)) {
-                            callSDKPaymentResponse()
+                            showExitCheckoutConfirmation.value = true
                         } else {
                             if (!surchargeDetails.value.isEmpty()) {
                                 CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
@@ -231,6 +232,11 @@ internal fun AppNavHost() {
                     },
                     onProceedInstantOfferScreen = {
                         navController.navigate(Routes.InstantOfferScreen.route)
+                    },
+                    onProceedPayNowScreen = {instrumentRef ->
+                        val encodedInstrumentRef =
+                            instrumentRef.encodeURLParameter()
+                        navController.navigate("${Routes.PayNowScreen.route}/$encodedInstrumentRef")
                     }
                 )
             }
@@ -264,7 +270,7 @@ internal fun AppNavHost() {
                     },
                     isAutoNavigationEnabled = isAutoNavigationEnabled,
                     onExitCheckout = {
-                        callSDKPaymentResponse()
+                        showExitCheckoutConfirmation.value = true
                     }
                 )
             }
@@ -283,7 +289,7 @@ internal fun AppNavHost() {
                     },
                     isAutoNavigationEnabled = isAutoNavigationEnabled,
                     onExitCheckout = {
-                        callSDKPaymentResponse()
+                        showExitCheckoutConfirmation.value = true
                     }
                 )
             }
@@ -334,7 +340,7 @@ internal fun AppNavHost() {
                     },
                     isAutoNavigationEnabled = isAutoNavigationEnabled,
                     onExitCheckout = {
-                        callSDKPaymentResponse()
+                        showExitCheckoutConfirmation.value = true
                     }
                 )
             }
@@ -353,7 +359,7 @@ internal fun AppNavHost() {
                     },
                     isAutoNavigationEnabled = isAutoNavigationEnabled,
                     onExitCheckout = {
-                        callSDKPaymentResponse()
+                        showExitCheckoutConfirmation.value = true
                     }
                 )
             }
@@ -372,7 +378,7 @@ internal fun AppNavHost() {
                     },
                     isAutoNavigationEnabled = isAutoNavigationEnabled,
                     onExitCheckout = {
-                        callSDKPaymentResponse()
+                        showExitCheckoutConfirmation.value = true
                     }
                 )
             }
@@ -396,6 +402,22 @@ internal fun AppNavHost() {
                         viewModel.applyOffer(it, amount)
                         navController.popBackStack()
                     }
+                )
+            }
+
+            composable(
+                route = "${Routes.PayNowScreen.route}/{instrumentRef}",
+                arguments = listOf(navArgument("instrumentRef") { type = NavType.StringType })
+            ) {backStackEntry ->
+                val instrumentRefEncoded = backStackEntry.arguments?.getString("instrumentRef") ?: ""
+                val instrumentRef =
+                    instrumentRefEncoded.decodeURLPart()
+
+                PayNowScreen(
+                    onBackPress = {
+                        navController.popBackStack()
+                    },
+                    instrumentRef = instrumentRef
                 )
             }
         }
@@ -523,7 +545,6 @@ internal fun AppNavHost() {
     if(showExitCheckoutConfirmation.value) {
         ExitCheckoutConfirmation(
             onConfirmExit = {
-                showExitCheckoutConfirmation.value = false
                 callSDKPaymentResponse()
             },
             onStay = {

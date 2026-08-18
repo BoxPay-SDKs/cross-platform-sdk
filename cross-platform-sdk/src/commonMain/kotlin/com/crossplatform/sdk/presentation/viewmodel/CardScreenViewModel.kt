@@ -63,6 +63,7 @@ internal class CardScreenViewModel(
 
     var maxCvvLength        = mutableStateOf(3)
     var maxCardNumberLength =  mutableStateOf(19)
+    var minCardNumberLength = mutableStateOf(19)
     var cardSelectedIcon    = mutableStateOf(Res.drawable.ic_card)
 
 
@@ -90,6 +91,7 @@ internal class CardScreenViewModel(
                     cardSelectedIcon.value = Res.drawable.ic_card
                     maxCvvLength.value = 3
                     maxCardNumberLength.value = 19
+                    minCardNumberLength.value = 19
                 }
             }
 

@@ -120,6 +120,14 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
             "NetBanking" -> methodFlags.copy(isNetBankingVisible = true)
             "Emi" -> methodFlags.copy(isEMIVisible = true)
             "BuyNowPayLater" -> methodFlags.copy(isBNPLVisible = true)
+            "Paynow" -> methodFlags.copy(
+                additionalPaymentMethods = methodFlags.additionalPaymentMethods + MainScreenModel.AdditionalPaymentMethod(
+                    title = method.typeTitle ?: "",
+                    iconUrl = method.logoUrl ?: "",
+                    instrumentTypeValue = method.instrumentTypeValue ?: "",
+                    brand = method.brand
+                )
+            )
             else -> methodFlags
         }
     }

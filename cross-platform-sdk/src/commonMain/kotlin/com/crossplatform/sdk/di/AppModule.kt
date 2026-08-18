@@ -24,6 +24,7 @@ import com.crossplatform.sdk.presentation.viewmodel.EMIScreenViewModel
 import com.crossplatform.sdk.presentation.viewmodel.InstantOfferViewModel
 import com.crossplatform.sdk.presentation.viewmodel.MainScreenViewModel
 import com.crossplatform.sdk.presentation.viewmodel.NetBankingViewModel
+import com.crossplatform.sdk.presentation.viewmodel.PayNowScreenViewModel
 import com.crossplatform.sdk.presentation.viewmodel.UpiTimerViewModel
 import com.crossplatform.sdk.presentation.viewmodel.WalletViewModel
 import org.koin.core.module.dsl.viewModel
@@ -61,6 +62,7 @@ internal val appModule = module {
     viewModel { EMIScreenViewModel(repo = get(),analyticsRepo = get(), cardScreenRepo = get(), fetchStatusRepo = get()) }
     viewModel { WalletViewModel(repo = get(),analyticsRepo = get(), fetchStatusRepo = get()) }
     viewModel { NetBankingViewModel(repo = get(),analyticsRepo = get(), fetchStatusRepo = get()) }
+    viewModel { PayNowScreenViewModel(repo = get(),analyticsRepo = get(), fetchStatusRepo = get()) }
     viewModel { BNPLViewModel(repo = get(),analyticsRepo = get(), fetchStatusRepo = get()) }
     viewModel { UpiTimerViewModel() }
 

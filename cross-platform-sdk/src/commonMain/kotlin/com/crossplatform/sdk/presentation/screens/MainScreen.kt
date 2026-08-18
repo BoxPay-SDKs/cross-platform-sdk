@@ -69,7 +69,8 @@ internal fun MainScreen(
     onShowSwipeToPay : () -> Unit,
     onProceedInstantOfferScreen : () -> Unit,
     selectedOfferCode: String,
-    onSetSelectedOfferCode : (String) -> Unit
+    onSetSelectedOfferCode : (String) -> Unit,
+    onProceedPayNowScreen : (String) -> Unit
 ) {
     val screenState by viewModel.state.collectAsStateWithLifecycle()
     val boxPayAnimationVisible by viewModel.isBoxPayAnimationLoading.collectAsStateWithLifecycle()
@@ -634,7 +635,9 @@ internal fun MainScreen(
                         onProceedForward = {  _,instrumentValue,type ->
                             viewModel.postWalletOrNetBakingRequest(instrumentValue, type)
                         },
-
+                        onNavigateToPayNow = {
+                            onProceedPayNowScreen(it)
+                        }
                     )
                 }
 

@@ -36,7 +36,15 @@ internal data class MainScreenModel(
         val isUPIOtmVisible : Boolean = false,
         val isGooglePayVisible : Boolean = false,
         val isApplePayVisible : Boolean = false,
-        val isRevolutPayVisible : Boolean = false
+        val isRevolutPayVisible : Boolean = false,
+        val additionalPaymentMethods : List<AdditionalPaymentMethod> = emptyList()
+    )
+
+    internal data class AdditionalPaymentMethod(
+        val title : String,
+        val iconUrl : String,
+        val instrumentTypeValue : String,
+        val brand : String
     )
 
     internal data class OrderDetails(

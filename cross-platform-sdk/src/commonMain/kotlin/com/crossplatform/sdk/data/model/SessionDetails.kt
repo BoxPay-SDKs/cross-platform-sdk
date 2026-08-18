@@ -160,6 +160,7 @@ internal data class PaymentMethod(
     @SerialName("type") val type: String,
     @SerialName("brand") val brand: String,
     @SerialName("title") val title: String? = null,
+    @SerialName("typeTitle") val typeTitle : String? = null,
     @SerialName("logoUrl") val logoUrl: String? = null,
     @SerialName("additionalData") val additionalData : AdditionalData? = null,
     @SerialName("instrumentTypeValue") val instrumentTypeValue: String? = null,

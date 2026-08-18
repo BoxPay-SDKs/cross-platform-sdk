@@ -32,6 +32,7 @@ internal fun MorePaymentMethods(
     onNavigateToNetBanking: () -> Unit,
     onNavigateToEmi: () -> Unit,
     onNavigateToBNPL: () -> Unit,
+    onNavigateToPayNow : (instrumentType : String) -> Unit,
     savedCardsList : List<SelectedPaymentMethod>,
     surchargeList : List<SurchargeModel>,
     currencySymbol : String,
@@ -134,6 +135,18 @@ internal fun MorePaymentMethods(
                 title = "Buy Now Pay Later",
                 image = Res.drawable.ic_bnpl,
                 onClick = onNavigateToBNPL,
+                surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "buynowpaylater" }?.amount,
+                currencySymbol = currencySymbol
+            )
+        }
+        methodFlags.additionalPaymentMethods.map { method ->
+            HorizontalDivider()
+            MorePaymentContainer(
+                title = method.title,
+                logoUrl = method.iconUrl,
+                onClick = {
+                    onNavigateToPayNow(method.instrumentTypeValue)
+                },
                 surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "buynowpaylater" }?.amount,
                 currencySymbol = currencySymbol
             )

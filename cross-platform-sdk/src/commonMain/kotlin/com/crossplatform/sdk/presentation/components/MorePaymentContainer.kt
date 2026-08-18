@@ -3,34 +3,37 @@ package com.crossplatform.sdk.presentation.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 internal fun MorePaymentContainer(
     title: String,
-    image: DrawableResource,
+    image: DrawableResource? = null,
+    logoUrl : String? = null,
     surchargeFee: Double? = null,
     onClick : () -> Unit,
     currencySymbol : String
@@ -46,16 +49,37 @@ internal fun MorePaymentContainer(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Payment Method Icon
-        Image(
-            painter = painterResource(image),
-            contentDescription = title,
-            modifier = Modifier
-                .size(32.dp)
-                .then(
-                    if (title == "EMI") Modifier.scale(scaleX = -1f, scaleY = 1f)
-                    else Modifier
-                )
-        )
+        if(logoUrl.isNullOrEmpty()) {
+            Image(
+                painter = painterResource(image!!),
+                contentDescription = title,
+                modifier = Modifier
+                    .size(32.dp)
+                    .then(
+                        if (title == "EMI") Modifier.scale(scaleX = -1f, scaleY = 1f)
+                        else Modifier
+                    )
+            )
+        } else {
+            KamelImage(
+                resource              = asyncPainterResource(data = logoUrl),
+                contentDescription = title,
+                modifier           = Modifier.size(32.dp),
+                onLoading = {
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .background(
+                                color = Color(0xFFE6E6E6),
+                                RoundedCornerShape(12.dp)
+                            )
+                    )
+                },
+                onFailure = {
+
+                }
+            )
+        }
 
         // Title + Surcharge
         Column(

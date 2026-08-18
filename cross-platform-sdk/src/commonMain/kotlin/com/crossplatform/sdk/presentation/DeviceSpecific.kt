@@ -40,3 +40,11 @@ internal expect fun base64ToImageBitmap(base64: String): ImageBitmap
 internal expect fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler
 
 internal expect fun formatAmount(amount: Double, minDecimals: Int = 0, maxDecimals: Int = 2): String
+
+// commonMain
+internal expect class QrImageSaver {
+    suspend fun saveBase64Image(base64: String, fileName: String): Result<Unit>
+}
+
+@Composable
+internal expect fun rememberQrImageSaver(): QrImageSaver

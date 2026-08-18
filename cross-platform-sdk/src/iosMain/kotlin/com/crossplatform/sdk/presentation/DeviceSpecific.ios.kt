@@ -1,6 +1,7 @@
 package com.crossplatform.sdk.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.crossplatform.sdk.data.model.BrowserData
 import com.crossplatform.sdk.data.model.DeviceDetails
 import com.crossplatform.sdk.domain.model.AppLifecycleState
@@ -46,7 +47,6 @@ import platform.Foundation.NSData
 import platform.Foundation.NSDecimalNumber
 import platform.Foundation.NSNumber
 import platform.Foundation.NSNumberFormatter
-import platform.Foundation.NSNumberFormatterStyle
 import platform.Foundation.create
 import platform.PassKit.PKMerchantCapability3DS
 import platform.PassKit.PKPayment
@@ -59,6 +59,8 @@ import platform.PassKit.PKPaymentNetworkMasterCard
 import platform.PassKit.PKPaymentNetworkVisa
 import platform.PassKit.PKPaymentRequest
 import platform.PassKit.PKPaymentSummaryItem
+import platform.UIKit.UIImage
+import platform.UIKit.UIImageWriteToSavedPhotosAlbum
 import platform.darwin.NSObject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -349,3 +351,23 @@ internal actual fun formatAmount(
     }
     return formatter.stringFromNumber(NSNumber(amount)) ?: amount.toString()
 }
+
+// iosMain
+internal actual class QrImageSaver {
+    @OptIn(ExperimentalForeignApi::class)
+    actual suspend fun saveBase64Image(base64: String, fileName: String): Result<Unit> =
+        runCatching {
+            val cleanBase64 = base64.substringAfter(",", base64)
+            val nsData = NSData.create(
+                base64EncodedString = cleanBase64,
+                options = 0u
+            ) ?: error("Invalid base64 data")
+
+            val uiImage = UIImage(data = nsData) ?: error("Could not decode image")
+
+            UIImageWriteToSavedPhotosAlbum(uiImage, null, null, null)
+        }
+}
+
+@Composable
+internal actual fun rememberQrImageSaver(): QrImageSaver = remember { QrImageSaver() }

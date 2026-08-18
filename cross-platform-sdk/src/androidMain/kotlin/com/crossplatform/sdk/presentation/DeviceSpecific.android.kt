@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation
 
+import android.content.ContentValues
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -8,6 +9,8 @@ import com.crossplatform.sdk.data.model.BrowserData
 import android.content.res.Resources
 import android.graphics.BitmapFactory
 import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -44,10 +47,14 @@ import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.Wallet
 import com.google.android.gms.wallet.contract.TaskResultContracts
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
 import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
@@ -432,4 +439,50 @@ internal actual fun formatAmount(
     nf.minimumFractionDigits = minDecimals
     nf.maximumFractionDigits = maxDecimals
     return nf.format(amount)
+}
+
+// androidMain
+internal actual class QrImageSaver(private val context: Context) {
+    actual suspend fun saveBase64Image(base64: String, fileName: String): Result<Unit> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                // Strip data URI prefix if present, e.g. "data:image/png;base64,...."
+                val cleanBase64 = base64.substringAfter(",", base64)
+                val bytes = Base64.decode(cleanBase64, android.util.Base64.DEFAULT)
+                println("QrSaver decoded bytes size = ${bytes.size}")
+
+                val resolver = context.contentResolver
+                val values = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, "$fileName.png")
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                    }
+                }
+
+                val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Downloads.EXTERNAL_CONTENT_URI
+                } else {
+                    // Pre-Q fallback: write directly to the public Downloads dir
+                    @Suppress("DEPRECATION")
+                    val downloadsDir =
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    val file = File(downloadsDir, "$fileName.png")
+                    FileOutputStream(file).use { it.write(bytes) }
+                    return@runCatching
+                }
+
+                val uri = resolver.insert(collection, values)
+                    ?: error("Failed to create MediaStore entry")
+
+                resolver.openOutputStream(uri)?.use { it.write(bytes) }
+                    ?: error("Failed to open output stream")
+            }
+        }
+}
+
+@Composable
+internal actual fun rememberQrImageSaver(): QrImageSaver {
+    val context = LocalContext.current
+    return remember { QrImageSaver(context) }
 }

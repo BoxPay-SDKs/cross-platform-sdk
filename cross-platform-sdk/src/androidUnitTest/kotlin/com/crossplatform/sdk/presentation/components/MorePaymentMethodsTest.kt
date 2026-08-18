@@ -43,6 +43,9 @@ class MorePaymentMethodsTest {
                     buttonTextColor = "#FFFFFF",
                     ctaBorderRadius = 8,
                     onProceedForward = { _, _, _ -> },
+                    onNavigateToPayNow = {
+
+                    }
                 )
             }
         }
@@ -76,6 +79,9 @@ class MorePaymentMethodsTest {
                     surchargeList = emptyList(), currencySymbol = "\u20b9", walletList = emptyList(), netBankingList = emptyList(),
                     amount = 499.0, buttonColor = "#000000", buttonTextColor = "#FFFFFF", ctaBorderRadius = 8,
                     onProceedForward = { _, _, _ -> },
+                    onNavigateToPayNow = {
+
+                    }
                 )
             }
         }

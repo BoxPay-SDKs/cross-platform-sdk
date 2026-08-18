@@ -11,4 +11,5 @@ internal sealed class Routes(val route: String) {
     object WalletScreen         : Routes("wallet_screen")
     object SavedAddressScreen   : Routes("saved_address_screen")
     object InstantOfferScreen   : Routes("instant_offer_screen")
+    object PayNowScreen         : Routes("pay_now_screen")
 }
