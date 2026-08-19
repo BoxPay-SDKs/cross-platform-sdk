@@ -10,7 +10,7 @@ import com.crossplatform.sdk.domain.model.AppLifecycleState
 internal expect fun getBrowserData(): BrowserData
 internal expect fun getDeviceDetails(): DeviceDetails
 
-expect fun getInstalledUpiApps(context: Any?): List<String>
+expect fun getInstalledUpiApps(context: Any?): List<Pair<String, String>>
 
 @Composable
 internal expect fun getPlatformContext(): Any?

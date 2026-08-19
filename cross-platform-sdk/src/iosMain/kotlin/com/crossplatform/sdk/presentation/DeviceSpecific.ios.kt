@@ -95,7 +95,7 @@ internal actual fun getBrowserData(): BrowserData {
     )
 }
 
-actual fun getInstalledUpiApps(context: Any?): List<String> {
+actual fun getInstalledUpiApps(context: Any?): List<Pair<String, String>> {
     // friendly name -> candidate schemes; any hit means installed
     val knownUpiSchemes: Map<String, List<String>> = mapOf(
         "gpay"       to listOf("tez://", "gpay://"),
@@ -109,12 +109,13 @@ actual fun getInstalledUpiApps(context: Any?): List<String> {
         "pop"        to listOf("popclubapp://"),
     )
 
-    return knownUpiSchemes.filter { (_, schemes) ->
-        schemes.any { scheme ->
-            val nsUrl = NSURL.URLWithString(scheme) ?: return@any false
-            UIApplication.sharedApplication.canOpenURL(nsUrl)
+    return knownUpiSchemes.mapNotNull { (alias, schemes) ->
+        val matchedScheme = schemes.firstOrNull { scheme ->
+            val nsUrl = NSURL.URLWithString(scheme)
+            nsUrl != null && UIApplication.sharedApplication.canOpenURL(nsUrl)
         }
-    }.keys.toList()
+        matchedScheme?.let { alias to it }
+    }
 }
 
 @Composable

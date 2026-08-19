@@ -128,21 +128,21 @@ internal fun UPIComponent(
     var isPopUpiInstalled    by remember { mutableStateOf(false) }
     var isBharatPeInstalled  by remember { mutableStateOf(false) }
     val installed = remember {
-        mutableStateOf<List<String>>(emptyList())
+        mutableStateOf<List<Pair<String, String>>>(emptyList())
     }
 
     LaunchedEffect(Unit) {
         installed.value    = getInstalledUpiApps(context)
-        onErrorLoadingIntent(installed.toString())
-        isGpayInstalled    = installed.value.contains("gpay")
-        isPhonePeInstalled = installed.value.contains("phonepe")
-        isPaytmInstalled   = installed.value.contains("paytm")
-        isBhimUpiInstalled = installed.value.contains("bhim")
-        isAmazonInstalled = installed.value.contains("amazon_pay")
-        isMobikwikInstalled = installed.value.contains("mobikwik")
-        isJupiterInstalled = installed.value.contains("jupiter")
-        isPopUpiInstalled = installed.value.contains("pop")
-        isBharatPeInstalled = installed.value.contains("bharatpe")
+        onErrorLoadingIntent(installed.value.toString())
+        isGpayInstalled      = installed.value.any { it.first == "gpay" }
+        isPhonePeInstalled   = installed.value.any { it.first == "phonepe" }
+        isPaytmInstalled     = installed.value.any { it.first == "paytm" }
+        isBhimUpiInstalled   = installed.value.any { it.first == "bhim" }
+        isAmazonInstalled    = installed.value.any { it.first == "amazon_pay" }
+        isMobikwikInstalled  = installed.value.any { it.first == "mobikwik" }
+        isJupiterInstalled   = installed.value.any { it.first == "jupiter" }
+        isPopUpiInstalled    = installed.value.any { it.first == "pop" }
+        isBharatPeInstalled  = installed.value.any { it.first == "bharatpe" }
     }
 
     LaunchedEffect(Unit) {

@@ -88,7 +88,7 @@ internal actual fun getBrowserData(): BrowserData {
     )
 }
 
-actual fun getInstalledUpiApps(context: Any?): List<String> {
+actual fun getInstalledUpiApps(context: Any?): List<Pair<String, String>> {
     try {
         val knownUpiPackages: Map<String, String> = mapOf(
             "gpay"       to "com.google.android.apps.nbu.paisa.user",
@@ -125,7 +125,9 @@ actual fun getInstalledUpiApps(context: Any?): List<String> {
         // Step 3: Merge and map back to friendly names
         val allFound = intentDiscovered + explicitlyFound
         val knownPackageToKey = knownUpiPackages.entries.associate { it.value to it.key }
-        return allFound.map { knownPackageToKey[it] ?: it }
+        return allFound.mapNotNull { packageName ->
+            knownPackageToKey[packageName]?.let { alias -> alias to packageName }
+        }
     } catch (_: Exception) {
         return emptyList()
     }
