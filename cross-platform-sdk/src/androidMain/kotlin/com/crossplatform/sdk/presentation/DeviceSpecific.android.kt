@@ -88,7 +88,7 @@ internal actual fun getBrowserData(): BrowserData {
     )
 }
 
-internal actual fun getInstalledUpiApps(context: Any?): List<String> {
+actual fun getInstalledUpiApps(context: Any?): List<String> {
     try {
         val knownUpiPackages: Map<String, String> = mapOf(
             "gpay"       to "com.google.android.apps.nbu.paisa.user",

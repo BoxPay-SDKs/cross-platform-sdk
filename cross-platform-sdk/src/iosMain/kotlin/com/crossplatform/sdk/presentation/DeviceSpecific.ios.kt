@@ -95,7 +95,7 @@ internal actual fun getBrowserData(): BrowserData {
     )
 }
 
-internal actual fun getInstalledUpiApps(context: Any?): List<String> {
+actual fun getInstalledUpiApps(context: Any?): List<String> {
     // friendly name -> candidate schemes; any hit means installed
     val knownUpiSchemes: Map<String, List<String>> = mapOf(
         "gpay"       to listOf("tez://", "gpay://"),
