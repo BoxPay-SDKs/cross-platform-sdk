@@ -345,7 +345,12 @@ private fun UpiTab(
             isBoxPayPayButtonVisible       = isBoxPayProceedButtonVisible,
             onClickIntent = {
                 viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.UpiIntent(it))
-            }
+            },
+            isExpanded = true,
+            setIsExpanded = {
+
+            },
+            collapsedLabel = ""
         )
         Footer()
     }

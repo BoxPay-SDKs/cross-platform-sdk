@@ -133,6 +133,13 @@ internal fun MainScreen(
     val selectedUpiInstrumentId = remember {
         mutableStateOf("")
     }
+    val selectedPaymentMethod = remember {
+        mutableStateOf("upi")
+    }
+
+    val selectedPaymentNetwork = remember {
+        mutableStateOf("intent")
+    }
 
     when (screenState) {
         is UiState.Loading ->  ShimmerView(modifier = Modifier.fillMaxSize())
@@ -410,8 +417,8 @@ internal fun MainScreen(
                 }
 
                 // --- UPI ---
-                if (response.methodFlags.isUPIVisible || response.methodFlags.isUPIOtmVisible) {
-                    SectionTitle(if(response.methodFlags.isUPIOtmVisible) "UPI One Time Mandate" else "Pay by any UPI")
+                if (response.methodFlags.isUPIVisible) {
+                    SectionTitle("Pay by any UPI")
                     UPIComponent(
                         methodFlags = response.methodFlags,
                         onClickSavedUpiPayButton = {instrumentRef, shopperVpa ->
@@ -433,7 +440,7 @@ internal fun MainScreen(
                                 screenName = "MainScreen",
                                 message = "Payment Category selected through upi collect"
                             )
-                            viewModel.postUpiCollectRequest(shopperVpa = shopperVpa, type = if(response. methodFlags.isUPIOtmCollectVisible ) "upiotm/collect" else "upi/collect", saveInstrument = saveInstrument)
+                            viewModel.postUpiCollectRequest(shopperVpa = shopperVpa, type = "upi/collect", saveInstrument = saveInstrument)
                         },
                         onClickUpiIntentPayButton = {selectedIntent ->
                             viewModel.callUiAnalytics(
@@ -446,11 +453,11 @@ internal fun MainScreen(
                                 screenName = "MainScreen",
                                 message = "Payment Category selected through intent"
                             )
-                            viewModel.postUpiIntentRequest(selectedIntent = selectedIntent, type =if(response. methodFlags.isUPIOtmCollectVisible ) "upiotm/intent" else "upi/intent")
+                            viewModel.postUpiIntentRequest(selectedIntent = selectedIntent, type = "upi/intent")
                         },
                         onClickUpiQRPayButton = {
                             viewModel.isQRLoaded.value = true
-                            viewModel.postUPIQrRequest(if(response. methodFlags.isUPIOtmCollectVisible ) "upiotm/qr" else "upi/qr")
+                            viewModel.postUPIQrRequest("upi/qr")
                         },
                         savedUpiList = viewModel.upiRecommendedList.value,
                         onClickRadio = {
@@ -490,7 +497,101 @@ internal fun MainScreen(
                         },
                         onClickIntent = {
                             // no operation
-                        }
+                        },
+                        isExpanded = selectedPaymentMethod.value.equals("upi", true),
+                        setIsExpanded = {
+                            selectedPaymentMethod.value = if (selectedPaymentMethod.value.equals("upi", true)) "" else "upi"
+                        },
+                        collapsedLabel = "UPI"
+                    )
+                }
+
+                if (response.methodFlags.isUPIOtmVisible) {
+                    SectionTitle("UPI One Time Mandate")
+                    UPIComponent(
+                        methodFlags = response.methodFlags,
+                        onClickSavedUpiPayButton = {instrumentRef, shopperVpa ->
+                            viewModel.callUiAnalytics(
+                                event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
+                                screenName = "MainScreen",
+                                message = "Payment Category selected through saved upi"
+                            )
+                            viewModel.postUpiCollectRequest(instrumentRef = instrumentRef, type = "upiotm/collect", shopperVpa = shopperVpa)
+                        },
+                        onClickUpiCollectPayButton = {shopperVpa, saveInstrument->
+                            viewModel.callUiAnalytics(
+                                event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
+                                screenName = "MainScreen",
+                                message = "Payment Category selected through upi collect"
+                            )
+                            viewModel.callUiAnalytics(
+                                event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
+                                screenName = "MainScreen",
+                                message = "Payment Category selected through upi collect"
+                            )
+                            viewModel.postUpiCollectRequest(shopperVpa = shopperVpa, type = "upiotm/collect", saveInstrument = saveInstrument)
+                        },
+                        onClickUpiIntentPayButton = {selectedIntent ->
+                            viewModel.callUiAnalytics(
+                                event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
+                                screenName = "MainScreen",
+                                message = "Payment Category selected through intent"
+                            )
+                            viewModel.callUiAnalytics(
+                                event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
+                                screenName = "MainScreen",
+                                message = "Payment Category selected through intent"
+                            )
+                            viewModel.postUpiIntentRequest(selectedIntent = selectedIntent, type = "upiotm/intent")
+                        },
+                        onClickUpiQRPayButton = {
+                            viewModel.isQRLoaded.value = true
+                            viewModel.postUPIQrRequest("upiotm/qr")
+                        },
+                        savedUpiList = viewModel.upiRecommendedList.value,
+                        onClickRadio = {
+                            selectedUpiInstrumentId.value = it
+                            selectedRecommendedInstrumentId.value = ""
+                            viewModel.callUiAnalytics(
+                                event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
+                                screenName = "MainScreen",
+                                message = "Payment Category selected through saved upi"
+                            )
+                        },
+                        onErrorLoadingIntent = {message ->
+                            viewModel.callUiAnalytics(
+                                event = AnalyticsEvents.UPI_APP_NOT_FOUND.value,
+                                screenName = "MainScreen",
+                                message = "UPI App related messages $message"
+                            )
+                        },
+                        buttonTextColor = buttonTextColor.value,
+                        buttonColor = buttonColor.value,
+                        currencySymbol = currencyCode,
+                        amount = amount.value,
+                        ctaBorderRadius = ctaBorderRadius.value,
+                        focusedTextInputBorderColor = focusedTextInputBorderColor.value,
+                        unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
+                        shopperToken = shopperToken.value,
+                        selectedId = selectedUpiInstrumentId.value,
+                        qrTimer = viewModel.qrTimer.value,
+                        qrImage = viewModel.qrImage.value,
+                        stopFunctionCall = {
+                            viewModel.stopFetchStatusPolling()
+                        },
+                        showQROnLoad = showQROnLoad.value,
+                        isQRLoaded = viewModel.isQRLoaded.value,
+                        onVpaChanged = {
+                            // no operation
+                        },
+                        onClickIntent = {
+                            // no operation
+                        },
+                        isExpanded = selectedPaymentMethod.value.equals("upionetimemandate", true),
+                        setIsExpanded = {
+                            selectedPaymentMethod.value = "upionetimemandate"
+                        },
+                        collapsedLabel = "UPI Mandate"
                     )
                 }
 
@@ -563,12 +664,12 @@ internal fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to Add card screen from normal flow"
                                 )
-                                if(isPresentInSurchargeModel(surchargeDetails.value, "card")) {
-                                    selectedMethod.value = "card"
-                                    showUpdatedAmountBottomSheet.value = true
-                                } else{
+//                                if(isPresentInSurchargeModel(surchargeDetails.value, "card")) {
+//                                    selectedMethod.value = "card"
+//                                    showUpdatedAmountBottomSheet.value = true
+//                                } else{
                                     onProceedCardScreen(false)
-                                }
+//                                }
                             },
                         onNavigateToWallet      =
                             {
@@ -578,12 +679,12 @@ internal fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to Wallet screen"
                                 )
-                                if(isPresentInSurchargeModel(surchargeDetails.value, "wallet")) {
-                                    selectedMethod.value = "wallet"
-                                    showUpdatedAmountBottomSheet.value = true
-                                } else{
+//                                if(isPresentInSurchargeModel(surchargeDetails.value, "wallet")) {
+//                                    selectedMethod.value = "wallet"
+//                                    showUpdatedAmountBottomSheet.value = true
+//                                } else{
                                     onProceedWalletScreen(false)
-                                }
+//                                }
                             },
                         onNavigateToNetBanking  =
                             {
@@ -593,12 +694,12 @@ internal fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to NetBanking screen"
                                 )
-                                if(isPresentInSurchargeModel(surchargeDetails.value, "netbanking")) {
-                                    selectedMethod.value = "netbanking"
-                                    showUpdatedAmountBottomSheet.value = true
-                                } else{
+//                                if(isPresentInSurchargeModel(surchargeDetails.value, "netbanking")) {
+//                                    selectedMethod.value = "netbanking"
+//                                    showUpdatedAmountBottomSheet.value = true
+//                                } else{
                                     onProceedNetBankingScreen(false)
-                                }
+//                                }
                             },
                         onNavigateToEmi         =
                             {
@@ -608,12 +709,12 @@ internal fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to EMI screen"
                                 )
-                                if(isPresentInSurchargeModel(surchargeDetails.value, "emi")) {
-                                    selectedMethod.value = "emi"
-                                    showUpdatedAmountBottomSheet.value = true
-                                } else{
+//                                if(isPresentInSurchargeModel(surchargeDetails.value, "emi")) {
+//                                    selectedMethod.value = "emi"
+//                                    showUpdatedAmountBottomSheet.value = true
+//                                } else{
                                     onProceedEMIScreen(false)
-                                }
+//                                }
                             },
                         onNavigateToBNPL        =
                             {
@@ -623,12 +724,13 @@ internal fun MainScreen(
                                     screenName = "MainScreen",
                                     message = "Navigated to BNPL screen"
                                 )
-                                if(isPresentInSurchargeModel(surchargeDetails.value, "buynowpaylater")) {
-                                    selectedMethod.value = "buynowpaylater"
-                                    showUpdatedAmountBottomSheet.value = true
-                                } else{
-                                    onProceedBNPLScreen(false)
-                                }
+//                                if(isPresentInSurchargeModel(surchargeDetails.value, "buynowpaylater")) {
+//                                    selectedMethod.value = "buynowpaylater"
+//                                    showUpdatedAmountBottomSheet.value = true
+//                                } else{
+//
+//                                }
+                                onProceedBNPLScreen(false)
                             },
                         savedCardsList = viewModel.cardsRecommendedList.value,
                         surchargeList = surchargeDetails.value,
@@ -637,6 +739,9 @@ internal fun MainScreen(
                         },
                         onNavigateToPayNow = {
                             onProceedPayNowScreen(it)
+                        },
+                        setSelectedPaymentMethod = {
+                            selectedPaymentMethod.value = it
                         }
                     )
                 }
@@ -644,14 +749,16 @@ internal fun MainScreen(
                 if (isOrderItemDetailsVisible.value) {
                     SectionTitle("Order Details")
                     OrderDetails(
-                        totalAmount = amount.value,
+                        totalAmount = amountBeforeSurcharge.value,
                         itemsArray = response.orderDetails?.items ?: emptyList(),
                         subTotalAmount = response.orderDetails?.subTotalAmount ?: 0.0,
                         shippingAmount = response.orderDetails?.shippingAmount ?: 0.0,
                         taxAmount = response.orderDetails?.taxAmount ?: 0.0,
                         surchargeDetails = surchargeDetails.value,
-                        selectedPaymentMethod = "Upi",
-                        currencySymbol = currencyCode
+                        selectedPaymentMethod = selectedPaymentMethod.value,
+                        selectedNetwork = selectedPaymentNetwork.value,
+                        currencySymbol = currencyCode,
+                        buttonColor = buttonColor.value,
                     )
                 }
                 Spacer(Modifier.weight(1f))
@@ -777,70 +884,70 @@ internal fun MainScreen(
         }
     }
 
-    if (showUpdatedAmountBottomSheet.value) {
-        ShowUpdateAmountBottomSheet(
-            selectedMethod = selectedMethod.value,
-            onClickProceed = {
-                showUpdatedAmountBottomSheet.value = false
-                when (selectedMethod.value) {
-                    "card"       -> {
-                        onProceedCardScreen(false)
-                        selectedMethod.value = ""
-                    }
-                    "wallet"     -> {
-                        onProceedWalletScreen(false)
-                        selectedMethod.value = ""
-                    }
-                    "netbanking" -> {
-                        onProceedNetBankingScreen(false)
-                        selectedMethod.value = ""
-                    }
-                    "emi"        -> {
-                        onProceedEMIScreen(false)
-                        selectedMethod.value = ""
-                    }
-                    "buynowpaylater"       -> {
-                        onProceedBNPLScreen(false)
-                        selectedMethod.value = ""
-                    }
-                    "googlepay" -> {
-                        viewModel.isBoxPayAnimationLoading.value = true
-
-                        paymentHandler.launchGooglePay(
-                            request = expressCheckoutPaymentRequest!!,
-                            config = googleConfig!!,
-                            onResult = {result ->
-                                when(result) {
-                                    is ExpressCheckoutPaymentResult.Cancelled , is ExpressCheckoutPaymentResult.Failure -> {
-                                        CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
-                                        viewModel.isBoxPayAnimationLoading.value = false
-                                        CheckoutDetailsHandler.setErrorMessage(errorMessage.value)
-                                        CheckoutDetailsHandler.setSessionFailed()
-                                    }
-                                    is ExpressCheckoutPaymentResult.Success -> {
-                                        viewModel.onProceedGooglePay(result.googleToken ?: "")
-                                    }
-                                }
-                            }
-                        )
-                    }
-                    "revolutpay" -> {
-                        viewModel.onClickRevolutPay()
-                    }
-                }
-            },
-            onClick = {
-                showUpdatedAmountBottomSheet.value = false
-                selectedMethod.value = ""
-            },
-            surchargeDetails = surchargeDetails.value,
-            currencySymbol = currencyCode,
-            amount = amount.value,
-            ctaBorderRadius = ctaBorderRadius.value,
-            buttonColor = buttonColor.value,
-            buttonTextColor = buttonTextColor.value
-        )
-    }
+//    if (showUpdatedAmountBottomSheet.value) {
+//        ShowUpdateAmountBottomSheet(
+//            selectedMethod = selectedMethod.value,
+//            onClickProceed = {
+//                showUpdatedAmountBottomSheet.value = false
+//                when (selectedMethod.value) {
+//                    "card"       -> {
+//                        onProceedCardScreen(false)
+//                        selectedMethod.value = ""
+//                    }
+//                    "wallet"     -> {
+//                        onProceedWalletScreen(false)
+//                        selectedMethod.value = ""
+//                    }
+//                    "netbanking" -> {
+//                        onProceedNetBankingScreen(false)
+//                        selectedMethod.value = ""
+//                    }
+//                    "emi"        -> {
+//                        onProceedEMIScreen(false)
+//                        selectedMethod.value = ""
+//                    }
+//                    "buynowpaylater"       -> {
+//                        onProceedBNPLScreen(false)
+//                        selectedMethod.value = ""
+//                    }
+//                    "googlepay" -> {
+//                        viewModel.isBoxPayAnimationLoading.value = true
+//
+//                        paymentHandler.launchGooglePay(
+//                            request = expressCheckoutPaymentRequest!!,
+//                            config = googleConfig!!,
+//                            onResult = {result ->
+//                                when(result) {
+//                                    is ExpressCheckoutPaymentResult.Cancelled , is ExpressCheckoutPaymentResult.Failure -> {
+//                                        CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
+//                                        viewModel.isBoxPayAnimationLoading.value = false
+//                                        CheckoutDetailsHandler.setErrorMessage(errorMessage.value)
+//                                        CheckoutDetailsHandler.setSessionFailed()
+//                                    }
+//                                    is ExpressCheckoutPaymentResult.Success -> {
+//                                        viewModel.onProceedGooglePay(result.googleToken ?: "")
+//                                    }
+//                                }
+//                            }
+//                        )
+//                    }
+//                    "revolutpay" -> {
+//                        viewModel.onClickRevolutPay()
+//                    }
+//                }
+//            },
+//            onClick = {
+//                showUpdatedAmountBottomSheet.value = false
+//                selectedMethod.value = ""
+//            },
+//            surchargeDetails = surchargeDetails.value,
+//            currencySymbol = currencyCode,
+//            amount = amountBeforeSurcharge.value,
+//            ctaBorderRadius = ctaBorderRadius.value,
+//            buttonColor = buttonColor.value,
+//            buttonTextColor = buttonTextColor.value
+//        )
+//    }
 
     if(showWebView) {
         WebViewScreen(

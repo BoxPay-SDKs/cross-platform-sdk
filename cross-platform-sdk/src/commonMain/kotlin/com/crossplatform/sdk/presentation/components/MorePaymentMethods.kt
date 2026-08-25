@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -42,8 +44,23 @@ internal fun MorePaymentMethods(
     buttonColor : String,
     buttonTextColor : String,
     ctaBorderRadius : Int,
-    onProceedForward : (instrumentType: String, instrumentValue: String, type: String) -> Unit
+    onProceedForward : (instrumentType: String, instrumentValue: String, type: String) -> Unit,
+    setSelectedPaymentMethod: (String) -> Unit
 ) {
+    val isWalletVisible = remember {
+        mutableStateOf(false)
+    }
+    val isNetBankingVisible = remember {
+        mutableStateOf(false)
+    }
+    val walletRotation by animateFloatAsState(
+        targetValue = if (isWalletVisible.value) 180f else 0f,
+        label       = "chevron"
+    )
+    val bankRotation by animateFloatAsState(
+        targetValue = if (isNetBankingVisible.value) 180f else 0f,
+        label       = "chevron"
+    )
     val selectedWalletId = remember {
         mutableStateOf("")
     }
@@ -79,7 +96,7 @@ internal fun MorePaymentMethods(
                 title = "Wallet",
                 image = Res.drawable.ic_wallet,
                 onViewMore = onNavigateToWallet,
-                surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "wallet" }?.amount,
+                surchargeList = surchargeList,
                 currencySymbol = currencySymbol,
                 providerList = walletList,
                 amount = amount,
@@ -90,7 +107,15 @@ internal fun MorePaymentMethods(
                 onClickRadio = {
                     selectedWalletId.value = it
                 },
-                onProceedForward = onProceedForward
+                onProceedForward = onProceedForward,
+                rotate = walletRotation,
+                isExpanded = isWalletVisible.value,
+                setIsExpanded = {
+                    isNetBankingVisible.value = false
+                    val newExpandedState = !isWalletVisible.value
+                    isWalletVisible.value = newExpandedState
+                    setSelectedPaymentMethod(if (newExpandedState) "wallet" else "")
+                }
             )
             if(methodFlags.isNetBankingVisible || methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
                 HorizontalDivider()
@@ -101,7 +126,7 @@ internal fun MorePaymentMethods(
                 title = "Bank Transfers",
                 image = Res.drawable.ic_netbanking,
                 onViewMore = onNavigateToNetBanking,
-                surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "netbanking" }?.amount,
+                surchargeList = surchargeList,
                 currencySymbol = currencySymbol,
                 providerList = netBankingList,
                 amount = amount,
@@ -112,7 +137,15 @@ internal fun MorePaymentMethods(
                 onClickRadio = {
                     selectedBankId.value = it
                 },
-                onProceedForward = onProceedForward
+                onProceedForward = onProceedForward,
+                rotate = bankRotation,
+                isExpanded = isNetBankingVisible.value,
+                setIsExpanded = {
+                    isWalletVisible.value = false
+                    val newExpandedState = !isNetBankingVisible.value
+                    isNetBankingVisible.value = newExpandedState
+                    setSelectedPaymentMethod(if (newExpandedState) "netbanking" else "")
+                }
             )
             if(methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
                 HorizontalDivider()

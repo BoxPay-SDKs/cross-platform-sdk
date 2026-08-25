@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.buildAnnotatedString
@@ -24,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.DrawableResource
@@ -91,20 +94,20 @@ internal fun MorePaymentContainer(
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Medium
             )
-            if (surchargeFee != 0.0 && surchargeFee != null) {
-                Text(
-                    text       = buildAnnotatedString {
-                        append(currencySymbol)
-                        append(" $surchargeFee extra applied as surcharge")
-                    },
-                    fontSize   = 14.sp,
-                    fontFamily = LocalSDKFonts.current.primary,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color      = Color(0xFF32CD32)
-                )
-            }
+//            if (surchargeFee != 0.0 && surchargeFee != null) {
+//                Text(
+//                    text       = buildAnnotatedString {
+//                        append(currencySymbol)
+//                        append(" $surchargeFee extra applied as surcharge")
+//                    },
+//                    fontSize   = 14.sp,
+//                    fontFamily = LocalSDKFonts.current.primary,
+//                    fontWeight = FontWeight.Medium,
+//                    maxLines = 1,
+//                    overflow = TextOverflow.Ellipsis,
+//                    color      = Color(0xFF32CD32)
+//                )
+//            }
         }
 
         // Chevron

@@ -9,5 +9,6 @@ internal data class SurchargeModel(
     val surchargeCode : String,
     val network : String,
     val classification : String,
-    val amount : Double
+    val amount : Double,
+    val description : String,
 )

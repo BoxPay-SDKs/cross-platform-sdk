@@ -2,6 +2,7 @@ package com.crossplatform.sdk.domain.mapper
 
 import com.crossplatform.sdk.data.model.FetchSurchargeResponse
 import com.crossplatform.sdk.domain.model.SurchargeModel
+import com.crossplatform.sdk.presentation.stripHtmlTags
 
 internal fun FetchSurchargeResponse.toUiModel() : List<SurchargeModel> {
     val expressCheckout = listOf("googlepay", "applepay", "revolutpay")
@@ -14,7 +15,8 @@ internal fun FetchSurchargeResponse.toUiModel() : List<SurchargeModel> {
             surchargeCode  = applied.surchargeDetails?.surchargeCode ?: "",
             network        = applied.surchargeDetails?.network ?: "",
             classification = applied.surchargeDetails?.classification ?: "",
-            amount         = applied.calculatedSurchargeFee ?: 0.0
+            amount         = applied.calculatedSurchargeFee ?: 0.0,
+            description = applied.surchargeDetails?.description?.stripHtmlTags() ?: ""
         )
     } ?: emptyList()
 }

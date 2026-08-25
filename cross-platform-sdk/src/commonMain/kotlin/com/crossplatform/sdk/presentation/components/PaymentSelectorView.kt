@@ -110,6 +110,7 @@ internal fun PaymentSelector(
     amount             : Double,
     ctaBorderRadius    : Int,
     drawableResource: DrawableResource,
+    surchargeFee : Double? = null,
     isBoxPayPayButtonVisible : Boolean = true
 ) {
     Column(
@@ -178,6 +179,17 @@ internal fun PaymentSelector(
                             color      = Color(0xFF1CA672)
                         )
                     }
+                }
+                if (surchargeFee != null && surchargeFee != 0.0) {
+                    Text(
+                        text = "$currencySymbol $surchargeFee extra applied as surcharge",
+                        fontSize = 14.sp,
+                        fontFamily = LocalSDKFonts.current.primary,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = Color(0xFF32CD32)
+                    )
                 }
             }
 

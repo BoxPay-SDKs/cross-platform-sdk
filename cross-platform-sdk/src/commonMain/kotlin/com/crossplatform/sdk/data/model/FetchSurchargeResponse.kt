@@ -28,6 +28,7 @@ internal data class FetchSurchargeResponse(
         @SerialName("surchargeCode") val surchargeCode  : String? = null,
         @SerialName("applicableOn") val applicableOn : String? = null,
         @SerialName("network") val network : String? = null,
-        @SerialName("classification") val classification : String? = null
+        @SerialName("classification") val classification : String? = null,
+        @SerialName("description") val description : String? = null
     )
 }

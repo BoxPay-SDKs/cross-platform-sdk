@@ -319,3 +319,17 @@ internal fun formatPercent(percent : Double) : String {
         percent.toString()
     }
 }
+
+internal fun String.stripHtmlTags(): String {
+    return this
+        .replace(Regex("<[^>]*>"), " ")
+        .replace("&nbsp;", " ")
+        .replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+        .replace("&apos;", "'")
+        .replace(Regex("\\s+"), " ")
+        .trim()
+}

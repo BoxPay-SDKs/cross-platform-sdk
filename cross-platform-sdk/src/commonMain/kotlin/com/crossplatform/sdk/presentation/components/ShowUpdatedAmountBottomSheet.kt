@@ -16,6 +16,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.formatAmount
+import com.crossplatform.sdk.presentation.isTabletDevice
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 
@@ -45,6 +49,25 @@ internal fun ShowUpdateAmountBottomSheet(
     buttonColor : String,
     buttonTextColor : String
 ) {
+    val amountAfterSurcharge = remember {
+        mutableStateOf(amount)
+    }
+
+    val filteredSurcharges = remember {
+        mutableStateOf<List<SurchargeModel>>(emptyList())
+    }
+
+    LaunchedEffect(selectedMethod) {
+        filteredSurcharges.value = surchargeDetails.filter { item ->
+            val applicable = item.applicableOn.lowercase().trim()
+            applicable == selectedMethod.lowercase().trim() && item.network.isBlank()
+        }
+
+        println("=====filteredsurcharge ${filteredSurcharges.value}")
+
+        amountAfterSurcharge.value = filteredSurcharges.value.sumOf { it.amount } + amount
+    }
+
     ModalBottomSheet(
         onDismissRequest = onClick,
         dragHandle       = null,
@@ -107,59 +130,19 @@ internal fun ShowUpdateAmountBottomSheet(
             }
 
             // Surcharge Rows — mirrors your displaySurcharge logic
-            surchargeDetails.forEach { item ->
-
-                if (item.applicableOn.lowercase() == selectedMethod) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = item.title,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 12.sp,
-                            fontFamily = LocalSDKFonts.current.primary,
-                            color = Color(0xFF010102)
-                        )
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontFamily = LocalSDKFonts.current.secondary
-                                    )
-                                ) {
-                                    append("+ $currencySymbol")
-                                }
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontFamily = LocalSDKFonts.current.primary
-                                    )
-                                ) {
-                                    append(" ${formatAmount(item.amount)}")
-                                }
-                            },
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 12.sp,
-                            fontFamily = LocalSDKFonts.current.primary,
-                            color = Color(0xFF010102)
-                        )
-                    }
-                }
+            filteredSurcharges.value.forEach { item ->
+                SummaryRow(
+                    label = item.title,
+                    amount = item.amount,
+                    currencySymbol = "+ $currencySymbol",
+                    buttonColor = buttonColor,
+                    description = item.description
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
             HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 1.dp)
             Spacer(modifier = Modifier.height(8.dp))
-
-            // Total Row
-            val totalSurcharge = surchargeDetails
-                .filter { it.applicableOn.equals(selectedMethod, ignoreCase = true) }
-                .sumOf { it.amount }
-
-            val totalAmount = amount + totalSurcharge
 
             Row(
                 modifier = Modifier
@@ -189,7 +172,7 @@ internal fun ShowUpdateAmountBottomSheet(
                                 fontFamily = LocalSDKFonts.current.primary
                             )
                         ) {
-                            append(" ${formatAmount(totalAmount)}")
+                            append(" ${formatAmount(amountAfterSurcharge.value)}")
                         }
                     },
                     fontWeight = FontWeight.SemiBold,
@@ -206,7 +189,7 @@ internal fun ShowUpdateAmountBottomSheet(
                     .clip(RoundedCornerShape(ctaBorderRadius.dp))
                     .background(buttonColor.toComposeColor(), RoundedCornerShape(ctaBorderRadius.dp))
                     .clickable{
-                        CheckoutDetailsHandler.setAmount(totalAmount)
+                        CheckoutDetailsHandler.setAmount(amountAfterSurcharge.value)
                         onClickProceed()
                     },
                 amount = 0.0,

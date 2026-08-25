@@ -40,13 +40,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.MainScreenModel
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
+import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.base64ToImageBitmap
 import com.crossplatform.sdk.presentation.getDeviceDetails
 import com.crossplatform.sdk.presentation.getInstalledUpiApps
@@ -102,7 +106,10 @@ internal fun UPIComponent(
     isQRLoaded : Boolean,
     isBoxPayPayButtonVisible : Boolean = true,
     onVpaChanged : (String) -> Unit,
-    onClickIntent : (String) -> Unit
+    onClickIntent : (String) -> Unit,
+    isExpanded : Boolean,
+    setIsExpanded : () -> Unit,
+    collapsedLabel : String
 ) {
     val isSaveInstrumentCheckBoxClicked = remember {
         mutableStateOf(false)
@@ -130,6 +137,11 @@ internal fun UPIComponent(
     val installed = remember {
         mutableStateOf<List<Pair<String, String>>>(emptyList())
     }
+
+    val rotation by animateFloatAsState(
+        targetValue = if (isExpanded) 180f else 0f,
+        label       = "chevron"
+    )
 
     LaunchedEffect(Unit) {
         installed.value    = getInstalledUpiApps(context)
@@ -209,7 +221,8 @@ internal fun UPIComponent(
             .padding(bottom = 12.dp)
     ) {
 
-        // --- Saved UPI Array ---
+        if(isExpanded) {
+            // --- Saved UPI Array ---
             if (savedUpiList.isNotEmpty()) {
                 savedUpiList.forEachIndexed { _, provider ->
                     PaymentSelector(
@@ -225,7 +238,7 @@ internal fun UPIComponent(
                             selectedIntent = ""
                             upiCollectVisible = false
                             upiCollectError   = false
-                                              },
+                        },
                         onProceedForward    = { displayValue, instrumentValue ->
                             onClickSavedUpiPayButton(instrumentValue, displayValue )
                         },
@@ -245,78 +258,78 @@ internal fun UPIComponent(
                 }
             }
 
-        // --- UPI Intent ---
-        if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) {
-            Row(
-                modifier              = Modifier.fillMaxWidth().padding(start = 16.dp,end = 16.dp, top = 8.dp).horizontalScroll(
-                    rememberScrollState()
-                ),
-                horizontalArrangement = Arrangement.spacedBy(32.dp)
-            ) {
-                if (isGpayInstalled) {
-                    UpiIntentItem(
-                        label       = "GPay",
-                        icon        = Res.drawable.gpay_icon,
-                        isSelected  = selectedIntent == "GPay",
-                        buttonColor = buttonColor,
-                        onClick     = {
-                            upiCollectVisible = false
-                            upiCollectError   = false
-                            selectedIntent    = "GPay"
-                            onClickRadio("")
-                            upiQRVisible = false
-                            onClickIntent(selectedIntent)
-                        }
-                    )
-                }
-                if (isPhonePeInstalled) {
-                    UpiIntentItem(
-                        label       = "PhonePe",
-                        icon        = Res.drawable.phonepe_icon,
-                        isSelected  = selectedIntent == "PhonePe",
-                        buttonColor = buttonColor,
-                        onClick     = {
-                            upiCollectVisible = false
-                            upiCollectError   = false
-                            selectedIntent    = "PhonePe"
-                            onClickRadio("")
-                            upiQRVisible = false
-                            onClickIntent(selectedIntent)
-                        }
-                    )
-                }
-                if (isPaytmInstalled) {
-                    UpiIntentItem(
-                        label       = "PayTm",
-                        icon        = Res.drawable.paytm_icon,
-                        isSelected  = selectedIntent == "PayTm",
-                        buttonColor = buttonColor,
-                        onClick     = {
-                            upiCollectVisible = false
-                            upiCollectError   = false
-                            selectedIntent    = "PayTm"
-                            onClickRadio("")
-                            upiQRVisible = false
-                            onClickIntent(selectedIntent)
-                        }
-                    )
-                }
-                if(isBhimUpiInstalled) {
-                    UpiIntentItem(
-                        label       = "Bhim",
-                        icon        = Res.drawable.ic_bhim_upi,
-                        isSelected  = selectedIntent == "BHIM",
-                        buttonColor = buttonColor,
-                        onClick     = {
-                            upiCollectVisible = false
-                            upiCollectError   = false
-                            selectedIntent    = "BHIM"
-                            onClickRadio("")
-                            upiQRVisible = false
-                            onClickIntent(selectedIntent)
-                        }
-                    )
-                }
+            // --- UPI Intent ---
+            if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) {
+                Row(
+                    modifier              = Modifier.fillMaxWidth().padding(start = 16.dp,end = 16.dp, top = 8.dp).horizontalScroll(
+                        rememberScrollState()
+                    ),
+                    horizontalArrangement = Arrangement.spacedBy(32.dp)
+                ) {
+                    if (isGpayInstalled) {
+                        UpiIntentItem(
+                            label       = "GPay",
+                            icon        = Res.drawable.gpay_icon,
+                            isSelected  = selectedIntent == "GPay",
+                            buttonColor = buttonColor,
+                            onClick     = {
+                                upiCollectVisible = false
+                                upiCollectError   = false
+                                selectedIntent    = "GPay"
+                                onClickRadio("")
+                                upiQRVisible = false
+                                onClickIntent(selectedIntent)
+                            }
+                        )
+                    }
+                    if (isPhonePeInstalled) {
+                        UpiIntentItem(
+                            label       = "PhonePe",
+                            icon        = Res.drawable.phonepe_icon,
+                            isSelected  = selectedIntent == "PhonePe",
+                            buttonColor = buttonColor,
+                            onClick     = {
+                                upiCollectVisible = false
+                                upiCollectError   = false
+                                selectedIntent    = "PhonePe"
+                                onClickRadio("")
+                                upiQRVisible = false
+                                onClickIntent(selectedIntent)
+                            }
+                        )
+                    }
+                    if (isPaytmInstalled) {
+                        UpiIntentItem(
+                            label       = "PayTm",
+                            icon        = Res.drawable.paytm_icon,
+                            isSelected  = selectedIntent == "PayTm",
+                            buttonColor = buttonColor,
+                            onClick     = {
+                                upiCollectVisible = false
+                                upiCollectError   = false
+                                selectedIntent    = "PayTm"
+                                onClickRadio("")
+                                upiQRVisible = false
+                                onClickIntent(selectedIntent)
+                            }
+                        )
+                    }
+                    if(isBhimUpiInstalled) {
+                        UpiIntentItem(
+                            label       = "Bhim",
+                            icon        = Res.drawable.ic_bhim_upi,
+                            isSelected  = selectedIntent == "BHIM",
+                            buttonColor = buttonColor,
+                            onClick     = {
+                                upiCollectVisible = false
+                                upiCollectError   = false
+                                selectedIntent    = "BHIM"
+                                onClickRadio("")
+                                upiQRVisible = false
+                                onClickIntent(selectedIntent)
+                            }
+                        )
+                    }
 //                if (isAmazonInstalled) {
 //                    UpiIntentItem(
 //                        label       = "AmazonPay",
@@ -333,54 +346,54 @@ internal fun UPIComponent(
 //                        }
 //                    )
 //                }
-                if (isMobikwikInstalled) {
-                    UpiIntentItem(
-                        label       = "Mobikwik",
-                        icon        = Res.drawable.ic_mobikwik_pay,
-                        isSelected  = selectedIntent == "Mobikwik",
-                        buttonColor = buttonColor,
-                        onClick     = {
-                            upiCollectVisible = false
-                            upiCollectError   = false
-                            selectedIntent    = "Mobikwik"
-                            onClickRadio("")
-                            upiQRVisible = false
-                            onClickIntent(selectedIntent)
-                        }
-                    )
-                }
-                if (isBharatPeInstalled) {
-                    UpiIntentItem(
-                        label       = "BharatPe",
-                        icon        = Res.drawable.ic_bharat_pe,
-                        isSelected  = selectedIntent == "BharatPe",
-                        buttonColor = buttonColor,
-                        onClick     = {
-                            upiCollectVisible = false
-                            upiCollectError   = false
-                            selectedIntent    = "BharatPe"
-                            onClickRadio("")
-                            upiQRVisible = false
-                            onClickIntent(selectedIntent)
-                        }
-                    )
-                }
-                if (isJupiterInstalled) {
-                    UpiIntentItem(
-                        label       = "Jupiter",
-                        icon        = Res.drawable.ic_jupiter_pay,
-                        isSelected  = selectedIntent == "Jupiter",
-                        buttonColor = buttonColor,
-                        onClick     = {
-                            upiCollectVisible = false
-                            upiCollectError   = false
-                            selectedIntent    = "Jupiter"
-                            onClickRadio("")
-                            upiQRVisible = false
-                            onClickIntent(selectedIntent)
-                        }
-                    )
-                }
+                    if (isMobikwikInstalled) {
+                        UpiIntentItem(
+                            label       = "Mobikwik",
+                            icon        = Res.drawable.ic_mobikwik_pay,
+                            isSelected  = selectedIntent == "Mobikwik",
+                            buttonColor = buttonColor,
+                            onClick     = {
+                                upiCollectVisible = false
+                                upiCollectError   = false
+                                selectedIntent    = "Mobikwik"
+                                onClickRadio("")
+                                upiQRVisible = false
+                                onClickIntent(selectedIntent)
+                            }
+                        )
+                    }
+                    if (isBharatPeInstalled) {
+                        UpiIntentItem(
+                            label       = "BharatPe",
+                            icon        = Res.drawable.ic_bharat_pe,
+                            isSelected  = selectedIntent == "BharatPe",
+                            buttonColor = buttonColor,
+                            onClick     = {
+                                upiCollectVisible = false
+                                upiCollectError   = false
+                                selectedIntent    = "BharatPe"
+                                onClickRadio("")
+                                upiQRVisible = false
+                                onClickIntent(selectedIntent)
+                            }
+                        )
+                    }
+                    if (isJupiterInstalled) {
+                        UpiIntentItem(
+                            label       = "Jupiter",
+                            icon        = Res.drawable.ic_jupiter_pay,
+                            isSelected  = selectedIntent == "Jupiter",
+                            buttonColor = buttonColor,
+                            onClick     = {
+                                upiCollectVisible = false
+                                upiCollectError   = false
+                                selectedIntent    = "Jupiter"
+                                onClickRadio("")
+                                upiQRVisible = false
+                                onClickIntent(selectedIntent)
+                            }
+                        )
+                    }
 //                if (isPopUpiInstalled) {
 //                    UpiIntentItem(
 //                        label       = "Pop UPI",
@@ -397,190 +410,190 @@ internal fun UPIComponent(
 //                        }
 //                    )
 //                }
-                if(!getDeviceDetails().browser.equals("ios", true)) {
-                    UpiIntentItem(
-                        label       = "Others",
-                        icon        = Res.drawable.other_intent_icon,
-                        isSelected  = false,
-                        buttonColor = buttonColor,
-                        onClick     = {
-                            upiCollectVisible = false
-                            upiCollectError   = false
-                            selectedIntent    = ""
-                            onClickUpiIntentPayButton(selectedIntent)
-                            onClickRadio("")
-                            upiQRVisible = false
-                        }
-                    )
-                }
-            }
-
-            // --- Pay via Intent Button ---
-            if (selectedIntent.isNotEmpty() && isBoxPayPayButtonVisible) {
-                Spacer(modifier = Modifier.height(12.dp))
-                PayButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(ctaBorderRadius.dp))
-                        .background(buttonColor.toComposeColor())
-                        .clickable {
-                            onClickUpiIntentPayButton(selectedIntent)
-                        },
-                    text   = "Pay",
-                    amount = amount,
-                    currencySymbol = currencySymbol,
-                    buttonTextColor = buttonTextColor,
-                    isValid = true
-                )
-            }
-        }
-
-        // --- UPI Collect ---
-        if (methodFlags.isUPICollectVisible || methodFlags.isUPIOtmCollectVisible) {
-            val showDivider = (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) && (installed.value.isNotEmpty() || !getDeviceDetails().browser.equals("ios", true))
-            if (showDivider) {
-                HorizontalDivider(
-                    color    = Color(0xFFE6E6E6),
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-                )
-            }
-
-            UpiExpandableHeader(
-                icon        = Res.drawable.add_icon,
-                label       = "Add new UPI Id",
-                isExpanded  = upiCollectVisible,
-                buttonColor = buttonColor,
-                onClick     = {
-                    selectedIntent    = ""
-                    upiCollectVisible = !upiCollectVisible
-                    upiQRVisible      = false
-                    onClickRadio("")
-                    onClickIntent(selectedIntent)
-                }
-            )
-
-            // --- Collect Input ---
-            if (upiCollectVisible) {
-                Spacer(modifier = Modifier.height(12.dp))
-                OutlinedTextField(
-                    value         = upiCollectTextInput,
-                    onValueChange = { handleTextChange(it) },
-                    label         = {
-                        Text(
-                            text       = "Enter UPI Id",
-                            fontFamily = LocalSDKFonts.current.primary,
-                            fontWeight = FontWeight.Normal
-                        )
-                    },
-                    isError      = upiCollectError,
-                    trailingIcon = {
-                        if (upiCollectError) {
-                            Image(
-                                painter            = painterResource(Res.drawable.ic_upi_error),
-                                contentDescription = null,
-                                modifier           = Modifier.size(20.dp)
-                            )
-                        }
-                    },
-                    shape    = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
-                    textStyle = TextStyle(
-                        fontFamily = LocalSDKFonts.current.primary,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp
-                    ),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        // Border
-                        focusedBorderColor   = focusedTextInputBorderColor.toComposeColor(),
-                        unfocusedBorderColor = unfocusedTextInputBorderColor.toComposeColor(),
-                    ),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions( onDone = {
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-                    }),
-                )
-
-                if (upiCollectError) {
-                    Text(
-                        text       = "Please enter a valid UPI Id",
-                        color      = Color.Red,
-                        fontSize   = 12.sp,
-                        fontFamily = LocalSDKFonts.current.primary,
-                        modifier   = Modifier.padding(top = 4.dp, start = 12.dp, end = 12.dp)
-                    )
-                }
-                if(!shopperToken.isNullOrBlank()) {
-                    Row(
-                        modifier          = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 12.dp, start = 12.dp, end = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        CheckboxItem(
-                            isChecked   = isSaveInstrumentCheckBoxClicked.value,
+                    if(!getDeviceDetails().browser.equals("ios", true)) {
+                        UpiIntentItem(
+                            label       = "Others",
+                            icon        = Res.drawable.other_intent_icon,
+                            isSelected  = false,
                             buttonColor = buttonColor,
-                            onClick     = { isSaveInstrumentCheckBoxClicked.value = !isSaveInstrumentCheckBoxClicked.value }
-                        )
-                        Text(
-                            text       = "Save UPI ID for future usage",
-                            fontFamily = LocalSDKFonts.current.primary,
-                            fontWeight = FontWeight.Normal,
-                            fontSize   = 14.sp,
-                            color      = Color(0xFF2D2B32),
-                            modifier   = Modifier.padding(start = 6.dp)
+                            onClick     = {
+                                upiCollectVisible = false
+                                upiCollectError   = false
+                                selectedIntent    = ""
+                                onClickUpiIntentPayButton(selectedIntent)
+                                onClickRadio("")
+                                upiQRVisible = false
+                            }
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                if(isBoxPayPayButtonVisible) {
+                // --- Pay via Intent Button ---
+                if (selectedIntent.isNotEmpty() && isBoxPayPayButtonVisible) {
+                    Spacer(modifier = Modifier.height(12.dp))
                     PayButton(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
+                            .padding(horizontal = 16.dp)
                             .clip(RoundedCornerShape(ctaBorderRadius.dp))
-                            .background(if (upiCollectValid) buttonColor.toComposeColor()
-                            else Color(0xFFE6E6E6))
-                            .clickable(enabled = upiCollectValid) {
-                                onClickUpiCollectPayButton(upiCollectTextInput, isSaveInstrumentCheckBoxClicked.value)
+                            .background(buttonColor.toComposeColor())
+                            .clickable {
+                                onClickUpiIntentPayButton(selectedIntent)
                             },
-                        text   = "Verify & Pay",
+                        text   = "Pay",
                         amount = amount,
                         currencySymbol = currencySymbol,
                         buttonTextColor = buttonTextColor,
-                        isValid = upiCollectValid
+                        isValid = true
                     )
                 }
             }
-        }
 
-        // --- UPI QR (Tablet only) ---
-        if ((methodFlags.isUPIQRVisible || methodFlags.isUPIOtmQRVisible) && isTablet) {
-            if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible ||
-                methodFlags.isUPICollectVisible || methodFlags.isUPIOtmCollectVisible
-            ) {
-                HorizontalDivider(
-                    color    = Color(0xFFE6E6E6),
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+            // --- UPI Collect ---
+            if (methodFlags.isUPICollectVisible || methodFlags.isUPIOtmCollectVisible) {
+                val showDivider = (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) && (installed.value.isNotEmpty() || !getDeviceDetails().browser.equals("ios", true))
+                if (showDivider) {
+                    HorizontalDivider(
+                        color    = Color(0xFFE6E6E6),
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+                    )
+                }
+
+                UpiExpandableHeader(
+                    icon        = Res.drawable.add_icon,
+                    label       = "Add new UPI Id",
+                    isExpanded  = upiCollectVisible,
+                    buttonColor = buttonColor,
+                    onClick     = {
+                        selectedIntent    = ""
+                        upiCollectVisible = !upiCollectVisible
+                        upiQRVisible      = false
+                        onClickRadio("")
+                        onClickIntent(selectedIntent)
+                    }
+                )
+
+                // --- Collect Input ---
+                if (upiCollectVisible) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value         = upiCollectTextInput,
+                        onValueChange = { handleTextChange(it) },
+                        label         = {
+                            Text(
+                                text       = "Enter UPI Id",
+                                fontFamily = LocalSDKFonts.current.primary,
+                                fontWeight = FontWeight.Normal
+                            )
+                        },
+                        isError      = upiCollectError,
+                        trailingIcon = {
+                            if (upiCollectError) {
+                                Image(
+                                    painter            = painterResource(Res.drawable.ic_upi_error),
+                                    contentDescription = null,
+                                    modifier           = Modifier.size(20.dp)
+                                )
+                            }
+                        },
+                        shape    = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                        textStyle = TextStyle(
+                            fontFamily = LocalSDKFonts.current.primary,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            // Border
+                            focusedBorderColor   = focusedTextInputBorderColor.toComposeColor(),
+                            unfocusedBorderColor = unfocusedTextInputBorderColor.toComposeColor(),
+                        ),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions( onDone = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+                        }),
+                    )
+
+                    if (upiCollectError) {
+                        Text(
+                            text       = "Please enter a valid UPI Id",
+                            color      = Color.Red,
+                            fontSize   = 12.sp,
+                            fontFamily = LocalSDKFonts.current.primary,
+                            modifier   = Modifier.padding(top = 4.dp, start = 12.dp, end = 12.dp)
+                        )
+                    }
+                    if(!shopperToken.isNullOrBlank()) {
+                        Row(
+                            modifier          = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 12.dp, start = 12.dp, end = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CheckboxItem(
+                                isChecked   = isSaveInstrumentCheckBoxClicked.value,
+                                buttonColor = buttonColor,
+                                onClick     = { isSaveInstrumentCheckBoxClicked.value = !isSaveInstrumentCheckBoxClicked.value }
+                            )
+                            Text(
+                                text       = "Save UPI ID for future usage",
+                                fontFamily = LocalSDKFonts.current.primary,
+                                fontWeight = FontWeight.Normal,
+                                fontSize   = 14.sp,
+                                color      = Color(0xFF2D2B32),
+                                modifier   = Modifier.padding(start = 6.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    if(isBoxPayPayButtonVisible) {
+                        PayButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp)
+                                .clip(RoundedCornerShape(ctaBorderRadius.dp))
+                                .background(if (upiCollectValid) buttonColor.toComposeColor()
+                                else Color(0xFFE6E6E6))
+                                .clickable(enabled = upiCollectValid) {
+                                    onClickUpiCollectPayButton(upiCollectTextInput, isSaveInstrumentCheckBoxClicked.value)
+                                },
+                            text   = "Verify & Pay",
+                            amount = amount,
+                            currencySymbol = currencySymbol,
+                            buttonTextColor = buttonTextColor,
+                            isValid = upiCollectValid
+                        )
+                    }
+                }
+            }
+
+            // --- UPI QR (Tablet only) ---
+            if ((methodFlags.isUPIQRVisible || methodFlags.isUPIOtmQRVisible) && isTablet) {
+                if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible ||
+                    methodFlags.isUPICollectVisible || methodFlags.isUPIOtmCollectVisible
+                ) {
+                    HorizontalDivider(
+                        color    = Color(0xFFE6E6E6),
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+                    )
+                }
+
+                UpiExpandableHeader(
+                    icon        = Res.drawable.ic_qr,
+                    label       = "Pay Using QR",
+                    isExpanded  = upiQRVisible,
+                    buttonColor = buttonColor,
+                    onClick     = {
+                        upiQRVisible = !upiQRVisible
+                        onClickUpiQRPayButton()
+                    }
                 )
             }
 
-            UpiExpandableHeader(
-                icon        = Res.drawable.ic_qr,
-                label       = "Pay Using QR",
-                isExpanded  = upiQRVisible,
-                buttonColor = buttonColor,
-                onClick     = {
-                    upiQRVisible = !upiQRVisible
-                    onClickUpiQRPayButton()
-                }
-            )
-        }
-
-        // --- QR Image ---
+            // --- QR Image ---
             if (upiQRVisible && qrImage.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(
@@ -632,6 +645,30 @@ internal fun UPIComponent(
                     }
                 }
             }
+        } else {
+            Row(
+                modifier = Modifier.clickable{setIsExpanded()}.fillMaxWidth().padding(start = 16.dp, top = 12.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = collapsedLabel,
+                    fontSize = 14.sp,
+                    color = Color(0xFF363840),
+                    fontFamily = LocalSDKFonts.current.primary,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Spacer(Modifier.width(6.dp))
+                Image(
+                    painter            = painterResource(Res.drawable.chervon_down),
+                    contentDescription = null,
+                    modifier           = Modifier
+                        .size(width = 20.dp, height = 30.dp)
+                        .rotate(rotation)
+                )
+            }
+        }
     }
 }
 

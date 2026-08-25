@@ -227,8 +227,6 @@ internal class MainScreenViewModel(
 
                 val updatedAmount = amount + applicableSurcharge
 
-                println("====result of surcharge ${surcharges}")
-
                 CheckoutDetailsHandler.setSurchargeDetails(surcharges)
                 CheckoutDetailsHandler.setAmount(updatedAmount)
             }

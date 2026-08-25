@@ -12,21 +12,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
+import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi_error
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -36,7 +40,7 @@ internal fun ExpandablePaymentSection(
     title: String,
     image: DrawableResource,
     providerList: List<SelectedPaymentMethod>,
-    surchargeFee: Double?,
+    surchargeList: List<SurchargeModel>,
     currencySymbol: String,
     amount: Double,
     selectedId: String,
@@ -46,10 +50,26 @@ internal fun ExpandablePaymentSection(
     onClickRadio: (String) -> Unit,
     onProceedForward: (instrumentType: String, instrumentValue: String, type: String) -> Unit,
     onViewMore: () -> Unit,
-    isBoxPayPayButtonVisible: Boolean = true
+    isBoxPayPayButtonVisible: Boolean = true,
+    rotate : Float,
+    isExpanded : Boolean,
+    setIsExpanded : () -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
     val hasMore = providerList.size > 4
+
+    val selectedSurchargeFee = remember {
+        mutableStateOf<Double?>(null)
+    }
+
+    val selectedNetwork = remember {
+        mutableStateOf("")
+    }
+
+    LaunchedEffect(selectedNetwork.value) {
+        if (selectedNetwork.value.isNotBlank() && isExpanded) {
+            selectedSurchargeFee.value = surchargeList.find { it.network.equals(selectedNetwork.value) }?.amount
+        }
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
 
@@ -59,7 +79,7 @@ internal fun ExpandablePaymentSection(
                 .fillMaxWidth()
                 .background(Color.White)
                 .padding(start = 16.dp, bottom = 10.dp, top = 10.dp, end = 8.dp)
-                .clickable { expanded = !expanded },
+                .clickable { setIsExpanded() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -74,25 +94,21 @@ internal fun ExpandablePaymentSection(
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Medium
                 )
-                if (surchargeFee != null && surchargeFee != 0.0) {
-                    Text(
-                        text = "$currencySymbol $surchargeFee extra applied as surcharge",
-                        fontSize = 14.sp,
-                        fontFamily = LocalSDKFonts.current.primary,
-                        fontWeight = FontWeight.Medium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = Color(0xFF32CD32)
-                    )
-                }
             }
             Spacer(modifier = Modifier.weight(1f))
-            ChevronIcon()
+            Image(
+                painter            = painterResource(Res.drawable.chervon_down),
+                contentDescription = null,
+                modifier           = Modifier
+                    .size(width = 20.dp, height = 30.dp)
+                    .rotate(rotate)
+            )
         }
 
         // Expanded content — inline selector
-        if (expanded && providerList.isNotEmpty()) {
-            providerList.forEachIndexed { _, provider ->
+        if (isExpanded && providerList.isNotEmpty()) {
+            val list = providerList.take(4)
+            list.forEachIndexed { _, provider ->
                 PaymentSelector(
                     id                  = provider.id,
                     title               = provider.displayName,
@@ -101,6 +117,7 @@ internal fun ExpandablePaymentSection(
                     instrumentTypeValue = provider.instrumentType,
                     isLastUsed          = false,
                     onPress             = {
+                        selectedNetwork.value = provider.displayName
                         onClickRadio(it)
                     },
                     onProceedForward    = { displayValue, instrumentValue ->
@@ -112,7 +129,8 @@ internal fun ExpandablePaymentSection(
                     amount              = amount,
                     ctaBorderRadius     = ctaBorderRadius,
                     drawableResource    = Res.drawable.ic_upi_error,
-                    isBoxPayPayButtonVisible = isBoxPayPayButtonVisible
+                    isBoxPayPayButtonVisible = isBoxPayPayButtonVisible,
+                    surchargeFee = selectedSurchargeFee.value
                 )
                 HorizontalDivider(
                     color     = Color(0xFFECECED),

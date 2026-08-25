@@ -52,6 +52,7 @@ import com.crossplatform.sdk.presentation.screens.SubscriptionRow
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_cvv_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
 import io.kamel.image.KamelImage
@@ -283,7 +284,7 @@ internal fun CardComponent(
                     modifier      = Modifier.fillMaxWidth().padding(end = 16.dp),
                     trailingIcon  = {
                         Image(
-                            painter            = painterResource(Res.drawable.ic_info),
+                            painter            = painterResource(Res.drawable.ic_cvv_info),
                             contentDescription = null,
                             modifier           = Modifier
                                 .size(24.dp)
