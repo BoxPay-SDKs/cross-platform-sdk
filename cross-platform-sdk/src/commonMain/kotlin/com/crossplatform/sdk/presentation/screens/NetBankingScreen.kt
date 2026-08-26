@@ -34,6 +34,7 @@ internal fun NetBankingScreen(
     val unfocusedTextInputBorderColor = CheckoutDetailsHandler.unfocusedBorderColorFlow.collectAsStateWithLifecycle()
     val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
     val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
+    val surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
     val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
     val (_, currencyCode) = currencyFlow.value
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
@@ -76,8 +77,11 @@ internal fun NetBankingScreen(
                 unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
                 focusedTextInputBorderColor = focusedTextInputBorderColor.value,
                 selectedInstrumentId = selectedInstrumentId.value,
-                onClickRadio = {
-                    selectedInstrumentId.value = it
+                onClickRadio = {id , name ->
+                    selectedInstrumentId.value = id
+                    CheckoutDetailsHandler.setAmount(amount = amount.value + (surchargeList.find {
+                        it.network.replace(" ", "").equals(name.replace(" ", ""), ignoreCase = true)
+                    }?.amount ?: 0.0))
                     viewModel.callUiAnalytics(
                         event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
                         screenName = "NetBankingScreen",
@@ -88,13 +92,14 @@ internal fun NetBankingScreen(
                 onSetSearchQuery = {
                     viewModel.onSearch(it)
                 },
-                onProceedForward = {
-                    viewModel.postNetBankingRequest(it)
+                onProceedForward = {_, instrumentValue , _->
+                    viewModel.postNetBankingRequest(instrumentValue)
                 },
                 amount = amount.value,
                 currencySymbol = currencyCode,
                 ctaBorderRadius = ctaBorderRadius.value,
-                title = "All Banks"
+                title = "All Banks",
+                surchargeList = surchargeList
             )
         }
     }

@@ -34,6 +34,7 @@ internal fun BNPLScreen(
     val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
     val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
     val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
+    val surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
     val (_, currencyCode) = currencyFlow.value
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
@@ -75,8 +76,11 @@ internal fun BNPLScreen(
                 unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
                 focusedTextInputBorderColor = focusedTextInputBorderColor.value,
                 selectedInstrumentId = selectedInstrumentId.value,
-                onClickRadio = {
-                    selectedInstrumentId.value = it
+                onClickRadio = {id , name ->
+                    selectedInstrumentId.value = id
+                    CheckoutDetailsHandler.setAmount(amount = amount.value + (surchargeList.find {
+                        it.network.replace(" ", "").equals(name.replace(" ", ""), ignoreCase = true)
+                    }?.amount ?: 0.0))
                     viewModel.callUiAnalytics(
                         event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
                         screenName = "NetBankingScreen",
@@ -87,13 +91,14 @@ internal fun BNPLScreen(
                 onSetSearchQuery = {
                     viewModel.onSearch(it)
                 },
-                onProceedForward = {
-                    viewModel.postBNPLRequest(it)
+                onProceedForward = {_, instrumentValue , _->
+                    viewModel.postBNPLRequest(instrumentValue)
                 },
                 amount = amount.value,
                 currencySymbol = currencyCode,
                 ctaBorderRadius = ctaBorderRadius.value,
-                title = "All Banks"
+                title = "All Banks",
+                surchargeList = surchargeList
             )
         }
     }

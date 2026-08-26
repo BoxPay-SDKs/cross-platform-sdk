@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
@@ -87,11 +86,11 @@ internal fun OrderDetails(
 
     val isTablet = isTabletDevice()
 
-    LaunchedEffect(selectedPaymentMethod) {
+    LaunchedEffect(selectedPaymentMethod, selectedNetwork) {
         filteredSurcharges.value = surchargeDetails.filter { item ->
             val applicable = item.applicableOn.lowercase().trim()
             val matches = applicable.isEmpty() ||
-                    (applicable == selectedPaymentMethod.lowercase().trim() && item.network.equals(selectedNetwork, true)) ||
+                    (applicable == selectedPaymentMethod.lowercase().trim() && item.network.contains(selectedNetwork, true)) ||
                     (applicable == selectedPaymentMethod.lowercase().trim() && item.network.isBlank())
 
             if (item.network.equals("UpiQr", true) || item.network.equals("UpiQrOtm", true)) {

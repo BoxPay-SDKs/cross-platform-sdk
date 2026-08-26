@@ -34,10 +34,15 @@ internal fun WalletScreen(
     val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
     val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
     val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
+    val surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
     val (_, currencyCode) = currencyFlow.value
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val appliedSurchargeAmount = remember {
+        mutableStateOf(0.0)
+    }
+    val baseAmount = amount.value
     val isBoxPayAnimationVisible by viewModel.isBoxPayAnimationVisible.collectAsStateWithLifecycle()
     val showWebView by viewModel.showWebview.collectAsStateWithLifecycle()
     val selectedInstrumentId = remember {
@@ -75,8 +80,18 @@ internal fun WalletScreen(
                 unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
                 focusedTextInputBorderColor = focusedTextInputBorderColor.value,
                 selectedInstrumentId = selectedInstrumentId.value,
-                onClickRadio = {
-                    selectedInstrumentId.value = it
+                onClickRadio = { id, name ->
+                    selectedInstrumentId.value = id
+
+                    val surchargeAmount = surchargeList.find {
+                        it.network.replace(" ", "").equals(name.replace(" ", ""), ignoreCase = true)
+                    }?.amount ?: 0.0
+
+                    // remove previously applied surcharge, then add the new one
+                    appliedSurchargeAmount.value = surchargeAmount
+
+                    CheckoutDetailsHandler.setAmount(amount = baseAmount + surchargeAmount)
+
                     viewModel.callUiAnalytics(
                         event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
                         screenName = "Wallet Screen",
@@ -87,13 +102,14 @@ internal fun WalletScreen(
                 onSetSearchQuery = {
                     viewModel.onSearch(it)
                 },
-                onProceedForward = {
-                    viewModel.postWalletRequest(it)
+                onProceedForward = {_, instrumentValue , _->
+                    viewModel.postWalletRequest(instrumentValue)
                 },
                 amount = amount.value,
                 currencySymbol = currencyCode,
                 ctaBorderRadius = ctaBorderRadius.value,
-                title = "All Wallet"
+                title = "All Wallet",
+                surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
             )
         }
     }

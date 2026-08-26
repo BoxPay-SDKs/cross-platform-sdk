@@ -45,7 +45,8 @@ internal fun MorePaymentMethods(
     buttonTextColor : String,
     ctaBorderRadius : Int,
     onProceedForward : (instrumentType: String, instrumentValue: String, type: String) -> Unit,
-    setSelectedPaymentMethod: (String) -> Unit
+    setSelectedPaymentMethod: (String) -> Unit,
+    setSelectedPaymentNetwork: (String) -> Unit
 ) {
     val isWalletVisible = remember {
         mutableStateOf(false)
@@ -104,13 +105,15 @@ internal fun MorePaymentMethods(
                 buttonTextColor = buttonTextColor,
                 buttonColor = buttonColor,
                 ctaBorderRadius = ctaBorderRadius,
-                onClickRadio = {
-                    selectedWalletId.value = it
+                onClickRadio = {id , name ->
+                    setSelectedPaymentNetwork(name)
+                    selectedWalletId.value = id
                 },
                 onProceedForward = onProceedForward,
                 rotate = walletRotation,
                 isExpanded = isWalletVisible.value,
                 setIsExpanded = {
+                    selectedBankId.value = ""
                     isNetBankingVisible.value = false
                     val newExpandedState = !isWalletVisible.value
                     isWalletVisible.value = newExpandedState
@@ -134,13 +137,15 @@ internal fun MorePaymentMethods(
                 buttonTextColor = buttonTextColor,
                 buttonColor = buttonColor,
                 ctaBorderRadius = ctaBorderRadius,
-                onClickRadio = {
-                    selectedBankId.value = it
+                onClickRadio = {id , name ->
+                    setSelectedPaymentNetwork(name)
+                    selectedBankId.value = id
                 },
                 onProceedForward = onProceedForward,
                 rotate = bankRotation,
                 isExpanded = isNetBankingVisible.value,
                 setIsExpanded = {
+                    selectedWalletId.value = ""
                     isWalletVisible.value = false
                     val newExpandedState = !isNetBankingVisible.value
                     isNetBankingVisible.value = newExpandedState

@@ -12,17 +12,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
@@ -47,7 +41,7 @@ internal fun ExpandablePaymentSection(
     buttonTextColor: String,
     buttonColor: String,
     ctaBorderRadius: Int,
-    onClickRadio: (String) -> Unit,
+    onClickRadio: (id : String, name : String) -> Unit,
     onProceedForward: (instrumentType: String, instrumentValue: String, type: String) -> Unit,
     onViewMore: () -> Unit,
     isBoxPayPayButtonVisible: Boolean = true,
@@ -57,20 +51,6 @@ internal fun ExpandablePaymentSection(
 ) {
     val hasMore = providerList.size > 4
 
-    val selectedSurchargeFee = remember {
-        mutableStateOf<Double?>(null)
-    }
-
-    val selectedNetwork = remember {
-        mutableStateOf("")
-    }
-
-    LaunchedEffect(selectedNetwork.value) {
-        if (selectedNetwork.value.isNotBlank() && isExpanded) {
-            selectedSurchargeFee.value = surchargeList.find { it.network.equals(selectedNetwork.value) }?.amount
-        }
-    }
-
     Column(modifier = Modifier.fillMaxWidth()) {
 
         // Header row — same as MorePaymentContainer, but toggles expansion
@@ -78,7 +58,7 @@ internal fun ExpandablePaymentSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .padding(start = 16.dp, bottom = 10.dp, top = 10.dp, end = 8.dp)
+                .padding(start = 16.dp, bottom = 10.dp, top = 10.dp, end = 10.dp)
                 .clickable { setIsExpanded() },
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -117,8 +97,7 @@ internal fun ExpandablePaymentSection(
                     instrumentTypeValue = provider.instrumentType,
                     isLastUsed          = false,
                     onPress             = {
-                        selectedNetwork.value = provider.displayName
-                        onClickRadio(it)
+                        onClickRadio(it, provider.displayName)
                     },
                     onProceedForward    = { displayValue, instrumentValue ->
                         onProceedForward(displayValue, instrumentValue, provider.type)
@@ -130,7 +109,7 @@ internal fun ExpandablePaymentSection(
                     ctaBorderRadius     = ctaBorderRadius,
                     drawableResource    = Res.drawable.ic_upi_error,
                     isBoxPayPayButtonVisible = isBoxPayPayButtonVisible,
-                    surchargeFee = selectedSurchargeFee.value
+                    surchargeFee = surchargeList.find { it.network.equals(provider.displayName, true) }?.amount
                 )
                 HorizontalDivider(
                     color     = Color(0xFFECECED),

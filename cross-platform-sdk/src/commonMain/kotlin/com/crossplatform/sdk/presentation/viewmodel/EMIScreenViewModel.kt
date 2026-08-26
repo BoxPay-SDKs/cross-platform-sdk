@@ -6,11 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.domain.mapper.toUiModel
 import com.crossplatform.sdk.domain.model.Bank
 import com.crossplatform.sdk.domain.model.ChooseEmiModel
+import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
 import com.crossplatform.sdk.domain.repo.CardScreenRepo
 import com.crossplatform.sdk.domain.repo.FetchStatusRepo
@@ -65,9 +67,7 @@ internal class EMIScreenViewModel(
     val selectedPercent = mutableStateOf<Double?>(null)
 
 
-    init {
-        loadPaymentMethods()
-    }
+    val appliedSurcharge = mutableStateOf<List<SurchargeModel>>(emptyList())
 
     fun callUiAnalytics(
         event : String,
@@ -183,6 +183,13 @@ internal class EMIScreenViewModel(
     var showCvvInfo                =  mutableStateOf(false)
     var showKnowMoreDialog         =  mutableStateOf(false)
 
+    init {
+        val firstName = UserDataHandler.firstNameFlow.value.orEmpty().trim()
+        val lastName  = UserDataHandler.lastNameFlow.value?.trim().orEmpty()
+        cardHolderNameText.value = if (lastName.isNotEmpty()) "$firstName $lastName" else firstName
+        loadPaymentMethods()
+    }
+
     fun fetchCardDetails(cardNumber : String, isTestEnv: Boolean) {
         viewModelScope.launch {
             when(val response = cardScreenRepo.getCardDetails(cardNumber)) {
@@ -258,6 +265,13 @@ internal class EMIScreenViewModel(
 
     // --- Update icon from API ---
     fun updateCardIcon(isTestEnv: Boolean, brand : String) {
+        val surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
+        appliedSurcharge.value = surchargeList.filter { item ->
+            (item.network.contains(brand, true) || item.network.isBlank()) && item.applicableOn.equals("card", true)
+        }
+        val amountAfterSurcharge = appliedSurcharge.value.sumOf { it.amount } + CheckoutDetailsHandler.amountFlow.value
+
+        CheckoutDetailsHandler.setAmount(amountAfterSurcharge)
         when (brand) {
             "VISA"            -> { cardSelectedIcon.value = Res.drawable.ic_visa;       maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             "Mastercard"      -> { cardSelectedIcon.value = Res.drawable.ic_masterCard; maxCvvLength.value = 3; maxCardNumberLength.value = 19 }

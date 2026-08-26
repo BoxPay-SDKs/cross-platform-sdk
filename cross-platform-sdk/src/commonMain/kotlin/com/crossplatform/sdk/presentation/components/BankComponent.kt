@@ -2,6 +2,7 @@ package com.crossplatform.sdk.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -22,6 +24,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
+import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
@@ -38,8 +41,8 @@ internal fun BankComponent(
     focusedTextInputBorderColor : String,
     unfocusedTextInputBorderColor : String,
     list : List<SelectedPaymentMethod>,
-    onProceedForward : (String) -> Unit,
-    onClickRadio : (String) -> Unit,
+    onProceedForward : (displayValue : String, instrumentValue : String, type : String) -> Unit,
+    onClickRadio : (id : String, name : String) -> Unit,
     selectedInstrumentId : String,
     buttonTextColor : String,
     buttonColor : String,
@@ -47,6 +50,7 @@ internal fun BankComponent(
     currencySymbol : String,
     ctaBorderRadius : Int,
     title : String,
+    surchargeList : List<SurchargeModel>,
     isBoxPayPayButtonVisible : Boolean = true
 ) {
     val focusManager = LocalFocusManager.current
@@ -98,23 +102,53 @@ internal fun BankComponent(
             ))
             Footer()
         } else {
-            PaymentSelectorView(
-                providerList = list,
-                onProceedForward = { _, instrumentValue, _ ->
-                    onProceedForward(instrumentValue)
-                },
-                drawableResource = Res.drawable.ic_netbanking,
-                onClickRadio = {
-                    onClickRadio(it)
-                },
-                buttonTextColor = buttonTextColor,
-                buttonColor = buttonColor,
-                currencySymbol = currencySymbol,
-                amount = amount,
-                ctaBorderRadius = ctaBorderRadius,
-                selectedId = selectedInstrumentId,
-                isBoxPayPayButtonVisible = isBoxPayPayButtonVisible
-            )
+            Column(
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp)
+                    .background(
+                        color =  Color.White,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFFE6E6E6),
+                        RoundedCornerShape(12.dp)
+                    )
+            ) {
+                list.mapIndexed { index, provider ->
+                    PaymentSelector(
+                        id                  = provider.id,
+                        title               = provider.displayName,
+                        imageUrl            = provider.imageUrl,
+                        isSelected          = provider.id == selectedInstrumentId,
+                        instrumentTypeValue = provider.instrumentType,
+                        isLastUsed          = false,
+                        onPress             = {
+                            onClickRadio(it, provider.displayName)
+                        },
+                        onProceedForward    = { displayValue, instrumentValue ->
+                            onProceedForward(displayValue, instrumentValue, provider.type)
+                        },
+                        brandColor          = buttonColor,
+                        buttonTextColor     = buttonTextColor,
+                        currencySymbol      = currencySymbol,
+                        amount              = amount,
+                        ctaBorderRadius     = ctaBorderRadius,
+                        drawableResource    = Res.drawable.ic_netbanking,
+                        isBoxPayPayButtonVisible = isBoxPayPayButtonVisible,
+                        surchargeFee = surchargeList.find {
+                            it.network.replace(" ", "").equals(provider.displayName.replace(" ", ""), ignoreCase = true)
+                        }?.amount
+                    )
+                    if(index != list.lastIndex) {
+                        HorizontalDivider(
+                            color     = Color(0xFFECECED),
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
+                }
+            }
             Spacer(Modifier.then(
                 if(isBoxPayPayButtonVisible) Modifier.height(10.dp)
                 else Modifier.weight(1f)

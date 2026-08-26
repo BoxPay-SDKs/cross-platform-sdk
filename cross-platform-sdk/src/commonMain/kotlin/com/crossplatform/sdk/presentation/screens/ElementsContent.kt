@@ -350,7 +350,10 @@ private fun UpiTab(
             setIsExpanded = {
 
             },
-            collapsedLabel = ""
+            collapsedLabel = "",
+            onExpandSectionChanged = {
+
+            }
         )
         Footer()
     }
@@ -496,7 +499,8 @@ private fun CardsTab(
         isBoxPayPayButtonVisible = isBoxPayPayButtonVisible,
         isSavedCardCheckBoxClicked = viewModel.isSavedCardCheckBoxClicked.value,
         modifier                 = Modifier.fillMaxWidth().wrapContentHeight(),
-        normalCheckout = false
+        normalCheckout = false,
+        appliedSurcharge = emptyList()
     )
 }
 
@@ -545,7 +549,7 @@ private fun InstrumentListTab(
                 unfocusedTextInputBorderColor = uiConfig.unfocusedBorderColor,
                 focusedTextInputBorderColor   = uiConfig.focusedBorderColor,
                 selectedInstrumentId          = selectedInstrumentId,
-                onClickRadio                  = { id ->
+                onClickRadio                  = { id, _  ->
                     onSelectId(id)
                     viewModel.setPaySelection(
                         BoxPayElementsViewModel.PaySelection.Instrument(value = id, type = paymentType)
@@ -558,16 +562,17 @@ private fun InstrumentListTab(
                 },
                 searchQuery      = viewModel.netBankingSearchQuery.value,
                 onSetSearchQuery = { viewModel.onSearch(it) },
-                onProceedForward = {
+                onProceedForward = {_, instrumentRef, _ ->
                     viewModel.setPaySelection(
-                        BoxPayElementsViewModel.PaySelection.Instrument(value = it, type = paymentType)
+                        BoxPayElementsViewModel.PaySelection.Instrument(value = instrumentRef, type = paymentType)
                     )
-                    viewModel.postOtherRequest(it, paymentType) },
+                    viewModel.postOtherRequest(instrumentRef, paymentType) },
                 amount           = uiConfig.amount,
                 currencySymbol   = uiConfig.currencySymbol,
                 ctaBorderRadius  = uiConfig.ctaBorderRadius,
                 title            = title,
-                isBoxPayPayButtonVisible = isBoxPayProceedButtonVisible
+                isBoxPayPayButtonVisible = isBoxPayProceedButtonVisible,
+                surchargeList = emptyList()
             )
         }
     }

@@ -187,7 +187,8 @@ internal fun CardScreen(
         ctaBorderRadius = ctaBorderRadius.value,
         isBoxPayPayButtonVisible = true,
         isSavedCardCheckBoxClicked = viewModel.isSavedCardCheckBoxClicked.value,
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        appliedSurcharge = viewModel.appliedSurcharge.value
     )
 
     if (viewModel.showCvvInfo.value) {

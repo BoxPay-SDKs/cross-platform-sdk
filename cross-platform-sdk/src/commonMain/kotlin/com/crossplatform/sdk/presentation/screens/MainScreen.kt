@@ -42,7 +42,6 @@ import com.crossplatform.sdk.presentation.components.PaymentSelectorView
 import com.crossplatform.sdk.presentation.components.SavedCardComponent
 import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
-import com.crossplatform.sdk.presentation.components.ShowUpdateAmountBottomSheet
 import com.crossplatform.sdk.presentation.components.UPIComponent
 import com.crossplatform.sdk.presentation.isPresentInSurchargeModel
 import com.crossplatform.sdk.presentation.launchUpiIntent
@@ -104,7 +103,7 @@ internal fun MainScreen(
     val errorMessage = CheckoutDetailsHandler.errorMessageFlow.collectAsStateWithLifecycle()
 
     val paymentHandler = rememberExpressCheckoutPaymentHandler()
-    var googleConfig : GooglePayExpressCheckoutConfig? = null
+    var googleConfig : GooglePayExpressCheckoutConfig?
     var revolutPay : RevolutPayExpressCheckoutConfig? = null
     var expressCheckoutPaymentRequest : ExpressCheckoutPaymentRequest? = null
 
@@ -502,7 +501,10 @@ internal fun MainScreen(
                         setIsExpanded = {
                             selectedPaymentMethod.value = if (selectedPaymentMethod.value.equals("upi", true)) "" else "upi"
                         },
-                        collapsedLabel = "UPI"
+                        collapsedLabel = "UPI",
+                        onExpandSectionChanged = {
+                            selectedPaymentNetwork.value = it
+                        }
                     )
                 }
 
@@ -591,7 +593,10 @@ internal fun MainScreen(
                         setIsExpanded = {
                             selectedPaymentMethod.value = "upionetimemandate"
                         },
-                        collapsedLabel = "UPI Mandate"
+                        collapsedLabel = "UPI Mandate",
+                        onExpandSectionChanged = {
+                            selectedPaymentNetwork.value = it
+                        }
                     )
                 }
 
@@ -668,7 +673,9 @@ internal fun MainScreen(
 //                                    selectedMethod.value = "card"
 //                                    showUpdatedAmountBottomSheet.value = true
 //                                } else{
-                                    onProceedCardScreen(false)
+                                selectedPaymentNetwork.value = ""
+                                selectedPaymentMethod.value = ""
+                                onProceedCardScreen(false)
 //                                }
                             },
                         onNavigateToWallet      =
@@ -742,6 +749,9 @@ internal fun MainScreen(
                         },
                         setSelectedPaymentMethod = {
                             selectedPaymentMethod.value = it
+                        },
+                        setSelectedPaymentNetwork = {
+                            selectedPaymentNetwork.value = it
                         }
                     )
                 }

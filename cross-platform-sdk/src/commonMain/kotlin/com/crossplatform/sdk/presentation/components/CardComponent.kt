@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.ErrorText
 import com.crossplatform.sdk.presentation.screens.CardNumberVisualTransformation
 import com.crossplatform.sdk.presentation.screens.CheckboxItem
@@ -117,6 +118,7 @@ internal fun CardComponent(
     onClickSavedCardCheckBox : () -> Unit,
     shopperToken : String?,
     modifier: Modifier,
+    appliedSurcharge : List<SurchargeModel>,
     normalCheckout : Boolean = true
 ) {
 //    val acceptedCardList = CheckoutDetailsHandler.acceptedCardsListFlow.collectAsStateWithLifecycle()
@@ -225,24 +227,6 @@ internal fun CardComponent(
         )
         if (cardNumberError) ErrorText(cardNumberErrorText)
 
-        // --- Cardholder Name ---
-        CardTextField(
-            value         = cardHolderNameText,
-            label         = "Cardholder Name*",
-            onValueChange = {
-                handleCardHolderNameChange(it)
-            },
-            isError       = cardHolderNameError,
-            modifier      = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
-            onFocus       = { setCardHolderNameError() },
-            focusedTextInputBorderColor = focusedTextInputBorderColor,
-            unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
-            onBlur        = {
-                onBlurCardName()
-            }
-        )
-        if (cardHolderNameError) ErrorText(cardHolderNameErrorText)
-
         // --- Expiry + CVV ---
         Row(
             modifier = Modifier.padding(top = 16.dp),
@@ -254,7 +238,7 @@ internal fun CardComponent(
                     label         = "Expiry (MM/YY)*",
                     onValueChange = {
                         handleExpiryChange(it)
-                                    },
+                    },
                     isError       = cardExpiryError,
                     keyboardType  = KeyboardType.Number,
                     maxLength     = 5,
@@ -264,7 +248,7 @@ internal fun CardComponent(
                     focusedTextInputBorderColor = focusedTextInputBorderColor,
                     unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
                     onBlur        = {
-                       onBlurCardExpiry()
+                        onBlurCardExpiry()
                     }
                 )
                 if (cardExpiryError) ErrorText(cardExpiryErrorText)
@@ -275,7 +259,7 @@ internal fun CardComponent(
                     label         = "CVV*",
                     onValueChange =
                         {
-                           handleCvvChange(it)
+                            handleCvvChange(it)
                         },
                     isError       = cardCvvError,
                     keyboardType  = KeyboardType.NumberPassword,
@@ -296,12 +280,30 @@ internal fun CardComponent(
                     focusedTextInputBorderColor = focusedTextInputBorderColor,
                     unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
                     onBlur  = {
-                       onBlurCardCVV()
+                        onBlurCardCVV()
                     }
                 )
                 if (cardCvvError) ErrorText(cardCvvErrorText)
             }
         }
+
+        // --- Cardholder Name ---
+        CardTextField(
+            value         = cardHolderNameText,
+            label         = "Cardholder Name*",
+            onValueChange = {
+                handleCardHolderNameChange(it)
+            },
+            isError       = cardHolderNameError,
+            modifier      = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+            onFocus       = { setCardHolderNameError() },
+            focusedTextInputBorderColor = focusedTextInputBorderColor,
+            unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
+            onBlur        = {
+                onBlurCardName()
+            }
+        )
+        if (cardHolderNameError) ErrorText(cardHolderNameErrorText)
 
         // --- NickName + Save Card (shopper token) ---
         if (!shopperToken.isNullOrEmpty()) {
@@ -425,11 +427,31 @@ internal fun CardComponent(
                 }
             }
         }
+        Spacer(Modifier.then(
+            if(!normalCheckout) Modifier.height(10.dp)
+            else Modifier.weight(1f)
+        ))
+        if(appliedSurcharge.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(Color(0xFFEFF3FA))
+                    .padding(vertical = 12.dp)
+            ) {
+                appliedSurcharge.forEach { item ->
+                    SummaryRow(
+                        label = item.title,
+                        amount = item.amount,
+                        currencySymbol = "+ $currencySymbol",
+                        buttonColor = buttonColor,
+                        description = item.description
+                    )
+                }
+            }
+        }
         if(isBoxPayPayButtonVisible) {
-            Spacer(Modifier.then(
-                if(!normalCheckout) Modifier.height(10.dp)
-                else Modifier.weight(1f)
-            ))
             PayButton(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -511,7 +533,7 @@ private fun CardTextField(
                 text       = label,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
-                fontSize   = 12.sp
+                fontSize   = 14.sp
             )
         },
         isError              = isError,

@@ -257,7 +257,8 @@ internal fun EMIScreen(
                             ctaBorderRadius = ctaBorderRadius.value,
                             isBoxPayPayButtonVisible = true,
                             isSavedCardCheckBoxClicked = viewModel.isSavedCardCheckBoxClicked.value,
-                            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+                            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                            appliedSurcharge = viewModel.appliedSurcharge.value
                         )
                     }
                     EmiStep.Tenure -> SelectTenureScreen(
