@@ -661,6 +661,7 @@ internal fun MainScreen(
                         buttonColor = buttonColor.value,
                         walletList = response.walletPaymentMethod,
                         netBankingList = response.netBankingPaymentMethod,
+                        bnplList = response.bnplPaymentMethod,
                         onNavigateToCard =
                             {
                                 viewModel.removeQRFromView()

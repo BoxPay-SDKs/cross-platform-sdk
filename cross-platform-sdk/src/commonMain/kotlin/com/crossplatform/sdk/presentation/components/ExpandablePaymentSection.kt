@@ -2,6 +2,7 @@ package com.crossplatform.sdk.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,11 +10,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -51,14 +54,23 @@ internal fun ExpandablePaymentSection(
 ) {
     val hasMore = providerList.size > 4
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .border(
+                width = 1.dp,
+                color = Color(0xFFE6E6E6),
+                RoundedCornerShape(12.dp)
+            )
+            .background(Color.White)
+    ) {
 
         // Header row — same as MorePaymentContainer, but toggles expansion
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .padding(start = 16.dp, bottom = 10.dp, top = 10.dp, end = 10.dp)
+                .padding(start = 16.dp, bottom = 12.dp, top = 12.dp, end = 10.dp)
                 .clickable { setIsExpanded() },
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -109,8 +121,9 @@ internal fun ExpandablePaymentSection(
                     ctaBorderRadius     = ctaBorderRadius,
                     drawableResource    = Res.drawable.ic_upi_error,
                     isBoxPayPayButtonVisible = isBoxPayPayButtonVisible,
-                    surchargeFee = surchargeList.find { it.network.equals(provider.displayName, true) }?.amount
-                )
+                    surchargeFee = surchargeList.find {
+                        it.network.replace(" ", "").equals(provider.displayName.replace(" ", ""), true)
+                    }?.amount                )
                 HorizontalDivider(
                     color     = Color(0xFFECECED),
                     thickness = 1.dp,

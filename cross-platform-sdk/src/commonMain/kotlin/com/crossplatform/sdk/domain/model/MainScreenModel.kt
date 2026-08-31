@@ -17,7 +17,8 @@ internal data class MainScreenModel(
     val googlePayAdditionData : GooglePayAdditionData?,
     val applePayAdditionData : ApplePayAdditionData?,
     val walletPaymentMethod : List<SelectedPaymentMethod>,
-    val netBankingPaymentMethod : List<SelectedPaymentMethod>
+    val netBankingPaymentMethod : List<SelectedPaymentMethod>,
+    val bnplPaymentMethod : List<SelectedPaymentMethod>
 ) {
 
     internal data class MethodFlags(

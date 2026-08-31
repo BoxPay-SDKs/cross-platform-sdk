@@ -80,7 +80,10 @@ internal object CheckoutDetailsHandler {
         ctaTextFontSize = 0,
         acceptedCardsList = emptyList(),
         showRetryBottomDown = false,
-        proceedAutoRetryPayment = {}
+        proceedAutoRetryPayment = {},
+        availableRetryMethods = emptyList(),
+        isCheckoutLimitReached = false,
+        isPaymentMaxAttemptsReached = false
     )
 
     // ─── Source of truth ──────────────────────────────────────────────────────
@@ -104,6 +107,11 @@ internal object CheckoutDetailsHandler {
         .map { it.amountBeforeSurcharge }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().amountBeforeSurcharge)
+
+    val availableMethodsListFlow: StateFlow<List<String>> = _checkoutDetailsFlow
+        .map { it.availableRetryMethods }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().availableRetryMethods)
 
     val discountAmountFlow: StateFlow<Double> = _checkoutDetailsFlow
         .map { it.discountAmount }
@@ -135,6 +143,16 @@ internal object CheckoutDetailsHandler {
         .map { it.showRetryBottomDown }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().showRetryBottomDown)
+
+    val isPaymentMaxAttemptsReachedFlow: StateFlow<Boolean> = _checkoutDetailsFlow
+        .map { it.isPaymentMaxAttemptsReached }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().isPaymentMaxAttemptsReached)
+
+    val isCheckoutLimitReachedFlow: StateFlow<Boolean> = _checkoutDetailsFlow
+        .map { it.isCheckoutLimitReached }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().isCheckoutLimitReached)
 
     val acceptedCardsListFlow: StateFlow<List<String>> = _checkoutDetailsFlow
         .map { it.acceptedCardsList }
@@ -535,6 +553,21 @@ internal object CheckoutDetailsHandler {
             appliedOfferId = appliedOfferId,
             discountAmount = amount
         )
+        _checkoutDetailsFlow.value = checkoutDetails
+    }
+
+    fun setIsPaymentMaxAttemptsReached() {
+        checkoutDetails = checkoutDetails.copy(isPaymentMaxAttemptsReached = !checkoutDetails.isPaymentMaxAttemptsReached)
+        _checkoutDetailsFlow.value = checkoutDetails
+    }
+
+    fun setIsCheckoutMaxAttemptsReached() {
+        checkoutDetails = checkoutDetails.copy(isCheckoutLimitReached = !checkoutDetails.isCheckoutLimitReached)
+        _checkoutDetailsFlow.value = checkoutDetails
+    }
+
+    fun setRetryAvailableMethods(availableMethodsList : List<String>) {
+        checkoutDetails = checkoutDetails.copy(availableRetryMethods = availableMethodsList)
         _checkoutDetailsFlow.value = checkoutDetails
     }
 }

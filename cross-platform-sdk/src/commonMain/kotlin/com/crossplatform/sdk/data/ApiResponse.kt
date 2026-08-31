@@ -6,6 +6,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.CancellationException
+import kotlinx.serialization.json.Json
 
 internal sealed class ApiResponse<out T> {
     data object Loading : ApiResponse<Nothing>()
@@ -57,4 +58,22 @@ internal suspend inline fun <reified T> executeWithResponse(
             exception = e
         )
     }
+}
+
+internal val sdkErrorJson = Json {
+    ignoreUnknownKeys = true
+    isLenient = true
+    coerceInputValues = true
+}
+
+/**
+ * Attempts to decode [ApiResponse.Error.errorBody] into a specific structured
+ * error type. Returns null if the body is missing, malformed, or doesn't match
+ * the expected shape — callers should always treat this as optional.
+ */
+internal inline fun <reified E> ApiResponse.Error.parseErrorBodyAs(
+    json: Json = sdkErrorJson
+): E? {
+    val body = errorBody ?: return null
+    return runCatching { json.decodeFromString<E>(body) }.getOrNull()
 }

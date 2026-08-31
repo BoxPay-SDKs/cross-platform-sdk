@@ -7,14 +7,24 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.crossplatform.sdk.domain.model.WebViewState
+import com.crossplatform.sdk.presentation.BackHandler
 
 @Composable
 internal actual fun WebViewScreen(
@@ -22,6 +32,9 @@ internal actual fun WebViewScreen(
     html: String?,
     onBackPress: (redirectionResult: String?) -> Unit
 ) {
+    BackHandler {
+        onBackPress("")
+    }
     var state by remember { mutableStateOf(WebViewState(currentUrl = url ?: "")) }
 
     // Guard against calling onBackPress more than once — mirrors hasCalledBack ref
@@ -38,13 +51,29 @@ internal actual fun WebViewScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        // ── Top bar: back icon + URL bar ─────────────────────────────
+        IconButton(onClick = {
+            onBackPress("")
+        }) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                modifier = Modifier.size(24.dp),
+                tint = Color.Black
+            )
+        }
+        WebViewUrlBar(currentUrl = state.currentUrl)
 
-        // ── URL bar ───────────────────────────────────────────────────────
-        Column {
-            WebViewUrlBar(currentUrl = state.currentUrl)
-
-            // ── WebView ───────────────────────────────────────────────────────
+        // ── WebView + loader overlay ─────────────────────────────────
+        // Box (not Column) so the loader is stacked ON TOP of the WebView
+        // and centered, instead of being laid out below it.
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentAlignment = Alignment.Center
+        ) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { context ->
@@ -54,8 +83,6 @@ internal actual fun WebViewScreen(
                             domStorageEnabled = true
                         }
                         webViewClient = object : WebViewClient() {
-
-                            // onLoadStart equivalent
                             override fun onPageStarted(
                                 view: WebView,
                                 pageUrl: String,
@@ -65,29 +92,26 @@ internal actual fun WebViewScreen(
                                 state = state.copy(isLoading = true)
                             }
 
-                            // onLoadEnd equivalent
                             override fun onPageFinished(view: WebView, pageUrl: String) {
                                 super.onPageFinished(view, pageUrl)
                                 state = state.copy(isLoading = false)
                                 handleUrl(pageUrl)
                             }
 
-                            // onShouldStartLoadWithRequest equivalent
                             override fun shouldOverrideUrlLoading(
                                 view: WebView,
                                 request: WebResourceRequest,
                             ): Boolean {
-                                return false   // mirrors `return true` in RN (let WebView load it)
+                                return false
                             }
                         }
 
-                        // Load content — html takes priority, then url, then fallback
                         when {
                             html != null -> loadDataWithBaseURL(
                                 null, html, "text/html", "UTF-8", null
                             )
-                            url != null  -> loadUrl(url)
-                            else         -> loadData(
+                            url != null -> loadUrl(url)
+                            else -> loadData(
                                 "<h1>No content provided</h1>", "text/html", "UTF-8"
                             )
                         }
@@ -95,7 +119,7 @@ internal actual fun WebViewScreen(
                 }
             )
 
-            // Loader overlay sits on top of WebView while loading
+            // Now centered over the WebView instead of sitting below it.
             if (state.isLoading) {
                 WebViewLoader()
             }

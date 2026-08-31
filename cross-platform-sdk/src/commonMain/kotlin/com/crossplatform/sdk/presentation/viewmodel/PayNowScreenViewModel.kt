@@ -1,8 +1,8 @@
 package com.crossplatform.sdk.presentation.viewmodel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.domain.model.AppLifecycleState
@@ -11,7 +11,8 @@ import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
 import com.crossplatform.sdk.domain.repo.FetchStatusRepo
 import com.crossplatform.sdk.domain.repo.OtherPaymentMethodRepo
 import com.crossplatform.sdk.presentation.AppLifecycleObserver
-import com.crossplatform.sdk.presentation.getStatus
+import com.crossplatform.sdk.presentation.sharedContext.handleFetchStatus
+import com.crossplatform.sdk.presentation.sharedContext.handlePaymentResponse
 import com.crossplatform.sdk.presentation.sharedContext.handleUpiCollectFetchStatus
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -26,10 +27,13 @@ internal class PayNowScreenViewModel(
     private val fetchStatusRepo: FetchStatusRepo
 ) : ViewModel()  {
 
-    private val _qrState = MutableStateFlow<PayNowUiState>(PayNowUiState.Idle)
-    val qrState : StateFlow<PayNowUiState> get() = _qrState
-    val isQRFetching = MutableStateFlow(false)
+    private val _qrState = MutableStateFlow<PayNowUiState?>(null)
+    val qrState : StateFlow<PayNowUiState?> get() = _qrState
+    val isQRFetching = MutableStateFlow(true)
     private var fetchStatusJob: Job? = null
+    val showWebview = MutableStateFlow(false)
+    val url = mutableStateOf<String?>(null)
+    val htmlString = mutableStateOf<String?>(null)
 
     private var isPollingIntended = false
 
@@ -48,39 +52,45 @@ internal class PayNowScreenViewModel(
     }
 
     fun getPayNowQR(instrumentType : String) {
+        isQRFetching.value = true
         viewModelScope.launch {
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_INITIATED.value,
                 screenName = "PayNowScreenViewModel",
                 message = "payment initiated"
             )
-            when (val response = repo.initiatePayment(
+            val response = repo.initiatePayment(
                 instrumentDetails = instrumentType,
                 paymentType = "",
                 token = ""
-            )) {
-                is ApiResponse.Error ->  {
+            )
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentUrl = {
+                    url.value = it
+                    setWebViewScreen(true)
+                },
+                onSetPaymentHtml = {
+                    htmlString.value = it
+                    setWebViewScreen(true)
+                },
+                onNavigateToTimer = {
+//                    proceedToTimer.value = true
+                },
+                onOpenQr = {content,expirySec ->
                     isQRFetching.value = false
-                    CheckoutDetailsHandler.setErrorMessage(CheckoutDetailsHandler.checkoutDetails.errorMessage)
-                    CheckoutDetailsHandler.setSessionFailed()
-                }
-                ApiResponse.Loading -> {
-                    isQRFetching.value = true
-                }
-                is ApiResponse.Success -> {
-                    val apiData = response.data
-                    val status = getStatus(apiData.status.status)
-                    val transactionId = apiData.transactionId
-
-                    CheckoutDetailsHandler.setStatusAndTransID(
-                        status = status.name,
-                        transactionId = transactionId
-                    )
-                    isQRFetching.value = false
-                    _qrState.value = PayNowUiState.Ready(response.data.actions?.get(0)?.content ?: "", response.data.actions?.get(0)?.expirySec ?: 300)
+                    _qrState.value = PayNowUiState.Ready(content, expirySec)
                     startFetchStatusPolling()
+                },
+                onOpenUpiIntent = {_ ->
+                    // no operation
+                },
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                setIsBoxPayAnimationVisible = {
+                    stopFetchStatusPolling()
+                    isQRFetching.value = it
                 }
-            }
+            )
         }
     }
 
@@ -142,6 +152,63 @@ internal class PayNowScreenViewModel(
     ) {
         viewModelScope.launch {
             analyticsRepo.callUiAnalytics(event, screenName, message)
+        }
+    }
+
+    fun callFetchStatus(inquiryResult : String) {
+        viewModelScope.launch {
+            CheckoutDetailsHandler.setInquiryToken(inquiryResult)
+            isQRFetching.value = true
+            val response = fetchStatusRepo.fetchStatus()
+            handleFetchStatus(
+                response = response,
+                setIsBoxPayAnimationVisible = {isQRFetching.value = it},
+                onAutoRetry = {
+                    CheckoutDetailsHandler.showAutoRetryDropDown { autoRetryInitiatePayment() }
+                    isQRFetching.value = false
+                }
+            )
+        }
+    }
+
+    fun setWebViewScreen(boolean: Boolean) {
+        showWebview.value = boolean
+        CheckoutDetailsHandler.setIsWebViewVisible(boolean)
+    }
+
+    fun setExpiredQRState() {
+        _qrState.value = PayNowUiState.Expired
+    }
+
+    fun autoRetryInitiatePayment() {
+        viewModelScope.launch {
+            isQRFetching.value = true
+            val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+            val response = fetchStatusRepo.autoRetryInitiatePayment(checkoutDetails.transactionId)
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentUrl = {
+                    url.value = it
+                    setWebViewScreen(true)
+                },
+                onSetPaymentHtml = {
+                    htmlString.value = it
+                    setWebViewScreen(true)
+                },
+                onNavigateToTimer = {
+                    // no operation
+                },
+                onOpenQr = {_, _ ->
+                    // no operation
+                },
+                onOpenUpiIntent = {_ ->
+                    // no operation
+                },
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                setIsBoxPayAnimationVisible = {
+                    isQRFetching.value = it
+                }
+            )
         }
     }
 }

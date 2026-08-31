@@ -3,10 +3,14 @@ package com.crossplatform.sdk.presentation.sharedContext
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
+import com.crossplatform.sdk.data.parseErrorBodyAs
+import com.crossplatform.sdk.domain.model.ApiErrorResponseModel
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.getStatus
 import com.crossplatform.sdk.presentation.resolveErrorMessage
 
+private const val PAYMENT_MAX_ATTEMPTS_REACHED = "BE_1815"
+private const val CHECKOUT_MAX_ATTEMPTS_REACHED = "BE_1816"
 internal fun handlePaymentResponse(
     response: ApiResponse<PaymentMethodPostResponse>,
     onRevolutPay: ((String, String) -> Unit)? = null,
@@ -94,15 +98,50 @@ internal fun handlePaymentResponse(
                 }
             }
         }
-        else -> {
-            if(errorMessage.contains("expired", true)) {
-                CheckoutDetailsHandler.setSessionExpired()
-                setIsBoxPayAnimationVisible(false)
-            } else {
-                CheckoutDetailsHandler.setErrorMessage(errorMessage)
-                CheckoutDetailsHandler.setSessionFailed()
-                setIsBoxPayAnimationVisible(false)
+
+        is ApiResponse.Error -> {
+            val structuredError = response.parseErrorBodyAs<ApiErrorResponseModel>()
+
+            when {
+                structuredError?.reasonCode == PAYMENT_MAX_ATTEMPTS_REACHED -> {
+//                    val ignoredMethods = setOf("Upi", "UpiOneTimeMandate")
+
+                    val availableMethods = structuredError.fieldErrorItems
+//                        .filter { it.fieldName !in ignoredMethods }
+                        .filter { (it.message?.toIntOrNull() ?: 0) > 0 }
+                        .map { it.fieldName }
+
+                    CheckoutDetailsHandler.setRetryAvailableMethods(availableMethods)
+                    CheckoutDetailsHandler.setIsPaymentMaxAttemptsReached()
+                    setIsBoxPayAnimationVisible(false)
+                }
+
+                structuredError?.reasonCode == CHECKOUT_MAX_ATTEMPTS_REACHED -> {
+                    CheckoutDetailsHandler.setIsCheckoutMaxAttemptsReached()
+                    setIsBoxPayAnimationVisible(false)
+                }
+
+                errorMessage.contains("expired", true) -> {
+                    CheckoutDetailsHandler.setSessionExpired()
+                    setIsBoxPayAnimationVisible(false)
+                }
+
+                else -> {
+                    val resolvedErrorMessage = resolveErrorMessage(
+                        reasonCode = structuredError?.reasonCode,
+                        reason = structuredError?.message,
+                        fallback = "You may have cancelled the payment or there was a delay in response. Please retry."
+                    )
+                    CheckoutDetailsHandler.setErrorMessage(
+                        resolvedErrorMessage
+                    )
+                    CheckoutDetailsHandler.setSessionFailed()
+                    setIsBoxPayAnimationVisible(false)
+                }
             }
+        }
+        else -> {
+            // no operations
         }
     }
 }

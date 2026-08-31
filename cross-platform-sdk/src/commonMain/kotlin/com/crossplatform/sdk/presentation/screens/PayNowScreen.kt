@@ -45,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.domain.model.PayNowUiState
 import com.crossplatform.sdk.presentation.BackHandler
+import com.crossplatform.sdk.presentation.base64ToImageBitmap
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.formatTimer
@@ -54,12 +55,9 @@ import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.PayNowScreenViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_download
-import crossplatformsdk.cross_platform_sdk.generated.resources.ic_qr
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_timer
 import crossplatformsdk.cross_platform_sdk.generated.resources.paynow_reinitiate_qr_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.qr_expired_icon
-import crossplatformsdk.cross_platform_sdk.generated.resources.qr_fetching_icon
-import crossplatformsdk.cross_platform_sdk.generated.resources.qr_ready_icon
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -70,7 +68,6 @@ internal fun PayNowScreen(
     onBackPress : () -> Unit,
     instrumentRef : String
 ) {
-
     val viewModel : PayNowScreenViewModel = koinViewModel()
     val saver = rememberQrImageSaver()
     val scope = rememberCoroutineScope()
@@ -80,9 +77,13 @@ internal fun PayNowScreen(
     val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
     val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
     var showCancelModal by remember { mutableStateOf(false) }
-
     var isDownloadingQr by remember { mutableStateOf(false) }
     var downloadDialogState by remember { mutableStateOf<DownloadDialogState?>(null) }
+    val showWebView by viewModel.showWebview.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.getPayNowQR(instrumentRef)
+    }
 
     BackHandler(onBack = {
         showCancelModal = true
@@ -95,18 +96,6 @@ internal fun PayNowScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             when (val state = qrState) {
-
-                PayNowUiState.Idle -> {
-                    PayNowIdleState(
-                        buttonColor = buttonColor.value,
-                        buttonTextColor = buttonTextColor.value,
-                        borderRadius = ctaBorderRadius.value,
-                        onGetQr = {
-                            viewModel.getPayNowQR(instrumentRef)
-                        }
-                    )
-                }
-
                 is PayNowUiState.Ready -> {
                     PayNowReadyState(
                         expirySec = state.totalSeconds.toLong(),
@@ -118,12 +107,10 @@ internal fun PayNowScreen(
                             scope.launch {
                                 saver.saveBase64Image(state.qrImage, fileName = "paynow_qr")
                                     .onSuccess {
-                                        println("====successfully downloaded")
                                         viewModel.lifecycleObserver.start()
                                         downloadDialogState = DownloadDialogState.Success
                                     }
-                                    .onFailure { e ->
-                                        println("==error came $e")
+                                    .onFailure { _ ->
                                         downloadDialogState = DownloadDialogState.Error
                                     }
                                 isDownloadingQr = false
@@ -132,7 +119,8 @@ internal fun PayNowScreen(
                         onExpired = {
                             viewModel.markExpired()
                         },
-                        isDownloadingQR = isDownloadingQr
+                        isDownloadingQR = isDownloadingQr,
+                        qrImage = state.qrImage
                     )
                 }
 
@@ -146,6 +134,10 @@ internal fun PayNowScreen(
                         }
                     )
                 }
+
+                else -> {
+                    // no op
+                }
             }
             Spacer(modifier = Modifier.weight(1f))
             Footer()
@@ -158,8 +150,20 @@ internal fun PayNowScreen(
                 onNoClick  = { showCancelModal = false },
                 onYesClick = {
                     showCancelModal = false
+                    viewModel.setWebViewScreen(false)
                     viewModel.stopFetchStatusPolling()
                     onBackPress()
+                }
+            )
+        }
+        if(showWebView) {
+            WebViewScreen(
+                url = viewModel.url.value,
+                html = viewModel.htmlString.value,
+                onBackPress = {result ->
+                    viewModel.callFetchStatus(result ?: "")
+                    viewModel.setWebViewScreen(false)
+                    viewModel.setExpiredQRState()
                 }
             )
         }
@@ -194,87 +198,14 @@ internal fun PayNowScreen(
 }
 
 @Composable
-private fun PayNowIdleState(
-    buttonColor: String,
-    buttonTextColor: String,
-    borderRadius: Int,
-    onGetQr: () -> Unit,
-) {
-
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 20.dp).background(Color.White, RoundedCornerShape(12.dp)).padding(vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(Res.drawable.qr_fetching_icon),
-            contentDescription = "",
-            modifier = Modifier
-                .size(140.dp),
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Get QR to Pay",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF363840),
-            fontFamily = LocalSDKFonts.current.primary
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-            text = "Generate a QR code to pay using any PayNow supported app.",
-            fontSize = 15.sp,
-            lineHeight = 22.sp,
-            color = Color(0xFF4F4D55),
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = onGetQr,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp, start = 16.dp, end = 16.dp)
-                .clip(RoundedCornerShape(borderRadius.dp))
-                .background(buttonColor.toComposeColor()),
-            shape = RoundedCornerShape(borderRadius.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = buttonColor.toComposeColor(),
-                contentColor = buttonTextColor.toComposeColor()
-            )
-        ) {
-
-            Image(
-                painter = painterResource(Res.drawable.ic_qr),
-                contentDescription = "",
-                modifier = Modifier
-                    .size(32.dp)
-            )
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Text(
-                text = "Get QR",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = buttonTextColor.toComposeColor()
-            )
-        }
-    }
-}
-
-@Composable
 private fun PayNowReadyState(
     expirySec: Long,
     buttonColor: String,
     borderRadius: Int,
     onDownloadQr: () -> Unit,
     isDownloadingQR : Boolean,
-    onExpired: () -> Unit
+    onExpired: () -> Unit,
+    qrImage : String
 ) {
 
     var remainingSeconds by remember {
@@ -298,14 +229,19 @@ private fun PayNowReadyState(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Image(
-            painter = painterResource(Res.drawable.qr_ready_icon),
-            contentDescription = "",
-            modifier = Modifier
-                .size(140.dp)
-        )
+        if(qrImage.isNotEmpty()) {
+            Box(contentAlignment = Alignment.Center) {
 
-        Spacer(modifier = Modifier.height(16.dp))
+                Image(
+                    bitmap = base64ToImageBitmap(qrImage),
+                    contentDescription = "Payment QR",
+                    modifier = Modifier
+                        .size(250.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         Text(
             text = "QR Ready",

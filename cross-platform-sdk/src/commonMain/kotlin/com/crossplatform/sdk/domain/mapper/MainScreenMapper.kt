@@ -189,6 +189,7 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
 
     val walletList = this.configs.paymentMethods.toUiModel("wallet")
     val netBankingList = this.configs.paymentMethods.toUiModel("netbanking")
+    val bnplList = this.configs.paymentMethods.toUiModel("buynowpaylater")
 
 
     return MainScreenModel(
@@ -206,7 +207,8 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
         googlePayAdditionData = googlePayAdditionData,
         applePayAdditionData = applePayAdditionData,
         walletPaymentMethod = walletList,
-        netBankingPaymentMethod = netBankingList
+        netBankingPaymentMethod = netBankingList,
+        bnplPaymentMethod = bnplList
     )
 }
 

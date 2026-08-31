@@ -90,7 +90,7 @@ internal fun OrderDetails(
         filteredSurcharges.value = surchargeDetails.filter { item ->
             val applicable = item.applicableOn.lowercase().trim()
             val matches = applicable.isEmpty() ||
-                    (applicable == selectedPaymentMethod.lowercase().trim() && item.network.contains(selectedNetwork, true)) ||
+                    (applicable == selectedPaymentMethod.lowercase().trim() && item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true)) ||
                     (applicable == selectedPaymentMethod.lowercase().trim() && item.network.isBlank())
 
             if (item.network.equals("UpiQr", true) || item.network.equals("UpiQrOtm", true)) {

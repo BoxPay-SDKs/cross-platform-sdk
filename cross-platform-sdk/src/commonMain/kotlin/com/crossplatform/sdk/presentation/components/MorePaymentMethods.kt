@@ -1,20 +1,15 @@
 package com.crossplatform.sdk.presentation.components
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.crossplatform.sdk.domain.model.MainScreenModel
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
@@ -40,6 +35,7 @@ internal fun MorePaymentMethods(
     currencySymbol : String,
     walletList : List<SelectedPaymentMethod>,
     netBankingList : List<SelectedPaymentMethod>,
+    bnplList : List<SelectedPaymentMethod>,
     amount : Double,
     buttonColor : String,
     buttonTextColor : String,
@@ -54,11 +50,18 @@ internal fun MorePaymentMethods(
     val isNetBankingVisible = remember {
         mutableStateOf(false)
     }
+    val isBNPLVisible = remember {
+        mutableStateOf(false)
+    }
     val walletRotation by animateFloatAsState(
         targetValue = if (isWalletVisible.value) 180f else 0f,
         label       = "chevron"
     )
     val bankRotation by animateFloatAsState(
+        targetValue = if (isNetBankingVisible.value) 180f else 0f,
+        label       = "chevron"
+    )
+    val bnplRotation by animateFloatAsState(
         targetValue = if (isNetBankingVisible.value) 180f else 0f,
         label       = "chevron"
     )
@@ -68,17 +71,14 @@ internal fun MorePaymentMethods(
     val selectedBankId = remember {
         mutableStateOf("")
     }
+    val selectedBnplId = remember {
+        mutableStateOf("")
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .border(
-                width = 1.dp,
-                color = Color(0xFFE6E6E6),
-                RoundedCornerShape(12.dp)
-            )
-            .background(Color.White)
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         if(methodFlags.isCardsVisible && savedCardsList.isEmpty()) {
             MorePaymentContainer(
@@ -88,9 +88,6 @@ internal fun MorePaymentMethods(
                 surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "card" }?.amount,
                 currencySymbol = currencySymbol
             )
-            if(methodFlags.isWalletVisible || methodFlags.isNetBankingVisible || methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
-                HorizontalDivider()
-            }
         }
         if(methodFlags.isWalletVisible) {
             ExpandablePaymentSection(
@@ -114,15 +111,14 @@ internal fun MorePaymentMethods(
                 isExpanded = isWalletVisible.value,
                 setIsExpanded = {
                     selectedBankId.value = ""
+                    selectedBnplId.value = ""
                     isNetBankingVisible.value = false
+                    isBNPLVisible.value = false
                     val newExpandedState = !isWalletVisible.value
                     isWalletVisible.value = newExpandedState
                     setSelectedPaymentMethod(if (newExpandedState) "wallet" else "")
                 }
             )
-            if(methodFlags.isNetBankingVisible || methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
-                HorizontalDivider()
-            }
         }
         if(methodFlags.isNetBankingVisible) {
             ExpandablePaymentSection(
@@ -146,15 +142,14 @@ internal fun MorePaymentMethods(
                 isExpanded = isNetBankingVisible.value,
                 setIsExpanded = {
                     selectedWalletId.value = ""
+                    selectedBnplId.value = ""
                     isWalletVisible.value = false
+                    isBNPLVisible.value = false
                     val newExpandedState = !isNetBankingVisible.value
                     isNetBankingVisible.value = newExpandedState
                     setSelectedPaymentMethod(if (newExpandedState) "netbanking" else "")
                 }
             )
-            if(methodFlags.isEMIVisible || methodFlags.isBNPLVisible) {
-                HorizontalDivider()
-            }
         }
         if (methodFlags.isEMIVisible) {
             MorePaymentContainer(
@@ -164,28 +159,52 @@ internal fun MorePaymentMethods(
                 surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "emi" }?.amount,
                 currencySymbol = currencySymbol
             )
-            if(methodFlags.isBNPLVisible) {
-                HorizontalDivider()
-            }
         }
         if(methodFlags.isBNPLVisible){
-            MorePaymentContainer(
+            ExpandablePaymentSection(
                 title = "Buy Now Pay Later",
                 image = Res.drawable.ic_bnpl,
-                onClick = onNavigateToBNPL,
-                surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "buynowpaylater" }?.amount,
-                currencySymbol = currencySymbol
+                onViewMore = onNavigateToBNPL,
+                surchargeList = surchargeList,
+                currencySymbol = currencySymbol,
+                providerList = bnplList,
+                amount = amount,
+                selectedId = selectedBnplId.value,
+                buttonTextColor = buttonTextColor,
+                buttonColor = buttonColor,
+                ctaBorderRadius = ctaBorderRadius,
+                onClickRadio = {id , name ->
+                    setSelectedPaymentNetwork(name)
+                    selectedBnplId.value = id
+                },
+                onProceedForward = onProceedForward,
+                rotate = bnplRotation,
+                isExpanded = isBNPLVisible.value,
+                setIsExpanded = {
+                    selectedWalletId.value = ""
+                    selectedBankId.value = ""
+                    isWalletVisible.value = false
+                    isNetBankingVisible.value = false
+                    val newExpandedState = !isBNPLVisible.value
+                    isBNPLVisible.value = newExpandedState
+                    setSelectedPaymentMethod(if (newExpandedState) "buynowpaylater" else "")
+                }
             )
         }
         methodFlags.additionalPaymentMethods.map { method ->
-            HorizontalDivider()
             MorePaymentContainer(
                 title = method.title,
                 logoUrl = method.iconUrl,
                 onClick = {
+                    selectedBankId.value = ""
+                    selectedBnplId.value = ""
+                    selectedWalletId.value = ""
+                    isNetBankingVisible.value = false
+                    isBNPLVisible.value = false
+                    isWalletVisible.value = false
+                    setSelectedPaymentMethod("")
                     onNavigateToPayNow(method.instrumentTypeValue)
                 },
-                surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "buynowpaylater" }?.amount,
                 currencySymbol = currencySymbol
             )
         }

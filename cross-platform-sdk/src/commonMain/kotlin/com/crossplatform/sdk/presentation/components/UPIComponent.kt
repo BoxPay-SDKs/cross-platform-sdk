@@ -64,6 +64,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_bhim_upi
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_jupiter_pay
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_mobikwik_pay
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_qr
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi_error
 import crossplatformsdk.cross_platform_sdk.generated.resources.other_intent_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.paytm_icon
@@ -646,9 +647,14 @@ internal fun UPIComponent(
         } else {
             Row(
                 modifier = Modifier.clickable{setIsExpanded()}.fillMaxWidth().padding(start = 16.dp, top = 12.dp, end = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Image(
+                    painter            = painterResource(Res.drawable.ic_upi),
+                    contentDescription = collapsedLabel,
+                    modifier           = Modifier.size(32.dp),
+                )
+                Spacer(Modifier.width(4.dp))
                 Text(
                     text = collapsedLabel,
                     fontSize = 14.sp,
@@ -657,7 +663,7 @@ internal fun UPIComponent(
                     fontWeight = FontWeight.SemiBold
                 )
 
-                Spacer(Modifier.width(6.dp))
+                Spacer(Modifier.weight(1f))
                 Image(
                     painter            = painterResource(Res.drawable.chervon_down),
                     contentDescription = null,

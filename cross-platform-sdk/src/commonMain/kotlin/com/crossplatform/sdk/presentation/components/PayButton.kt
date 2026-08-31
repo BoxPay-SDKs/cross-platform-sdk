@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.presentation.formatAmount
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 
@@ -57,7 +58,7 @@ internal fun PayButton(
                             fontFamily = LocalSDKFonts.current.primary
                         )
                     ) {
-                        append(" $amount")
+                        append(" ${formatAmount(amount)}")
                     }
                 }
             },

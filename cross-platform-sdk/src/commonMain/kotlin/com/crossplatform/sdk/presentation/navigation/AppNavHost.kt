@@ -30,9 +30,12 @@ import com.crossplatform.sdk.data.handler.SDKPaymentResponseHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.data.model.SDKPaymentResponse
+import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.buildAddressAndUserDetailsString
+import com.crossplatform.sdk.presentation.components.CheckoutLimitReached
 import com.crossplatform.sdk.presentation.components.ExitCheckoutConfirmation
 import com.crossplatform.sdk.presentation.components.PaymentFailed
+import com.crossplatform.sdk.presentation.components.PaymentMaxRetryReached
 import com.crossplatform.sdk.presentation.components.PaymentRetryBottomSheet
 import com.crossplatform.sdk.presentation.components.PaymentSuccessful
 import com.crossplatform.sdk.presentation.components.SessionExpire
@@ -84,6 +87,9 @@ internal fun AppNavHost() {
     val isSessionExpired = CheckoutDetailsHandler.isSessionExpiredFlow.collectAsStateWithLifecycle()
     val successDetails = CheckoutDetailsHandler.successfulTimestampFlow.collectAsStateWithLifecycle()
     val proceedAutoRetryPayment = CheckoutDetailsHandler.proceedAutoRetryFunctionFlow.collectAsStateWithLifecycle()
+    val isPaymentMaxAttemptsReached = CheckoutDetailsHandler.isPaymentMaxAttemptsReachedFlow.collectAsStateWithLifecycle()
+    val isCheckoutLimitReached = CheckoutDetailsHandler.isCheckoutLimitReachedFlow.collectAsStateWithLifecycle()
+    val availableRetryMethods = CheckoutDetailsHandler.availableMethodsListFlow.collectAsStateWithLifecycle()
     val (successTimeStamp , selectedPaymentMethod) = successDetails.value
 
     val showExitCheckoutConfirmation = remember { mutableStateOf(false) }
@@ -101,12 +107,21 @@ internal fun AppNavHost() {
 
     val failedSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val autoRetrySheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val paymentMaxAttemptSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val checkoutMaxAttemptSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope            = rememberCoroutineScope()
 
     fun hideFailedSheet() {
         scope.launch {
             CheckoutDetailsHandler.setSessionFailed()
             failedSheetState.hide()
+        }
+    }
+
+    fun hidePaymentMaxRetrySheet() {
+        scope.launch {
+            CheckoutDetailsHandler.setIsPaymentMaxAttemptsReached()
+            paymentMaxAttemptSheetState.hide()
         }
     }
 
@@ -171,6 +186,9 @@ internal fun AppNavHost() {
     }
 
     Column (modifier = Modifier.fillMaxSize()) {
+        BackHandler {
+            callSDKPaymentResponse()
+        }
         if(!viewModel.isLoadingSession.value && !isWebViewVisible.value) {
             TopBar(
                 showDesc   = true,
@@ -553,6 +571,45 @@ internal fun AppNavHost() {
             ctaBorderRadius = ctaBorderRadius.value,
             buttonColor = buttonColor.value,
             buttonTextColor = buttonTextColor.value
+        )
+    }
+
+    if(isPaymentMaxAttemptsReached.value) {
+        PaymentMaxRetryReached(
+            availableMethods = availableRetryMethods.value,
+            sheetState = paymentMaxAttemptSheetState,
+            onSelectMethod = {
+                hidePaymentMaxRetrySheet()
+                when(it.lowercase()) {
+                    "upi", "upionetimemandate" -> {
+                        val currentRoute = navController.currentDestination?.route
+                        if (currentRoute != Routes.MainScreen.route) {
+                            navController.popBackStack(Routes.MainScreen.route, inclusive = false)
+                        }
+                    }
+                    "card" -> navController.navigate("${Routes.CardScreen.route}/false")
+                    "wallet" -> navController.navigate("${Routes.WalletScreen.route}/false")
+                    "netbanking" -> navController.navigate("${Routes.NetBankingScreen.route}/false")
+                    "buynowpaylater" -> navController.navigate("${Routes.BNPLScreen.route}/false")
+                    "emi" -> navController.navigate("${Routes.EMIScreen.route}/false")
+                    else -> hidePaymentMaxRetrySheet()
+                }
+            },
+            onDismiss = {
+                hidePaymentMaxRetrySheet()
+            }
+        )
+    }
+
+    if(isCheckoutLimitReached.value) {
+        CheckoutLimitReached(
+            sheetState = checkoutMaxAttemptSheetState,
+            onExitCheckout = {
+                scope.launch {
+                    CheckoutDetailsHandler.setIsCheckoutMaxAttemptsReached()
+                }
+                callSDKPaymentResponse()
+            }
         )
     }
 }
