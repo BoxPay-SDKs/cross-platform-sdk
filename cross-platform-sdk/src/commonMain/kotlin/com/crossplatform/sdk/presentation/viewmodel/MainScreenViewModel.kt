@@ -214,7 +214,6 @@ internal class MainScreenViewModel(
     ) {
         when(val response = repo.getSurcharge(amount, currencyCode)) {
             is ApiResponse.Error -> {
-                println("====error mrsshe ${response.errorBody}")
                 CheckoutDetailsHandler.setSurchargeDetails(emptyList())
             }
             is ApiResponse.Success -> {

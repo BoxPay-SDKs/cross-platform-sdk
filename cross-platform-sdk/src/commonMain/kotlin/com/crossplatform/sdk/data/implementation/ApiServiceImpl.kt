@@ -195,7 +195,6 @@ internal class ApiServiceImpl : ApiService {
             shopper = getShopperDetails(),
             deviceDetails = getDeviceDetails()
         )
-        println("request body $requestBody")
         return executeWithResponse {
             client.post(urlString = "") {
                 contentType(ContentType.Application.Json)

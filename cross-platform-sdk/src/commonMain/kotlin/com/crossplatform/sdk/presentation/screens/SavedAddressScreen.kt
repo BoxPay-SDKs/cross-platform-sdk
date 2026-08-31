@@ -62,10 +62,8 @@ internal fun SavedAddressScreen(
                         number = item.phoneNumber,
                         isCurrentlySelected = selectedAddress == item.addressRef,
                         onClickEditAddress = {
-                            println("======address $item")
                         },
                         onClickSelectAddress = {
-                            println("========$item")
                         },
                         selectedCtaColor = buttonColor,
                         editAddressIcon = Res.drawable.ic_more

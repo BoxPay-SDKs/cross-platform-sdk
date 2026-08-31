@@ -63,7 +63,6 @@ internal fun ShowUpdateAmountBottomSheet(
             applicable == selectedMethod.lowercase().trim() && item.network.isBlank()
         }
 
-        println("=====filteredsurcharge ${filteredSurcharges.value}")
 
         amountAfterSurcharge.value = filteredSurcharges.value.sumOf { it.amount } + amount
     }

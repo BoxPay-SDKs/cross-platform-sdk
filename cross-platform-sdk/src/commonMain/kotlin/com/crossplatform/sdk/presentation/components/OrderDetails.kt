@@ -100,7 +100,6 @@ internal fun OrderDetails(
             }
         }
 
-        println("=====filteredsurcharge ${filteredSurcharges.value}")
 
         amountAfterSurcharge.value = filteredSurcharges.value.sumOf { it.amount } + totalAmount
 

@@ -451,7 +451,6 @@ internal actual class QrImageSaver(private val context: Context) {
                 // Strip data URI prefix if present, e.g. "data:image/png;base64,...."
                 val cleanBase64 = base64.substringAfter(",", base64)
                 val bytes = Base64.decode(cleanBase64, android.util.Base64.DEFAULT)
-                println("QrSaver decoded bytes size = ${bytes.size}")
 
                 val resolver = context.contentResolver
                 val values = ContentValues().apply {

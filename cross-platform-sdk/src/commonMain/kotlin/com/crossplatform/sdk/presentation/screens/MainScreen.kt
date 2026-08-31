@@ -872,7 +872,6 @@ internal fun MainScreen(
     LaunchedEffect(viewModel.revolutOrderToken.value) {
         if(viewModel.revolutOrderToken.value.isNotBlank()) {
             paymentHandler.launchRevolutPay(expressCheckoutPaymentRequest!!, config = revolutPay!!, isSandbox = isTestEnv.value) { result ->
-                println("==revolut==result $result")
                 when (result) {
                     is ExpressCheckoutPaymentResult.Cancelled -> {
                         CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)

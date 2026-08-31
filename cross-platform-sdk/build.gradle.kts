@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
-val sdkVersion = "1.0.2-beta20"
+val sdkVersion = "1.0.2-beta21"
 
 plugins {
     kotlin("multiplatform")
@@ -39,6 +39,19 @@ kotlin {
     }
 
     iosSimulatorArm64 {
+        binaries.framework {
+            baseName = "cross-platform-sdk"
+            freeCompilerArgs += listOf(
+                "-Xbinary=bundleId=com.boxpay.crossplatformsdk",
+                "-Xg0",
+                "-Xadd-light-debug=disable"
+            )
+            linkerOpts += listOf("-dead_strip", "-Wl,-x")
+            xcf.add(this)
+        }
+    }
+
+    iosX64 {
         binaries.framework {
             baseName = "cross-platform-sdk"
             freeCompilerArgs += listOf(
@@ -119,6 +132,7 @@ kotlin {
             dependsOn(iosMain)
         }
         val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
+        val iosX64Main by getting { dependsOn(iosMain) }
 
         val commonTest by getting {
             dependencies {
