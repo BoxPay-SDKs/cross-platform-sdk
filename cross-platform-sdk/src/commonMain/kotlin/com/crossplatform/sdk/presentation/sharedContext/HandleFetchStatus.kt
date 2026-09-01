@@ -4,7 +4,7 @@ import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.FetchStatusResponse
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
-import com.crossplatform.sdk.presentation.getStatus
+import com.crossplatform.sdk.presentation.getFetchStatus
 import com.crossplatform.sdk.presentation.resolveErrorMessage
 
 internal fun handleFetchStatus(
@@ -20,7 +20,7 @@ internal fun handleFetchStatus(
         }
         is ApiResponse.Success -> {
             val apiData = response.data
-            val status = getStatus(apiData.status)
+            val status = getFetchStatus(apiData.status)
             val transactionId = apiData.transactionId
 
             CheckoutDetailsHandler.setStatusAndTransID(
@@ -38,6 +38,10 @@ internal fun handleFetchStatus(
                     setIsBoxPayAnimationVisible(false)
                 }
                 TransactionStatusEnum.FAILED -> {
+                    if(response.data.retryable) {
+                        onAutoRetry()
+                        return
+                    }
                     val resolvedErrorMessage = resolveErrorMessage(
                         reasonCode = apiData.reasonCode,
                         reason = apiData.reason,
@@ -52,10 +56,6 @@ internal fun handleFetchStatus(
                     setIsBoxPayAnimationVisible(false)
                 }
                 else -> {
-                    if(response.data.retryable) {
-                        onAutoRetry()
-                        return
-                    }
                     CheckoutDetailsHandler.setSessionFailed()
                     setIsBoxPayAnimationVisible(false)
                 }
@@ -80,7 +80,7 @@ internal fun handleUpiCollectFetchStatus(
         }
         is ApiResponse.Success -> {
             val apiData = response.data
-            val status = getStatus(apiData.status)
+            val status = getFetchStatus(apiData.status)
             val transactionId = apiData.transactionId
 
             CheckoutDetailsHandler.setStatusAndTransID(

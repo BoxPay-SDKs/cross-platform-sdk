@@ -68,6 +68,8 @@ internal class CardScreenViewModel(
     var minCardNumberLength = mutableStateOf(19)
     var cardSelectedIcon    = mutableStateOf(Res.drawable.ic_card)
 
+    val amountBeforeSurcharge = mutableStateOf(0.0)
+
 
     var isSavedCardCheckBoxClicked =  mutableStateOf(false)
     var showCvvInfo                =  mutableStateOf(false)
@@ -151,7 +153,7 @@ internal class CardScreenViewModel(
 
         checkCardValid(isTestEnv)
 
-        if (cleaned.length == 16 || (cleaned.length == 15 && maxCardNumberLength.value == 15)) {
+        if (cleaned.length == 16 || (cleaned.length == 15 && maxCardNumberLength.value == 18)) {
             cardNumberValid.value = isValidCardNumberByLuhn(cleaned)
         }
 
@@ -163,6 +165,10 @@ internal class CardScreenViewModel(
             cardSelectedIcon.value    = Res.drawable.ic_card
             maxCvvLength.value        = 3
             maxCardNumberLength.value = 19
+            if(appliedSurcharge.value.isNotEmpty()) {
+                CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
+            }
+            appliedSurcharge.value = emptyList()
         }
         cardNumberError.value = cleaned.isEmpty() || cardNumberText.value.startsWith("0") ||
                 (!isTestEnv && (!methodEnabled.value || !cardNumberValid.value))
@@ -170,13 +176,16 @@ internal class CardScreenViewModel(
 
     // --- Update icon from API ---
     fun updateCardIcon(isTestEnv: Boolean, brand : String) {
-        val surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
-        appliedSurcharge.value = surchargeList.filter { item ->
-            (item.network.contains(brand, true) || item.network.isBlank()) && item.applicableOn.equals("card", true)
-        }
-        val amountAfterSurcharge = appliedSurcharge.value.sumOf { it.amount } + CheckoutDetailsHandler.amountFlow.value
+        if(appliedSurcharge.value.isEmpty()) {
+            amountBeforeSurcharge.value = CheckoutDetailsHandler.amountFlow.value
+            val surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
+            appliedSurcharge.value = surchargeList.filter { item ->
+                (item.network.contains(brand, true) || item.network.isBlank()) && item.applicableOn.equals("card", true)
+            }
+            val amountAfterSurcharge = appliedSurcharge.value.sumOf { it.amount } + amountBeforeSurcharge.value
 
-        CheckoutDetailsHandler.setAmount(amountAfterSurcharge)
+            CheckoutDetailsHandler.setAmount(amountAfterSurcharge)
+        }
         when (brand) {
             "VISA"            -> { cardSelectedIcon.value = Res.drawable.ic_visa;       maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             "Mastercard"      -> { cardSelectedIcon.value = Res.drawable.ic_masterCard; maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
@@ -274,7 +283,7 @@ internal class CardScreenViewModel(
                 response = response,
                 setIsBoxPayAnimationVisible = {isBoxPayAnimationVisible.value = it},
                 onAutoRetry = {
-                    CheckoutDetailsHandler.showAutoRetryDropDown { autoRetryInitiatePayment() }
+                    CheckoutDetailsHandler.showAutoRetryDropDown({ autoRetryInitiatePayment() })
                     isBoxPayAnimationVisible.value = false
                 }
             )

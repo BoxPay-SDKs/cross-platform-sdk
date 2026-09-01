@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
@@ -75,7 +76,7 @@ internal fun PaymentRetryBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
-                .padding(top = 12.dp, bottom = 32.dp),
+                .padding(top = 24.dp, bottom = 24.dp),
             horizontalAlignment = Alignment.Start,
         ) {
             Row(
@@ -84,7 +85,7 @@ internal fun PaymentRetryBottomSheet(
                 Image(
                     painter = painterResource(Res.drawable.ic_lock),
                     contentDescription = null,
-                    modifier = Modifier.size(22.dp),
+                    modifier = Modifier.size(32.dp),
                 )
 
                 // Title
@@ -147,6 +148,7 @@ internal fun PaymentRetryBottomSheet(
                 text = "Only one successful charge will be processed.",
                 fontSize = 12.sp,
                 modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
             )
         }
     }

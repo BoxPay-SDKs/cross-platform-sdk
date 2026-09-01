@@ -134,10 +134,10 @@ internal object CheckoutDetailsHandler {
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().merchantName)
 
-    val proceedAutoRetryFunctionFlow : StateFlow<Function<Unit>> = _checkoutDetailsFlow
+    val proceedAutoRetryFunctionFlow : StateFlow<() -> Unit> = _checkoutDetailsFlow
         .map { it.proceedAutoRetryPayment }
         .distinctUntilChanged()
-        .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().proceedAutoRetryPayment)
+        .stateIn(scope, SharingStarted.Eagerly, {})
 
     val showRetryBottomDownFlow: StateFlow<Boolean> = _checkoutDetailsFlow
         .map { it.showRetryBottomDown }

@@ -138,6 +138,7 @@ internal data class CustomFields(
     @SerialName("validationParams") val validationParams : Map<String, String>?,
     @SerialName("dropDownOptions") val dropDownOptions : List<String>?,
     @SerialName("mandatory") val mandatory : Boolean,
+    @SerialName("enabled") val enabled : Boolean,
     @SerialName("fieldValue") val fieldValue : String? = null
 )
 

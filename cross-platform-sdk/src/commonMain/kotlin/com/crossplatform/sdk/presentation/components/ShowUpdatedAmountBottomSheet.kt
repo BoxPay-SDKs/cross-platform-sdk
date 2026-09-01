@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.formatAmount
-import com.crossplatform.sdk.presentation.isTabletDevice
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 
@@ -77,7 +76,7 @@ internal fun ShowUpdateAmountBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(vertical = 12.dp)
         ) {
 
             // Title
@@ -86,14 +85,14 @@ internal fun ShowUpdateAmountBottomSheet(
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
                 color = Color(0xFF010102),
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier.padding(bottom = 12.dp, start = 16.dp, end = 16.dp)
             )
 
             // Base Amount Row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp),
+                    .padding(top = 4.dp, start = 16.dp, end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -101,7 +100,7 @@ internal fun ShowUpdateAmountBottomSheet(
                     text = "Sub Total",
                     fontWeight = FontWeight.Normal,
                     fontFamily = LocalSDKFonts.current.primary,
-                    fontSize = 12.sp,
+                    fontSize = 14.sp,
                     color = Color(0xFF010102)
                 )
                 Text(
@@ -122,7 +121,7 @@ internal fun ShowUpdateAmountBottomSheet(
                         }
                     },
                     fontWeight = FontWeight.Medium,
-                    fontSize = 12.sp,
+                    fontSize = 14.sp,
                     fontFamily = LocalSDKFonts.current.primary,
                     color = Color(0xFF010102)
                 )
@@ -140,20 +139,20 @@ internal fun ShowUpdateAmountBottomSheet(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 1.dp)
+            HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp),
+                    .padding(top = 4.dp,start = 16.dp, end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = "Total Payable",
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     color = Color(0xFF010102),
                     fontFamily = LocalSDKFonts.current.primary
                 )
@@ -176,7 +175,7 @@ internal fun ShowUpdateAmountBottomSheet(
                     },
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = LocalSDKFonts.current.primary,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     color = Color(0xFF010102)
                 )
             }
@@ -184,7 +183,7 @@ internal fun ShowUpdateAmountBottomSheet(
                 text = "Proceed to Pay",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp)
+                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                     .clip(RoundedCornerShape(ctaBorderRadius.dp))
                     .background(buttonColor.toComposeColor(), RoundedCornerShape(ctaBorderRadius.dp))
                     .clickable{

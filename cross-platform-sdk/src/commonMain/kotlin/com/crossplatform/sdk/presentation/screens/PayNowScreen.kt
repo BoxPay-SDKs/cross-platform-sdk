@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -83,6 +84,18 @@ internal fun PayNowScreen(
 
     LaunchedEffect(Unit) {
         viewModel.getPayNowQR(instrumentRef)
+    }
+
+    DisposableEffect(Unit) {
+        ScreenBackInterceptor.onBack = {
+            showCancelModal = true
+            true
+        }
+
+        onDispose {
+            ScreenBackInterceptor.onBack = null
+            ScreenBackInterceptor.currentTitle = null
+        }
     }
 
     BackHandler(onBack = {

@@ -11,7 +11,6 @@ import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
 import com.crossplatform.sdk.domain.repo.FetchStatusRepo
 import com.crossplatform.sdk.domain.repo.OtherPaymentMethodRepo
 import com.crossplatform.sdk.presentation.AppLifecycleObserver
-import com.crossplatform.sdk.presentation.sharedContext.handleFetchStatus
 import com.crossplatform.sdk.presentation.sharedContext.handlePaymentResponse
 import com.crossplatform.sdk.presentation.sharedContext.handleUpiCollectFetchStatus
 import kotlinx.coroutines.Job
@@ -109,21 +108,9 @@ internal class PayNowScreenViewModel(
         fetchStatusJob?.cancel()
         fetchStatusJob = viewModelScope.launch {
             while (isActive) {
-                callUpiCollectFetchStatue()
+                callFetchStatus("")
                 delay(4000L)
             }
-        }
-    }
-
-    fun callUpiCollectFetchStatue() {
-        viewModelScope.launch {
-            val response = fetchStatusRepo.fetchStatus()
-            handleUpiCollectFetchStatus(
-                response = response,
-                setIsBoxPayAnimationVisible = {
-                    stopFetchStatusPolling()
-                }
-            )
         }
     }
 
@@ -158,15 +145,13 @@ internal class PayNowScreenViewModel(
     fun callFetchStatus(inquiryResult : String) {
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
-            isQRFetching.value = true
             val response = fetchStatusRepo.fetchStatus()
-            handleFetchStatus(
+            handleUpiCollectFetchStatus(
                 response = response,
-                setIsBoxPayAnimationVisible = {isQRFetching.value = it},
-                onAutoRetry = {
-                    CheckoutDetailsHandler.showAutoRetryDropDown { autoRetryInitiatePayment() }
-                    isQRFetching.value = false
-                }
+                setIsBoxPayAnimationVisible = {
+                    isQRFetching.value = it
+                    stopFetchStatusPolling()
+                                              }
             )
         }
     }

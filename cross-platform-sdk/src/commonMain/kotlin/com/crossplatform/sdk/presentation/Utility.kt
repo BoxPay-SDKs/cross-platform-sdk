@@ -246,6 +246,16 @@ internal fun getStatus(status : String) : TransactionStatusEnum {
     }
 }
 
+internal fun getFetchStatus(status : String) : TransactionStatusEnum {
+    return when (status.uppercase()) {
+        in listOf("APPROVED", "SUCCESS", "PAID") -> TransactionStatusEnum.SUCCESS
+        "EXPIRED"                                 -> TransactionStatusEnum.EXPIRED
+        in listOf("FAILED", "REJECTED")           -> TransactionStatusEnum.FAILED
+        "REQUIRESACTION"                          -> TransactionStatusEnum.REQUIRESACTION
+        else                                      -> TransactionStatusEnum.REQUIRESACTION
+    }
+}
+
 internal fun buildAddressAndUserDetailsString(): String {
     val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
     val userDetails = UserDataHandler.userData

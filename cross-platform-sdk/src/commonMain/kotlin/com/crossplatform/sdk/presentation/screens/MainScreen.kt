@@ -42,6 +42,7 @@ import com.crossplatform.sdk.presentation.components.PaymentSelectorView
 import com.crossplatform.sdk.presentation.components.SavedCardComponent
 import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
+import com.crossplatform.sdk.presentation.components.ShowUpdateAmountBottomSheet
 import com.crossplatform.sdk.presentation.components.UPIComponent
 import com.crossplatform.sdk.presentation.isPresentInSurchargeModel
 import com.crossplatform.sdk.presentation.launchUpiIntent
@@ -103,9 +104,12 @@ internal fun MainScreen(
     val errorMessage = CheckoutDetailsHandler.errorMessageFlow.collectAsStateWithLifecycle()
 
     val paymentHandler = rememberExpressCheckoutPaymentHandler()
-    var googleConfig : GooglePayExpressCheckoutConfig?
+    var googleConfig : GooglePayExpressCheckoutConfig? = null
     var revolutPay : RevolutPayExpressCheckoutConfig? = null
     var expressCheckoutPaymentRequest : ExpressCheckoutPaymentRequest? = null
+    val payNowInstrumentRef = remember {
+        mutableStateOf("")
+    }
 
     val selectedDeleteCardId = remember {
         mutableStateOf("")
@@ -177,7 +181,7 @@ internal fun MainScreen(
             }
 
             val isMandatoryCustomFieldMissing = customFieldsFlow.value.any {
-                it.mandatory && it.fieldValue.isNullOrBlank()
+                it.enabled && it.mandatory && it.fieldValue.isNullOrBlank()
             }
 
             val isMandatoryDataMissing =
@@ -746,7 +750,19 @@ internal fun MainScreen(
                             viewModel.postWalletOrNetBakingRequest(instrumentValue, type)
                         },
                         onNavigateToPayNow = {
-                            onProceedPayNowScreen(it)
+                            payNowInstrumentRef.value = it
+                            viewModel.removeQRFromView()
+                            viewModel.callUiAnalytics(
+                                event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
+                                screenName = "MainScreen",
+                                message = "Navigated to PayNow screen"
+                            )
+                            if(isPresentInSurchargeModel(surchargeDetails.value, "paynow")) {
+                                selectedMethod.value = "paynow"
+                                showUpdatedAmountBottomSheet.value = true
+                            } else{
+                                onProceedPayNowScreen(payNowInstrumentRef.value)
+                            }
                         },
                         setSelectedPaymentMethod = {
                             selectedPaymentMethod.value = it
@@ -894,70 +910,73 @@ internal fun MainScreen(
         }
     }
 
-//    if (showUpdatedAmountBottomSheet.value) {
-//        ShowUpdateAmountBottomSheet(
-//            selectedMethod = selectedMethod.value,
-//            onClickProceed = {
-//                showUpdatedAmountBottomSheet.value = false
-//                when (selectedMethod.value) {
-//                    "card"       -> {
-//                        onProceedCardScreen(false)
-//                        selectedMethod.value = ""
-//                    }
-//                    "wallet"     -> {
-//                        onProceedWalletScreen(false)
-//                        selectedMethod.value = ""
-//                    }
-//                    "netbanking" -> {
-//                        onProceedNetBankingScreen(false)
-//                        selectedMethod.value = ""
-//                    }
-//                    "emi"        -> {
-//                        onProceedEMIScreen(false)
-//                        selectedMethod.value = ""
-//                    }
-//                    "buynowpaylater"       -> {
-//                        onProceedBNPLScreen(false)
-//                        selectedMethod.value = ""
-//                    }
-//                    "googlepay" -> {
-//                        viewModel.isBoxPayAnimationLoading.value = true
-//
-//                        paymentHandler.launchGooglePay(
-//                            request = expressCheckoutPaymentRequest!!,
-//                            config = googleConfig!!,
-//                            onResult = {result ->
-//                                when(result) {
-//                                    is ExpressCheckoutPaymentResult.Cancelled , is ExpressCheckoutPaymentResult.Failure -> {
-//                                        CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
-//                                        viewModel.isBoxPayAnimationLoading.value = false
-//                                        CheckoutDetailsHandler.setErrorMessage(errorMessage.value)
-//                                        CheckoutDetailsHandler.setSessionFailed()
-//                                    }
-//                                    is ExpressCheckoutPaymentResult.Success -> {
-//                                        viewModel.onProceedGooglePay(result.googleToken ?: "")
-//                                    }
-//                                }
-//                            }
-//                        )
-//                    }
-//                    "revolutpay" -> {
-//                        viewModel.onClickRevolutPay()
-//                    }
-//                }
-//            },
-//            onClick = {
-//                showUpdatedAmountBottomSheet.value = false
-//                selectedMethod.value = ""
-//            },
-//            surchargeDetails = surchargeDetails.value,
-//            currencySymbol = currencyCode,
-//            amount = amountBeforeSurcharge.value,
-//            ctaBorderRadius = ctaBorderRadius.value,
-//            buttonColor = buttonColor.value,
-//            buttonTextColor = buttonTextColor.value
-//        )
-//    }
+    if (showUpdatedAmountBottomSheet.value) {
+        ShowUpdateAmountBottomSheet(
+            selectedMethod = selectedMethod.value,
+            onClickProceed = {
+                showUpdatedAmountBottomSheet.value = false
+                when (selectedMethod.value) {
+                    "card"       -> {
+                        onProceedCardScreen(false)
+                        selectedMethod.value = ""
+                    }
+                    "wallet"     -> {
+                        onProceedWalletScreen(false)
+                        selectedMethod.value = ""
+                    }
+                    "netbanking" -> {
+                        onProceedNetBankingScreen(false)
+                        selectedMethod.value = ""
+                    }
+                    "emi"        -> {
+                        onProceedEMIScreen(false)
+                        selectedMethod.value = ""
+                    }
+                    "buynowpaylater"       -> {
+                        onProceedBNPLScreen(false)
+                        selectedMethod.value = ""
+                    }
+                    "googlepay" -> {
+                        viewModel.isBoxPayAnimationLoading.value = true
+
+                        paymentHandler.launchGooglePay(
+                            request = expressCheckoutPaymentRequest!!,
+                            config = googleConfig!!,
+                            onResult = {result ->
+                                when(result) {
+                                    is ExpressCheckoutPaymentResult.Cancelled , is ExpressCheckoutPaymentResult.Failure -> {
+                                        CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
+                                        viewModel.isBoxPayAnimationLoading.value = false
+                                        CheckoutDetailsHandler.setErrorMessage(errorMessage.value)
+                                        CheckoutDetailsHandler.setSessionFailed()
+                                    }
+                                    is ExpressCheckoutPaymentResult.Success -> {
+                                        viewModel.onProceedGooglePay(result.googleToken ?: "")
+                                    }
+                                }
+                            }
+                        )
+                    }
+                    "revolutpay" -> {
+                        viewModel.onClickRevolutPay()
+                    }
+                    "paynow" -> {
+                        onProceedPayNowScreen(payNowInstrumentRef.value)
+                    }
+                }
+            },
+            onClick = {
+                showUpdatedAmountBottomSheet.value = false
+                selectedMethod.value = ""
+            },
+            surchargeDetails = surchargeDetails.value,
+            currencySymbol = currencyCode,
+            amount = amountBeforeSurcharge.value,
+            ctaBorderRadius = ctaBorderRadius.value,
+            buttonColor = buttonColor.value,
+            buttonTextColor = buttonTextColor.value
+        )
+    }
 
     if(showWebView) {
         WebViewScreen(

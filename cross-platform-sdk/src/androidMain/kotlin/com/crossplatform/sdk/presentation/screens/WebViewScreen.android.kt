@@ -1,13 +1,16 @@
 package com.crossplatform.sdk.presentation.screens
 
 import android.graphics.Bitmap
+import android.util.Log
+import android.webkit.CookieManager
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -70,52 +73,93 @@ internal actual fun WebViewScreen(
         // and centered, instead of being laid out below it.
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .weight(1f),
             contentAlignment = Alignment.Center
         ) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { context ->
-                    WebView(context).apply {
-                        settings.apply {
-                            javaScriptEnabled = true
-                            domStorageEnabled = true
-                        }
-                        webViewClient = object : WebViewClient() {
-                            override fun onPageStarted(
-                                view: WebView,
-                                pageUrl: String,
-                                favicon: Bitmap?,
-                            ) {
-                                super.onPageStarted(view, pageUrl, favicon)
-                                state = state.copy(isLoading = true)
-                            }
+                    val webView = WebView(context)
+                    webView.settings.apply {
+                        javaScriptEnabled = true
+                        domStorageEnabled = true
+                        setSupportMultipleWindows(true)
+                        javaScriptCanOpenWindowsAutomatically = true
+                        mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 
-                            override fun onPageFinished(view: WebView, pageUrl: String) {
-                                super.onPageFinished(view, pageUrl)
-                                state = state.copy(isLoading = false)
-                                handleUrl(pageUrl)
-                            }
+                        useWideViewPort = true          // respect the page's own <meta viewport> tag
+                        loadWithOverviewMode = true     // scale content to fit screen width initially
+                        textZoom = 100                  // ignore Android system font-scaling, which otherwise distorts layout
+                    }
 
-                            override fun shouldOverrideUrlLoading(
-                                view: WebView,
-                                request: WebResourceRequest,
-                            ): Boolean {
-                                return false
-                            }
+                    CookieManager.getInstance().apply {
+                        setAcceptCookie(true)
+                        setAcceptThirdPartyCookies(webView, true)   // ← the critical one for this flow
+                    }
+                    webView.webViewClient = object : WebViewClient() {
+                        override fun onPageStarted(
+                            view: WebView,
+                            pageUrl: String,
+                            favicon: Bitmap?,
+                        ) {
+                            super.onPageStarted(view, pageUrl, favicon)
+                            state = state.copy(isLoading = true)
                         }
 
-                        when {
-                            html != null -> loadDataWithBaseURL(
-                                null, html, "text/html", "UTF-8", null
-                            )
-                            url != null -> loadUrl(url)
-                            else -> loadData(
-                                "<h1>No content provided</h1>", "text/html", "UTF-8"
-                            )
+                        override fun onPageFinished(view: WebView, pageUrl: String) {
+                            super.onPageFinished(view, pageUrl)
+                            state = state.copy(isLoading = false)
+                            handleUrl(pageUrl)
+                        }
+
+                        override fun shouldOverrideUrlLoading(
+                            view: WebView,
+                            request: WebResourceRequest,
+                        ): Boolean {
+                            return false
                         }
                     }
+                    webView.webChromeClient = object : WebChromeClient() {
+                        override fun onConsoleMessage(msg: android.webkit.ConsoleMessage): Boolean {
+                            Log.d("3DS_DEBUG", "${msg.message()} @ ${msg.sourceId()}:${msg.lineNumber()}")
+                            return true
+                        }
+
+                        override fun onCreateWindow(
+                            view: WebView,
+                            isDialog: Boolean,
+                            isUserGesture: Boolean,
+                            resultMsg: android.os.Message
+                        ): Boolean {
+                            // Reuse the SAME WebView so the popup navigates in place, visible on screen
+                            val transport = resultMsg.obj as WebView.WebViewTransport
+                            transport.webView = view
+                            resultMsg.sendToTarget()
+                            return true
+                        }
+
+                        override fun onPermissionRequest(request: android.webkit.PermissionRequest) {
+                            // Grants whatever the page is explicitly asking WebView for.
+                            // Won't fix Permissions-Policy header/iframe-attribute blocks,
+                            // but covers the case where WebView itself is the gatekeeper.
+                            request.grant(request.resources)
+                        }
+                    }
+
+                    when {
+                        html != null -> webView.loadDataWithBaseURL(
+                            null, html, "text/html", "UTF-8", null
+                        )
+                        url != null -> webView.loadUrl(url)
+                        else -> webView.loadData(
+                            "<h1>No content provided</h1>", "text/html", "UTF-8"
+                        )
+                    }
+                    webView
+                },
+                update = { webView ->
+                    webView.requestLayout()   // ensures WebView re-measures against final container size
                 }
             )
 

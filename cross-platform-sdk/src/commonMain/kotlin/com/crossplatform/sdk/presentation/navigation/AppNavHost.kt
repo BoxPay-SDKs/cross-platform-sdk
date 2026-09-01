@@ -555,7 +555,8 @@ internal fun AppNavHost() {
             buttonColor = buttonColor.value,
             buttonTextColor = buttonTextColor.value,
             onProceedForward = {
-                proceedAutoRetryPayment.value
+                CheckoutDetailsHandler.hideAutoRetryDropDown()
+                proceedAutoRetryPayment.value()
             },
             ctaBorderRadius = ctaBorderRadius.value
         )

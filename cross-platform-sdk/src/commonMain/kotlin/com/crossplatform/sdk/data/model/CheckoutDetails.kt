@@ -71,7 +71,8 @@ internal data class CheckoutDetails(
     val appliedOfferId : String?,
     val subscription : List<Pair<String, String>>?,
 
-    val proceedAutoRetryPayment : () -> Unit,
+// Likely culprit — no arity, resolves to raw Function<Unit>
+    val proceedAutoRetryPayment: () -> Unit = {},
     val availableRetryMethods : List<String>,
     val isCheckoutLimitReached : Boolean,
     val isPaymentMaxAttemptsReached : Boolean,
