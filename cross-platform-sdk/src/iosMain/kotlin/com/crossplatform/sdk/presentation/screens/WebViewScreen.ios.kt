@@ -123,8 +123,8 @@ internal actual fun WebViewScreen(
 
                     // Load content — html takes priority, then url, then fallback
                     when {
-                        html != null -> wkWebView.loadHTMLString(html, baseURL = null)
-                        url != null  -> wkWebView.loadRequest(
+                        !html.isNullOrBlank() -> wkWebView.loadHTMLString(html, baseURL = null)
+                        !url.isNullOrBlank()  -> wkWebView.loadRequest(
                             NSURLRequest.requestWithURL(NSURL.URLWithString(url)!!)
                         )
                         else         -> wkWebView.loadHTMLString(

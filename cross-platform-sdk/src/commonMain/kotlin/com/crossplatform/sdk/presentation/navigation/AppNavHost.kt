@@ -608,6 +608,7 @@ internal fun AppNavHost() {
             onExitCheckout = {
                 scope.launch {
                     CheckoutDetailsHandler.setIsCheckoutMaxAttemptsReached()
+                    checkoutMaxAttemptSheetState.hide()
                 }
                 callSDKPaymentResponse()
             }
