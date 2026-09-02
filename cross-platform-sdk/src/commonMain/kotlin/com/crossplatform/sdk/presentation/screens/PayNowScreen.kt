@@ -88,7 +88,16 @@ internal fun PayNowScreen(
 
     DisposableEffect(Unit) {
         ScreenBackInterceptor.onBack = {
-            showCancelModal = true
+            when (qrState) {
+                is PayNowUiState.Ready,
+                PayNowUiState.Expired -> {
+                    showCancelModal = true
+                }
+
+                else -> {
+                    onBackPress()
+                }
+            }
             true
         }
 

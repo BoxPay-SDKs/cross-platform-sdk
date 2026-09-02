@@ -1,11 +1,8 @@
 package com.crossplatform.sdk.presentation.screens
 
 import android.graphics.Bitmap
-import android.util.Log
 import android.webkit.CookieManager
-import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
-import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Box
@@ -84,17 +81,9 @@ internal actual fun WebViewScreen(
                     webView.settings.apply {
                         javaScriptEnabled = true
                         domStorageEnabled = true
-                        setSupportMultipleWindows(true)
-                        javaScriptCanOpenWindowsAutomatically = true
-                        mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-
-                        useWideViewPort = true          // respect the page's own <meta viewport> tag
-                        loadWithOverviewMode = true     // scale content to fit screen width initially
-                        textZoom = 100                  // ignore Android system font-scaling, which otherwise distorts layout
                     }
 
                     CookieManager.getInstance().apply {
-                        setAcceptCookie(true)
                         setAcceptThirdPartyCookies(webView, true)   // ← the critical one for this flow
                     }
                     webView.webViewClient = object : WebViewClient() {
@@ -120,41 +109,16 @@ internal actual fun WebViewScreen(
                             return false
                         }
                     }
-                    webView.webChromeClient = object : WebChromeClient() {
-                        override fun onConsoleMessage(msg: android.webkit.ConsoleMessage): Boolean {
-                            Log.d("3DS_DEBUG", "${msg.message()} @ ${msg.sourceId()}:${msg.lineNumber()}")
-                            return true
-                        }
-
-                        override fun onCreateWindow(
-                            view: WebView,
-                            isDialog: Boolean,
-                            isUserGesture: Boolean,
-                            resultMsg: android.os.Message
-                        ): Boolean {
-                            // Reuse the SAME WebView so the popup navigates in place, visible on screen
-                            val transport = resultMsg.obj as WebView.WebViewTransport
-                            transport.webView = view
-                            resultMsg.sendToTarget()
-                            return true
-                        }
-
-                        override fun onPermissionRequest(request: android.webkit.PermissionRequest) {
-                            // Grants whatever the page is explicitly asking WebView for.
-                            // Won't fix Permissions-Policy header/iframe-attribute blocks,
-                            // but covers the case where WebView itself is the gatekeeper.
-                            request.grant(request.resources)
-                        }
-                    }
-
                     when {
-                        html != null -> webView.loadDataWithBaseURL(
-                            null, html, "text/html", "UTF-8", null
-                        )
-                        url != null -> webView.loadUrl(url)
-                        else -> webView.loadData(
-                            "<h1>No content provided</h1>", "text/html", "UTF-8"
-                        )
+                        !html.isNullOrBlank() -> {
+                            webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
+                        }
+                        !url.isNullOrBlank() -> {
+                            webView.loadUrl(url)
+                        }
+                        else -> {
+                            webView.loadData("<h1>No content provided</h1>", "text/html", "UTF-8")
+                        }
                     }
                     webView
                 },
