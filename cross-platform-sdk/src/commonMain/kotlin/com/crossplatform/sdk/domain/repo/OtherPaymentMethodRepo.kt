@@ -10,7 +10,7 @@ internal interface OtherPaymentMethodRepo {
         offerId: String?
     ) : ApiResponse<List<PaymentMethod>>
 
-    suspend fun initiatePayment(instrumentDetails: String, paymentType : String, token : String) : ApiResponse<PaymentMethodPostResponse>
+    suspend fun initiatePayment(instrumentDetails: String, paymentType : String, token : String, surcharges : List<String>?) : ApiResponse<PaymentMethodPostResponse>
 
     suspend fun initiateEMIPayment(
         cardNumber: String,
@@ -20,6 +20,7 @@ internal interface OtherPaymentMethodRepo {
         cardType: String?,
         offerCode: String?,
         duration: Int?,
-        provider : String?
+        provider : String?,
+        surcharges : List<String>?
     ) : ApiResponse<PaymentMethodPostResponse>
 }

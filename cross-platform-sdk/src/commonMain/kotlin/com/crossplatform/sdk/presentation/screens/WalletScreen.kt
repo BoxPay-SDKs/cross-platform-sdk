@@ -102,8 +102,9 @@ internal fun WalletScreen(
                 onSetSearchQuery = {
                     viewModel.onSearch(it)
                 },
-                onProceedForward = {_, instrumentValue , _->
-                    viewModel.postWalletRequest(instrumentValue)
+                onProceedForward = {displayValue, instrumentValue , type->
+                    val surchargeList = viewModel.resolveSurchargeList( type, displayValue)
+                    viewModel.postWalletRequest(instrumentValue, surchargeList)
                 },
                 amount = amount.value,
                 currencySymbol = currencyCode,

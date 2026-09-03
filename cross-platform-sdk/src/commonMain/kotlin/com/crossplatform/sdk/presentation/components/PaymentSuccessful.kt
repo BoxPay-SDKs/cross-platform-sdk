@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,6 +43,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun PaymentSuccessful(
+    sheetState: SheetState,
     dateNTime : String,
     paymentMethod : String,
     onClick: () -> Unit,
@@ -75,6 +77,7 @@ internal fun PaymentSuccessful(
     )
 
     ModalBottomSheet(
+        sheetState = sheetState,
         onDismissRequest = onClick,
         dragHandle       = null,
         containerColor   = Color.White,
@@ -154,7 +157,7 @@ internal fun PaymentSuccessful(
                                 fontFamily = LocalSDKFonts.current.primary
                             )
                         ) {
-                            append("${formatAmount(amount.value)}")
+                            append(" ${formatAmount(amount.value)}")
                         }
                     },
                     fontSize = 16.sp,

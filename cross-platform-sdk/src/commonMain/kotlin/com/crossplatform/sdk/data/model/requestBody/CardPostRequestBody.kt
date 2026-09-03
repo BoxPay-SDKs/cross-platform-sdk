@@ -12,7 +12,8 @@ internal data class CardPostRequestBody(
     @SerialName("instrumentDetails") val instrumentDetails: InstrumentDetails,
     @SerialName("shopper") val shopper: ShopperRequest,
     @SerialName("deviceDetails") val deviceDetails: DeviceDetails,
-    @SerialName("oneTimePayment") val oneTimePayment: Boolean? = null  // conditional field
+    @SerialName("oneTimePayment") val oneTimePayment: Boolean? = null,  // conditional field
+    @SerialName("surcharges") val surcharges : List<String>? = null
 ) {
     @Serializable
     internal data class InstrumentDetails(

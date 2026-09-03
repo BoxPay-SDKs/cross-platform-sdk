@@ -96,7 +96,7 @@ internal fun PaymentFailed(
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
                 color      = Color.Black,
-                textAlign  = TextAlign.Center,
+                textAlign  = TextAlign.Left,
                 lineHeight = 20.sp,
                 modifier   = Modifier.padding(top = 8.dp, bottom = 16.dp)
             )

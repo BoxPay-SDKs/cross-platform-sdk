@@ -303,7 +303,7 @@ internal class BoxPayElementsViewModel (
                 screenName = "MainScreenViewModel",
                 message = "Payment initiated though collect method and function is postUpiCollectRequest"
             )
-            val response = repo.postUpiCollectRequest(type = type,shopperVpa = shopperVpa, instrumentRef = instrumentRef , saveInstrument = saveInstrument)
+            val response = repo.postUpiCollectRequest(type = type,shopperVpa = shopperVpa, instrumentRef = instrumentRef , saveInstrument = saveInstrument, surcharges = null)
             handlePaymentResponse(
                 response = response,
                 onSetPaymentUrl = {
@@ -343,7 +343,7 @@ internal class BoxPayElementsViewModel (
                 screenName = "MainScreenViewModel",
                 message = "Payment initiated though intent method and function is postUpiIntentRequest"
             )
-            val response = repo.postUpiIntentRequest(type = type, upiApp = selectedIntent )
+            val response = repo.postUpiIntentRequest(type = type, upiApp = selectedIntent,  surcharges = null)
             handlePaymentResponse(
                 response = response,
                 onSetPaymentUrl = {
@@ -556,7 +556,7 @@ internal class BoxPayElementsViewModel (
                 screenName = "MainScreenViewModel",
                 message = "Payment initiated though QR method and function is postUPIQrRequest"
             )
-            val response = repo.postUPIQrRequest(type = type)
+            val response = repo.postUPIQrRequest(type = type,  surcharges = null)
             handlePaymentResponse(
                 response = response,
                 onSetPaymentUrl = {
@@ -744,7 +744,8 @@ internal class BoxPayElementsViewModel (
                 cvv = cardCvvText.value,
                 nickName = cardNickNameText.value,
                 isSaveInstrumentCheckboxClicked = isSavedCardCheckBoxClicked.value,
-                isSICheckboxClicked = !isSICheckBoxClicked
+                isSICheckboxClicked = !isSICheckBoxClicked,
+                surcharges = null
             )
             handlePaymentResponse(
                 response = response,
@@ -825,7 +826,8 @@ internal class BoxPayElementsViewModel (
             val response = otherPaymentMethodRepo.initiatePayment(
                 instrumentDetails = instrumentValue,
                 paymentType = type,
-                token = CheckoutDetailsHandler.checkoutDetails.token
+                token = CheckoutDetailsHandler.checkoutDetails.token,
+                surcharges = null
             )
             handlePaymentResponse(
                 response = response,

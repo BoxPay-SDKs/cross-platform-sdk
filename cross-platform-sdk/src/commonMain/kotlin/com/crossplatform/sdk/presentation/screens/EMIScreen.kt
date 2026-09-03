@@ -251,7 +251,8 @@ internal fun EMIScreen(
                             amount = amount.value,
                             cardValid = viewModel.cardValid.value,
                             postCardRequest = {
-                                viewModel.postEMIRequest()
+                                val surchargeList = viewModel.resolveSurchargeList( "emi", viewModel.cardSelectedNetwork.value)
+                                viewModel.postEMIRequest(surchargeList)
                             },
                             buttonTextColor = buttonTextColor.value,
                             ctaBorderRadius = ctaBorderRadius.value,

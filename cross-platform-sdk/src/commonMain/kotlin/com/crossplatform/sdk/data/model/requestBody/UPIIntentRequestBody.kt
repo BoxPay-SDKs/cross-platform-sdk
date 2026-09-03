@@ -11,6 +11,7 @@ internal data class UPIIntentRequestBody(
     @SerialName("instrumentDetails") val instrumentDetails: Instrument,
     @SerialName("shopper") val shopper: ShopperRequest,
     @SerialName("deviceDetails") val deviceDetails: DeviceDetails,
+    @SerialName("surcharges") val surcharges : List<String>? = null
 ) {
     @Serializable
     internal data class Instrument(

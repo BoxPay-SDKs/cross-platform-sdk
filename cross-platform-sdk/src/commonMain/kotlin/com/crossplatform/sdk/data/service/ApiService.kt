@@ -30,7 +30,8 @@ internal interface ApiService {
         expiry : String,
         nickName : String?,
         isSaveInstrumentCheckboxClicked : Boolean,
-        isSICheckboxClicked : Boolean?
+        isSICheckboxClicked : Boolean?,
+        surcharges : List<String>?
     ) : ApiResponse<PaymentMethodPostResponse>
 
     suspend fun emiPostRequest(
@@ -41,7 +42,8 @@ internal interface ApiService {
         cardType: String?,
         offerCode: String?,
         duration: Int?,
-        provider : String?
+        provider : String?,
+        surcharges : List<String>?
     ): ApiResponse<PaymentMethodPostResponse>
 
     suspend fun fetchCardDetails(
@@ -55,7 +57,8 @@ internal interface ApiService {
     suspend fun methodsPostRequest(
         instrumentDetails : String,
         token : String,
-        paymentType : String
+        paymentType : String,
+        surcharges : List<String>?
     ) : ApiResponse<PaymentMethodPostResponse>
 
     suspend fun fetchPaymentMethods(
@@ -67,18 +70,21 @@ internal interface ApiService {
 
     suspend fun upiIntentPostRequest(
         type: String,
-        upiApp : String
+        upiApp : String,
+        surcharges : List<String>?
     ) : ApiResponse<PaymentMethodPostResponse>
 
     suspend fun upiCollectPostRequest(
         type : String,
         instrumentRef : String?,
         shopperVpa : String?,
-        saveInstrument : Boolean?
+        saveInstrument : Boolean?,
+        surcharges : List<String>?
     ) : ApiResponse<PaymentMethodPostResponse>
 
     suspend fun upiQrPostRequest(
         type : String,
+        surcharges : List<String>?
     ) : ApiResponse<PaymentMethodPostResponse>
 
     suspend fun savedCardPostRequest(

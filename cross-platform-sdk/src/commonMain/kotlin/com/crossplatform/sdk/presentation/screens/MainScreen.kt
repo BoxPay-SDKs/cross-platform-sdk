@@ -23,7 +23,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
-import com.crossplatform.sdk.domain.handler.ApplePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
 import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
@@ -33,7 +32,6 @@ import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.buildAddressString
 import com.crossplatform.sdk.presentation.components.AddressComponent
-import com.crossplatform.sdk.presentation.components.ExpressCheckout
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.MorePaymentMethods
 import com.crossplatform.sdk.presentation.components.OfferSection
@@ -303,64 +301,64 @@ internal fun MainScreen(
 
                 val isExpressCheckoutVisible = response.methodFlags.isApplePayVisible || response.methodFlags.isGooglePayVisible || response.methodFlags.isRevolutPayVisible
 
-                if (isExpressCheckoutVisible) {
-                    SectionTitle("Express Checkout")
-                    ExpressCheckout(
-                        paymentHandler = paymentHandler,
-                        onClickRevolut = {
-                            if(isPresentInSurchargeModel(surchargeDetails.value, "revolutpay")) {
-                                selectedMethod.value = "revolutpay"
-                                showUpdatedAmountBottomSheet.value = true
-                            } else{
-                                viewModel.onClickRevolutPay()
-                            }
-                        },
-                        onClickApplePay = {
-                            viewModel.isBoxPayAnimationLoading.value = true
-                            val config = ApplePayExpressCheckoutConfig(
-                                gateway = response.applePayAdditionData?.gateway ?: "",
-                                merchantName = response.applePayAdditionData?.merchantName ?: "",
-                                siteReference = response.applePayAdditionData?.siteReference ?: "",
-                                merchantCapabilities = response.applePayAdditionData?.merchantCapabilities ?: emptyList(),
-                                supportedNetworks = response.applePayAdditionData?.supportedNetworks ?: emptyList()
-                            )
-
-                            paymentHandler.launchApplePay(
-                                request = expressCheckoutPaymentRequest,
-                                config = config,
-                                onResult = {_ ->
-                                    viewModel.isBoxPayAnimationLoading.value = false
-                                }
-                            )
-                        },
-                        onClickGooglePay = {
-                            if(isPresentInSurchargeModel(surchargeDetails.value, "googlepay")) {
-                                selectedMethod.value = "googlepay"
-                                showUpdatedAmountBottomSheet.value = true
-                            } else{
-                                viewModel.isBoxPayAnimationLoading.value = true
-                                paymentHandler.launchGooglePay(
-                                    request = expressCheckoutPaymentRequest,
-                                    config = googleConfig,
-                                    onResult = {result ->
-                                        when(result) {
-                                            is ExpressCheckoutPaymentResult.Cancelled , is ExpressCheckoutPaymentResult.Failure -> {
-                                                CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
-                                                viewModel.isBoxPayAnimationLoading.value = false
-                                                CheckoutDetailsHandler.setErrorMessage(errorMessage.value)
-                                                CheckoutDetailsHandler.setSessionFailed()
-                                            }
-                                            is ExpressCheckoutPaymentResult.Success -> {
-                                                viewModel.onProceedGooglePay(result.googleToken ?: "")
-                                            }
-                                        }
-                                    }
-                                )
-                            }
-                        },
-                        config = googleConfig
-                    )
-                }
+//                if (isExpressCheckoutVisible) {
+//                    SectionTitle("Express Checkout")
+//                    ExpressCheckout(
+//                        paymentHandler = paymentHandler,
+//                        onClickRevolut = {
+//                            if(isPresentInSurchargeModel(surchargeDetails.value, "revolutpay")) {
+//                                selectedMethod.value = "revolutpay"
+//                                showUpdatedAmountBottomSheet.value = true
+//                            } else{
+//                                viewModel.onClickRevolutPay()
+//                            }
+//                        },
+//                        onClickApplePay = {
+//                            viewModel.isBoxPayAnimationLoading.value = true
+//                            val config = ApplePayExpressCheckoutConfig(
+//                                gateway = response.applePayAdditionData?.gateway ?: "",
+//                                merchantName = response.applePayAdditionData?.merchantName ?: "",
+//                                siteReference = response.applePayAdditionData?.siteReference ?: "",
+//                                merchantCapabilities = response.applePayAdditionData?.merchantCapabilities ?: emptyList(),
+//                                supportedNetworks = response.applePayAdditionData?.supportedNetworks ?: emptyList()
+//                            )
+//
+//                            paymentHandler.launchApplePay(
+//                                request = expressCheckoutPaymentRequest,
+//                                config = config,
+//                                onResult = {_ ->
+//                                    viewModel.isBoxPayAnimationLoading.value = false
+//                                }
+//                            )
+//                        },
+//                        onClickGooglePay = {
+//                            if(isPresentInSurchargeModel(surchargeDetails.value, "googlepay")) {
+//                                selectedMethod.value = "googlepay"
+//                                showUpdatedAmountBottomSheet.value = true
+//                            } else{
+//                                viewModel.isBoxPayAnimationLoading.value = true
+//                                paymentHandler.launchGooglePay(
+//                                    request = expressCheckoutPaymentRequest,
+//                                    config = googleConfig,
+//                                    onResult = {result ->
+//                                        when(result) {
+//                                            is ExpressCheckoutPaymentResult.Cancelled , is ExpressCheckoutPaymentResult.Failure -> {
+//                                                CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
+//                                                viewModel.isBoxPayAnimationLoading.value = false
+//                                                CheckoutDetailsHandler.setErrorMessage(errorMessage.value)
+//                                                CheckoutDetailsHandler.setSessionFailed()
+//                                            }
+//                                            is ExpressCheckoutPaymentResult.Success -> {
+//                                                viewModel.onProceedGooglePay(result.googleToken ?: "")
+//                                            }
+//                                        }
+//                                    }
+//                                )
+//                            }
+//                        },
+//                        config = googleConfig
+//                    )
+//                }
 
                 if(viewModel.appliedOffers.value.isNotEmpty()) {
                     SectionTitle("Offers & discounts")
@@ -397,7 +395,8 @@ internal fun MainScreen(
                                 screenName = "MainScreen",
                                 message = "Payment Category selected through recommended method"
                             )
-                            viewModel.postUpiCollectRequest(instrumentRef = instrument, type = "upi/collect", shopperVpa = display)
+                            val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                            viewModel.postUpiCollectRequest(instrumentRef = instrument, type = "upi/collect", shopperVpa = display, surchargeList =  surchargeList)
                         },
                         drawableResource = Res.drawable.ic_upi,
                         onClickRadio = {
@@ -430,7 +429,8 @@ internal fun MainScreen(
                                 screenName = "MainScreen",
                                 message = "Payment Category selected through saved upi"
                             )
-                            viewModel.postUpiCollectRequest(instrumentRef = instrumentRef, type = "upi/collect", shopperVpa = shopperVpa)
+                            val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                            viewModel.postUpiCollectRequest(instrumentRef = instrumentRef, type = "upi/collect", shopperVpa = shopperVpa, surchargeList = surchargeList)
                         },
                         onClickUpiCollectPayButton = {shopperVpa, saveInstrument->
                             viewModel.callUiAnalytics(
@@ -443,7 +443,8 @@ internal fun MainScreen(
                                 screenName = "MainScreen",
                                 message = "Payment Category selected through upi collect"
                             )
-                            viewModel.postUpiCollectRequest(shopperVpa = shopperVpa, type = "upi/collect", saveInstrument = saveInstrument)
+                            val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                            viewModel.postUpiCollectRequest(shopperVpa = shopperVpa, type = "upi/collect", saveInstrument = saveInstrument, surchargeList = surchargeList)
                         },
                         onClickUpiIntentPayButton = {selectedIntent ->
                             viewModel.callUiAnalytics(
@@ -456,11 +457,13 @@ internal fun MainScreen(
                                 screenName = "MainScreen",
                                 message = "Payment Category selected through intent"
                             )
-                            viewModel.postUpiIntentRequest(selectedIntent = selectedIntent, type = "upi/intent")
+                            val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                            viewModel.postUpiIntentRequest(selectedIntent = selectedIntent, type = "upi/intent", surchargeList = surchargeList)
                         },
                         onClickUpiQRPayButton = {
                             viewModel.isQRLoaded.value = true
-                            viewModel.postUPIQrRequest("upi/qr")
+                            val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                            viewModel.postUPIQrRequest("upi/qr", surchargeList = surchargeList)
                         },
                         savedUpiList = viewModel.upiRecommendedList.value,
                         onClickRadio = {
@@ -522,7 +525,8 @@ internal fun MainScreen(
                                 screenName = "MainScreen",
                                 message = "Payment Category selected through saved upi"
                             )
-                            viewModel.postUpiCollectRequest(instrumentRef = instrumentRef, type = "upiotm/collect", shopperVpa = shopperVpa)
+                            val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                            viewModel.postUpiCollectRequest(instrumentRef = instrumentRef, type = "upiotm/collect", shopperVpa = shopperVpa, surchargeList = surchargeList)
                         },
                         onClickUpiCollectPayButton = {shopperVpa, saveInstrument->
                             viewModel.callUiAnalytics(
@@ -535,7 +539,8 @@ internal fun MainScreen(
                                 screenName = "MainScreen",
                                 message = "Payment Category selected through upi collect"
                             )
-                            viewModel.postUpiCollectRequest(shopperVpa = shopperVpa, type = "upiotm/collect", saveInstrument = saveInstrument)
+                            val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                            viewModel.postUpiCollectRequest(shopperVpa = shopperVpa, type = "upiotm/collect", saveInstrument = saveInstrument, surchargeList = surchargeList)
                         },
                         onClickUpiIntentPayButton = {selectedIntent ->
                             viewModel.callUiAnalytics(
@@ -548,11 +553,13 @@ internal fun MainScreen(
                                 screenName = "MainScreen",
                                 message = "Payment Category selected through intent"
                             )
-                            viewModel.postUpiIntentRequest(selectedIntent = selectedIntent, type = "upiotm/intent")
+                            val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                            viewModel.postUpiIntentRequest(selectedIntent = selectedIntent, type = "upiotm/intent", surchargeList = surchargeList)
                         },
                         onClickUpiQRPayButton = {
                             viewModel.isQRLoaded.value = true
-                            viewModel.postUPIQrRequest("upiotm/qr")
+                            val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                            viewModel.postUPIQrRequest("upiotm/qr", surchargeList = surchargeList)
                         },
                         savedUpiList = viewModel.upiRecommendedList.value,
                         onClickRadio = {
@@ -747,7 +754,8 @@ internal fun MainScreen(
                         savedCardsList = viewModel.cardsRecommendedList.value,
                         surchargeList = surchargeDetails.value,
                         onProceedForward = {  _,instrumentValue,type ->
-                            viewModel.postWalletOrNetBakingRequest(instrumentValue, type)
+                            val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                            viewModel.postWalletOrNetBakingRequest(instrumentValue, type, surchargeList)
                         },
                         onNavigateToPayNow = {
                             payNowInstrumentRef.value = it
@@ -951,14 +959,16 @@ internal fun MainScreen(
                                         CheckoutDetailsHandler.setSessionFailed()
                                     }
                                     is ExpressCheckoutPaymentResult.Success -> {
-                                        viewModel.onProceedGooglePay(result.googleToken ?: "")
+                                        val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                                        viewModel.onProceedGooglePay(result.googleToken ?: "", surchargeList)
                                     }
                                 }
                             }
                         )
                     }
                     "revolutpay" -> {
-                        viewModel.onClickRevolutPay()
+                        val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                        viewModel.onClickRevolutPay(surchargeList)
                     }
                     "paynow" -> {
                         onProceedPayNowScreen(payNowInstrumentRef.value)

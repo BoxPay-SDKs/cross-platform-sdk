@@ -50,7 +50,7 @@ internal class PayNowScreenViewModel(
         }
     }
 
-    fun getPayNowQR(instrumentType : String) {
+    fun getPayNowQR(instrumentType : String, surcharge : List<String>?) {
         isQRFetching.value = true
         viewModelScope.launch {
             callUiAnalytics(
@@ -61,7 +61,8 @@ internal class PayNowScreenViewModel(
             val response = repo.initiatePayment(
                 instrumentDetails = instrumentType,
                 paymentType = "",
-                token = ""
+                token = "",
+                surcharge
             )
             handlePaymentResponse(
                 response = response,
@@ -195,5 +196,20 @@ internal class PayNowScreenViewModel(
                 }
             )
         }
+    }
+
+    fun resolveSurchargeList(
+        selectedMethod: String,
+        selectedNetwork: String = ""
+    ): List<String>? {
+        val surcharges = CheckoutDetailsHandler.surchargeDetailsFlow.value
+        val filtered = surcharges.filter { item ->
+            val applicable = item.applicableOn.lowercase().trim()
+            applicable.isNotEmpty() &&
+                    applicable == selectedMethod.lowercase().trim() &&
+                    (item.network.isBlank() ||
+                            item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true))
+        }
+        return filtered.map { it.surchargeCode }.ifEmpty { null }
     }
 }

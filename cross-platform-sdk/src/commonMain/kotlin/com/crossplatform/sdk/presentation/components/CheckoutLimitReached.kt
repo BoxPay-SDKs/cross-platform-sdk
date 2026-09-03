@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -78,7 +79,9 @@ internal fun CheckoutLimitReached(
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
                 color      = Color(0xFFE84142),
-                modifier   = Modifier.padding(top = 8.dp)
+                modifier   = Modifier.padding(top = 8.dp),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
             )
 
             // Description
@@ -88,7 +91,7 @@ internal fun CheckoutLimitReached(
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
                 color      = Color.Black,
-                textAlign  = TextAlign.Center,
+                textAlign  = TextAlign.Left,
                 lineHeight = 20.sp,
                 modifier   = Modifier.padding(top = 8.dp, bottom = 16.dp)
             )
