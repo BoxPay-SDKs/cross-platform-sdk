@@ -28,7 +28,8 @@ internal class CardScreenRepoImpl(
         expiry: String,
         nickName: String?,
         isSaveInstrumentCheckboxClicked: Boolean,
-        isSICheckboxClicked: Boolean?
+        isSICheckboxClicked: Boolean?,
+        surcharges : List<String>?
     ): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
         apiService.cardPostRequest(
             type = type,
@@ -38,7 +39,8 @@ internal class CardScreenRepoImpl(
             expiry = expiry,
             nickName = nickName,
             isSaveInstrumentCheckboxClicked = isSaveInstrumentCheckboxClicked,
-            isSICheckboxClicked = isSICheckboxClicked
+            isSICheckboxClicked = isSICheckboxClicked,
+            surcharges = surcharges
         )
     }
 }

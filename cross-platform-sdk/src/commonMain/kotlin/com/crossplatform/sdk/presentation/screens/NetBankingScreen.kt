@@ -92,8 +92,9 @@ internal fun NetBankingScreen(
                 onSetSearchQuery = {
                     viewModel.onSearch(it)
                 },
-                onProceedForward = {_, instrumentValue , _->
-                    viewModel.postNetBankingRequest(instrumentValue)
+                onProceedForward = {displayValue, instrumentValue , type->
+                    val surchargeList = viewModel.resolveSurchargeList( type, displayValue)
+                    viewModel.postNetBankingRequest(instrumentValue, surchargeList)
                 },
                 amount = amount.value,
                 currencySymbol = currencyCode,

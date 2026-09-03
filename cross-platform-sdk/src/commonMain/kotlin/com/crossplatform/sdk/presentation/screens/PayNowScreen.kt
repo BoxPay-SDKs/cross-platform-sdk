@@ -63,6 +63,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Composable
 internal fun PayNowScreen(
@@ -83,10 +85,12 @@ internal fun PayNowScreen(
     val showWebView by viewModel.showWebview.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.getPayNowQR(instrumentRef)
+        val surchargeList = viewModel.resolveSurchargeList( "paynowqr","")
+        viewModel.getPayNowQR(instrumentRef, surchargeList)
     }
 
     DisposableEffect(Unit) {
+        viewModel.lifecycleObserver.start()
         ScreenBackInterceptor.onBack = {
             when (qrState) {
                 is PayNowUiState.Ready,
@@ -129,7 +133,6 @@ internal fun PayNowScreen(
                             scope.launch {
                                 saver.saveBase64Image(state.qrImage, fileName = "paynow_qr")
                                     .onSuccess {
-                                        viewModel.lifecycleObserver.start()
                                         downloadDialogState = DownloadDialogState.Success
                                     }
                                     .onFailure { _ ->
@@ -152,7 +155,8 @@ internal fun PayNowScreen(
                         buttonTextColor = buttonTextColor.value,
                         borderRadius = ctaBorderRadius.value,
                         onGetNewQr = {
-                            viewModel.getPayNowQR(instrumentRef)
+                            val surchargeList = viewModel.resolveSurchargeList( "paynowqr","")
+                            viewModel.getPayNowQR(instrumentRef, surchargeList)
                         }
                     )
                 }
@@ -219,6 +223,7 @@ internal fun PayNowScreen(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 private fun PayNowReadyState(
     expirySec: Long,
@@ -230,21 +235,28 @@ private fun PayNowReadyState(
     qrImage : String
 ) {
 
-    var remainingSeconds by remember {
+    val expiresAtMillis = remember(expirySec) {
+        Clock.System.now().toEpochMilliseconds() + expirySec * 1000
+    }
+
+    var remainingSeconds by remember(expirySec) {
         mutableLongStateOf(expirySec)
     }
 
-    LaunchedEffect(expirySec) {
+    LaunchedEffect(expiresAtMillis) {
+        while (true) {
+            val nowMillis = Clock.System.now().toEpochMilliseconds()
+            val remainingMillis = expiresAtMillis - nowMillis
+            remainingSeconds = (remainingMillis / 1000).coerceAtLeast(0)
 
-        remainingSeconds = expirySec
-
-        while (remainingSeconds > 0) {
+            if (remainingSeconds <= 0) {
+                onExpired()
+                break
+            }
             delay(1000)
-            remainingSeconds--
         }
-
-        onExpired()
     }
+
 
     Column(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 20.dp).background(Color.White, RoundedCornerShape(12.dp)).padding(vertical = 16.dp),

@@ -249,7 +249,7 @@ internal fun AddressScreen(
         when {
             text.trim().isEmpty() -> { pinError = "Required"; isPinValid = false }
             selectedPhoneCode == "+91" && text.length < 6 -> {
-                pinError = "Zip/Postal code must be 6 digits"; isPinValid = false
+                pinError = "Postal code must be 6 digits"; isPinValid = false
             }
             else -> { pinError = ""; isPinValid = true }
         }
@@ -384,43 +384,45 @@ internal fun AddressScreen(
         }
 
         customFields.value.forEach { field ->
-            val name = field.fieldName ?: return@forEach
-            val value = customFieldValues[name] ?: ""
-            val error = customFieldErrors[name] ?: ""
-            val label = name + if (field.mandatory) "*" else ""
+            if(field.enabled) {
+                val name = field.fieldName ?: return@forEach
+                val value = customFieldValues[name] ?: ""
+                val error = customFieldErrors[name] ?: ""
+                val label = name + if (field.mandatory) "*" else ""
 
-            when (field.fieldType) {
-                "DROPDOWN" -> {
-                    CustomDropdownField(
-                        value = value,
-                        label = label,
-                        options = field.dropDownOptions ?: emptyList(),
-                        onSelect = {
-                            customFieldValues[name] = it
-                            customFieldErrors[name] = validateCustomField(field, it)
-                        },
-                        focusedBorderColor = focusedBorderColor.value,
-                        unfocusedBorderColor = unfocusedBorderColor.value,
-                        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp)
-                    )
+                when (field.fieldType) {
+                    "DROPDOWN" -> {
+                        CustomDropdownField(
+                            value = value,
+                            label = label,
+                            options = field.dropDownOptions ?: emptyList(),
+                            onSelect = {
+                                customFieldValues[name] = it
+                                customFieldErrors[name] = validateCustomField(field, it)
+                            },
+                            focusedBorderColor = focusedBorderColor.value,
+                            unfocusedBorderColor = unfocusedBorderColor.value,
+                            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp)
+                        )
+                    }
+                    else -> {   // TEXTUAL / NUMERIC
+                        AddressTextField(
+                            value = value,
+                            label = label,
+                            onValueChange = {
+                                customFieldValues[name] = it
+                                customFieldErrors[name] = validateCustomField(field, it)
+                            },
+                            isError = error.isNotEmpty(),
+                            keyboardType = if (field.fieldType == "NUMERIC") KeyboardType.Number else KeyboardType.Text,
+                            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
+                            focusedBorderColor = focusedBorderColor.value,
+                            unfocusedBorderColor = unfocusedBorderColor.value
+                        )
+                    }
                 }
-                else -> {   // TEXTUAL / NUMERIC
-                    AddressTextField(
-                        value = value,
-                        label = label,
-                        onValueChange = {
-                            customFieldValues[name] = it
-                            customFieldErrors[name] = validateCustomField(field, it)
-                        },
-                        isError = error.isNotEmpty(),
-                        keyboardType = if (field.fieldType == "NUMERIC") KeyboardType.Number else KeyboardType.Text,
-                        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
-                        focusedBorderColor = focusedBorderColor.value,
-                        unfocusedBorderColor = unfocusedBorderColor.value
-                    )
-                }
+                if (error.isNotEmpty()) ErrorText(error)
             }
-            if (error.isNotEmpty()) ErrorText(error)
         }
 
         // --- Shipping Only Fields ---
@@ -434,7 +436,7 @@ internal fun AddressScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     AddressTextField(
                         value         = pinTextField,
-                        label         = "ZIP/Postal code*",
+                        label         = "Postal code*",
                         onValueChange = {
                             pinTextField = it
                             validatePin(it)

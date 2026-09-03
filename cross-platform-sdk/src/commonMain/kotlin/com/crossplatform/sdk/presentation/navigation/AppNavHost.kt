@@ -107,6 +107,7 @@ internal fun AppNavHost() {
 
     val failedSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val autoRetrySheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val successSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val paymentMaxAttemptSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val checkoutMaxAttemptSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope            = rememberCoroutineScope()
@@ -473,6 +474,7 @@ internal fun AppNavHost() {
                 },
                 onSwipeComplete = {
                     showSwipeToPay = false
+                    val surchargeList = viewModel.resolveSurchargeList( "upi", "upicollect")
                     viewModel.postUpiCollectRequest(
                         instrumentRef = firstInstrument.instrumentType,
                         type = if (firstInstrument.type.equals(
@@ -480,7 +482,8 @@ internal fun AppNavHost() {
                                 true
                             )
                         ) "upi/collect" else "card/token",
-                        shopperVpa = firstInstrument.displayValue
+                        shopperVpa = firstInstrument.displayValue,
+                        surchargeList = surchargeList
                     )
                 },
                 onClickChangeAddress = {
@@ -511,6 +514,7 @@ internal fun AppNavHost() {
         viewModel.stopFetchStatusPolling()
         viewModel.qrTimer.value = 0
         PaymentSuccessful (
+            sheetState = successSheetState,
             dateNTime = successTimeStamp,
             paymentMethod = selectedPaymentMethod,
             onClick = {
@@ -519,6 +523,10 @@ internal fun AppNavHost() {
                     screenName = "App nav host",
                     message = "Payment successful"
                 )
+                CheckoutDetailsHandler.setSessionSuccess()
+                scope.launch {
+                    successSheetState.hide()
+                }
                 callSDKPaymentResponse()
             }
         )

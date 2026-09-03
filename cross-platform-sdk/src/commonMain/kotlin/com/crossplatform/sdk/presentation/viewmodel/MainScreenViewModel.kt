@@ -307,7 +307,7 @@ internal class MainScreenViewModel(
         CheckoutDetailsHandler.setSessionSuccess()
     }
 
-    fun postUpiCollectRequest(shopperVpa : String, type : String, instrumentRef : String? = null, saveInstrument : Boolean? = null) {
+    fun postUpiCollectRequest(shopperVpa : String, type : String, instrumentRef : String? = null, saveInstrument : Boolean? = null,surchargeList : List<String>?) {
         viewModelScope.launch {
             isBoxPayAnimationLoading.value = true
             upiId.value = shopperVpa
@@ -316,7 +316,7 @@ internal class MainScreenViewModel(
                 screenName = "MainScreenViewModel",
                 message = "Payment initiated though collect method and function is postUpiCollectRequest"
             )
-            val response = repo.postUpiCollectRequest(type = type,shopperVpa = shopperVpa, instrumentRef = instrumentRef , saveInstrument = saveInstrument)
+            val response = repo.postUpiCollectRequest(type = type,shopperVpa = shopperVpa, instrumentRef = instrumentRef , saveInstrument = saveInstrument, surcharges = surchargeList)
             handlePaymentResponse(
                 response = response,
                 onSetPaymentUrl = {
@@ -348,6 +348,7 @@ internal class MainScreenViewModel(
     fun postUpiIntentRequest(
         selectedIntent : String,
         type : String,
+        surchargeList : List<String>?
     ) {
         viewModelScope.launch {
             isBoxPayAnimationLoading.value = true
@@ -356,7 +357,7 @@ internal class MainScreenViewModel(
                 screenName = "MainScreenViewModel",
                 message = "Payment initiated though intent method and function is postUpiIntentRequest"
             )
-            val response = repo.postUpiIntentRequest(type = type, upiApp = selectedIntent )
+            val response = repo.postUpiIntentRequest(type = type, upiApp = selectedIntent , surchargeList)
             handlePaymentResponse(
                 response = response,
                 onSetPaymentUrl = {
@@ -664,7 +665,8 @@ internal class MainScreenViewModel(
     }
 
     fun postUPIQrRequest(
-        type : String
+        type : String,
+        surchargeList : List<String>?
     ) {
         viewModelScope.launch {
             stopFetchStatusPolling()
@@ -674,7 +676,7 @@ internal class MainScreenViewModel(
                 screenName = "MainScreenViewModel",
                 message = "Payment initiated though QR method and function is postUPIQrRequest"
             )
-            val response = repo.postUPIQrRequest(type = type)
+            val response = repo.postUPIQrRequest(type = type, surchargeList)
             handlePaymentResponse(
                 response = response,
                 onSetPaymentUrl = {
@@ -716,7 +718,9 @@ internal class MainScreenViewModel(
         qrImage.value = ""
     }
 
-    fun onClickRevolutPay() {
+    fun onClickRevolutPay(
+        surchargeList : List<String>?
+    ) {
         viewModelScope.launch {
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_INITIATED.value,
@@ -727,7 +731,8 @@ internal class MainScreenViewModel(
             val response = otherPaymentMethodRepo.initiatePayment(
                 instrumentDetails = "wallet/revolutpay",
                 paymentType = "wallet",
-                token = CheckoutDetailsHandler.checkoutDetails.token
+                token = CheckoutDetailsHandler.checkoutDetails.token,
+                surchargeList
             )
             handlePaymentResponse(
                 response = response,
@@ -756,7 +761,7 @@ internal class MainScreenViewModel(
         }
     }
 
-    fun onProceedGooglePay(googlePayToken : String) {
+    fun onProceedGooglePay(googlePayToken : String, surchargeList : List<String>?) {
         viewModelScope.launch {
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_INITIATED.value,
@@ -767,7 +772,8 @@ internal class MainScreenViewModel(
             val response = otherPaymentMethodRepo.initiatePayment(
                 instrumentDetails = "wallet/googlepay-direct",
                 paymentType = "wallet",
-                token = googlePayToken
+                token = googlePayToken,
+                surchargeList
             )
             handlePaymentResponse(
                 response = response,
@@ -797,7 +803,7 @@ internal class MainScreenViewModel(
         }
     }
 
-    fun postWalletOrNetBakingRequest(instrumentValue: String, type : String) {
+    fun postWalletOrNetBakingRequest(instrumentValue: String, type : String, surchargeList : List<String>?) {
         viewModelScope.launch {
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_INITIATED.value,
@@ -808,7 +814,8 @@ internal class MainScreenViewModel(
             val response = otherPaymentMethodRepo.initiatePayment(
                 instrumentDetails = instrumentValue,
                 paymentType = type,
-                token = CheckoutDetailsHandler.checkoutDetails.token
+                token = CheckoutDetailsHandler.checkoutDetails.token,
+                surchargeList
             )
             handlePaymentResponse(
                 response = response,
@@ -833,6 +840,21 @@ internal class MainScreenViewModel(
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage
             )
         }
+    }
+
+    fun resolveSurchargeList(
+        selectedMethod: String,
+        selectedNetwork: String = ""
+    ): List<String>? {
+        val surcharges = CheckoutDetailsHandler.surchargeDetailsFlow.value
+        val filtered = surcharges.filter { item ->
+            val applicable = item.applicableOn.lowercase().trim()
+            applicable.isNotEmpty() &&
+                    applicable == selectedMethod.lowercase().trim() &&
+                    (item.network.isBlank() ||
+                            item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true))
+        }
+        return filtered.map { it.surchargeCode }.ifEmpty { null }
     }
 
 }

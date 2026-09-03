@@ -91,7 +91,8 @@ internal class ApiServiceImpl : ApiService {
         expiry: String,
         nickName: String?,
         isSaveInstrumentCheckboxClicked: Boolean,
-        isSICheckboxClicked: Boolean?
+        isSICheckboxClicked: Boolean?,
+        surcharges : List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
         val requestBody = CardPostRequestBody(
             browserData = getBrowserData(),
@@ -108,7 +109,8 @@ internal class ApiServiceImpl : ApiService {
             ),
             shopper = getShopperDetails(),
             deviceDetails = getDeviceDetails(),
-            oneTimePayment = isSICheckboxClicked
+            oneTimePayment = isSICheckboxClicked,
+            surcharges = surcharges
         )
         return executeWithResponse {
             client.post(urlString = "") {
@@ -126,7 +128,8 @@ internal class ApiServiceImpl : ApiService {
         cardType: String?,
         offerCode: String?,
         duration: Int?,
-        provider : String?
+        provider : String?,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
         val instrumentType = when {
             cardType == null              -> "emi/cardless"
@@ -143,7 +146,7 @@ internal class ApiServiceImpl : ApiService {
                     cvc = cvv,
                     holderName = holderName
                 ),
-                emi = EmiPostRequestBody.Emi(duration = duration)
+                emi = EmiPostRequestBody.Emi(duration = duration),
             )
         } else {
             EmiPostRequestBody.InstrumentDetails(
@@ -157,7 +160,8 @@ internal class ApiServiceImpl : ApiService {
             instrumentDetails = instrumentDetails,
             offers = offerCode?.takeIf { it.trim().isNotEmpty() }?.let { listOf(it) },
             shopper = getShopperDetails(),
-            deviceDetails = getDeviceDetails()
+            deviceDetails = getDeviceDetails(),
+            surcharges = surcharges
         )
 
         return executeWithResponse {
@@ -183,7 +187,8 @@ internal class ApiServiceImpl : ApiService {
     override suspend fun methodsPostRequest(
         instrumentDetails: String,
         token : String,
-        paymentType : String
+        paymentType : String,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
         val requestBody = MethodsPostRequest(
             browserData = getBrowserData(),
@@ -193,7 +198,8 @@ internal class ApiServiceImpl : ApiService {
                 details = Details(token = token)
             ),
             shopper = getShopperDetails(),
-            deviceDetails = getDeviceDetails()
+            deviceDetails = getDeviceDetails(),
+            surcharges = surcharges
         )
         return executeWithResponse {
             client.post(urlString = "") {
@@ -224,7 +230,7 @@ internal class ApiServiceImpl : ApiService {
         }
     }
 
-    override suspend fun upiIntentPostRequest(type: String,upiApp: String): ApiResponse<PaymentMethodPostResponse> {
+    override suspend fun upiIntentPostRequest(type: String,upiApp: String, surcharges: List<String>?): ApiResponse<PaymentMethodPostResponse> {
         val requestBody = UPIIntentRequestBody(
             browserData = getBrowserData(),
             shopper = getShopperDetails(),
@@ -234,7 +240,8 @@ internal class ApiServiceImpl : ApiService {
                 upiAppDetails = if (upiApp.isNotBlank()) {
                     UPIIntentRequestBody.UPIAppDetails(upiApp = upiApp)
                 } else null
-            )
+            ),
+            surcharges = surcharges
         )
         return executeWithResponse {
             client.post(urlString = "") {
@@ -248,7 +255,8 @@ internal class ApiServiceImpl : ApiService {
         type: String,
         instrumentRef: String?,
         shopperVpa: String?,
-        saveInstrument : Boolean?
+        saveInstrument : Boolean?,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
         val requestBody = UPICollectRequestBody(
             browserData = getBrowserData(),
@@ -261,7 +269,8 @@ internal class ApiServiceImpl : ApiService {
                     shopperVpa = shopperVpa
                 ),
                 saveInstrument = saveInstrument
-            )
+            ),
+            surcharges = surcharges
         )
         return executeWithResponse {
             client.post(urlString = "") {
@@ -273,6 +282,7 @@ internal class ApiServiceImpl : ApiService {
 
     override suspend fun upiQrPostRequest(
         type : String,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
         val requestBody = UPIQRRequestBody(
             browserData = getBrowserData(),
@@ -280,7 +290,8 @@ internal class ApiServiceImpl : ApiService {
             deviceDetails = getDeviceDetails(),
             instrumentDetails = UPIQRRequestBody.Instrument(
                 type = type
-            )
+            ),
+            surcharges = surcharges
         )
         return executeWithResponse {
             client.post(urlString = "") {

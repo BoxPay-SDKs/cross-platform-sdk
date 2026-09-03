@@ -15,6 +15,7 @@ internal interface CardScreenRepo {
         expiry: String,
         nickName: String?,
         isSaveInstrumentCheckboxClicked: Boolean,
-        isSICheckboxClicked: Boolean?
+        isSICheckboxClicked: Boolean?,
+        surcharges : List<String>?
     ) : ApiResponse<PaymentMethodPostResponse>
 }

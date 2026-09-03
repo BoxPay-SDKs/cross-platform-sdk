@@ -11,7 +11,8 @@ internal data class EmiPostRequestBody(
     @SerialName("instrumentDetails") val instrumentDetails: InstrumentDetails,
     @SerialName("shopper") val shopper: ShopperRequest,
     @SerialName("deviceDetails") val deviceDetails: DeviceDetails,
-    @SerialName("offers") val offers : List<String>? = null
+    @SerialName("offers") val offers : List<String>? = null,
+    @SerialName("surcharges") val surcharges : List<String>? = null
 ) {
     @Serializable
     internal data class InstrumentDetails(

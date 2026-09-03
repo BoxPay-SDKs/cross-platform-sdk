@@ -74,7 +74,7 @@ internal class NetBankingViewModel (
         _uiState.value = UiState.Success(filtered)
     }
 
-    fun postNetBankingRequest(instrumentValue: String) {
+    fun postNetBankingRequest(instrumentValue: String, surchargeList : List<String>?) {
         viewModelScope.launch {
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_INITIATED.value,
@@ -85,7 +85,8 @@ internal class NetBankingViewModel (
             val response = repo.initiatePayment(
                 instrumentDetails = instrumentValue,
                 paymentType = "netbanking",
-                token = CheckoutDetailsHandler.checkoutDetails.token
+                token = CheckoutDetailsHandler.checkoutDetails.token,
+                surchargeList
             )
             handlePaymentResponse(
                 response = response,
@@ -173,5 +174,20 @@ internal class NetBankingViewModel (
         viewModelScope.launch {
             analyticsRepo.callUiAnalytics(event, screenName, message)
         }
+    }
+
+    fun resolveSurchargeList(
+        selectedMethod: String,
+        selectedNetwork: String = ""
+    ): List<String>? {
+        val surcharges = CheckoutDetailsHandler.surchargeDetailsFlow.value
+        val filtered = surcharges.filter { item ->
+            val applicable = item.applicableOn.lowercase().trim()
+            applicable.isNotEmpty() &&
+                    applicable == selectedMethod.lowercase().trim() &&
+                    (item.network.isBlank() ||
+                            item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true))
+        }
+        return filtered.map { it.title }.ifEmpty { null }
     }
 }

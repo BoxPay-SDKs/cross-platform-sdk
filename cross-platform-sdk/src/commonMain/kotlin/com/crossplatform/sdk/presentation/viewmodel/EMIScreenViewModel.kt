@@ -56,6 +56,7 @@ internal class EMIScreenViewModel(
     val selectedEmi = mutableStateOf<Pair<Int?, String?>>(Pair(null, null))
     val searchText = mutableStateOf("")
     val selectedFilter = mutableStateOf("")
+    var cardSelectedNetwork = mutableStateOf("")
 
     val selectedOthers = mutableStateOf<String?>(null)
     val selectedBank = mutableStateOf(null as Bank?)
@@ -65,6 +66,7 @@ internal class EMIScreenViewModel(
     val discount = mutableStateOf<String?>(null)
     val netAmount = mutableStateOf<String?>(null)
     val selectedPercent = mutableStateOf<Double?>(null)
+    val amountBeforeSurcharge = mutableStateOf(0.0)
 
 
     val appliedSurcharge = mutableStateOf<List<SurchargeModel>>(emptyList())
@@ -260,18 +262,26 @@ internal class EMIScreenViewModel(
             cardSelectedIcon.value    = Res.drawable.ic_card
             maxCvvLength.value        = 3
             maxCardNumberLength.value = 19
+            if(appliedSurcharge.value.isNotEmpty()) {
+                CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
+            }
+            appliedSurcharge.value = emptyList()
         }
     }
 
     // --- Update icon from API ---
     fun updateCardIcon(isTestEnv: Boolean, brand : String) {
-        val surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
-        appliedSurcharge.value = surchargeList.filter { item ->
-            (item.network.contains(brand, true) || item.network.isBlank()) && item.applicableOn.equals("card", true)
-        }
-        val amountAfterSurcharge = appliedSurcharge.value.sumOf { it.amount } + CheckoutDetailsHandler.amountFlow.value
+        if(appliedSurcharge.value.isEmpty()) {
+            amountBeforeSurcharge.value = CheckoutDetailsHandler.amountFlow.value
+            val surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
+            appliedSurcharge.value = surchargeList.filter { item ->
+                (item.network.contains(brand, true) || item.network.isBlank()) && item.applicableOn.equals("card", true)
+            }
+            val amountAfterSurcharge = appliedSurcharge.value.sumOf { it.amount } + amountBeforeSurcharge.value
 
-        CheckoutDetailsHandler.setAmount(amountAfterSurcharge)
+            CheckoutDetailsHandler.setAmount(amountAfterSurcharge)
+        }
+        cardSelectedNetwork.value = brand
         when (brand) {
             "VISA"            -> { cardSelectedIcon.value = Res.drawable.ic_visa;       maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             "Mastercard"      -> { cardSelectedIcon.value = Res.drawable.ic_masterCard; maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
@@ -378,7 +388,7 @@ internal class EMIScreenViewModel(
         return true
     }
 
-    fun postEMIRequest() {
+    fun postEMIRequest(surcharge : List<String>?) {
         viewModelScope.launch {
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
@@ -399,7 +409,8 @@ internal class EMIScreenViewModel(
                 cvv = cardCvvText.value,
                 duration = selectedEmi.value.first,
                 provider = selectedOthers.value,
-                offerCode = offerSelectedCode.value
+                offerCode = offerSelectedCode.value,
+                surcharges = surcharge
             )
             handlePaymentResponse(
                 response = response,
@@ -424,5 +435,20 @@ internal class EMIScreenViewModel(
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage
             )
         }
+    }
+
+    fun resolveSurchargeList(
+        selectedMethod: String,
+        selectedNetwork: String = ""
+    ): List<String>? {
+        val surcharges = CheckoutDetailsHandler.surchargeDetailsFlow.value
+        val filtered = surcharges.filter { item ->
+            val applicable = item.applicableOn.lowercase().trim()
+            applicable.isNotEmpty() &&
+                    applicable == selectedMethod.lowercase().trim() &&
+                    (item.network.isBlank() ||
+                            item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true))
+        }
+        return filtered.map { it.surchargeCode }.ifEmpty { null }
     }
 }

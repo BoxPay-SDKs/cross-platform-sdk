@@ -21,7 +21,8 @@ internal data class MethodsPostRequest(
     @SerialName("browserData") val browserData: BrowserData,
     @SerialName("instrumentDetails") val instrumentDetails: MethodInstrumentDetails,
     @SerialName("shopper") val shopper: ShopperRequest,
-    @SerialName("deviceDetails") val deviceDetails: DeviceDetails
+    @SerialName("deviceDetails") val deviceDetails: DeviceDetails,
+    @SerialName("surcharges") val surcharges : List<String>? = null
 )
 
 @Serializable(with = MethodInstrumentDetailsSerializer::class)

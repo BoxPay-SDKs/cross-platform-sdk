@@ -181,7 +181,8 @@ internal fun CardScreen(
         amount = amount.value,
         cardValid = viewModel.cardValid.value,
         postCardRequest = {
-            viewModel.postCardRequest(it)
+            val surchargeList = viewModel.resolveSurchargeList( "card", viewModel.cardSelectedNetwork.value, viewModel.cardSelectedSpecification.value)
+            viewModel.postCardRequest(it, surchargeList)
         },
         buttonTextColor = buttonTextColor.value,
         ctaBorderRadius = ctaBorderRadius.value,

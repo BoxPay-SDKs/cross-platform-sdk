@@ -2,7 +2,6 @@ package com.crossplatform.sdk.data.repo
 
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.implementation.ApiServiceImpl
-import com.crossplatform.sdk.data.model.FetchStatusResponse
 import com.crossplatform.sdk.data.model.FetchSurchargeResponse
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
@@ -13,6 +12,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import kotlin.String
 
 internal class MainScreenRepoImpl(
     private val apiService: ApiService = ApiServiceImpl(),
@@ -24,11 +24,13 @@ internal class MainScreenRepoImpl(
 
     override suspend fun postUpiIntentRequest(
         type: String,
-        upiApp: String
+        upiApp: String,
+        surcharges : List<String>?
     ): ApiResponse<PaymentMethodPostResponse> =withContext(ioDispatcher) {
         apiService.upiIntentPostRequest(
             type = type,
-            upiApp = upiApp
+            upiApp = upiApp,
+            surcharges =surcharges
         )
     }
 
@@ -37,12 +39,14 @@ internal class MainScreenRepoImpl(
         instrumentRef: String?,
         shopperVpa: String?,
         saveInstrument: Boolean?,
+        surcharges : List<String>?
     ): ApiResponse<PaymentMethodPostResponse> =withContext(ioDispatcher) {
         apiService.upiCollectPostRequest(
             type = type,
             instrumentRef = instrumentRef,
             shopperVpa = shopperVpa,
-            saveInstrument = saveInstrument
+            saveInstrument = saveInstrument,
+            surcharges = surcharges
         )
     }
 
@@ -74,9 +78,10 @@ internal class MainScreenRepoImpl(
         apiService.deleteSavedCard(id)
     }
 
-    override suspend fun postUPIQrRequest(type: String): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
+    override suspend fun postUPIQrRequest(type: String,surcharges : List<String>?): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
         apiService.upiQrPostRequest(
-            type = type
+            type = type,
+            surcharges = surcharges
         )
     }
 

@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -525,9 +526,21 @@ private fun CardTextField(
     unfocusedTextInputBorderColor : String
 ) {
     var hasBeenFocused by remember { mutableStateOf(false) }  // ← track first focus
+    val keyboardController = LocalSoftwareKeyboardController.current   // ← add this
+
     OutlinedTextField(
         value               = value,
-        onValueChange       = { if (it.length <= maxLength) onValueChange(it) },
+        onValueChange       = { new ->
+            if (new.length <= maxLength) {
+                onValueChange(new)
+                if (keyboardType == KeyboardType.Number || keyboardType == KeyboardType.NumberPassword) {
+                    if (new.length == maxLength) {
+                        keyboardController?.hide()
+                        onBlur()
+                    }
+                }
+            }
+        },
         label               = {
             Text(
                 text       = label,
@@ -543,6 +556,7 @@ private fun CardTextField(
         shape                = RoundedCornerShape(8.dp),
         keyboardActions = KeyboardActions(
             onDone = {
+                keyboardController?.hide()
                 onBlur()
             }
         ),

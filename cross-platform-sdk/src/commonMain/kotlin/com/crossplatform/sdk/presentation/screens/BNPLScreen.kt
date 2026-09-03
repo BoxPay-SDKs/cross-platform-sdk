@@ -91,8 +91,9 @@ internal fun BNPLScreen(
                 onSetSearchQuery = {
                     viewModel.onSearch(it)
                 },
-                onProceedForward = {_, instrumentValue , _->
-                    viewModel.postBNPLRequest(instrumentValue)
+                onProceedForward = {displayName, instrumentValue , type->
+                    val surchargeList = viewModel.resolveSurchargeList( type, displayName,)
+                    viewModel.postBNPLRequest(instrumentValue, surchargeList)
                 },
                 amount = amount.value,
                 currencySymbol = currencyCode,

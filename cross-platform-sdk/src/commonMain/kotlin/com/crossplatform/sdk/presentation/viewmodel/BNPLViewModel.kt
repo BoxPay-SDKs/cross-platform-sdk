@@ -73,7 +73,7 @@ internal class BNPLViewModel (
         _uiState.value = UiState.Success(filtered)
     }
 
-    fun postBNPLRequest(instrumentValue: String) {
+    fun postBNPLRequest(instrumentValue: String, surcharge : List<String>?) {
         viewModelScope.launch {
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_INITIATED.value,
@@ -84,7 +84,8 @@ internal class BNPLViewModel (
             val response = repo.initiatePayment(
                 instrumentDetails = instrumentValue,
                 paymentType = "buynowpaylater",
-                token = CheckoutDetailsHandler.checkoutDetails.token
+                token = CheckoutDetailsHandler.checkoutDetails.token,
+                surcharge
             )
             handlePaymentResponse(
                 response = response,
@@ -172,5 +173,20 @@ internal class BNPLViewModel (
         viewModelScope.launch {
             analyticsRepo.callUiAnalytics(event, screenName, message)
         }
+    }
+
+    fun resolveSurchargeList(
+        selectedMethod: String,
+        selectedNetwork: String = ""
+    ): List<String>? {
+        val surcharges = CheckoutDetailsHandler.surchargeDetailsFlow.value
+        val filtered = surcharges.filter { item ->
+            val applicable = item.applicableOn.lowercase().trim()
+            applicable.isNotEmpty() &&
+                    applicable == selectedMethod.lowercase().trim() &&
+                    (item.network.isBlank() ||
+                            item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true))
+        }
+        return filtered.map { it.surchargeCode }.ifEmpty { null }
     }
 }

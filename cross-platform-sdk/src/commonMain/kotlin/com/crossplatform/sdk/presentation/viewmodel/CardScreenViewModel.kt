@@ -67,6 +67,8 @@ internal class CardScreenViewModel(
     var maxCardNumberLength =  mutableStateOf(19)
     var minCardNumberLength = mutableStateOf(19)
     var cardSelectedIcon    = mutableStateOf(Res.drawable.ic_card)
+    var cardSelectedNetwork = mutableStateOf("")
+    val cardSelectedSpecification = mutableStateOf("")
 
     val amountBeforeSurcharge = mutableStateOf(0.0)
 
@@ -88,7 +90,7 @@ internal class CardScreenViewModel(
             when(val response = repo.getCardDetails(cardNumber)) {
                 is ApiResponse.Success -> {
                     val data = response.data
-                    updateCardIcon(isTestEnv, data.paymentMethod.brand)
+                    updateCardIcon(isTestEnv, data.paymentMethod.brand, data.paymentMethod.classification ?: "")
                     _cardDetails.value = UiState.Success(data)
                 }
                 is ApiResponse.Error -> {
@@ -175,12 +177,25 @@ internal class CardScreenViewModel(
     }
 
     // --- Update icon from API ---
-    fun updateCardIcon(isTestEnv: Boolean, brand : String) {
+    fun updateCardIcon(isTestEnv: Boolean, brand : String, classification : String) {
+        cardSelectedNetwork.value = brand
+        cardSelectedSpecification.value = classification
         if(appliedSurcharge.value.isEmpty()) {
             amountBeforeSurcharge.value = CheckoutDetailsHandler.amountFlow.value
             val surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
             appliedSurcharge.value = surchargeList.filter { item ->
-                (item.network.contains(brand, true) || item.network.isBlank()) && item.applicableOn.equals("card", true)
+                val applicable = item.applicableOn.lowercase().trim()
+
+                val methodMatches = applicable.isNotEmpty() &&
+                        applicable == "card"
+
+                val networkMatches = item.network.isBlank() ||
+                        item.network.replace(" ", "").equals(brand.replace(" ", ""), true)
+
+                val classificationMatches = item.classification.isBlank() ||
+                        item.classification.replace(" ", "").equals(classification.replace(" ", ""), true)
+
+                methodMatches && networkMatches && classificationMatches
             }
             val amountAfterSurcharge = appliedSurcharge.value.sumOf { it.amount } + amountBeforeSurcharge.value
 
@@ -226,7 +241,7 @@ internal class CardScreenViewModel(
         checkCardValid(isTestEnv)
     }
 
-    fun postCardRequest(isSICheckBoxClicked : Boolean) {
+    fun postCardRequest(isSICheckBoxClicked : Boolean, surcharge : List<String>?) {
         viewModelScope.launch {
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
@@ -247,7 +262,8 @@ internal class CardScreenViewModel(
                 cvv = cardCvvText.value,
                 nickName = cardNickNameText.value,
                 isSaveInstrumentCheckboxClicked = isSavedCardCheckBoxClicked.value,
-                isSICheckboxClicked = !isSICheckBoxClicked
+                isSICheckboxClicked = !isSICheckBoxClicked,
+                surcharges = surcharge
             )
             handlePaymentResponse(
                 response = response,
@@ -342,5 +358,28 @@ internal class CardScreenViewModel(
         viewModelScope.launch {
             analyticsRepo.callUiAnalytics(event, screenName, message)
         }
+    }
+
+    fun resolveSurchargeList(
+        selectedMethod: String,
+        selectedNetwork: String = "",
+        selectedClassification: String = ""
+    ): List<String>? {
+        val surcharges = CheckoutDetailsHandler.surchargeDetailsFlow.value
+        val filtered = surcharges.filter { item ->
+            val applicable = item.applicableOn.lowercase().trim()
+
+            val methodMatches = applicable.isNotEmpty() &&
+                    applicable == selectedMethod.lowercase().trim()
+
+            val networkMatches = item.network.isBlank() ||
+                    item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true)
+
+            val classificationMatches = selectedClassification.isBlank() && (item.classification.isBlank() ||
+                    item.classification.replace(" ", "").equals(selectedClassification.replace(" ", ""), true))
+
+            methodMatches && networkMatches && classificationMatches
+        }
+        return filtered.map { it.surchargeCode }.ifEmpty { null }
     }
 }

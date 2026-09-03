@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import kotlin.String
 
 internal class OtherPaymentMethodRepoImpl(
     private val apiService: ApiService = ApiServiceImpl(),
@@ -26,8 +27,8 @@ internal class OtherPaymentMethodRepoImpl(
         )
     }
 
-    override suspend fun initiatePayment(instrumentDetails: String, paymentType : String, token : String): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
-        apiService.methodsPostRequest(instrumentDetails, token, paymentType)
+    override suspend fun initiatePayment(instrumentDetails: String, paymentType : String, token : String, surcharges : List<String>?): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
+        apiService.methodsPostRequest(instrumentDetails, token, paymentType, surcharges = surcharges)
     }
 
     override suspend fun initiateEMIPayment(
@@ -38,7 +39,8 @@ internal class OtherPaymentMethodRepoImpl(
         cardType: String?,
         offerCode: String?,
         duration: Int?,
-        provider: String?
+        provider: String?,
+        surcharges : List<String>?
     ): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
         apiService.emiPostRequest(
             cardNumber = cardNumber,
@@ -48,7 +50,8 @@ internal class OtherPaymentMethodRepoImpl(
             cardType = cardType,
             offerCode = offerCode,
             duration = duration,
-            provider = provider
+            provider = provider,
+            surcharges = surcharges
         )
     }
 
