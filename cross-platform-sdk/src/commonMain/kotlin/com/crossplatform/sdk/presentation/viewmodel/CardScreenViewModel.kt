@@ -375,8 +375,8 @@ internal class CardScreenViewModel(
             val networkMatches = item.network.isBlank() ||
                     item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true)
 
-            val classificationMatches = selectedClassification.isBlank() && (item.classification.isBlank() ||
-                    item.classification.replace(" ", "").equals(selectedClassification.replace(" ", ""), true))
+            val classificationMatches = item.classification.isBlank() ||
+                    item.classification.replace(" ", "").equals(selectedClassification.replace(" ", ""), true)
 
             methodMatches && networkMatches && classificationMatches
         }
