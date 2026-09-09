@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
+import com.crossplatform.sdk.domain.handler.ApplePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
 import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
@@ -32,6 +34,7 @@ import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.buildAddressString
 import com.crossplatform.sdk.presentation.components.AddressComponent
+import com.crossplatform.sdk.presentation.components.ExpressCheckout
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.MorePaymentMethods
 import com.crossplatform.sdk.presentation.components.OfferSection
@@ -101,7 +104,7 @@ internal fun MainScreen(
     val isTestEnv = CheckoutDetailsHandler.isTestEnvFlow.collectAsStateWithLifecycle()
     val errorMessage = CheckoutDetailsHandler.errorMessageFlow.collectAsStateWithLifecycle()
 
-    val paymentHandler = rememberExpressCheckoutPaymentHandler()
+    val paymentHandler = rememberExpressCheckoutPaymentHandler(isTestEnv.value)
     var googleConfig : GooglePayExpressCheckoutConfig? = null
     var revolutPay : RevolutPayExpressCheckoutConfig? = null
     var expressCheckoutPaymentRequest : ExpressCheckoutPaymentRequest? = null
@@ -140,6 +143,10 @@ internal fun MainScreen(
 
     val selectedPaymentNetwork = remember {
         mutableStateOf("intent")
+    }
+
+    val expressCheckoutCountryCode = remember {
+        mutableStateOf("IN")
     }
 
     when (screenState) {
@@ -253,11 +260,8 @@ internal fun MainScreen(
                 merchantPublicKey = response.revolutPublicKey ?: ""
             )
 
-            expressCheckoutPaymentRequest = ExpressCheckoutPaymentRequest(
-                amount = amount.value.toString(),
-                currencyCode = currencyCode,
-                countryCode = addressFlow.value.countryCode ?: "IN",
-            )
+            expressCheckoutCountryCode.value = response.googlePayAdditionData?.countryCode ?: "IN"
+
             googleConfig = GooglePayExpressCheckoutConfig(
                 gateway = response.googlePayAdditionData?.gateway ?: "",
                 merchantName = response.googlePayAdditionData?.merchantName ?: "",
@@ -265,6 +269,12 @@ internal fun MainScreen(
                 merchantId = response.googlePayAdditionData?.merchantId ?: "",
                 allowedPaymentMethods = response.googlePayAdditionData?.allowedPaymentMethods ?: emptyList()
             )
+
+            val showApplePay = paymentHandler.isApplePayAvailable()
+            val showGooglePay by produceState(initialValue = false, key1 = googleConfig) {
+                value = paymentHandler.isGooglePayAvailable(googleConfig)
+            }
+            val showRevolutPay = paymentHandler.isRevolutPayAvailable()
 
             Column(
                 modifier = Modifier
@@ -299,66 +309,80 @@ internal fun MainScreen(
                     )
                 }
 
-                val isExpressCheckoutVisible = response.methodFlags.isApplePayVisible || response.methodFlags.isGooglePayVisible || response.methodFlags.isRevolutPayVisible
+                val isExpressCheckoutVisible = (response.methodFlags.isApplePayVisible && showApplePay) || (response.methodFlags.isGooglePayVisible && showGooglePay) || (response.methodFlags.isRevolutPayVisible && showRevolutPay)
 
-//                if (isExpressCheckoutVisible) {
-//                    SectionTitle("Express Checkout")
-//                    ExpressCheckout(
-//                        paymentHandler = paymentHandler,
-//                        onClickRevolut = {
-//                            if(isPresentInSurchargeModel(surchargeDetails.value, "revolutpay")) {
-//                                selectedMethod.value = "revolutpay"
-//                                showUpdatedAmountBottomSheet.value = true
-//                            } else{
-//                                viewModel.onClickRevolutPay()
-//                            }
-//                        },
-//                        onClickApplePay = {
-//                            viewModel.isBoxPayAnimationLoading.value = true
-//                            val config = ApplePayExpressCheckoutConfig(
-//                                gateway = response.applePayAdditionData?.gateway ?: "",
-//                                merchantName = response.applePayAdditionData?.merchantName ?: "",
-//                                siteReference = response.applePayAdditionData?.siteReference ?: "",
-//                                merchantCapabilities = response.applePayAdditionData?.merchantCapabilities ?: emptyList(),
-//                                supportedNetworks = response.applePayAdditionData?.supportedNetworks ?: emptyList()
-//                            )
-//
-//                            paymentHandler.launchApplePay(
-//                                request = expressCheckoutPaymentRequest,
-//                                config = config,
-//                                onResult = {_ ->
-//                                    viewModel.isBoxPayAnimationLoading.value = false
-//                                }
-//                            )
-//                        },
-//                        onClickGooglePay = {
-//                            if(isPresentInSurchargeModel(surchargeDetails.value, "googlepay")) {
-//                                selectedMethod.value = "googlepay"
-//                                showUpdatedAmountBottomSheet.value = true
-//                            } else{
-//                                viewModel.isBoxPayAnimationLoading.value = true
-//                                paymentHandler.launchGooglePay(
-//                                    request = expressCheckoutPaymentRequest,
-//                                    config = googleConfig,
-//                                    onResult = {result ->
-//                                        when(result) {
-//                                            is ExpressCheckoutPaymentResult.Cancelled , is ExpressCheckoutPaymentResult.Failure -> {
-//                                                CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
-//                                                viewModel.isBoxPayAnimationLoading.value = false
-//                                                CheckoutDetailsHandler.setErrorMessage(errorMessage.value)
-//                                                CheckoutDetailsHandler.setSessionFailed()
-//                                            }
-//                                            is ExpressCheckoutPaymentResult.Success -> {
-//                                                viewModel.onProceedGooglePay(result.googleToken ?: "")
-//                                            }
-//                                        }
-//                                    }
-//                                )
-//                            }
-//                        },
-//                        config = googleConfig
-//                    )
-//                }
+                if (isExpressCheckoutVisible) {
+                    SectionTitle("Express Checkout")
+                    ExpressCheckout(
+                        onClickRevolut = {
+                            if(isPresentInSurchargeModel(surchargeDetails.value, "revolutpay")) {
+                                selectedMethod.value = "revolutpay"
+                                showUpdatedAmountBottomSheet.value = true
+                            } else{
+                                viewModel.onClickRevolutPay(null)
+                            }
+                        },
+                        onClickApplePay = {
+                            viewModel.isBoxPayAnimationLoading.value = true
+                            expressCheckoutPaymentRequest = ExpressCheckoutPaymentRequest(
+                                amount = amount.value,
+                                currencyCode = currencyCode,
+                                countryCode = expressCheckoutCountryCode.value,
+                            )
+                            val config = ApplePayExpressCheckoutConfig(
+                                gateway = response.applePayAdditionData?.gateway ?: "",
+                                merchantName = response.applePayAdditionData?.merchantName ?: "",
+                                siteReference = response.applePayAdditionData?.siteReference ?: "",
+                                merchantCapabilities = response.applePayAdditionData?.merchantCapabilities
+                                    ?: emptyList(),
+                                supportedNetworks = response.applePayAdditionData?.supportedNetworks
+                                    ?: emptyList()
+                            )
+
+                            paymentHandler.launchApplePay(
+                                request = expressCheckoutPaymentRequest!!,
+                                config = config,
+                                onResult = {_ ->
+                                    viewModel.isBoxPayAnimationLoading.value = false
+                                }
+                            )
+                        },
+                        onClickGooglePay = {
+                            if(isPresentInSurchargeModel(surchargeDetails.value, "googlepay")) {
+                                selectedMethod.value = "googlepay"
+                                showUpdatedAmountBottomSheet.value = true
+                            } else{
+                                viewModel.isBoxPayAnimationLoading.value = true
+                                expressCheckoutPaymentRequest = ExpressCheckoutPaymentRequest(
+                                    amount = amount.value,
+                                    currencyCode = currencyCode,
+                                    countryCode = expressCheckoutCountryCode.value,
+                                )
+                                paymentHandler.launchGooglePay(
+                                    request = expressCheckoutPaymentRequest!!,
+                                    config = googleConfig,
+                                    onResult = {result ->
+                                        when(result) {
+                                            is ExpressCheckoutPaymentResult.Cancelled , is ExpressCheckoutPaymentResult.Failure -> {
+                                                CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
+                                                viewModel.isBoxPayAnimationLoading.value = false
+                                                CheckoutDetailsHandler.setErrorMessage(errorMessage.value)
+                                                CheckoutDetailsHandler.setSessionFailed()
+                                            }
+                                            is ExpressCheckoutPaymentResult.Success -> {
+                                                viewModel.onProceedGooglePay(result.googleToken ?: "", surchargeList = null)
+                                            }
+                                        }
+                                    }
+                                )
+                            }
+                        },
+                        showApplePay = showApplePay && response.methodFlags.isApplePayVisible,
+                        showGooglePay = showGooglePay && response.methodFlags.isGooglePayVisible,
+                        showRevolutPay = showRevolutPay && response.methodFlags.isRevolutPayVisible,
+                        config = googleConfig
+                    )
+                }
 
                 if(viewModel.appliedOffers.value.isNotEmpty()) {
                     SectionTitle("Offers & discounts")
@@ -947,19 +971,30 @@ internal fun MainScreen(
                     "googlepay" -> {
                         viewModel.isBoxPayAnimationLoading.value = true
 
+                        expressCheckoutPaymentRequest = ExpressCheckoutPaymentRequest(
+                            amount = it,
+                            currencyCode = currencyCode,
+                            countryCode = expressCheckoutCountryCode.value,
+                        )
+
+                        println("=====aamount ${it}")
                         paymentHandler.launchGooglePay(
-                            request = expressCheckoutPaymentRequest!!,
+                            request = expressCheckoutPaymentRequest,
                             config = googleConfig!!,
                             onResult = {result ->
                                 when(result) {
                                     is ExpressCheckoutPaymentResult.Cancelled , is ExpressCheckoutPaymentResult.Failure -> {
-                                        CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
+                                        selectedMethod.value = ""
                                         viewModel.isBoxPayAnimationLoading.value = false
                                         CheckoutDetailsHandler.setErrorMessage(errorMessage.value)
                                         CheckoutDetailsHandler.setSessionFailed()
                                     }
                                     is ExpressCheckoutPaymentResult.Success -> {
-                                        val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                                        val surchargeList = viewModel.resolveSurchargeList( selectedMethod.value, "")
+                                        println("=====surchargeList $surchargeList")
+                                        println("======selectedmethod ${selectedMethod.value}")
+                                        println("=====selected paymene method ${selectedPaymentMethod.value}")
+                                        println("=======selectedNetwork ${selectedPaymentNetwork.value}")
                                         viewModel.onProceedGooglePay(result.googleToken ?: "", surchargeList)
                                     }
                                 }
@@ -981,7 +1016,7 @@ internal fun MainScreen(
             },
             surchargeDetails = surchargeDetails.value,
             currencySymbol = currencyCode,
-            amount = amountBeforeSurcharge.value,
+            amount = amount.value,
             ctaBorderRadius = ctaBorderRadius.value,
             buttonColor = buttonColor.value,
             buttonTextColor = buttonTextColor.value

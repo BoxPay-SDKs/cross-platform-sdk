@@ -13,7 +13,7 @@ internal interface ExpressCheckoutPaymentHandler {
 }
 
 internal data class ExpressCheckoutPaymentRequest(
-    val amount: String,
+    val amount: Double,
     val currencyCode: String,
     val countryCode: String
 )

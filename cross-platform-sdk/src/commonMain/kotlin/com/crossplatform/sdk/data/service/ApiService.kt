@@ -8,6 +8,7 @@ import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.data.model.FetchStatusResponse
 import com.crossplatform.sdk.data.model.FetchSurchargeResponse
 import com.crossplatform.sdk.data.model.InstantOfferResponse
+import com.crossplatform.sdk.data.model.NativeOtpResponse
 import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
@@ -113,5 +114,16 @@ internal interface ApiService {
     suspend fun autoRetryInitiatePayment(
         transactionId : String
     ) : ApiResponse<PaymentMethodPostResponse>
+
+    suspend fun submitNativeOtp(
+        otp : String,
+        transactionId : String,
+        isTestEnv : Boolean
+    ) : ApiResponse<NativeOtpResponse>
+
+    suspend fun resendOtp(
+        transactionId : String,
+        isTestEnv : Boolean
+    ) : ApiResponse<NativeOtpResponse>
 
 }

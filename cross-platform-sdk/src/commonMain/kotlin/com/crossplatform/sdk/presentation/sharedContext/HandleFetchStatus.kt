@@ -14,12 +14,14 @@ internal fun handleFetchStatus(
 ) {
     when(response) {
         is ApiResponse.Error -> {
+            println("======response  in fetch status error === $response")
             CheckoutDetailsHandler.setErrorMessage()
             CheckoutDetailsHandler.setSessionFailed()
             setIsBoxPayAnimationVisible(false)
         }
         is ApiResponse.Success -> {
             val apiData = response.data
+            println("======response  in fetch status success === ${response.data}")
             val status = getFetchStatus(apiData.status)
             val transactionId = apiData.transactionId
 
@@ -56,12 +58,14 @@ internal fun handleFetchStatus(
                     setIsBoxPayAnimationVisible(false)
                 }
                 else -> {
+                    println("======response  in fetch status success in else === ${response.data}")
                     CheckoutDetailsHandler.setSessionFailed()
                     setIsBoxPayAnimationVisible(false)
                 }
             }
         }
         else -> {
+            println("======response  in fetch statussss === ${response}")
             CheckoutDetailsHandler.setSessionFailed()
             setIsBoxPayAnimationVisible(false)
         }

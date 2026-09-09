@@ -68,7 +68,8 @@ internal data class MainScreenModel(
         val merchantName : String?,
         val gateway : String?,
         val siteReference : String?,
-        val allowedPaymentMethods : List<AllowedPaymentMethods>?
+        val allowedPaymentMethods : List<AllowedPaymentMethods>?,
+        val countryCode : String
     )
 
     internal data class ApplePayAdditionData(

@@ -13,7 +13,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,6 +43,7 @@ import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.components.CardComponent
 import com.crossplatform.sdk.presentation.components.CvvInfoBottomSheet
 import com.crossplatform.sdk.presentation.components.KnowMoreBottomSheet
+import com.crossplatform.sdk.presentation.components.NativeOTPBottomSheet
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
@@ -48,7 +52,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalTime::class, ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun CardScreen(
     isAutoNavigationEnabled: Boolean = false,
@@ -73,6 +77,10 @@ internal fun CardScreen(
     val subscription = CheckoutDetailsHandler.subscriptionFlow.collectAsStateWithLifecycle()
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { targetValue -> targetValue != SheetValue.Hidden }
+    )
 
     var isSiCheckBoxChecked  by remember { mutableStateOf(isSICheckboxChecked.value) }
 
@@ -226,6 +234,33 @@ internal fun CardScreen(
                 viewModel.callFetchStatus(result ?: "")
                 viewModel.setWebViewScreen(false)
             }
+        )
+    }
+
+    if (viewModel.showNativeOtpBottomSheet.value) {
+        NativeOTPBottomSheet(
+            sheetState = sheetState,
+            onClickCancel = {
+                // call the api to cancel the transaction but not yet as it is been on hold
+                viewModel.showNativeOtpBottomSheet.value = false
+                CheckoutDetailsHandler.setSessionFailed()
+            },
+            onClickProceed = {
+                println("=======card screen submit otp $it")
+                viewModel.submitOtp(it, isTestEnv.value)
+            },
+            onClickResend = {
+                viewModel.resendOtp(isTestEnv.value)
+            },
+            cardBrand = viewModel.cardSelectedNetwork.value,
+            onClickUrl = {
+                viewModel.showNativeOtpBottomSheet.value = false
+                viewModel.setWebViewScreen(true)
+            },
+            minOtpField = viewModel.minOtpLength.value,
+            maxOtpField = viewModel.maxOtpLength.value,
+            isOtpInvalid = viewModel.isNativeOtpInvalid.value,
+            isLoading = viewModel.isNativeOtpLoading.value
         )
     }
 }

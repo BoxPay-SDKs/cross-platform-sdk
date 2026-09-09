@@ -39,7 +39,7 @@ import com.crossplatform.sdk.presentation.toComposeColor
 @Composable
 internal fun ShowUpdateAmountBottomSheet(
     selectedMethod : String,
-    onClickProceed : () -> Unit,
+    onClickProceed : (amountAfterSurcharge : Double) -> Unit,
     onClick : () -> Unit,
     currencySymbol : String,
     amount : Double,
@@ -85,14 +85,14 @@ internal fun ShowUpdateAmountBottomSheet(
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
                 color = Color(0xFF010102),
-                modifier = Modifier.padding(bottom = 12.dp, start = 16.dp, end = 16.dp)
+                modifier = Modifier.padding(bottom = 12.dp, start = 12.dp, end = 16.dp)
             )
 
             // Base Amount Row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp, start = 16.dp, end = 16.dp),
+                    .padding(top = 4.dp, start = 12.dp, end = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -188,7 +188,7 @@ internal fun ShowUpdateAmountBottomSheet(
                     .background(buttonColor.toComposeColor(), RoundedCornerShape(ctaBorderRadius.dp))
                     .clickable{
                         CheckoutDetailsHandler.setAmount(amountAfterSurcharge.value)
-                        onClickProceed()
+                        onClickProceed(amountAfterSurcharge.value)
                     },
                 amount = 0.0,
                 currencySymbol= "",

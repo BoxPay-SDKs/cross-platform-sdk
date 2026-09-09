@@ -17,14 +17,19 @@ import com.crossplatform.sdk.presentation.currentMonth
 import com.crossplatform.sdk.presentation.currentYear
 import com.crossplatform.sdk.presentation.sharedContext.handleFetchStatus
 import com.crossplatform.sdk.presentation.sharedContext.handlePaymentResponse
+import com.crossplatform.sdk.presentation.sharedContext.handleUpiCollectFetchStatus
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_amex
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_diners
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_maestro
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_masterCard
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_rupay
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_visa
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 internal class CardScreenViewModel(
@@ -72,10 +77,17 @@ internal class CardScreenViewModel(
 
     val amountBeforeSurcharge = mutableStateOf(0.0)
 
-
     var isSavedCardCheckBoxClicked =  mutableStateOf(false)
     var showCvvInfo                =  mutableStateOf(false)
     var showKnowMoreDialog         =  mutableStateOf(false)
+
+    val showNativeOtpBottomSheet = mutableStateOf(false)
+    val isNativeOtpInvalid = mutableStateOf(false)
+    val minOtpLength = mutableStateOf(0)
+    val maxOtpLength = mutableStateOf(0)
+    val isNativeOtpLoading = mutableStateOf(false)
+
+    private var fetchStatusJob: Job? = null
 
     val appliedSurcharge = mutableStateOf<List<SurchargeModel>>(emptyList())
 
@@ -207,6 +219,7 @@ internal class CardScreenViewModel(
             "RUPAY"           -> { cardSelectedIcon.value = Res.drawable.ic_rupay;      maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             "AmericanExpress" -> { cardSelectedIcon.value = Res.drawable.ic_amex;       maxCvvLength.value = 4; maxCardNumberLength.value = if (isTestEnv) 19 else 18 }
             "Maestro"         -> { cardSelectedIcon.value = Res.drawable.ic_maestro;    maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
+            "Diners"         -> { cardSelectedIcon.value = Res.drawable.ic_diners;    maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             else              -> { cardSelectedIcon.value = Res.drawable.ic_card;       maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
         }
     }
@@ -284,6 +297,17 @@ internal class CardScreenViewModel(
                     url.value = responseUrl
                     setWebViewScreen(true)
                 },
+                onSetNativeOtp = { min, max, responseUrl, html ->
+                    minOtpLength.value = min
+                    maxOtpLength.value = max
+                    if(html.isBlank()) {
+                        url.value = responseUrl
+                    } else {
+                        htmlString.value = html
+                    }
+                    showNativeOtpBottomSheet.value = true
+                    isBoxPayAnimationVisible.value = false
+                },
                 setIsBoxPayAnimationVisible = {isBoxPayAnimationVisible.value = it},
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage
             )
@@ -329,6 +353,17 @@ internal class CardScreenViewModel(
                 },
                 onOpenUpiIntent = {_ ->
                     // no operation
+                },
+                onSetNativeOtp = { min, max, responseUrl, html ->
+                    minOtpLength.value = min
+                    maxOtpLength.value = max
+                    if(html.isBlank()) {
+                        url.value = responseUrl
+                    } else {
+                        htmlString.value = html
+                    }
+                    showNativeOtpBottomSheet.value = true
+                    isBoxPayAnimationVisible.value = false
                 },
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
                 setIsBoxPayAnimationVisible = {
@@ -378,8 +413,74 @@ internal class CardScreenViewModel(
             val classificationMatches = item.classification.isBlank() ||
                     item.classification.replace(" ", "").equals(selectedClassification.replace(" ", ""), true)
 
-            methodMatches && networkMatches && classificationMatches
+            (applicable.isBlank() || methodMatches) && networkMatches && classificationMatches
         }
         return filtered.map { it.surchargeCode }.ifEmpty { null }
     }
+
+    fun submitOtp(otp : String,isTestEnv: Boolean) {
+        isNativeOtpInvalid.value = false
+        isNativeOtpLoading.value = true
+        viewModelScope.launch {
+            val response = repo.submitOtp(otp, CheckoutDetailsHandler.transactionFlow.value.second, isTestEnv)
+            when (response) {
+                is ApiResponse.Success -> {
+                    val data = response.data
+                    if(data.success) {
+                        showNativeOtpBottomSheet.value = false
+                        startFetchStatusPolling("")
+                    } else {
+                        isNativeOtpInvalid.value = true
+                        isNativeOtpLoading.value = false
+                    }
+                }
+                else -> {
+                    isNativeOtpLoading.value = true
+                }
+            }
+        }
+    }
+
+    fun resendOtp(isTestEnv: Boolean) {
+        isNativeOtpLoading.value = true
+        viewModelScope.launch {
+            val response = repo.resendOtp( CheckoutDetailsHandler.transactionFlow.value.second, isTestEnv)
+            isNativeOtpLoading.value = false
+            when (response) {
+                else -> {
+                   // no op
+                }
+            }
+        }
+    }
+
+    fun startFetchStatusPolling(inquiryResult: String) {
+        fetchStatusJob?.cancel()
+        fetchStatusJob = viewModelScope.launch {
+            while (isActive) {
+                callUpiCollectFetchStatue(inquiryResult)
+                delay(4000L)
+            }
+        }
+    }
+
+    fun callUpiCollectFetchStatue(inquiryResult : String) {
+        viewModelScope.launch {
+            CheckoutDetailsHandler.setInquiryToken(inquiryResult)
+            val response = fetchStatusRepo.fetchStatus()
+            handleUpiCollectFetchStatus(
+                response = response,
+                setIsBoxPayAnimationVisible = {
+                    stopFetchStatusPolling()
+                    isBoxPayAnimationVisible.value = it
+                }
+            )
+        }
+    }
+
+    fun stopFetchStatusPolling() {
+        fetchStatusJob?.cancel()
+        fetchStatusJob = null
+    }
+
 }

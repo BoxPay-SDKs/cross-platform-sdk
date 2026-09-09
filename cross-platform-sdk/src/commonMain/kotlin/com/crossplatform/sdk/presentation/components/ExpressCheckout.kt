@@ -15,37 +15,29 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
 import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
+import com.crossplatform.sdk.presentation.GooglePayButton
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_apple_pay
-import crossplatformsdk.cross_platform_sdk.generated.resources.ic_google_pay
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_revolut_pay
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 internal fun ExpressCheckout(
-    config : GooglePayExpressCheckoutConfig,
-    paymentHandler: ExpressCheckoutPaymentHandler,
+    showApplePay : Boolean,
+    showGooglePay : Boolean,
+    showRevolutPay : Boolean,
     onClickRevolut : () -> Unit,
     onClickGooglePay : () -> Unit,
-    onClickApplePay : () -> Unit
+    onClickApplePay : () -> Unit,
+    config: GooglePayExpressCheckoutConfig
 ) {
-    val showApplePay = paymentHandler.isApplePayAvailable()
-    val showGooglePay by produceState(initialValue = false, key1 = config) {
-        value = paymentHandler.isGooglePayAvailable(config)
-    }
-    val showRevolutPay = paymentHandler.isRevolutPayAvailable()
-
-
     FlowRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -70,7 +62,8 @@ internal fun ExpressCheckout(
                     .defaultMinSize(minWidth = 140.dp),
                 onClick = {
                     onClickGooglePay()
-                }
+                },
+                config = config
             )
         }
         if (showRevolutPay) {
@@ -104,27 +97,6 @@ private fun RevolutPay(
         )
     }
 }
-
-@Composable
-private fun GooglePayButton(
-    onClick: () -> Unit,
-    modifier: Modifier
-) {
-    Button(
-        onClick = onClick,
-        shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-        modifier = modifier.height(50.dp)
-    ) {
-        Image(
-            painter = painterResource(Res.drawable.ic_google_pay),
-            modifier = Modifier.size(32.dp),
-            contentDescription = "google pay "
-        )
-        Text("Pay", color = Color.White, fontWeight = FontWeight.Medium, fontSize = 16.sp, fontFamily = LocalSDKFonts.current.primary)
-    }
-}
-
 @Composable
 private fun ApplePayButton(
     onClick: () -> Unit,

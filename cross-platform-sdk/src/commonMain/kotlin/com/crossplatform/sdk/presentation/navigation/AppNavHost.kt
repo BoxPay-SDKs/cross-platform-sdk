@@ -113,22 +113,22 @@ internal fun AppNavHost() {
     val scope            = rememberCoroutineScope()
 
     fun hideFailedSheet() {
+        CheckoutDetailsHandler.setSessionFailed()
         scope.launch {
-            CheckoutDetailsHandler.setSessionFailed()
             failedSheetState.hide()
         }
     }
 
     fun hidePaymentMaxRetrySheet() {
+        CheckoutDetailsHandler.setIsPaymentMaxAttemptsReached()
         scope.launch {
-            CheckoutDetailsHandler.setIsPaymentMaxAttemptsReached()
             paymentMaxAttemptSheetState.hide()
         }
     }
 
     fun hideAutoRetrySheet() {
+        CheckoutDetailsHandler.hideAutoRetryDropDown()
         scope.launch {
-            CheckoutDetailsHandler.hideAutoRetryDropDown()
             autoRetrySheetState.hide()
         }
     }
@@ -596,11 +596,21 @@ internal fun AppNavHost() {
                             navController.popBackStack(Routes.MainScreen.route, inclusive = false)
                         }
                     }
-                    "card" -> navController.navigate("${Routes.CardScreen.route}/false")
-                    "wallet" -> navController.navigate("${Routes.WalletScreen.route}/false")
-                    "netbanking" -> navController.navigate("${Routes.NetBankingScreen.route}/false")
-                    "buynowpaylater" -> navController.navigate("${Routes.BNPLScreen.route}/false")
-                    "emi" -> navController.navigate("${Routes.EMIScreen.route}/false")
+                    "card" -> navController.navigate("${Routes.CardScreen.route}/false") {
+                        popUpTo(Routes.MainScreen.route) { inclusive = false }
+                    }
+                    "wallet" -> navController.navigate("${Routes.WalletScreen.route}/false") {
+                        popUpTo(Routes.MainScreen.route) { inclusive = false }
+                    }
+                    "netbanking" -> navController.navigate("${Routes.NetBankingScreen.route}/false") {
+                        popUpTo(Routes.MainScreen.route) { inclusive = false }
+                    }
+                    "buynowpaylater" -> navController.navigate("${Routes.BNPLScreen.route}/false") {
+                        popUpTo(Routes.MainScreen.route) { inclusive = false }
+                    }
+                    "emi" -> navController.navigate("${Routes.EMIScreen.route}/false") {
+                        popUpTo(Routes.MainScreen.route) { inclusive = false }
+                    }
                     else -> hidePaymentMaxRetrySheet()
                 }
             },
@@ -614,8 +624,8 @@ internal fun AppNavHost() {
         CheckoutLimitReached(
             sheetState = checkoutMaxAttemptSheetState,
             onExitCheckout = {
+                CheckoutDetailsHandler.setIsCheckoutMaxAttemptsReached()
                 scope.launch {
-                    CheckoutDetailsHandler.setIsCheckoutMaxAttemptsReached()
                     checkoutMaxAttemptSheetState.hide()
                 }
                 callSDKPaymentResponse()

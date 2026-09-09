@@ -15,6 +15,7 @@ import com.crossplatform.sdk.data.model.FetchSurchargeResponse
 import com.crossplatform.sdk.data.model.InstantOfferResponse
 import com.crossplatform.sdk.data.model.MethodInstrumentDetails
 import com.crossplatform.sdk.data.model.MethodsPostRequest
+import com.crossplatform.sdk.data.model.NativeOtpResponse
 import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
@@ -25,6 +26,7 @@ import com.crossplatform.sdk.data.model.requestBody.ApplyOfferRequestBody
 import com.crossplatform.sdk.data.model.requestBody.CardPostRequestBody
 import com.crossplatform.sdk.data.model.requestBody.EmiPostRequestBody
 import com.crossplatform.sdk.data.model.requestBody.InstantOfferRequestBody
+import com.crossplatform.sdk.data.model.requestBody.NativeOtpRequestBody
 import com.crossplatform.sdk.data.model.requestBody.SavedCardPostRequestBody
 import com.crossplatform.sdk.data.model.requestBody.SurchargeRequestBody
 import com.crossplatform.sdk.data.model.requestBody.UPICollectRequestBody
@@ -401,6 +403,30 @@ internal class ApiServiceImpl : ApiService {
     ): ApiResponse<PaymentMethodPostResponse> {
         return executeWithResponse{
             client.post(urlString = "transactions/${transactionId}/clones") {
+                contentType(ContentType.Application.Json)
+            }
+        }
+    }
+
+    override suspend fun submitNativeOtp(otp: String, transactionId : String, isTestEnv : Boolean): ApiResponse<NativeOtpResponse> {
+        val requestBody = NativeOtpRequestBody(
+            otpValue = otp
+        )
+        return executeWithResponse {
+            plainClient.post(
+                urlString = "${getEndpoint(isTestEnv)}/transactions/${transactionId}/native-otps/submit"
+            ) {
+                contentType(ContentType.Application.Json)
+                setBody(requestBody)
+            }
+        }
+    }
+
+    override suspend fun resendOtp(transactionId : String,isTestEnv : Boolean): ApiResponse<NativeOtpResponse> {
+        return executeWithResponse {
+            plainClient.post(
+                urlString = "${getEndpoint(isTestEnv)}/transactions/${transactionId}/native-otps/resend"
+            ) {
                 contentType(ContentType.Application.Json)
             }
         }

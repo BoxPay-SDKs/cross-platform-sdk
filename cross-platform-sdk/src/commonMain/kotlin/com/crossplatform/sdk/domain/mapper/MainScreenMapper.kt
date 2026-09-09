@@ -96,7 +96,8 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
                         merchantName = data?.merchantName,
                         gateway = data?.gateway,
                         siteReference = data?.siteReference,
-                        allowedPaymentMethods = data?.allowedPaymentMethods
+                        allowedPaymentMethods = data?.allowedPaymentMethods,
+                        countryCode = paymentDetails.context.countryCode
                     )
                     methodFlags.copy(isGooglePayVisible = true)
                 }

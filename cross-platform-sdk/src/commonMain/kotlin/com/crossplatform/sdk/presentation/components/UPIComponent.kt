@@ -258,21 +258,23 @@ internal fun UPIComponent(
                 }
             }
 
+            Spacer(Modifier.padding(vertical = 6.dp))
             // --- UPI Intent ---
             if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) {
-                Spacer(Modifier.padding(vertical = 6.dp))
-                UpiExpandableHeader(
-                    icon        = Res.drawable.other_intent_icon, // swap for whatever icon you want here
-                    label       = "Pay via UPI Apps",
-                    isExpanded  = expandedUpiSection == UpiSection.INTENT,
-                    buttonColor = buttonColor,
-                    onClick     = {
-                        expandedUpiSection = if (expandedUpiSection == UpiSection.INTENT) UpiSection.NONE else UpiSection.INTENT
-                        upiCollectError   = false
-                        selectedIntent    = ""
-                        onClickRadio("")
-                    }
-                )
+                if(installed.value.isNotEmpty()) {
+                    UpiExpandableHeader(
+                        icon        = Res.drawable.other_intent_icon, // swap for whatever icon you want here
+                        label       = "Pay via UPI Apps",
+                        isExpanded  = expandedUpiSection == UpiSection.INTENT,
+                        buttonColor = buttonColor,
+                        onClick     = {
+                            expandedUpiSection = if (expandedUpiSection == UpiSection.INTENT) UpiSection.NONE else UpiSection.INTENT
+                            upiCollectError   = false
+                            selectedIntent    = ""
+                            onClickRadio("")
+                        }
+                    )
+                }
 
                 if (expandedUpiSection == UpiSection.INTENT) {
                     Row(
@@ -451,7 +453,7 @@ internal fun UPIComponent(
 
             // --- UPI Collect ---
             if (methodFlags.isUPICollectVisible || methodFlags.isUPIOtmCollectVisible) {
-                val showDivider = (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) && (installed.value.isNotEmpty() || !getDeviceDetails().browser.equals("ios", true))
+                val showDivider = (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) && (installed.value.isNotEmpty())
                 if (showDivider) {
                     HorizontalDivider(
                         color    = Color(0xFFE6E6E6),

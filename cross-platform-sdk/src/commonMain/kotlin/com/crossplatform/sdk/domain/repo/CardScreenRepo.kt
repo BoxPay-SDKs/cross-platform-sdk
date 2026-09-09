@@ -2,6 +2,7 @@ package com.crossplatform.sdk.domain.repo
 
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.model.FetchCardDetails
+import com.crossplatform.sdk.data.model.NativeOtpResponse
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 
 internal interface CardScreenRepo {
@@ -18,4 +19,8 @@ internal interface CardScreenRepo {
         isSICheckboxClicked: Boolean?,
         surcharges : List<String>?
     ) : ApiResponse<PaymentMethodPostResponse>
+
+    suspend fun submitOtp(otp : String, transactionId : String,isTestEnv : Boolean) : ApiResponse<NativeOtpResponse>
+
+    suspend fun resendOtp(transactionId: String,isTestEnv : Boolean) : ApiResponse<NativeOtpResponse>
 }

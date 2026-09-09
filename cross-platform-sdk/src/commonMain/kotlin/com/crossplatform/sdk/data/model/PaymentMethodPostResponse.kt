@@ -27,7 +27,9 @@ internal data class PaymentActions(
     @SerialName("htmlPageString") val htmlPageString: String? = null,
     @SerialName("content") val content: String? = null,
     @SerialName("token") val token : String? = null,
-    @SerialName("expirySec") val expirySec : Int? = null
+    @SerialName("expirySec") val expirySec : Int? = null,
+    @SerialName("minLength") val minLength : Int? = null,
+    @SerialName("maxLength") val maxLength: Int? = null
 )
 
 @Serializable

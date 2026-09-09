@@ -25,6 +25,7 @@ import com.crossplatform.sdk.presentation.sharedContext.handlePaymentResponse
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_amex
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_diners
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_maestro
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_masterCard
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_rupay
@@ -66,6 +67,7 @@ internal class EMIScreenViewModel(
     val discount = mutableStateOf<String?>(null)
     val netAmount = mutableStateOf<String?>(null)
     val selectedPercent = mutableStateOf<Double?>(null)
+    val cardSelectedSpecification = mutableStateOf("")
     val amountBeforeSurcharge = mutableStateOf(0.0)
 
 
@@ -197,7 +199,7 @@ internal class EMIScreenViewModel(
             when(val response = cardScreenRepo.getCardDetails(cardNumber)) {
                 is ApiResponse.Success<*> -> {
                     val data = response.data as FetchCardDetails
-                    updateCardIcon(isTestEnv, data.paymentMethod.brand)
+                    updateCardIcon(isTestEnv, data.paymentMethod.brand,data.paymentMethod.classification ?: "")
                     _cardDetails.value = UiState.Success(data)
                 }
                 else -> {
@@ -270,24 +272,37 @@ internal class EMIScreenViewModel(
     }
 
     // --- Update icon from API ---
-    fun updateCardIcon(isTestEnv: Boolean, brand : String) {
+    fun updateCardIcon(isTestEnv: Boolean, brand : String, classification : String) {
+        cardSelectedNetwork.value = brand
+        cardSelectedSpecification.value = classification
         if(appliedSurcharge.value.isEmpty()) {
             amountBeforeSurcharge.value = CheckoutDetailsHandler.amountFlow.value
             val surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
             appliedSurcharge.value = surchargeList.filter { item ->
-                (item.network.contains(brand, true) || item.network.isBlank()) && item.applicableOn.equals("card", true)
+                val applicable = item.applicableOn.lowercase().trim()
+
+                val methodMatches = applicable.isNotEmpty() &&
+                        applicable == "card"
+
+                val networkMatches = item.network.isBlank() ||
+                        item.network.replace(" ", "").equals(brand.replace(" ", ""), true)
+
+                val classificationMatches = item.classification.isBlank() ||
+                        item.classification.replace(" ", "").equals(classification.replace(" ", ""), true)
+
+                methodMatches && networkMatches && classificationMatches
             }
             val amountAfterSurcharge = appliedSurcharge.value.sumOf { it.amount } + amountBeforeSurcharge.value
 
             CheckoutDetailsHandler.setAmount(amountAfterSurcharge)
         }
-        cardSelectedNetwork.value = brand
         when (brand) {
             "VISA"            -> { cardSelectedIcon.value = Res.drawable.ic_visa;       maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             "Mastercard"      -> { cardSelectedIcon.value = Res.drawable.ic_masterCard; maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             "RUPAY"           -> { cardSelectedIcon.value = Res.drawable.ic_rupay;      maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             "AmericanExpress" -> { cardSelectedIcon.value = Res.drawable.ic_amex;       maxCvvLength.value = 4; maxCardNumberLength.value = if (isTestEnv) 19 else 18 }
             "Maestro"         -> { cardSelectedIcon.value = Res.drawable.ic_maestro;    maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
+            "Diners"         -> { cardSelectedIcon.value = Res.drawable.ic_diners;    maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             else              -> { cardSelectedIcon.value = Res.drawable.ic_card;       maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
         }
     }
@@ -439,15 +454,23 @@ internal class EMIScreenViewModel(
 
     fun resolveSurchargeList(
         selectedMethod: String,
-        selectedNetwork: String = ""
+        selectedNetwork: String = "",
+        selectedClassification: String = ""
     ): List<String>? {
         val surcharges = CheckoutDetailsHandler.surchargeDetailsFlow.value
         val filtered = surcharges.filter { item ->
             val applicable = item.applicableOn.lowercase().trim()
-            applicable.isNotEmpty() &&
-                    applicable == selectedMethod.lowercase().trim() &&
-                    (item.network.isBlank() ||
-                            item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true))
+
+            val methodMatches = applicable.isNotEmpty() &&
+                    applicable == selectedMethod.lowercase().trim()
+
+            val networkMatches = item.network.isBlank() ||
+                    item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true)
+
+            val classificationMatches = item.classification.isBlank() ||
+                    item.classification.replace(" ", "").equals(selectedClassification.replace(" ", ""), true)
+
+            (applicable.isBlank() || methodMatches) && networkMatches && classificationMatches
         }
         return filtered.map { it.surchargeCode }.ifEmpty { null }
     }

@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation
 
+import com.google.pay.button.PayButton
 import android.content.ContentValues
 import android.content.Context
 import android.content.ContextWrapper
@@ -15,20 +16,24 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.crossplatform.sdk.data.model.DeviceDetails
 import java.util.TimeZone
 import androidx.core.net.toUri
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.crossplatform.sdk.data.model.AllowedPaymentMethods
 import com.crossplatform.sdk.data.model.GooglePayExpressCheckoutResponse
 import com.crossplatform.sdk.domain.handler.ApplePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
@@ -46,10 +51,13 @@ import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.Wallet
+import com.google.android.gms.wallet.WalletConstants
 import com.google.android.gms.wallet.contract.TaskResultContracts
+import com.google.pay.button.ButtonType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONObject
@@ -221,14 +229,14 @@ internal actual fun base64ToImageBitmap(base64: String): ImageBitmap {
 
 // androidMain
 @Composable
-internal actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler {
+internal actual fun rememberExpressCheckoutPaymentHandler(isTestEnv : Boolean): ExpressCheckoutPaymentHandler {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
 
     val client =  Wallet.getPaymentsClient(
         context,
         Wallet.WalletOptions.Builder()
-            .setEnvironment(3)
+            .setEnvironment(if(isTestEnv) WalletConstants.ENVIRONMENT_TEST else WalletConstants.ENVIRONMENT_PRODUCTION)
             .build()
     )
 
@@ -309,7 +317,7 @@ internal class AndroidPaymentHandler(
             )
 
             client.isReadyToPay(request).await()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
@@ -415,7 +423,7 @@ private fun buildGooglePayRequestJson(request: ExpressCheckoutPaymentRequest, co
     )
 
     val transactionInfo = JSONObject()
-        .put("totalPrice", request.amount)
+        .put("totalPrice", request.amount.toString())
         .put("totalPriceStatus", "FINAL")
         .put("currencyCode", request.currencyCode)
         .put("countryCode", request.countryCode)
@@ -486,4 +494,26 @@ internal actual class QrImageSaver(private val context: Context) {
 internal actual fun rememberQrImageSaver(): QrImageSaver {
     val context = LocalContext.current
     return remember { QrImageSaver(context) }
+}
+
+@Composable
+internal actual fun GooglePayButton(
+    onClick: () -> Unit,
+    modifier: Modifier,
+    config : GooglePayExpressCheckoutConfig
+) {
+    val allowedPaymentMethodsJson = remember(config.allowedPaymentMethods) {
+        Json.encodeToString(
+            ListSerializer(AllowedPaymentMethods.serializer()),
+            config.allowedPaymentMethods
+        )
+    }
+
+    PayButton(
+        onClick = onClick,
+        allowedPaymentMethods = allowedPaymentMethodsJson,
+        radius = 8.dp,
+        modifier = modifier.height(50.dp),
+        type = ButtonType.Plain
+    )
 }

@@ -2,6 +2,7 @@ package com.crossplatform.sdk.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import com.crossplatform.sdk.data.model.BrowserData
 import com.crossplatform.sdk.data.model.DeviceDetails
 import com.crossplatform.sdk.domain.model.AppLifecycleState
@@ -238,7 +239,7 @@ internal actual fun base64ToImageBitmap(base64: String): ImageBitmap {
 
 // iosMain
 @Composable
-internal actual fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler {
+internal actual fun rememberExpressCheckoutPaymentHandler(isTestEnv : Boolean): ExpressCheckoutPaymentHandler {
     return IosPaymentHandler()
 }
 
@@ -267,7 +268,7 @@ internal class IosPaymentHandler() : ExpressCheckoutPaymentHandler {
             paymentSummaryItems = listOf(
                 PKPaymentSummaryItem.summaryItemWithLabel(
                     label = config.merchantName,
-                    amount = NSDecimalNumber(string = request.amount)
+                    amount = NSDecimalNumber(string = request.amount.toString())
                 )
             )
         }
@@ -372,3 +373,12 @@ internal actual class QrImageSaver {
 
 @Composable
 internal actual fun rememberQrImageSaver(): QrImageSaver = remember { QrImageSaver() }
+
+@Composable
+internal actual fun GooglePayButton(
+    onClick: () -> Unit,
+    modifier: Modifier,
+    config: GooglePayExpressCheckoutConfig
+) {
+    // no operation in iOS
+}

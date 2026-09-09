@@ -13,7 +13,7 @@ internal fun FetchSurchargeResponse.toUiModel() : List<SurchargeModel> {
                 else applied.surchargeDetails?.applicableOn?.lowercase() ?: "",
             title          = applied.surchargeDetails?.title ?: "",
             surchargeCode  = applied.surchargeDetails?.surchargeCode ?: "",
-            network        = applied.surchargeDetails?.network ?: "",
+            network        = if(!expressCheckout.contains(applied.surchargeDetails?.network?.lowercase())) applied.surchargeDetails?.network ?: "" else "",
             classification = applied.surchargeDetails?.classification ?: "",
             amount         = applied.calculatedSurchargeFee ?: 0.0,
             description = applied.surchargeDetails?.description?.stripHtmlTags() ?: ""

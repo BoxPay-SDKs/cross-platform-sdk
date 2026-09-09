@@ -3,6 +3,7 @@ package com.crossplatform.sdk.data.repo
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.implementation.ApiServiceImpl
 import com.crossplatform.sdk.data.model.FetchCardDetails
+import com.crossplatform.sdk.data.model.NativeOtpResponse
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 import com.crossplatform.sdk.data.service.ApiService
 import com.crossplatform.sdk.domain.repo.CardScreenRepo
@@ -42,5 +43,17 @@ internal class CardScreenRepoImpl(
             isSICheckboxClicked = isSICheckboxClicked,
             surcharges = surcharges
         )
+    }
+
+    override suspend fun submitOtp(
+        otp: String,
+        transactionId: String,
+        isTestEnv : Boolean
+    ): ApiResponse<NativeOtpResponse> = withContext(ioDispatcher) {
+        apiService.submitNativeOtp(otp, transactionId,isTestEnv)
+    }
+
+    override suspend fun resendOtp(transactionId: String, isTestEnv : Boolean): ApiResponse<NativeOtpResponse> = withContext(ioDispatcher) {
+        apiService.resendOtp( transactionId,isTestEnv)
     }
 }

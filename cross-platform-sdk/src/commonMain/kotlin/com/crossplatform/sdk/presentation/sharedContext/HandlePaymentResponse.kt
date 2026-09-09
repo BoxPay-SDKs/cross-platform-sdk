@@ -14,6 +14,7 @@ private const val CHECKOUT_MAX_ATTEMPTS_REACHED = "BE_1816"
 internal fun handlePaymentResponse(
     response: ApiResponse<PaymentMethodPostResponse>,
     onRevolutPay: ((String, String) -> Unit)? = null,
+    onSetNativeOtp : ((Int, Int, String, String) -> Unit)? = null,
     onSetPaymentUrl: ((String) -> Unit)? = null,
     onSetPaymentHtml: ((String) -> Unit)? = null,
     onNavigateToTimer: (() -> Unit)? = null,
@@ -36,23 +37,31 @@ internal fun handlePaymentResponse(
             when (status) {
                 TransactionStatusEnum.REQUIRESACTION -> {
                     val action = apiData.actions?.firstOrNull()
+                    val secondAction = apiData.actions?.getOrNull(1)
 
                     if(action != null) {
-                        if(action.type == "html") {
+                        if(action.type == "html" && secondAction == null) {
                             onSetPaymentHtml?.invoke(action.htmlPageString ?: "")
                         }
-                        else if (action.type == "redirect") {
+                        else if (action.type == "redirect"  && secondAction == null) {
                             onSetPaymentUrl?.invoke(action.url ?: "")
                         }
-                        else if (action.type == "appRedirect") {
+                        else if (action.type == "appRedirect"  && secondAction == null) {
                             onOpenUpiIntent?.invoke(action.url ?: "")
                         }
-                        else if (action.type == "qrCode") {
+                        else if (action.type == "qrCode" && secondAction == null) {
                             onOpenQr?.invoke(action.content ?: "", action.expirySec ?: 0)
                         }
                         else if (action.type == "info") {
-                            val secondAction = apiData.actions.getOrNull(1)
                             onRevolutPay?.invoke(action.token ?: "", secondAction?.url ?: "")
+                        }
+                        else if (secondAction?.type == "nativeOtp") {
+                            onSetNativeOtp?.invoke(
+                                secondAction.minLength ?: 6,
+                                secondAction.maxLength ?: 6,
+                                action.url ?: "",
+                                action.htmlPageString ?: ""
+                            )
                         }
                         else {
                             setIsBoxPayAnimationVisible(false)

@@ -183,10 +183,14 @@ internal class WalletViewModel (
         val surcharges = CheckoutDetailsHandler.surchargeDetailsFlow.value
         val filtered = surcharges.filter { item ->
             val applicable = item.applicableOn.lowercase().trim()
-            applicable.isNotEmpty() &&
-                    applicable == selectedMethod.lowercase().trim() &&
-                    (item.network.isBlank() ||
-                            item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true))
+
+            val methodMatches = applicable.isNotEmpty() &&
+                    applicable == selectedMethod.lowercase().trim()
+
+            val networkMatches = item.network.isBlank() ||
+                    item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true)
+
+            (applicable.isBlank() || methodMatches) && networkMatches
         }
         return filtered.map { it.surchargeCode }.ifEmpty { null }
     }

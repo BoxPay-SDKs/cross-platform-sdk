@@ -1,10 +1,12 @@
 package com.crossplatform.sdk.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import com.crossplatform.sdk.data.model.BrowserData
 import com.crossplatform.sdk.data.model.DeviceDetails
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
+import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.model.AppLifecycleState
 
 internal expect fun getBrowserData(): BrowserData
@@ -37,7 +39,7 @@ internal expect fun base64ToImageBitmap(base64: String): ImageBitmap
 
 // commonMain
 @Composable
-internal expect fun rememberExpressCheckoutPaymentHandler(): ExpressCheckoutPaymentHandler
+internal expect fun rememberExpressCheckoutPaymentHandler(isTestEnv : Boolean): ExpressCheckoutPaymentHandler
 
 internal expect fun formatAmount(amount: Double, minDecimals: Int = 0, maxDecimals: Int = 2): String
 
@@ -48,3 +50,10 @@ internal expect class QrImageSaver {
 
 @Composable
 internal expect fun rememberQrImageSaver(): QrImageSaver
+
+@Composable
+internal expect fun GooglePayButton(
+    onClick: () -> Unit,
+    modifier: Modifier,
+    config: GooglePayExpressCheckoutConfig
+)
