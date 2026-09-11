@@ -54,8 +54,12 @@ internal actual fun WebViewScreen(
     // WKWebView held in a remember so it survives recompositions
     val wkWebView = remember {
         WKWebView().apply {
-            // javaScriptEnabled is true by default in WKWebView
-            // domStorage is always enabled in WKWebView — no flag needed
+            // Equivalent of Android's explicit MATCH_PARENT LayoutParams —
+            // makes WKWebView track its superview's bounds instead of
+            // sitting at its zero-size default frame.
+            translatesAutoresizingMaskIntoConstraints = true
+            autoresizingMask = platform.UIKit.UIViewAutoresizingFlexibleWidth or
+                    platform.UIKit.UIViewAutoresizingFlexibleHeight
         }
     }
 
@@ -132,8 +136,7 @@ internal actual fun WebViewScreen(
                         )
                     }
                     wkWebView
-                },
-                update = { /* WKWebView is imperative — no update needed */ }
+                }
             )
 
             // Now centered over the WebView instead of the whole screen.

@@ -8,6 +8,7 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -70,14 +71,20 @@ internal actual fun WebViewScreen(
         // and centered, instead of being laid out below it.
         Box(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .weight(1f),
             contentAlignment = Alignment.Center
         ) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { context ->
-                    val webView = WebView(context)
+                    val webView = WebView(context).apply {
+                        // CRITICAL: Explicitly set LayoutParams so WebView occupies space
+                        layoutParams = android.view.ViewGroup.LayoutParams(
+                            android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                            android.view.ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+                    }
                     webView.settings.apply {
                         javaScriptEnabled = true
                         domStorageEnabled = true
@@ -121,9 +128,6 @@ internal actual fun WebViewScreen(
                         }
                     }
                     webView
-                },
-                update = { webView ->
-                    webView.requestLayout()   // ensures WebView re-measures against final container size
                 }
             )
 
