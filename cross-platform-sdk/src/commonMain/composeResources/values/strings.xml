@@ -1,0 +1,20 @@
+<!-- values/strings.xml -->
+<resources>
+    <string name="payment_details">Payment details</string>
+    <string name="address_title">Address</string>
+    <string name="deliver_at_title">Deliver at </string>
+    <string name="personal_details_title">Personal Details</string>
+    <string name="search_title">Search</string>
+    <string name="no_result_found_title">Oops!! No results found</string>
+    <string name="no_result_found_desc">Please try another search</string>
+    <string name="duration_months_x">%1$s months x</string>
+    <string name="percent_title">@%1$s% p.a.</string>
+    <string name="card_number_title">Card Number*</string>
+    <string name="expiry_title">Expiry (MM/YY)*</string>
+    <string name="cvv_title">CVV*</string>
+    <string name="card_holder_name_title">Cardholder Name*</string>
+    <string name="card_nick_name_title">Card NickName (for easy identification)</string>
+    <string name="cvv_not_be_stored_info">CVV will not be stored</string>
+    <string name="save_this_card_info">Save this card as per RBI guidelines.</string>
+    <string name="know_more_cta">Know more</string>
+</resources>

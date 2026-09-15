@@ -54,13 +54,24 @@ import com.crossplatform.sdk.presentation.screens.SubscriptionRow
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.card_holder_name_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.card_nick_name_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.card_number_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.cvv_not_be_stored_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.cvv_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.duration_months_x
+import crossplatformsdk.cross_platform_sdk.generated.resources.expiry_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_cvv_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
+import crossplatformsdk.cross_platform_sdk.generated.resources.know_more_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.percent_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.save_this_card_info
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CardComponent(
@@ -167,7 +178,7 @@ internal fun CardComponent(
                         text = buildAnnotatedString {
                             append(
                                 AnnotatedString(
-                                    text = "$duration months x",
+                                    text = stringResource(Res.string.duration_months_x, duration ?: ""),
                                     spanStyle = SpanStyle(
                                         fontFamily = LocalSDKFonts.current.primary
                                     )
@@ -192,7 +203,7 @@ internal fun CardComponent(
                         color      = Color(0xFF2D2B32)
                     )
                     Text(
-                        text       = "@$percent% p.a.",
+                        text       = stringResource(Res.string.percent_title, percent ?: ""),
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
                         fontSize   = 12.sp,
@@ -205,7 +216,7 @@ internal fun CardComponent(
         // --- Card Number ---
         CardTextField(
             value         = cardNumberText,
-            label         = "Card Number*",
+            label         = stringResource(Res.string.card_number_title),
             onValueChange = { handleCardNumberChange(it) },
             isError       = cardNumberError,
             keyboardType  = KeyboardType.Number,
@@ -236,7 +247,7 @@ internal fun CardComponent(
             Column(modifier = Modifier.weight(1f)) {
                 CardTextField(
                     value         = cardExpiryText,
-                    label         = "Expiry (MM/YY)*",
+                    label         = stringResource(Res.string.expiry_title),
                     onValueChange = {
                         handleExpiryChange(it)
                     },
@@ -257,7 +268,7 @@ internal fun CardComponent(
             Column(modifier = Modifier.weight(1f)) {
                 CardTextField(
                     value         = cardCvvText,
-                    label         = "CVV*",
+                    label         = stringResource(Res.string.cvv_title),
                     onValueChange =
                         {
                             handleCvvChange(it)
@@ -291,7 +302,7 @@ internal fun CardComponent(
         // --- Cardholder Name ---
         CardTextField(
             value         = cardHolderNameText,
-            label         = "Cardholder Name*",
+            label         = stringResource(Res.string.card_holder_name_title),
             onValueChange = {
                 handleCardHolderNameChange(it)
             },
@@ -310,7 +321,7 @@ internal fun CardComponent(
         if (!shopperToken.isNullOrEmpty()) {
             CardTextField(
                 value         = cardNickNameText,
-                label         = "Card NickName (for easy identification)",
+                label         = stringResource(Res.string.card_nick_name_title),
                 onValueChange = {  },
                 modifier      = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
                 focusedTextInputBorderColor = focusedTextInputBorderColor,
@@ -334,7 +345,7 @@ internal fun CardComponent(
                     colorFilter        = ColorFilter.tint(Color(0xFF2D2B32))
                 )
                 Text(
-                    text       = "CVV will not be stored",
+                    text       = stringResource(Res.string.cvv_not_be_stored_info),
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize   = 12.sp,
@@ -356,7 +367,7 @@ internal fun CardComponent(
                     onClick     = { onClickSavedCardCheckBox() }
                 )
                 Text(
-                    text       = "Save this card as per RBI guidelines.",
+                    text       = stringResource(Res.string.save_this_card_info),
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize   = 14.sp,
@@ -364,7 +375,7 @@ internal fun CardComponent(
                     modifier   = Modifier.padding(start = 6.dp)
                 )
                 Text(
-                    text       = "Know more",
+                    text       = stringResource(Res.string.know_more_cta),
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize   = 12.sp,

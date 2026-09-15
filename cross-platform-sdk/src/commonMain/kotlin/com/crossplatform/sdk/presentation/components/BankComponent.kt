@@ -31,7 +31,11 @@ import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_search
+import crossplatformsdk.cross_platform_sdk.generated.resources.no_result_found_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.no_result_found_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.search_title
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun BankComponent(
@@ -64,7 +68,7 @@ internal fun BankComponent(
                onSetSearchQuery(it)
             },
             modifier = Modifier.fillMaxWidth().background(Color.White).padding(16.dp),
-            label = { Text("Search", fontFamily = LocalSDKFonts.current.primary) },
+            label = { Text(stringResource(Res.string.search_title), fontFamily = LocalSDKFonts.current.primary) },
             singleLine = true,
             leadingIcon = {
                 Image(
@@ -93,8 +97,8 @@ internal fun BankComponent(
         SectionTitle(title)
         if(list.isEmpty()) {
             EmptyListView(
-                heading = "Oops!! No results found",
-                subHeading = "Please try another search"
+                heading = stringResource(Res.string.no_result_found_title),
+                subHeading = stringResource(Res.string.no_result_found_desc)
             )
             Spacer(Modifier.then(
                 if(isBoxPayPayButtonVisible) Modifier.height(10.dp)

@@ -1,0 +1,4 @@
+<!-- values-es/strings.xml -->
+<resources>
+    <string name="payment_details">Payment details</string>
+</resources>
