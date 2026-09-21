@@ -26,10 +26,14 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.go_back_to_home_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.payment_expired_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.payment_expired_header
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +73,7 @@ internal fun SessionExpire(
 
             // Title
             Text(
-                text       = "Payment session has expired.",
+                text       = stringResource(Res.string.payment_expired_header),
                 fontSize   = 22.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
@@ -79,7 +83,7 @@ internal fun SessionExpire(
 
             // Description
             Text(
-                text       = "For your security, your session has expired due to inactivity. Please restart the payment process.",
+                text       = stringResource(Res.string.payment_expired_desc),
                 fontSize   = 14.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
@@ -91,7 +95,7 @@ internal fun SessionExpire(
 
             // Button
             PayButton(
-                text = "Go Back to Home",
+                text = stringResource(Res.string.go_back_to_home_cta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp)

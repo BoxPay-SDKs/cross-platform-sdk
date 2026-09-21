@@ -47,9 +47,19 @@ import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.UpiTimerViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.avoid_back_button_in_upi_timer_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.cancel_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.cancel_payment_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.cancel_payment_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.complete_your_payment_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.expires_in_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi
+import crossplatformsdk.cross_platform_sdk.generated.resources.no_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.upi_timer_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.yes_cta
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -79,7 +89,7 @@ internal fun UpiTimerScreen(
         Spacer(Modifier.height(24.dp))
 
         Text(
-            text = "Complete your payment",
+            text = stringResource(Res.string.complete_your_payment_title),
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color(0xFF1A1A1A),
@@ -89,7 +99,7 @@ internal fun UpiTimerScreen(
         Spacer(Modifier.height(8.dp))
 
         Text(
-            text = "Open your UPI application and confirm the payment before the time expires",
+            text = stringResource(Res.string.upi_timer_info),
             fontSize = 14.sp,
             color = Color(0xFF666666),
             textAlign = TextAlign.Center,
@@ -123,7 +133,7 @@ internal fun UpiTimerScreen(
 
 
         Text(
-            text = "Expires in",
+            text = stringResource(Res.string.expires_in_info),
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             color = Color(0xFF444444),
@@ -159,7 +169,7 @@ internal fun UpiTimerScreen(
             )
             Spacer(Modifier.width(8.dp))
             Text(
-                text = "Kindly avoid using the back button until the transaction process is complete",
+                text = stringResource(Res.string.avoid_back_button_in_upi_timer_info),
                 fontSize = 12.sp,
                 color = Color(0xFF555555),
                 fontFamily = LocalSDKFonts.current.primary,
@@ -170,7 +180,7 @@ internal fun UpiTimerScreen(
         Spacer(Modifier.weight(1f))
 
         PayButton(
-            text = "Cancel Payment",
+            text = stringResource(Res.string.cancel_cta),
             modifier = Modifier
                 .fillMaxWidth()
                 .background(buttonColor.toComposeColor(), RoundedCornerShape(12.dp))
@@ -200,13 +210,13 @@ internal fun UpiTimerScreen(
 internal fun CancelPaymentModal(onNoClick: () -> Unit, onYesClick: () -> Unit) {
     AlertDialog(
         onDismissRequest = onNoClick,
-        title = { Text("Cancel Payment?", fontFamily = LocalSDKFonts.current.primary) },
-        text  = { Text("Are you sure you want to cancel this payment?", fontFamily = LocalSDKFonts.current.primary) },
+        title = { Text(stringResource(Res.string.cancel_payment_title), fontFamily = LocalSDKFonts.current.primary) },
+        text  = { Text(stringResource(Res.string.cancel_payment_desc), fontFamily = LocalSDKFonts.current.primary) },
         confirmButton = {
-            TextButton(onClick = onYesClick) { Text("Yes", fontFamily = LocalSDKFonts.current.primary) }
+            TextButton(onClick = onYesClick) { Text(stringResource(Res.string.yes_cta), fontFamily = LocalSDKFonts.current.primary) }
         },
         dismissButton = {
-            TextButton(onClick = onNoClick)  { Text("No", fontFamily = LocalSDKFonts.current.primary) }
+            TextButton(onClick = onNoClick)  { Text(stringResource(Res.string.no_cta), fontFamily = LocalSDKFonts.current.primary) }
         }
     )
 }

@@ -35,10 +35,14 @@ import com.crossplatform.sdk.presentation.formatTransactionTimestamp
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.go_back_to_home_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.payment_successful_header
+import crossplatformsdk.cross_platform_sdk.generated.resources.total_info
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -101,7 +105,7 @@ internal fun PaymentSuccessful(
 
             // Title
             Text(
-                text       = "Payment Successful",
+                text       = stringResource(Res.string.payment_successful_header),
                 fontSize   = 22.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
@@ -138,7 +142,7 @@ internal fun PaymentSuccessful(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Total Amount",
+                    text = stringResource(Res.string.total_info),
                     fontSize = 14.sp,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
@@ -170,7 +174,7 @@ internal fun PaymentSuccessful(
 
             // Button
             PayButton(
-                text = "Go Back to Home",
+                text = stringResource(Res.string.go_back_to_home_cta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp)

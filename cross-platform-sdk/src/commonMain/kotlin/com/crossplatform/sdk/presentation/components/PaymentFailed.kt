@@ -28,10 +28,13 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.payment_failed_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.retry_payment_cta
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -81,7 +84,7 @@ internal fun PaymentFailed(
 
             // Title
             Text(
-                text       = "Payment Failed",
+                text       = stringResource(Res.string.payment_failed_title),
                 fontSize   = 22.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
@@ -103,7 +106,7 @@ internal fun PaymentFailed(
 
             // Button
             PayButton(
-                text = "Retry Payment",
+                text = stringResource(Res.string.retry_payment_cta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp)

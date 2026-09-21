@@ -16,11 +16,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.loading_info
 import io.github.alexzhirkevich.compottie.Compottie
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -45,7 +47,7 @@ internal fun ShowLoadingComponent(modifier: Modifier) {
             modifier = Modifier.size(96.dp)
         )
         Text(
-            text       = "Loading...",
+            text       = stringResource(Res.string.loading_info),
             fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Normal,
             fontSize   = 14.sp

@@ -8,7 +8,7 @@ internal data class SessionDetails(
     @SerialName("configs") val configs: Configs,
     @SerialName("paymentDetails") val paymentDetails: PaymentDetails,
     @SerialName("merchantDetails") val merchantDetails: MerchantDetails,
-    @SerialName("sessionExpiryTimestamp") val sessionExpiryTimestamp: String,
+    @SerialName("sessionExpiryTimestamp") val sessionExpiryTimestamp: String? = null,
     @SerialName("status") val status: String,
     @SerialName("lastPaidAtTimestamp") val lastPaidAtTimestamp: String?,
     @SerialName("lastTransactionId") val lastTransactionId: String?,
@@ -126,7 +126,7 @@ internal data class MerchantDetails(
     @SerialName("merchantName") val merchantName : String?,
     @SerialName("logoUrl") val merchantLogo : String?,
     @SerialName("checkoutTheme") val checkoutTheme: CheckoutTheme,
-    @SerialName("customFields") val customFields : List<CustomFields>
+    @SerialName("customFields") val customFields : List<CustomFields>? = null
 )
 
 @Serializable

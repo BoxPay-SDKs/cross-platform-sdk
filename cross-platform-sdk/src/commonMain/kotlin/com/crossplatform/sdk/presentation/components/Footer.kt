@@ -24,8 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.secured_by_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.splash_icon
+import crossplatformsdk.cross_platform_sdk.generated.resources.terms_and_conditions_cta
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun Footer() {
@@ -38,7 +41,7 @@ internal fun Footer() {
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text       = "Secured by",
+            text       = stringResource(Res.string.secured_by_info),
             fontSize   = 12.sp,
             fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Medium,
@@ -58,7 +61,7 @@ internal fun Footer() {
             color      = Color(0xFF888888)
         )
         Text(
-            text       = "Terms & Conditions",
+            text       = stringResource(Res.string.terms_and_conditions_cta),
             fontSize   = 12.sp,
             fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Medium,

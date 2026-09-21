@@ -40,8 +40,12 @@ import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.InstantOfferViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.apply_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_search
+import crossplatformsdk.cross_platform_sdk.generated.resources.instant_offer_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.search_title
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -92,7 +96,7 @@ internal fun InstantOfferScreen(
                             codeTextField.value = it
                         },
                         modifier = Modifier.fillMaxWidth().background(Color.White).padding(16.dp),
-                        label = { Text("Search", fontFamily = LocalSDKFonts.current.primary) },
+                        label = { Text(stringResource(Res.string.search_title), fontFamily = LocalSDKFonts.current.primary) },
                         singleLine = true,
                         leadingIcon = {
                             Image(
@@ -103,7 +107,7 @@ internal fun InstantOfferScreen(
                         },
                         trailingIcon = {
                             Text(
-                                text = "APPLY",
+                                text = stringResource(Res.string.apply_cta),
                                 fontWeight = FontWeight.Bold,
                                 color = buttonColor.value.toComposeColor(),
                                 fontSize = 16.sp,
@@ -123,7 +127,7 @@ internal fun InstantOfferScreen(
                             keyboardController?.hide()
                         }),
                     )
-                    SectionTitle("Instant Offers")
+                    SectionTitle(stringResource(Res.string.instant_offer_title))
                 }
                 items(data) { item ->
                     OfferCard(

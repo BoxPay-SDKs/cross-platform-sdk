@@ -15,11 +15,17 @@ import com.crossplatform.sdk.domain.model.MainScreenModel
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.domain.model.SurchargeModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.bnpl_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.cards_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.emi_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_bnpl
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_emi
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_wallet
+import crossplatformsdk.cross_platform_sdk.generated.resources.net_banking_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.wallet_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun MorePaymentMethods(
@@ -82,7 +88,7 @@ internal fun MorePaymentMethods(
     ) {
         if(methodFlags.isCardsVisible && savedCardsList.isEmpty()) {
             MorePaymentContainer(
-                title = "Cards",
+                title = stringResource(Res.string.cards_title),
                 image = Res.drawable.ic_card,
                 onClick = onNavigateToCard,
                 surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "card" }?.amount,
@@ -91,7 +97,7 @@ internal fun MorePaymentMethods(
         }
         if(methodFlags.isWalletVisible) {
             ExpandablePaymentSection(
-                title = "Wallet",
+                title = stringResource(Res.string.wallet_title),
                 image = Res.drawable.ic_wallet,
                 onViewMore = onNavigateToWallet,
                 surchargeList = surchargeList,
@@ -122,7 +128,7 @@ internal fun MorePaymentMethods(
         }
         if(methodFlags.isNetBankingVisible) {
             ExpandablePaymentSection(
-                title = "Bank Transfers",
+                title = stringResource(Res.string.net_banking_title),
                 image = Res.drawable.ic_netbanking,
                 onViewMore = onNavigateToNetBanking,
                 surchargeList = surchargeList,
@@ -153,7 +159,7 @@ internal fun MorePaymentMethods(
         }
         if (methodFlags.isEMIVisible) {
             MorePaymentContainer(
-                title = "EMI",
+                title = stringResource(Res.string.emi_title),
                 image = Res.drawable.ic_emi,
                 onClick = onNavigateToEmi,
                 surchargeFee = surchargeList.find { it.applicableOn.lowercase() == "emi" }?.amount,
@@ -162,7 +168,7 @@ internal fun MorePaymentMethods(
         }
         if(methodFlags.isBNPLVisible){
             ExpandablePaymentSection(
-                title = "Buy Now Pay Later",
+                title = stringResource(Res.string.bnpl_title),
                 image = Res.drawable.ic_bnpl,
                 onViewMore = onNavigateToBNPL,
                 surchargeList = surchargeList,

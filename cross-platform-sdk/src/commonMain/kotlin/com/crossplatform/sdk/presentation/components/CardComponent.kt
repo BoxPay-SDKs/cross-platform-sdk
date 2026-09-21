@@ -65,8 +65,10 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_cvv_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
 import crossplatformsdk.cross_platform_sdk.generated.resources.know_more_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.percent_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.save_this_card_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.set_up_si_instructions
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.DrawableResource
@@ -408,7 +410,7 @@ internal fun CardComponent(
                     }
                 )
                 Text(
-                    text       = "Set up Standing Instructions (SI) for this payment.",
+                    text       = stringResource(Res.string.set_up_si_instructions),
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize   = 14.sp,
@@ -480,7 +482,7 @@ internal fun CardComponent(
                 currencySymbol = currencySymbol,
                 isValid = cardValid,
                 buttonTextColor = buttonTextColor,
-                text = "Pay"
+                text = stringResource(Res.string.pay_cta)
             )
         }
         Footer()

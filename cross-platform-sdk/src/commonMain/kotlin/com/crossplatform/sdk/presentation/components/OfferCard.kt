@@ -40,6 +40,13 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.apply_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.less_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.more_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.offer_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.remove_cta
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
 val DarkGrey = Color(0xFF333333)
@@ -142,7 +149,7 @@ internal fun OfferCard(
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = if (offerCode == selectedCouponCode) "REMOVE" else "APPLY",
+                        text = if (offerCode == selectedCouponCode) stringResource(Res.string.remove_cta) else stringResource(Res.string.apply_cta),
                         fontWeight = FontWeight.Bold,
                         color = if (offerCode == selectedCouponCode) Color(0xFFE84142) else selectedColor,
                         fontSize = 16.sp,
@@ -174,7 +181,7 @@ internal fun OfferCard(
 
                 Text(
                     text = if (applicable.isNotEmpty())
-                        "Applicable on all transactions made using $applicable"
+                        stringResource(Res.string.offer_info, applicable)
                     else
                         description,
                     color = MediumGrey,
@@ -185,7 +192,7 @@ internal fun OfferCard(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = if (showMore.value) "- LESS" else "+ MORE",
+                    text = if (showMore.value) stringResource(Res.string.less_cta) else stringResource(Res.string.more_cta),
                     color = MediumGrey,
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp,

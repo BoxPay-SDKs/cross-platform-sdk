@@ -48,7 +48,14 @@ import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.CardScreenViewModel
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.card_not_supported_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.invalid_card_number_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.invalid_cvv_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.invalid_expiry_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.required_error_message
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
 
@@ -81,6 +88,12 @@ internal fun CardScreen(
         skipPartiallyExpanded = true,
         confirmValueChange = { targetValue -> targetValue != SheetValue.Hidden }
     )
+
+    val requiredErrorMessage = stringResource(Res.string.required_error_message)
+    val cardNotSupportedErrorMessage = stringResource(Res.string.card_not_supported_error_message)
+    val invalidCardNumberErrorMessage = stringResource(Res.string.invalid_card_number_error_message)
+    val invalidExpiryErrorMessage = stringResource(Res.string.invalid_expiry_error_message)
+    val invalidCvvErrorMessage = stringResource(Res.string.invalid_cvv_error_message)
 
     var isSiCheckBoxChecked  by remember { mutableStateOf(isSICheckboxChecked.value) }
 
@@ -159,28 +172,28 @@ internal fun CardScreen(
             viewModel.cardNumberError.value = cleaned.isEmpty() || viewModel.cardNumberText.value.startsWith("0") ||
                     (!isTestEnv.value && (!viewModel.methodEnabled.value || !viewModel.cardNumberValid.value))
             viewModel.cardNumberErrorText.value = when {
-                cleaned.isEmpty()     -> "Required"
-                !viewModel.methodEnabled.value        -> "This card is not supported for the payment"
-                !viewModel.cardNumberValid.value   -> "Invalid card number"
-                viewModel.cardNumberText.value.startsWith("0") -> "Invalid card number"
+                cleaned.isEmpty()     -> requiredErrorMessage
+                !viewModel.methodEnabled.value        -> cardNotSupportedErrorMessage
+                !viewModel.cardNumberValid.value   -> invalidCardNumberErrorMessage
+                viewModel.cardNumberText.value.startsWith("0") -> invalidCardNumberErrorMessage
                 else                  -> ""
             }
             viewModel.checkCardValid(isTestEnv.value)
         },
         onBlurCardName = {
             viewModel.cardHolderNameError.value    = viewModel.cardHolderNameText.value.trim().isEmpty()
-            viewModel.cardHolderNameErrorText.value = if (viewModel.cardHolderNameError.value) "Required" else ""
+            viewModel.cardHolderNameErrorText.value = if (viewModel.cardHolderNameError.value) requiredErrorMessage else ""
         },
         onBlurCardExpiry = {
             viewModel.cardExpiryError.value    = viewModel.cardExpiryText.value.length < 4 || !viewModel.cardExpiryValid.value
             viewModel.cardExpiryErrorText.value = when {
-                viewModel.cardExpiryText.value.isEmpty() -> "Required"
-                else                     -> "Invalid Expiry"
+                viewModel.cardExpiryText.value.isEmpty() -> requiredErrorMessage
+                else                     -> invalidExpiryErrorMessage
             }
         },
         onBlurCardCVV = {
             viewModel.cardCvvError.value    = viewModel.cardCvvText.value.length < viewModel.maxCvvLength.value
-            viewModel.cardCvvErrorText.value = if (viewModel.cardCvvText.value.isEmpty()) "Required" else "Invalid CVV"
+            viewModel.cardCvvErrorText.value = if (viewModel.cardCvvText.value.isEmpty()) requiredErrorMessage else invalidCvvErrorMessage
         },
         cardNumberErrorText = viewModel.cardNumberErrorText.value,
         cardHolderNameErrorText = viewModel.cardHolderNameErrorText.value,
@@ -246,7 +259,6 @@ internal fun CardScreen(
                 CheckoutDetailsHandler.setSessionFailed()
             },
             onClickProceed = {
-                println("=======card screen submit otp $it")
                 viewModel.submitOtp(it, isTestEnv.value)
             },
             onClickResend = {

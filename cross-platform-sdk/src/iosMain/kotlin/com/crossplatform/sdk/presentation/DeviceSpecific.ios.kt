@@ -100,7 +100,7 @@ actual fun getInstalledUpiApps(context: Any?): List<Pair<String, String>> {
     // friendly name -> candidate schemes; any hit means installed
     val knownUpiSchemes: Map<String, List<String>> = mapOf(
         "gpay"       to listOf("tez://", "gpay://"),
-        "phonepe"    to listOf("phonepe://"),
+        "phonepe"    to listOf("phonepe://", "ppe://"),
         "paytm"      to listOf("paytmmp://", "paytm://"),
         "bhim"       to listOf("bhim://"),
         "amazon_pay" to listOf("amazonpay://"),

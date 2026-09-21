@@ -71,10 +71,7 @@ private fun isDeliveryAddressEmpty(address: DeliveryAddress): Boolean {
         address.address2,
         address.city,
         address.state,
-        address.countryCode,
-        address.postalCode,
-        address.labelType,
-        address.labelName
+        address.postalCode
     ).all { it.isNullOrEmpty() }
 }
 

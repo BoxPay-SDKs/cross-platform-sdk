@@ -26,10 +26,16 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.got_it_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card_add
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card_lock
+import crossplatformsdk.cross_platform_sdk.generated.resources.rbi_guideline_info_1
+import crossplatformsdk.cross_platform_sdk.generated.resources.rbi_guideline_info_2
+import crossplatformsdk.cross_platform_sdk.generated.resources.rbi_guidelines_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.rbi_guidelines_header
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +63,7 @@ internal fun KnowMoreBottomSheet(
 
             // ── Heading ────────────────────────────────────────
             Text(
-                text       = "RBI Guidelines",
+                text       = stringResource(Res.string.rbi_guidelines_header),
                 fontSize   = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = Color(0xFF2D2B32),
@@ -66,7 +72,7 @@ internal fun KnowMoreBottomSheet(
 
             // ── Subtitle ───────────────────────────────────────
             Text(
-                text     = "As per the new RBI guidelines, we can no longer store your card information with us.",
+                text     = stringResource(Res.string.rbi_guidelines_desc),
                 fontSize = 14.sp,
                 color    = Color(0xFF2D2B32),
                 modifier = Modifier.padding(top = 12.dp),
@@ -76,18 +82,18 @@ internal fun KnowMoreBottomSheet(
             // ── Row 1 ──────────────────────────────────────────
             InfoRow(
                 icon = Res.drawable.ic_card_lock,
-                text = "Your bank/card network will securely save your card information via tokenization if you consent for the same."
+                text = stringResource(Res.string.rbi_guideline_info_1)
             )
 
             // ── Row 2 ──────────────────────────────────────────
             InfoRow(
                 icon = Res.drawable.ic_card_add,
-                text = "In case you choose to not tokenize, you'll have to enter card details every time you pay."
+                text = stringResource(Res.string.rbi_guideline_info_2)
             )
 
             // ── Button ─────────────────────────────────────────
             PayButton(
-                text = "Got it!",
+                text = stringResource(Res.string.got_it_cta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 28.dp)

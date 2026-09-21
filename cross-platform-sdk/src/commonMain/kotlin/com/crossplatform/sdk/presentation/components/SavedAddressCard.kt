@@ -28,8 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.currently_selected_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.mobile_number
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SavedAddressCard(
@@ -89,7 +93,7 @@ internal fun SavedAddressCard(
             // "CURRENTLY SELECTED" tag — only when selected
             if (isCurrentlySelected) {
                 Spacer(Modifier.width(2.dp))
-                FilterTag(text = "CURRENTLY SELECTED")
+                FilterTag(text = stringResource(Res.string.currently_selected_info))
             }
 
             // Edit icon
@@ -127,7 +131,7 @@ internal fun SavedAddressCard(
 
         // ── Row 3: mobile number ─────────────────────────────────────────
         Text(
-            text = "Mobile: $number",
+            text = stringResource(Res.string.mobile_number, number ?: ""),
             style = TextStyle(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,

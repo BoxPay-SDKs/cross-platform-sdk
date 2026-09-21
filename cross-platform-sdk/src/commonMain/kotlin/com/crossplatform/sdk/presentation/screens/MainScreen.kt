@@ -52,8 +52,26 @@ import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.MainScreenViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.cancel_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.confirm_to_delete_card_header
+import crossplatformsdk.cross_platform_sdk.generated.resources.credit_and_debit_card_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.express_checkout_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi
+import crossplatformsdk.cross_platform_sdk.generated.resources.more_payment_options_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.no_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.offers_and_discount_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.order_details_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_by_any_upi_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.payment_options_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.recommended_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.unable_to_remove_card_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.unable_to_remove_card_header
+import crossplatformsdk.cross_platform_sdk.generated.resources.upi_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.upi_mandate_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.upi_one_time_mandate_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.yes_cta
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -312,7 +330,7 @@ internal fun MainScreen(
                 val isExpressCheckoutVisible = (response.methodFlags.isApplePayVisible && showApplePay) || (response.methodFlags.isGooglePayVisible && showGooglePay) || (response.methodFlags.isRevolutPayVisible && showRevolutPay)
 
                 if (isExpressCheckoutVisible) {
-                    SectionTitle("Express Checkout")
+                    SectionTitle(stringResource(Res.string.express_checkout_title))
                     ExpressCheckout(
                         onClickRevolut = {
                             if(isPresentInSurchargeModel(surchargeDetails.value, "revolutpay")) {
@@ -385,7 +403,7 @@ internal fun MainScreen(
                 }
 
                 if(viewModel.appliedOffers.value.isNotEmpty()) {
-                    SectionTitle("Offers & discounts")
+                    SectionTitle(stringResource(Res.string.offers_and_discount_title))
                     OfferSection(
                         offers = viewModel.appliedOffers.value,
                         selectedCode = selectedOfferCode,
@@ -410,7 +428,7 @@ internal fun MainScreen(
                 }
 
                 if(viewModel.recommendedList.value.isNotEmpty() && response.methodFlags.isUPIVisible) {
-                    SectionTitle("Recommended")
+                    SectionTitle(stringResource(Res.string.recommended_title))
                     PaymentSelectorView(
                         providerList      = viewModel.recommendedList.value,
                         onProceedForward  = { display, instrument, _ ->
@@ -444,7 +462,7 @@ internal fun MainScreen(
 
                 // --- UPI ---
                 if (response.methodFlags.isUPIVisible) {
-                    SectionTitle("Pay by any UPI")
+                    SectionTitle(stringResource(Res.string.pay_by_any_upi_title))
                     UPIComponent(
                         methodFlags = response.methodFlags,
                         onClickSavedUpiPayButton = {instrumentRef, shopperVpa ->
@@ -532,7 +550,7 @@ internal fun MainScreen(
                         setIsExpanded = {
                             selectedPaymentMethod.value = if (selectedPaymentMethod.value.equals("upi", true)) "" else "upi"
                         },
-                        collapsedLabel = "UPI",
+                        collapsedLabel = stringResource(Res.string.upi_info),
                         onExpandSectionChanged = {
                             selectedPaymentNetwork.value = it
                         }
@@ -540,7 +558,7 @@ internal fun MainScreen(
                 }
 
                 if (response.methodFlags.isUPIOtmVisible) {
-                    SectionTitle("UPI One Time Mandate")
+                    SectionTitle(stringResource(Res.string.upi_one_time_mandate_title))
                     UPIComponent(
                         methodFlags = response.methodFlags,
                         onClickSavedUpiPayButton = {instrumentRef, shopperVpa ->
@@ -628,7 +646,7 @@ internal fun MainScreen(
                         setIsExpanded = {
                             selectedPaymentMethod.value = "upionetimemandate"
                         },
-                        collapsedLabel = "UPI Mandate",
+                        collapsedLabel = stringResource(Res.string.upi_mandate_info),
                         onExpandSectionChanged = {
                             selectedPaymentNetwork.value = it
                         }
@@ -638,7 +656,7 @@ internal fun MainScreen(
                 // --- More Payment Methods ---
                 if (otherPaymentMethodEnabled) {
                     if(!viewModel.cardsRecommendedList.value.isEmpty()) {
-                        SectionTitle("Credit & Debit Cards")
+                        SectionTitle(stringResource(Res.string.credit_and_debit_card_title))
                         SavedCardComponent(
                             savedCards = viewModel.cardsRecommendedList.value,
                             onProceedForward = { instrumentRef, isSICheckboxChecked ->
@@ -684,8 +702,8 @@ internal fun MainScreen(
                         )
                     }
                     SectionTitle(
-                        if (response.methodFlags.isUPIVisible) "More Payment Options"
-                        else "Payment Options"
+                        if (response.methodFlags.isUPIVisible) stringResource(Res.string.more_payment_options_title)
+                        else stringResource(Res.string.payment_options_title)
                     )
                     MorePaymentMethods(
                         methodFlags      = response.methodFlags,
@@ -806,7 +824,7 @@ internal fun MainScreen(
                 }
 
                 if (isOrderItemDetailsVisible.value) {
-                    SectionTitle("Order Details")
+                    SectionTitle(stringResource(Res.string.order_details_title))
                     OrderDetails(
                         totalAmount = amountBeforeSurcharge.value,
                         itemsArray = response.orderDetails?.items ?: emptyList(),
@@ -859,13 +877,13 @@ internal fun MainScreen(
             },
             title = {
                 Text(
-                    "Unable to Remove Card",
+                    stringResource(Res.string.unable_to_remove_card_header),
                     fontFamily = LocalSDKFonts.current.primary
                 )
             },
             text = {
                 Text(
-                    "We couldn't remove your saved card due to an issue. Your card is still saved.",
+                    stringResource(Res.string.unable_to_remove_card_desc),
                     fontFamily = LocalSDKFonts.current.primary
                 )
             },
@@ -873,7 +891,7 @@ internal fun MainScreen(
                 TextButton(onClick = {
                     viewModel.isToastVisible.value = false
                 }) {
-                    Text("Cancel", fontFamily = LocalSDKFonts.current.primary)
+                    Text(stringResource(Res.string.cancel_cta), fontFamily = LocalSDKFonts.current.primary)
                 }
             }
         )
@@ -886,7 +904,7 @@ internal fun MainScreen(
             },
             title = {
                 Text(
-                    "Do you actually want to delete the saved Card ${selectedDeleteCardName.value}?",
+                    stringResource(Res.string.confirm_to_delete_card_header, selectedDeleteCardName.value),
                     fontFamily = LocalSDKFonts.current.primary,
                     fontSize = 14.sp
                 )
@@ -896,14 +914,14 @@ internal fun MainScreen(
                     isShowSavedCardDeleteConfirmation.value = false
                     viewModel.onClickDeleteSavedCard(selectedDeleteCardId.value)
                 }) {
-                    Text("Yes", fontFamily = LocalSDKFonts.current.primary, fontSize = 14.sp)
+                    Text(stringResource(Res.string.yes_cta), fontFamily = LocalSDKFonts.current.primary, fontSize = 14.sp)
                 }
             },
             dismissButton = {
                 TextButton(onClick = {
                     isShowSavedCardDeleteConfirmation.value = false
                 }) {
-                    Text("No", fontFamily = LocalSDKFonts.current.primary, fontSize = 14.sp)
+                    Text(stringResource(Res.string.no_cta), fontFamily = LocalSDKFonts.current.primary, fontSize = 14.sp)
                 }
             }
         )
@@ -977,7 +995,6 @@ internal fun MainScreen(
                             countryCode = expressCheckoutCountryCode.value,
                         )
 
-                        println("=====aamount ${it}")
                         paymentHandler.launchGooglePay(
                             request = expressCheckoutPaymentRequest,
                             config = googleConfig!!,
@@ -991,10 +1008,6 @@ internal fun MainScreen(
                                     }
                                     is ExpressCheckoutPaymentResult.Success -> {
                                         val surchargeList = viewModel.resolveSurchargeList( selectedMethod.value, "")
-                                        println("=====surchargeList $surchargeList")
-                                        println("======selectedmethod ${selectedMethod.value}")
-                                        println("=====selected paymene method ${selectedPaymentMethod.value}")
-                                        println("=======selectedNetwork ${selectedPaymentNetwork.value}")
                                         viewModel.onProceedGooglePay(result.googleToken ?: "", surchargeList)
                                     }
                                 }

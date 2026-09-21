@@ -55,6 +55,30 @@ import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.PayButton
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.area_colony_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.city_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.country_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.email_id_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.enter_a_valid_number_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.full_name_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.house_number_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.invalid_email_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.mobile_code_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.mobile_number_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.mobile_number_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.must_be_at_least_characters
+import crossplatformsdk.cross_platform_sdk.generated.resources.must_be_at_least_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.must_be_at_most_characters
+import crossplatformsdk.cross_platform_sdk.generated.resources.must_be_at_most_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.must_be_exactly_characters_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.postal_code_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.postal_code_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.required_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.save_address_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.save_personal_details_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.state_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AddressScreen(
@@ -121,8 +145,29 @@ internal fun AddressScreen(
     var isStateValid       by remember { mutableStateOf<Boolean?>(null) }
     var isMainAddressValid by remember { mutableStateOf<Boolean?>(null) }
 
+    val min = remember {
+        mutableStateOf<Int?>(null)
+    }
+    val max = remember {
+        mutableStateOf<Int?>(null)
+    }
+    val len = remember {
+        mutableStateOf(0)
+    }
+
     val phoneNumberLengthList = remember { mutableStateOf(listOf(10)) }
     val emailRegex = remember { Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$") }
+    
+    val requiredErrorMessage = stringResource(Res.string.required_error_message)
+    val enterValidNumberErrorMessage = stringResource(Res.string.enter_a_valid_number_error_message)
+    val mobileNumberErrorMessage = stringResource(Res.string.mobile_number_error_message, phoneNumberLengthList.value.joinToString(" or "))
+    val invalidEmailErrorMessage = stringResource(Res.string.invalid_email_error_message)
+    val postalCodeErrorMessage = stringResource(Res.string.postal_code_error_message)
+    val mustBeAtLeastErrorMessage = stringResource(Res.string.must_be_at_least_error_message, min.value ?: 0)
+    val mustBeAtMostErrorMessage = stringResource(Res.string.must_be_at_most_error_message, max.value ?: 0)
+    val mustBeAtLeastCharactersErrorMessage = stringResource(Res.string.must_be_at_least_characters, min.value ?: 0)
+    val mustBeAtMostCharactersErrorMessage = stringResource(Res.string.must_be_at_most_characters, max.value ?: 0)
+    val mustBeExactlyCharactersErrorMessage = stringResource(Res.string.must_be_exactly_characters_error_message, len.value)
 
     // --- Pre-fill fields ---
     LaunchedEffect(Unit) {
@@ -159,7 +204,7 @@ internal fun AddressScreen(
 
     fun validateCustomField(field: CustomFields, raw: String): String {
         val value = raw.trim()
-        if (field.mandatory && value.isEmpty()) return "Required"
+        if (field.mandatory && value.isEmpty()) return requiredErrorMessage
         if (value.isEmpty()) return ""   // optional & blank → ok
 
         val p = field.validationParams ?: emptyMap()
@@ -170,47 +215,48 @@ internal fun AddressScreen(
         // TEXTUAL: MIN/MAX compare the character LENGTH
         return when (field.validation) {
             "RANGE" -> {
-                val min = n("MIN"); val max = n("MAX")
+                min.value = n("MIN")
+                max.value = n("MAX")
                 if (isNumeric) {
-                    val num = value.toIntOrNull() ?: return "Enter a valid number"
+                    val num = value.toIntOrNull() ?: return enterValidNumberErrorMessage
                     when {
-                        min != null && num < min -> "Must be at least $min"
-                        max != null && num > max -> "Must be at most $max"
+                        min.value != null && num < (min.value ?: 0) -> mustBeAtLeastErrorMessage
+                        max.value != null && num > (max.value ?: 0) -> mustBeAtMostErrorMessage
                         else -> ""
                     }
                 } else {
                     when {
-                        min != null && value.length < min -> "Must be at least $min characters"
-                        max != null && value.length > max -> "Must be at most $max characters"
+                        min.value != null && value.length < (min.value ?: 0) -> mustBeAtLeastCharactersErrorMessage
+                        max.value != null && value.length > (max.value ?: 0) -> mustBeAtMostCharactersErrorMessage
                         else -> ""
                     }
                 }
             }
 
             "MIN" -> {
-                val min = n("MIN") ?: return ""
+                min.value = n("MIN") ?: return ""
                 if (isNumeric) {
-                    val num = value.toIntOrNull() ?: return "Enter a valid number"
-                    if (num < min) "Must be at least $min" else ""
+                    val num = value.toIntOrNull() ?: return enterValidNumberErrorMessage
+                    if (num < (min.value ?: 0)) mustBeAtLeastErrorMessage else ""
                 } else {
-                    if (value.length < min) "Must be at least $min characters" else ""
+                    if (value.length < (min.value ?: 0)) mustBeAtLeastCharactersErrorMessage else ""
                 }
             }
 
             "MAX" -> {
-                val max = n("MAX") ?: return ""
+                max.value = n("MAX") ?: return ""
                 if (isNumeric) {
-                    val num = value.toIntOrNull() ?: return "Enter a valid number"
-                    if (num > max) "Must be at most $max" else ""
+                    val num = value.toIntOrNull() ?: return enterValidNumberErrorMessage
+                    if (num > (max.value ?: 0)) mustBeAtMostErrorMessage else ""
                 } else {
-                    if (value.length > max) "Must be at most $max characters" else ""
+                    if (value.length > (max.value ?: 0)) mustBeAtMostCharactersErrorMessage else ""
                 }
             }
 
             "FIXED" -> {
-                val len = n("FIXED") ?: return ""
+                len.value = n("FIXED") ?: return ""
                 // FIXED is character length for both types (e.g. Pincode = 6 digits, Referral = 8 chars)
-                if (value.length != len) "Must be exactly $len characters" else ""
+                if (value.length != len.value) mustBeExactlyCharactersErrorMessage else ""
             }
 
             else -> ""
@@ -220,7 +266,8 @@ internal fun AddressScreen(
     // --- Validation Functions ---
     fun validateFullName(text: String) {
         if (text.trim().isEmpty()) {
-            fullNameError = "Required"; isFullNameValid = false
+            fullNameError = requiredErrorMessage
+            isFullNameValid = false
         } else {
             fullNameError = ""; isFullNameValid = true
         }
@@ -228,9 +275,9 @@ internal fun AddressScreen(
 
     fun validatePhone(text: String) {
         when {
-            text.isEmpty() -> { phoneError = "Required"; isPhoneValid = false }
+            text.isEmpty() -> { phoneError = requiredErrorMessage; isPhoneValid = false }
             !phoneNumberLengthList.value.contains(text.length) -> {
-                phoneError = "Mobile number must be ${phoneNumberLengthList.value.joinToString(" or ")} digits"
+                phoneError = mobileNumberErrorMessage
                 isPhoneValid = false
             }
             else -> { phoneError = ""; isPhoneValid = true }
@@ -239,34 +286,34 @@ internal fun AddressScreen(
 
     fun validateEmail(text: String) {
         when {
-            text.trim().isEmpty() -> { emailError = "Required"; isEmailValid = false }
-            !emailRegex.matches(text.trim()) -> { emailError = "Invalid Email"; isEmailValid = false }
+            text.trim().isEmpty() -> { emailError = requiredErrorMessage; isEmailValid = false }
+            !emailRegex.matches(text.trim()) -> { emailError = invalidEmailErrorMessage; isEmailValid = false }
             else -> { emailError = ""; isEmailValid = true }
         }
     }
 
     fun validatePin(text: String) {
         when {
-            text.trim().isEmpty() -> { pinError = "Required"; isPinValid = false }
+            text.trim().isEmpty() -> { pinError = requiredErrorMessage; isPinValid = false }
             selectedPhoneCode == "+91" && text.length < 6 -> {
-                pinError = "Postal code must be 6 digits"; isPinValid = false
+                pinError = postalCodeErrorMessage; isPinValid = false
             }
             else -> { pinError = ""; isPinValid = true }
         }
     }
 
     fun validateCity(text: String) {
-        if (text.trim().isEmpty()) { cityError = "Required"; isCityValid = false }
+        if (text.trim().isEmpty()) { cityError = requiredErrorMessage; isCityValid = false }
         else { cityError = ""; isCityValid = true }
     }
 
     fun validateState(text: String) {
-        if (text.trim().isEmpty()) { stateError = "Required"; isStateValid = false }
+        if (text.trim().isEmpty()) { stateError = requiredErrorMessage; isStateValid = false }
         else { stateError = ""; isStateValid = true }
     }
 
     fun validateMainAddress(text: String) {
-        if (text.trim().isEmpty()) { mainAddressError = "Required"; isMainAddressValid = false }
+        if (text.trim().isEmpty()) { mainAddressError = requiredErrorMessage; isMainAddressValid = false }
         else { mainAddressError = ""; isMainAddressValid = true }
     }
 
@@ -311,7 +358,7 @@ internal fun AddressScreen(
         if (isShippingEnabled) {
             AddressTextField(
                 value       = countryTextField,
-                label       = "Country*",
+                label       = stringResource(Res.string.country_title),
                 onValueChange = {},
                 readOnly    = true,
                 trailingIcon = { ChevronIcon() },
@@ -326,8 +373,11 @@ internal fun AddressScreen(
         if (isShippingEnabled || isFullNameEnabled) {
             AddressTextField(
                 value         = fullNameTextField,
-                label         = "Full Name*",
-                onValueChange = { fullNameTextField = it; validateFullName(it) },
+                label         = stringResource(Res.string.full_name_title),
+                onValueChange = {
+                    fullNameTextField = it
+                    validateFullName(it)
+                },
                 isError       = isFullNameValid == false,
                 modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
                 focusedBorderColor = focusedBorderColor.value,
@@ -344,7 +394,7 @@ internal fun AddressScreen(
             ) {
                 AddressTextField(
                     value         = selectedPhoneCode,
-                    label         = "Code*",
+                    label         = stringResource(Res.string.mobile_code_title),
                     onValueChange = {},
                     readOnly      = true,
                     trailingIcon  = { ChevronIcon() },
@@ -356,8 +406,11 @@ internal fun AddressScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 AddressTextField(
                     value         = phoneNumberTextField,
-                    label         = "Mobile Number*",
-                    onValueChange = { phoneNumberTextField = it; validatePhone(it) },
+                    label         = stringResource(Res.string.mobile_number_title),
+                    onValueChange = {
+                        phoneNumberTextField = it
+                        validatePhone(it)
+                    },
                     isError       = isPhoneValid == false,
                     keyboardType  = KeyboardType.Number,
                     modifier      = Modifier.weight(1f),
@@ -372,8 +425,11 @@ internal fun AddressScreen(
         if (isShippingEnabled || isEmailEnabled) {
             AddressTextField(
                 value         = emailTextField,
-                label         = "Email ID*",
-                onValueChange = { emailTextField = it; validateEmail(it) },
+                label         = stringResource(Res.string.email_id_title),
+                onValueChange = {
+                    emailTextField = it
+                    validateEmail(it)
+                },
                 isError       = isEmailValid == false,
                 keyboardType  = KeyboardType.Email,
                 modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
@@ -436,11 +492,11 @@ internal fun AddressScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     AddressTextField(
                         value         = pinTextField,
-                        label         = "Postal code*",
+                        label         = stringResource(Res.string.postal_code_title),
                         onValueChange = {
                             pinTextField = it
                             validatePin(it)
-                                        },
+                        },
                         isError       = isPinValid == false,
                         keyboardType  = KeyboardType.Number,
                         modifier      = Modifier.fillMaxWidth().padding(start = 16.dp),
@@ -453,8 +509,11 @@ internal fun AddressScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     AddressTextField(
                         value         = cityTextField,
-                        label         = "City*",
-                        onValueChange = { cityTextField = it; validateCity(it) },
+                        label         = stringResource(Res.string.city_title),
+                        onValueChange = {
+                            cityTextField = it
+                            validateCity(it)
+                        },
                         isError       = isCityValid == false,
                         modifier      = Modifier.fillMaxWidth().padding(end = 16.dp),
                         focusedBorderColor = focusedBorderColor.value,
@@ -467,8 +526,11 @@ internal fun AddressScreen(
             // State
             AddressTextField(
                 value         = stateTextField,
-                label         = "State*",
-                onValueChange = { stateTextField = it; validateState(it) },
+                label         = stringResource(Res.string.state_title),
+                onValueChange = {
+                    stateTextField = it
+                    validateState(it)
+                },
                 isError       = isStateValid == false,
                 modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
                 focusedBorderColor = focusedBorderColor.value,
@@ -479,8 +541,11 @@ internal fun AddressScreen(
             // Main Address
             AddressTextField(
                 value         = mainAddressTextField,
-                label         = "House number, Apartment*",
-                onValueChange = { mainAddressTextField = it; validateMainAddress(it) },
+                label         = stringResource(Res.string.house_number_title),
+                onValueChange = {
+                    mainAddressTextField = it
+                    validateMainAddress(it)
+                },
                 isError       = isMainAddressValid == false,
                 modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
                 focusedBorderColor = focusedBorderColor.value,
@@ -491,7 +556,7 @@ internal fun AddressScreen(
             // Secondary Address
             AddressTextField(
                 value         = secondaryAddressTextField,
-                label         = "Area, Colony, Street, Sector",
+                label         = stringResource(Res.string.area_colony_title),
                 onValueChange = { secondaryAddressTextField = it },
                 modifier      = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp),
                 focusedBorderColor = focusedBorderColor.value,
@@ -503,7 +568,7 @@ internal fun AddressScreen(
 
         // --- Bottom Button ---
         PayButton(
-            text = if (isShippingEnabled) "Save Address" else "Save Personal Details",
+            text = if (isShippingEnabled) stringResource(Res.string.save_address_cta) else stringResource(Res.string.save_personal_details_cta),
             modifier = Modifier.fillMaxWidth().padding(top = 28.dp, start = 16.dp, end = 16.dp)
                 .clip(RoundedCornerShape(ctaBorderRadius.value.dp))
                 .background(buttonColor.value.toComposeColor())

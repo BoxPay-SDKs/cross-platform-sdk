@@ -54,9 +54,22 @@ import com.crossplatform.sdk.presentation.screens.ScreenBackInterceptor
 import com.crossplatform.sdk.presentation.screens.UpiTimerScreen
 import com.crossplatform.sdk.presentation.screens.WalletScreen
 import com.crossplatform.sdk.presentation.viewmodel.MainScreenViewModel
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.add_address_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.add_personal_details_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.edit_address_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.edit_personal_details_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_now_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_via_card_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.payment_details
+import crossplatformsdk.cross_platform_sdk.generated.resources.select_bank_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.select_bnpl_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.select_wallet_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.your_addresses_title
 import io.ktor.http.decodeURLPart
 import io.ktor.http.encodeURLParameter
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -162,22 +175,22 @@ internal fun AppNavHost() {
     val baseRoute = currentRoute?.substringBefore("/{")
 
     val routeTitle = when (baseRoute) {
-        Routes.MainScreen.route    -> "Payment Details"
+        Routes.MainScreen.route    -> stringResource(Res.string.payment_details)
         Routes.AddressScreen.route -> {
             when {
-                isShippingAddressEnabled && isNewAddress   -> "Add Address"
-                isShippingAddressEnabled && !isNewAddress  -> "Edit Address"
-                !isShippingAddressEnabled && isNewAddress  -> "Add Personal Details"
-                else -> "Edit Personal Details"
+                isShippingAddressEnabled && isNewAddress   -> stringResource(Res.string.add_address_title)
+                isShippingAddressEnabled && !isNewAddress  -> stringResource(Res.string.edit_address_title)
+                !isShippingAddressEnabled && isNewAddress  -> stringResource(Res.string.add_personal_details_title)
+                else -> stringResource(Res.string.edit_personal_details_title)
             }
         }
-        Routes.CardScreen.route -> "Pay via Card"
-        Routes.NetBankingScreen.route  -> "Select Bank"
-        Routes.WalletScreen.route -> "Select Wallet"
-        Routes.SavedAddressScreen.route -> "Your Addresses"
-        Routes.BNPLScreen.route -> "Select BNPL"
-        Routes.PayNowScreen.route -> "PayNow"
-        else -> "Payment Details"
+        Routes.CardScreen.route -> stringResource(Res.string.pay_via_card_title)
+        Routes.NetBankingScreen.route  -> stringResource(Res.string.select_bank_title)
+        Routes.WalletScreen.route -> stringResource(Res.string.select_wallet_title)
+        Routes.SavedAddressScreen.route -> stringResource(Res.string.your_addresses_title)
+        Routes.BNPLScreen.route -> stringResource(Res.string.select_bnpl_title)
+        Routes.PayNowScreen.route -> stringResource(Res.string.pay_now_title)
+        else -> stringResource(Res.string.payment_details)
     }
 
     val screenTitle = ScreenBackInterceptor.currentTitle?.invoke() ?: routeTitle

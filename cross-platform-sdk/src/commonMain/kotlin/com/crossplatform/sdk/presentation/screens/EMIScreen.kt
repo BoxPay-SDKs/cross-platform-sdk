@@ -36,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,12 +71,23 @@ import com.crossplatform.sdk.presentation.viewmodel.EMIScreenViewModel
 import com.crossplatform.sdk.presentation.viewmodel.EmiStep
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.add_icon
+import crossplatformsdk.cross_platform_sdk.generated.resources.card_not_supported_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.choose_emi_option_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_search
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_tick_arrow
+import crossplatformsdk.cross_platform_sdk.generated.resources.invalid_card_number_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.invalid_cvv_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.invalid_expiry_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_via_card_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.required_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.select_tenure_title
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import kotlinx.coroutines.Job
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -90,13 +102,24 @@ internal fun EMIScreen(
         if (!viewModel.goBackStep()) onBackPress()   // exit EMI only at root
     }
     BackHandler(onBack = handleBack)
-    DisposableEffect(Unit) {
+
+    val cardTitle = stringResource(Res.string.pay_via_card_title)
+    val tenureTitle = stringResource(Res.string.select_tenure_title)
+    val contentTitle = stringResource(Res.string.choose_emi_option_title)
+
+    val requiredErrorMessage = stringResource(Res.string.required_error_message)
+    val cardNotSupportedErrorMessage = stringResource(Res.string.card_not_supported_error_message)
+    val invalidCardNumberErrorMessage = stringResource(Res.string.invalid_card_number_error_message)
+    val invalidExpiryErrorMessage = stringResource(Res.string.invalid_expiry_error_message)
+    val invalidCvvErrorMessage = stringResource(Res.string.invalid_cvv_error_message)
+
+    DisposableEffect(viewModel.currentStep) {
         ScreenBackInterceptor.onBack = { viewModel.goBackStep() }
         ScreenBackInterceptor.currentTitle = {
             when (viewModel.currentStep) {
-                EmiStep.Card    -> "Pay via Card"
-                EmiStep.Tenure  -> "Select Tenure"
-                EmiStep.Content -> "Choose EMI Option"
+                EmiStep.Card    -> cardTitle
+                EmiStep.Tenure  -> tenureTitle
+                EmiStep.Content -> contentTitle
             }
         }
         onDispose {
@@ -223,26 +246,26 @@ internal fun EMIScreen(
                                 viewModel.cardNumberError.value = cleaned.isEmpty() ||
                                         (!isTestEnv.value && (!viewModel.methodEnabled.value || !viewModel.cardNumberValid.value))
                                 viewModel.cardNumberErrorText.value = when {
-                                    cleaned.isEmpty()     -> "Required"
-                                    !viewModel.methodEnabled.value        -> "This card is not supported for the payment"
-                                    !viewModel.cardNumberValid.value     -> "Invalid card number"
+                                    cleaned.isEmpty()     -> requiredErrorMessage
+                                    !viewModel.methodEnabled.value        -> cardNotSupportedErrorMessage
+                                    !viewModel.cardNumberValid.value     -> invalidCardNumberErrorMessage
                                     else                  -> ""
                                 }
                             },
                             onBlurCardName = {
                                 viewModel.cardHolderNameError.value    = viewModel.cardHolderNameText.value.trim().isEmpty()
-                                viewModel.cardHolderNameErrorText.value = if (viewModel.cardHolderNameError.value) "Required" else ""
+                                viewModel.cardHolderNameErrorText.value = if (viewModel.cardHolderNameError.value) requiredErrorMessage else ""
                             },
                             onBlurCardExpiry = {
                                 viewModel.cardExpiryError.value    = viewModel.cardExpiryText.value.length < 4 || !viewModel.cardExpiryValid.value
                                 viewModel.cardExpiryErrorText.value = when {
-                                    viewModel.cardExpiryText.value.isEmpty() -> "Required"
-                                    else                     -> "Invalid Expiry"
+                                    viewModel.cardExpiryText.value.isEmpty() -> requiredErrorMessage
+                                    else                     -> invalidExpiryErrorMessage
                                 }
                             },
                             onBlurCardCVV = {
                                 viewModel.cardCvvError.value    = viewModel.cardCvvText.value.length < viewModel.maxCvvLength.value
-                                viewModel.cardCvvErrorText.value = if (viewModel.cardCvvText.value.isEmpty()) "Required" else "Invalid CVV"
+                                viewModel.cardCvvErrorText.value = if (viewModel.cardCvvText.value.isEmpty()) requiredErrorMessage else invalidCvvErrorMessage
                             },
                             cardNumberErrorText = viewModel.cardNumberErrorText.value,
                             cardHolderNameErrorText = viewModel.cardHolderNameErrorText.value,

@@ -51,9 +51,15 @@ import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_broken_order_image
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_cvv_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.price_details_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.shipping_amount_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.sub_total_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.taxes_and_fees_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.total_info
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun OrderDetails(
@@ -127,7 +133,7 @@ internal fun OrderDetails(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Price Details",
+                    text = stringResource(Res.string.price_details_info),
                     fontSize = 14.sp,
                     color = Color(0xFF363840),
                     fontFamily = LocalSDKFonts.current.primary,
@@ -228,7 +234,7 @@ internal fun OrderDetails(
             // Subtotal
             if (subTotalAmount != 0.0) {
                 SummaryRow(
-                    label = "Subtotal",
+                    label = stringResource(Res.string.sub_total_info),
                     amount = subTotalAmount,
                     currencySymbol = currencySymbol,
                     buttonColor = buttonColor
@@ -238,7 +244,7 @@ internal fun OrderDetails(
             // Tax
             if (taxAmount != 0.0) {
                 SummaryRow(
-                    label = "Taxes and Fees",
+                    label = stringResource(Res.string.taxes_and_fees_info),
                     amount = taxAmount,
                     currencySymbol = currencySymbol,
                     buttonColor = buttonColor
@@ -248,7 +254,7 @@ internal fun OrderDetails(
             // Shipping
             if (shippingAmount != 0.0) {
                 SummaryRow(
-                    label = "Shipping Amount",
+                    label = stringResource(Res.string.shipping_amount_info),
                     amount = shippingAmount,
                     currencySymbol = currencySymbol,
                     buttonColor = buttonColor
@@ -277,7 +283,7 @@ internal fun OrderDetails(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Total",
+                    text = stringResource(Res.string.total_info),
                     fontSize = 16.sp,
                     color = Color(0xFF1D1C20),
                     fontFamily = LocalSDKFonts.current.primary,
@@ -312,7 +318,7 @@ internal fun OrderDetails(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Price Details",
+                text = stringResource(Res.string.price_details_info),
                 fontSize = 14.sp,
                 color = Color(0xFF363840),
                 fontFamily = LocalSDKFonts.current.primary,

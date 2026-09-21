@@ -6,22 +6,23 @@ import com.crossplatform.sdk.data.model.FetchStatusResponse
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.getFetchStatus
 import com.crossplatform.sdk.presentation.resolveErrorMessage
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.payment_failed_error_messages
+import org.jetbrains.compose.resources.getString
 
-internal fun handleFetchStatus(
+internal suspend fun handleFetchStatus(
     response : ApiResponse<FetchStatusResponse>,
     setIsBoxPayAnimationVisible : (Boolean) -> Unit,
     onAutoRetry : () -> Unit
 ) {
     when(response) {
         is ApiResponse.Error -> {
-            println("======response  in fetch status error === $response")
             CheckoutDetailsHandler.setErrorMessage()
             CheckoutDetailsHandler.setSessionFailed()
             setIsBoxPayAnimationVisible(false)
         }
         is ApiResponse.Success -> {
             val apiData = response.data
-            println("======response  in fetch status success === ${response.data}")
             val status = getFetchStatus(apiData.status)
             val transactionId = apiData.transactionId
 
@@ -47,7 +48,7 @@ internal fun handleFetchStatus(
                     val resolvedErrorMessage = resolveErrorMessage(
                         reasonCode = apiData.reasonCode,
                         reason = apiData.reason,
-                        fallback = "You may have cancelled the payment or there was a delay in response. Please retry."
+                        fallback = getString(Res.string.payment_failed_error_messages)
                     )
                     CheckoutDetailsHandler.setErrorMessage(resolvedErrorMessage)
                     CheckoutDetailsHandler.setSessionFailed()
@@ -58,21 +59,19 @@ internal fun handleFetchStatus(
                     setIsBoxPayAnimationVisible(false)
                 }
                 else -> {
-                    println("======response  in fetch status success in else === ${response.data}")
                     CheckoutDetailsHandler.setSessionFailed()
                     setIsBoxPayAnimationVisible(false)
                 }
             }
         }
         else -> {
-            println("======response  in fetch statussss === ${response}")
             CheckoutDetailsHandler.setSessionFailed()
             setIsBoxPayAnimationVisible(false)
         }
     }
 }
 
-internal fun handleUpiCollectFetchStatus(
+internal suspend fun handleUpiCollectFetchStatus(
     response : ApiResponse<FetchStatusResponse>,
     setIsBoxPayAnimationVisible : (Boolean) -> Unit
 ) {
@@ -105,7 +104,7 @@ internal fun handleUpiCollectFetchStatus(
                     val resolvedErrorMessage = resolveErrorMessage(
                         reasonCode = apiData.reasonCode,
                         reason = apiData.reason,
-                        fallback = "You may have cancelled the payment or there was a delay in response. Please retry."
+                        fallback = getString(Res.string.payment_failed_error_messages)
                     )
                     CheckoutDetailsHandler.setErrorMessage(resolvedErrorMessage)
                     CheckoutDetailsHandler.setSessionFailed()

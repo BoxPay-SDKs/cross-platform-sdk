@@ -19,6 +19,9 @@ import com.crossplatform.sdk.presentation.components.BankComponent
 import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.viewmodel.NetBankingViewModel
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.all_banks_title
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -99,7 +102,7 @@ internal fun NetBankingScreen(
                 amount = amount.value,
                 currencySymbol = currencyCode,
                 ctaBorderRadius = ctaBorderRadius.value,
-                title = "All Banks",
+                title = stringResource(Res.string.all_banks_title),
                 surchargeList = surchargeList
             )
         }

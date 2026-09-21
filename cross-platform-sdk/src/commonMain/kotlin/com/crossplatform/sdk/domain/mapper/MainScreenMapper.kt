@@ -62,7 +62,7 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
         labelType = paymentDetails.shopper.deliveryAddress?.labelType
     )
 
-    UserDataHandler.setCustomFields(merchantDetails.customFields)
+    UserDataHandler.setCustomFields(merchantDetails.customFields ?: emptyList())
 
     var methodFlags = MainScreenModel.MethodFlags()
     var revolutPublicKey: String? = null
@@ -203,7 +203,7 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
         currencyCode = moneyObject.currencyCode,
         methodFlags = methodFlags,
         orderDetails = orderDetails,
-        sessionExpiryTimer = this.sessionExpiryTimestamp,
+        sessionExpiryTimer = this.sessionExpiryTimestamp ?: "",
         revolutPublicKey = revolutPublicKey,
         googlePayAdditionData = googlePayAdditionData,
         applePayAdditionData = applePayAdditionData,

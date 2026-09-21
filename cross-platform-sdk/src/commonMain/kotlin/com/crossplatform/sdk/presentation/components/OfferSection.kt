@@ -40,10 +40,18 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.OfferItem
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.apply_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.count_more
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_offer_tag
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_savings
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_tick_arrow
+import crossplatformsdk.cross_platform_sdk.generated.resources.offer_available
+import crossplatformsdk.cross_platform_sdk.generated.resources.offer_code_applied
+import crossplatformsdk.cross_platform_sdk.generated.resources.remove_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.view_all_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.you_saved_info
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun OfferSection(
@@ -135,7 +143,7 @@ internal fun SingleOfferCard(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = if (isApplied) "${offer.code} applied!" else offer.code,
+                    text = if (isApplied) stringResource(Res.string.offer_code_applied, offer.code) else offer.code,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = LocalSDKFonts.current.primary,
@@ -153,7 +161,7 @@ internal fun SingleOfferCard(
             Spacer(Modifier.width(8.dp))
 
             Text(
-                text = if (isApplied) "Remove" else "Apply",
+                text = if (isApplied) stringResource(Res.string.remove_cta) else stringResource(Res.string.apply_cta),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 fontFamily = LocalSDKFonts.current.primary,
@@ -182,7 +190,7 @@ internal fun SingleOfferCard(
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    text = "You saved",
+                    text = stringResource(Res.string.you_saved_info),
                     fontSize = 11.sp,
                     fontFamily = LocalSDKFonts.current.primary,
                     color = appliedGreenDark
@@ -247,7 +255,7 @@ internal fun MultiOfferCard(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "${offers.size} offers available",
+                    text = stringResource(Res.string.offer_available, offers.size),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = LocalSDKFonts.current.primary,
@@ -262,7 +270,7 @@ internal fun MultiOfferCard(
             }
 
             Text(
-                text = "View all >",
+                text = stringResource(Res.string.view_all_cta),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = themeColor,
@@ -410,7 +418,7 @@ private fun MoreChip(
             .padding(horizontal = 12.dp, vertical = 5.dp)
     ) {
         Text(
-            text = "+$count more",
+            text = stringResource(Res.string.count_more, count),
             fontSize = 12.sp,
             fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Medium,

@@ -29,8 +29,10 @@ import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi_error
+import crossplatformsdk.cross_platform_sdk.generated.resources.view_more_cta
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ExpandablePaymentSection(
@@ -139,7 +141,7 @@ internal fun ExpandablePaymentSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "View More",
+                        text = stringResource(Res.string.view_more_cta),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         fontFamily = LocalSDKFonts.current.primary,
