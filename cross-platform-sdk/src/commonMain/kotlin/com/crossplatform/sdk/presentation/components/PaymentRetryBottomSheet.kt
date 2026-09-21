@@ -36,9 +36,14 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.auto_retry_cta_with_value
+import crossplatformsdk.cross_platform_sdk.generated.resources.auto_retry_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_lock
+import crossplatformsdk.cross_platform_sdk.generated.resources.retrying_your_payment_securely_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.retrying_your_payment_securely_header
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,7 +95,7 @@ internal fun PaymentRetryBottomSheet(
 
                 // Title
                 Text(
-                    text = "Retrying your payment securely",
+                    text = stringResource(Res.string.retrying_your_payment_securely_header),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = LocalSDKFonts.current.primary,
@@ -102,7 +107,7 @@ internal fun PaymentRetryBottomSheet(
 
             // Description
             Text(
-                text = "Payment failed. Retrying with another payment partner. OTP may be required again.",
+                text = stringResource(Res.string.retrying_your_payment_securely_desc),
                 fontSize = 14.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 lineHeight = 20.sp,
@@ -132,7 +137,7 @@ internal fun PaymentRetryBottomSheet(
                 )
 
                 Text(
-                    text = "Retrying in ${secondsLeft}s \u2013 Tap to cancel",
+                    text = stringResource(Res.string.auto_retry_cta_with_value, secondsLeft),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = LocalSDKFonts.current.primary,
@@ -145,7 +150,7 @@ internal fun PaymentRetryBottomSheet(
 
             // Footer note
             Text(
-                text = "Only one successful charge will be processed.",
+                text = stringResource(Res.string.auto_retry_info),
                 fontSize = 12.sp,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,

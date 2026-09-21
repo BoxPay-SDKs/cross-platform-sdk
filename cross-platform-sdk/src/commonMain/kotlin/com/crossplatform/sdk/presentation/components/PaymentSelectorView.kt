@@ -29,10 +29,15 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.extra_applied_as_surcharge
+import crossplatformsdk.cross_platform_sdk.generated.resources.last_used_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_cta
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PaymentSelectorView(
@@ -172,7 +177,7 @@ internal fun PaymentSelector(
                             .padding(horizontal = 4.dp)
                     ) {
                         Text(
-                            text       = "Last Used",
+                            text       = stringResource(Res.string.last_used_info),
                             fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Medium,
                             fontSize   = 10.sp,
@@ -182,7 +187,7 @@ internal fun PaymentSelector(
                 }
                 if (surchargeFee != null && surchargeFee != 0.0) {
                     Text(
-                        text = "$currencySymbol $surchargeFee extra applied as surcharge",
+                        text = stringResource(Res.string.extra_applied_as_surcharge, currencySymbol, surchargeFee),
                         fontSize = 14.sp,
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Medium,
@@ -214,7 +219,7 @@ internal fun PaymentSelector(
                     .clickable { onProceedForward(title, instrumentTypeValue) },
                 amount = amount,
                 currencySymbol = currencySymbol,
-                text = "Pay",
+                text = stringResource(Res.string.pay_cta),
                 buttonTextColor = buttonTextColor,
                 isValid = true
             )

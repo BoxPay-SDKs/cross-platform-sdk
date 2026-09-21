@@ -50,12 +50,20 @@ import com.crossplatform.sdk.presentation.formatAmount
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.change_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_keyboard_double_arrow
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_tick_arrow
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi
+import crossplatformsdk.cross_platform_sdk.generated.resources.last_used_payment_option_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.more_options_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.personal_details_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.shipping_address_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.swipe_to_pay_cta
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
 @Composable
@@ -97,7 +105,7 @@ internal fun SwipeToPayComponent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (toShowPersonal) "Personal Details" else "Shipping Address",
+                        text = if (toShowPersonal) stringResource(Res.string.personal_details_title) else stringResource(Res.string.shipping_address_title),
                         color = Color(0xFF2D2B32),
                         style = TextStyle(
                             fontSize = 14.sp,
@@ -110,7 +118,7 @@ internal fun SwipeToPayComponent(
                     )
                     if (toShowOnChangeAddressClick) {
                         Text(
-                            text = "Change",
+                            text = stringResource(Res.string.change_cta),
                             color = buttonColor.toComposeColor(),
                             style = TextStyle(
                                 fontSize = 14.sp,
@@ -156,7 +164,7 @@ internal fun SwipeToPayComponent(
                     text = buildAnnotatedString {
                         append(
                             AnnotatedString(
-                                text = "Pay ",
+                                text = stringResource(Res.string.pay_cta),
                                 spanStyle = SpanStyle(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.SemiBold,
@@ -192,7 +200,7 @@ internal fun SwipeToPayComponent(
 
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = "More Options",
+                    text = stringResource(Res.string.more_options_cta),
                     color = buttonColor.toComposeColor(),
                     style = TextStyle(
                         fontSize = 14.sp,
@@ -211,7 +219,7 @@ internal fun SwipeToPayComponent(
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text = "Last Used Payment Option",
+                text = stringResource(Res.string.last_used_payment_option_info),
                 color = Color(0xFF7F7D83),
                 style = TextStyle(
                     fontSize = 14.sp,
@@ -334,7 +342,7 @@ internal fun SwipeToPayButtonComponent(
             text = buildAnnotatedString {
                 append(
                     AnnotatedString(
-                        text = "Swipe to Pay ",
+                        text = stringResource(Res.string.swipe_to_pay_cta),
                         spanStyle = SpanStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,

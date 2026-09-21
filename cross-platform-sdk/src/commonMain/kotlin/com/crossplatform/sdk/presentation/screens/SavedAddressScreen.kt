@@ -15,10 +15,14 @@ import com.crossplatform.sdk.presentation.components.SavedAddressCard
 import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.viewmodel.AddressScreenViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.home_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_home
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_more
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_other_house
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_work
+import crossplatformsdk.cross_platform_sdk.generated.resources.other_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.work_info
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -49,7 +53,7 @@ internal fun SavedAddressScreen(
             ) {
                 response.map {item ->
                     val addressIcon = if (item.labelType == "Home") Res.drawable.ic_home else if (item.labelType == "Work") Res.drawable.ic_work else Res.drawable.ic_other_house
-                    val label = if (item.labelType == "Home") "Home" else if (item.labelType == "Work") "Work" else "Other"
+                    val label = if (item.labelType == "Home") stringResource(Res.string.home_info) else if (item.labelType == "Work") stringResource(Res.string.work_info) else stringResource(Res.string.other_info)
                     SavedAddressCard(
                         modifier = Modifier.fillMaxSize(),
                         address2 = item.address2,

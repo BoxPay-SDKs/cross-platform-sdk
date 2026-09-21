@@ -23,9 +23,16 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.amex_cvv_position_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.amex_cvv_position_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.cvv_info_image
 import crossplatformsdk.cross_platform_sdk.generated.resources.cvv_info_image_amex
+import crossplatformsdk.cross_platform_sdk.generated.resources.generic_position_for_cvv_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.generic_position_for_cvv_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.got_it_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.where_to_find_cvv_title
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +51,7 @@ internal fun CvvInfoBottomSheet(onClick: () -> Unit, buttonColor : String, borde
 
             // --- Title ---
             Text(
-                text       = "Where to find CVV?",
+                text       = stringResource(Res.string.where_to_find_cvv_title),
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
                 fontSize   = 18.sp,
@@ -62,14 +69,14 @@ internal fun CvvInfoBottomSheet(onClick: () -> Unit, buttonColor : String, borde
 
             // --- Generic CVV Info ---
             Text(
-                text       = "Generic position for CVV",
+                text       = stringResource(Res.string.generic_position_for_cvv_title),
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
                 fontSize   = 14.sp,
                 modifier   = Modifier.padding(top = 12.dp)
             )
             Text(
-                text       = "3 digit numeric code on the back side of card",
+                text       = stringResource(Res.string.generic_position_for_cvv_desc),
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
                 fontSize   = 14.sp,
@@ -94,14 +101,14 @@ internal fun CvvInfoBottomSheet(onClick: () -> Unit, buttonColor : String, borde
 
             // --- Amex CVV Info ---
             Text(
-                text       = "CVV for American Express Card",
+                text       = stringResource(Res.string.amex_cvv_position_title),
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
                 fontSize   = 14.sp,
                 modifier   = Modifier.padding(top = 12.dp)
             )
             Text(
-                text       = "4 digit numeric code on the front side of the card, just above the card number",
+                text       = stringResource(Res.string.amex_cvv_position_desc),
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
                 fontSize   = 14.sp,
@@ -111,7 +118,7 @@ internal fun CvvInfoBottomSheet(onClick: () -> Unit, buttonColor : String, borde
 
             // --- Got it Button ---
             PayButton(
-                text = "Got it!",
+                text = stringResource(Res.string.got_it_cta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)

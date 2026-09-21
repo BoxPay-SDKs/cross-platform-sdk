@@ -8,10 +8,13 @@ import com.crossplatform.sdk.domain.model.ApiErrorResponseModel
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.getStatus
 import com.crossplatform.sdk.presentation.resolveErrorMessage
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.payment_failed_error_messages
+import org.jetbrains.compose.resources.getString
 
 private const val PAYMENT_MAX_ATTEMPTS_REACHED = "BE_1815"
 private const val CHECKOUT_MAX_ATTEMPTS_REACHED = "BE_1816"
-internal fun handlePaymentResponse(
+internal suspend fun handlePaymentResponse(
     response: ApiResponse<PaymentMethodPostResponse>,
     onRevolutPay: ((String, String) -> Unit)? = null,
     onSetNativeOtp : ((Int, Int, String, String) -> Unit)? = null,
@@ -139,7 +142,7 @@ internal fun handlePaymentResponse(
                     val resolvedErrorMessage = resolveErrorMessage(
                         reasonCode = structuredError?.reasonCode,
                         reason = structuredError?.message,
-                        fallback = "You may have cancelled the payment or there was a delay in response. Please retry."
+                        fallback = getString(Res.string.payment_failed_error_messages)
                     )
                     CheckoutDetailsHandler.setErrorMessage(
                         resolvedErrorMessage

@@ -37,11 +37,15 @@ import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.add_icon
+import crossplatformsdk.cross_platform_sdk.generated.resources.add_new_card_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_trash
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.set_up_si_instructions
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SavedCardComponent(
@@ -118,7 +122,7 @@ internal fun SavedCardComponent(
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text       = "Add new Card",
+                    text       = stringResource(Res.string.add_new_card_cta),
                     fontSize   = 14.sp,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
@@ -259,7 +263,7 @@ private fun SavedCardRow(
                     onClick     = { isSICheckBoxChecked = !isSICheckBoxChecked }
                 )
                 Text(
-                    text       = "Set up Standing Instructions (SI) for this payment.",
+                    text       = stringResource(Res.string.set_up_si_instructions),
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize   = 14.sp,
@@ -272,7 +276,7 @@ private fun SavedCardRow(
         // Pay button
         if (isSelected) {
             PayButton(
-                text = "Pay",
+                text = stringResource(Res.string.pay_cta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp)

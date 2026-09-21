@@ -1,0 +1,218 @@
+<!-- values-fr/strings.xml -->
+<resources>
+    <!--    Header String Resources-->
+    <string name="payment_details">Détails du paiement</string>
+    <string name="address_title">Adresse</string>
+    <string name="deliver_at_title">Livrer à </string>
+    <string name="personal_details_title">Informations personnelles</string>
+    <string name="cards_title">Cartes</string>
+    <string name="shipping_address_title">Adresse de livraison</string>
+    <string name="wallet_title">Portefeuille</string>
+    <string name="net_banking_title">Virements bancaires</string>
+    <string name="emi_title">Paiement échelonné</string>
+    <string name="bnpl_title">Achetez maintenant, payez plus tard</string>
+    <string name="pay_via_upi_apps_title">Payer via une application UPI</string>
+    <string name="pay_by_any_upi_title">Payer avec n'importe quel UPI</string>
+    <string name="add_address_title">Ajouter une adresse</string>
+    <string name="edit_address_title">Modifier l'adresse</string>
+    <string name="add_personal_details_title">Ajouter des informations personnelles</string>
+    <string name="edit_personal_details_title">Modifier les informations personnelles</string>
+    <string name="pay_via_card_title">Payer par carte</string>
+    <string name="select_bank_title">Sélectionner une banque</string>
+    <string name="select_wallet_title">Sélectionner un portefeuille</string>
+    <string name="your_addresses_title">Vos adresses</string>
+    <string name="select_bnpl_title">Sélectionner un service de paiement différé</string>
+    <string name="pay_now_title">PayNow</string>
+    <string name="all_banks_title">Toutes les banques</string>
+    <string name="all_wallets_title">Tous les portefeuilles</string>
+    <string name="select_tenure_title">Sélectionner la durée</string>
+    <string name="instant_offer_title">Offres instantanées</string>
+    <string name="offers_and_discount_title">Offres et réductions</string>
+    <string name="express_checkout_title">Paiement express</string>
+    <string name="choose_emi_option_title">Choisir une option de paiement échelonné</string>
+    <string name="recommended_title">Recommandé</string>
+    <string name="credit_and_debit_card_title">Cartes de crédit et de débit</string>
+    <string name="upi_one_time_mandate_title">Mandat UPI unique</string>
+    <string name="payment_options_title">Options de paiement</string>
+    <string name="more_payment_options_title">Plus d'options de paiement</string>
+    <string name="order_details_title">Détails de la commande</string>
+    <string name="qr_expired_title">Code QR expiré</string>
+    <string name="complete_your_payment_title">Finalisez votre paiement</string>
+
+    <!--    Text input fields string resources-->
+    <string name="search_title">Rechercher</string>
+    <string name="country_title">Pays*</string>
+    <string name="full_name_title">Nom complet*</string>
+    <string name="mobile_code_title">Indicatif*</string>
+    <string name="select_country_text_field">Sélectionner un pays</string>
+    <string name="card_number_title">Numéro de carte*</string>
+    <string name="expiry_title">Expiration (MM/AA)*</string>
+    <string name="cvv_title">CVV*</string>
+    <string name="mobile_number_title">Numéro de mobile*</string>
+    <string name="email_id_title">Adresse e-mail*</string>
+    <string name="postal_code_title">Code postal*</string>
+    <string name="city_title">Ville*</string>
+    <string name="state_title">État/Région*</string>
+    <string name="house_number_title">Numéro, appartement*</string>
+    <string name="area_colony_title">Quartier, rue, secteur</string>
+    <string name="card_holder_name_title">Nom du titulaire*</string>
+    <string name="card_nick_name_title">Nom de la carte (pour l'identifier facilement)</string>
+
+    <!--    CTA string resources-->
+    <string name="know_more_cta">En savoir plus</string>
+    <string name="pay_cta">Payer</string>
+    <string name="go_back_to_home_cta">Retour à l'accueil</string>
+    <string name="got_it_cta">Compris !</string>
+    <string name="exit_checkout_cta">Quitter le paiement</string>
+    <string name="back_to_checkout_cta">Retour au paiement</string>
+    <string name="view_more_cta">Voir plus</string>
+    <string name="view_all_cta">Tout voir ></string>
+    <string name="terms_and_conditions_cta">Conditions générales</string>
+    <string name="resend_otp_cta">Renvoyer l'OTP</string>
+    <string name="cancel_cta">Annuler</string>
+    <string name="remove_cta">SUPPRIMER</string>
+    <string name="apply_cta">APPLIQUER</string>
+    <string name="less_cta">- MOINS</string>
+    <string name="change_cta">Modifier</string>
+    <string name="more_cta">+ PLUS</string>
+    <string name="save_address_cta">Enregistrer l'adresse</string>
+    <string name="save_personal_details_cta">Enregistrer les informations personnelles</string>
+    <string name="continue_on_bank_page_cta">Continuer sur la page de la banque</string>
+    <string name="more_options_cta">Plus d'options</string>
+    <string name="retry_payment_cta">Réessayer le paiement</string>
+    <string name="add_new_card_cta">Ajouter une nouvelle carte</string>
+    <string name="swipe_to_pay_cta">Glisser pour payer </string>
+    <string name="proceed_to_pay_cta">Procéder au paiement</string>
+    <string name="yes_cta">Oui</string>
+    <string name="no_cta">Non</string>
+    <string name="ok_cta">OK</string>
+    <string name="downloading_qr_cta">Téléchargement du QR...</string>
+    <string name="download_qr_cta">Télécharger le QR</string>
+    <string name="get_new_qr_cta">Obtenir un nouveau QR</string>
+
+    <!--    Information String Resources-->
+    <string name="set_up_si_instructions">Configurez les instructions permanentes (SI) pour ce paiement.</string>
+    <string name="cvv_not_be_stored_info">Le CVV ne sera pas enregistré</string>
+    <string name="secured_by_info">Sécurisé par</string>
+    <string name="save_this_card_info">Enregistrez cette carte conformément aux directives RBI.</string>
+    <string name="where_to_find_cvv_title">Où trouver le CVV ?</string>
+    <string name="generic_position_for_cvv_title">Emplacement habituel du CVV</string>
+    <string name="generic_position_for_cvv_desc">Code numérique à 3 chiffres au dos de la carte</string>
+    <string name="amex_cvv_position_title">CVV pour carte American Express</string>
+    <string name="amex_cvv_position_desc">Code numérique à 4 chiffres au recto de la carte, juste au-dessus du numéro de carte</string>
+    <string name="rbi_guideline_info_1">Votre banque/réseau de carte enregistrera en toute sécurité les informations de votre carte via la tokenisation, si vous y consentez.</string>
+    <string name="rbi_guideline_info_2">Si vous choisissez de ne pas tokeniser, vous devrez saisir les détails de votre carte à chaque paiement.</string>
+    <string name="enter_otp_info">Vous n'avez pas reçu le code ?</string>
+    <string name="resend_otp_info">Plus aucun renvoi disponible</string>
+    <string name="you_saved_info">Vous avez économisé</string>
+    <string name="price_details_info">Détails du prix</string>
+    <string name="sub_total_info">Sous-total</string>
+    <string name="total_info">Montant total</string>
+    <string name="taxes_and_fees_info">Taxes et frais</string>
+    <string name="shipping_amount_info">Frais de livraison</string>
+    <string name="last_used_info">Dernière utilisation</string>
+    <string name="loading_info">Chargement...</string>
+    <string name="gpay_info">GPay</string>
+    <string name="phonepe_info">PhonePe</string>
+    <string name="paytm_info">PayTm</string>
+    <string name="bhim_info">Bhim</string>
+    <string name="mobikwik_info">Mobikwik</string>
+    <string name="bharatpe_info">BharatPe</string>
+    <string name="jupiter_info">Jupiter</string>
+    <string name="upi_info">UPI</string>
+    <string name="qr_valid_info">Le QR est valable pour</string>
+    <string name="qr_ready_info">QR prêt</string>
+    <string name="download_qr_info">Téléchargez le QR et scannez-le avec une application compatible PayNow.</string>
+    <string name="upi_mandate_info">Mandat UPI</string>
+    <string name="order_summary_info">Récapitulatif de la commande</string>
+    <string name="last_used_payment_option_info">Dernier mode de paiement utilisé</string>
+    <string name="currently_selected_info">ACTUELLEMENT SÉLECTIONNÉ</string>
+    <string name="try_another_payment_method_info">Essayez un autre mode de paiement</string>
+    <string name="auto_retry_info">Un seul prélèvement réussi sera traité.</string>
+    <string name="pay_now_qr_expires_info">Une fois le minuteur expiré, ce QR ne sera plus valable.</string>
+    <string name="qr_expired_desc_info">Ce code QR a expiré. Veuillez en obtenir un nouveau pour continuer.</string>
+    <string name="home_info">Domicile</string>
+    <string name="work_info">Travail</string>
+    <string name="other_info">Autre</string>
+    <string name="expires_in_info">Expire dans</string>
+    <string name="avoid_back_button_in_upi_timer_info">Merci d'éviter d'utiliser le bouton retour tant que la transaction n'est pas terminée</string>
+    <string name="upi_timer_info">Ouvrez votre application UPI et confirmez le paiement avant l'expiration du délai</string>
+
+    <!--    String resources with values-->
+    <string name="duration_months_x">%1$s mois x</string>
+    <string name="percent_title">@%1$s % par an</string>
+    <string name="resend_otp_timer">Renvoyer dans %1$s</string>
+    <string name="offer_code_applied">%1$s appliqué !</string>
+    <string name="count_more">+%1$d de plus</string>
+    <string name="offer_available">%1$d offres disponibles</string>
+    <string name="native_otp_page_timer">Cette page expirera dans %1$s</string>
+    <string name="offer_info">Applicable sur toutes les transactions effectuées avec %1$s</string>
+    <string name="extra_applied_as_surcharge">%1$s %1$d appliqué en supplément</string>
+    <string name="mobile_number">Mobile : %1$s</string>
+    <string name="confirm_to_delete_card_header">Voulez-vous vraiment supprimer la carte %1$s enregistrée ?</string>
+
+    <!--    Empty list string resources-->
+    <string name="no_result_found_title">Oups !! Aucun résultat trouvé</string>
+    <string name="no_result_found_desc">Veuillez essayer une autre recherche</string>
+
+    <!--    Bottom Sheet Headers-->
+    <string name="payment_attempt_limit_reached_header">Limite de tentatives de paiement atteinte</string>
+    <string name="exit_checkout_header">Quitter le paiement ?</string>
+    <string name="rbi_guidelines_header">Directives RBI</string>
+    <string name="enter_otp_title">Saisir l'OTP</string>
+    <string name="payment_failed_title">Échec du paiement</string>
+    <string name="retrying_your_payment_securely_header">Nouvelle tentative sécurisée de votre paiement</string>
+    <string name="payment_method_limit_reached_title">Limite du mode de paiement atteinte</string>
+    <string name="payment_successful_header">Paiement réussi</string>
+    <string name="payment_expired_header">La session de paiement a expiré.</string>
+    <string name="unable_to_remove_card_header">Impossible de supprimer la carte</string>
+    <string name="download_complete">Téléchargement terminé</string>
+    <string name="download_failed">Échec du téléchargement</string>
+    <string name="how_to_pay_title">Comment payer</string>
+    <string name="cancel_payment_title">Annuler le paiement ?</string>
+
+
+    <!--    Bottom Sheet Description-->
+    <string name="payment_attempt_limit_reached_desc">Le nombre maximal de tentatives de paiement a été atteint. Retournez sur le site du marchand pour démarrer un nouveau paiement.</string>
+    <string name="exit_checkout_desc">Votre paiement n'est pas encore terminé. Si vous quittez maintenant, votre progression sera perdue.</string>
+    <string name="rbi_guidelines_desc">Conformément aux nouvelles directives RBI, nous ne pouvons plus stocker les informations de votre carte.</string>
+    <string name="enter_otp_desc">Saisissez le mot de passe à usage unique envoyé à votre numéro de mobile enregistré.</string>
+    <string name="qr_code_save_complete_desc">Code QR enregistré dans votre dossier de téléchargements.</string>
+    <string name="qr_code_save_failed_desc">Nous n'avons pas pu enregistrer le code QR. Vérifiez les autorisations de stockage et réessayez.</string>
+    <string name="unable_to_remove_card_desc">Nous n'avons pas pu supprimer votre carte enregistrée en raison d'un problème. Votre carte reste enregistrée.</string>
+    <string name="retrying_your_payment_securely_desc">Le paiement a échoué. Nouvelle tentative avec un autre partenaire de paiement. L'OTP pourrait être requis à nouveau.</string>
+    <string name="payment_method_retry_limit_reached_desc">Vous avez atteint le nombre maximal de tentatives de paiement pour ce mode de paiement. Veuillez choisir un autre mode de paiement pour continuer</string>
+    <string name="payment_expired_desc">Pour votre sécurité, votre session a expiré en raison d'inactivité. Veuillez recommencer le processus de paiement.</string>
+    <string name="pay_instruction_desc_1">Téléchargez le code QR et ouvrez-le sur un autre appareil. Lancez votre application bancaire sur votre mobile et scannez le code QR pour effectuer le paiement.</string>
+    <string name="pay_instruction_num_1">1.</string>
+    <string name="pay_instruction_num_2">2.</string>
+    <string name="pay_instruction_num_3">3.</string>
+    <string name="pay_instruction_num_4">4.</string>
+    <string name="pay_instruction_desc_2">Votre paiement sera effectué au bénéficiaire indiqué sur l'écran de paiement.</string>
+    <string name="pay_instruction_desc_3">Ne fermez pas et n'actualisez pas cette fenêtre, le traitement du paiement pouvant prendre jusqu'à 2 minutes.</string>
+    <string name="pay_instruction_desc_4">Vous serez redirigé vers le marchand une fois le paiement terminé.</string>
+    <string name="cancel_payment_desc">Êtes-vous sûr de vouloir annuler ce paiement ?</string>
+
+    <!--    Error Messages-->
+    <string name="enter_otp_error_message">OTP saisi invalide. Veuillez réessayer.</string>
+    <string name="required_error_message">Obligatoire</string>
+    <string name="invalid_email_error_message">E-mail invalide</string>
+    <string name="invalid_expiry_error_message">Date d'expiration invalide</string>
+    <string name="invalid_cvv_error_message">CVV invalide</string>
+    <string name="card_not_supported_error_message">Cette carte n'est pas prise en charge pour ce paiement</string>
+    <string name="postal_code_error_message">Le code postal doit comporter 6 chiffres</string>
+    <string name="enter_a_valid_number_error_message">Saisissez un numéro valide</string>
+    <string name="invalid_card_number_error_message">Numéro de carte invalide</string>
+    <string name="payment_failed_error_messages">Vous avez peut-être annulé le paiement ou un délai de réponse s'est produit. Veuillez réessayer.</string>
+
+    <!--    Cta with values-->
+    <string name="auto_retry_cta_with_value">Nouvelle tentative dans %1$s – Appuyez pour annuler</string>
+
+    <!--    Error messages with values-->
+    <string name="must_be_at_least_error_message">Doit être au moins %1$d</string>
+    <string name="must_be_at_most_error_message">Doit être au plus %1$d</string>
+    <string name="must_be_at_least_characters">Doit contenir au moins %1$d caractères</string>
+    <string name="must_be_at_most_characters">Doit contenir au plus %1$d caractères</string>
+    <string name="must_be_exactly_characters_error_message">Doit contenir exactement %1$d caractères</string>
+    <string name="mobile_number_error_message">Le numéro de mobile doit comporter %1$d chiffres</string>
+</resources>

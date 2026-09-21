@@ -19,6 +19,9 @@ import com.crossplatform.sdk.presentation.components.BankComponent
 import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.viewmodel.WalletViewModel
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.all_wallets_title
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -109,7 +112,7 @@ internal fun WalletScreen(
                 amount = amount.value,
                 currencySymbol = currencyCode,
                 ctaBorderRadius = ctaBorderRadius.value,
-                title = "All Wallet",
+                title = stringResource(Res.string.all_wallets_title),
                 surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
             )
         }

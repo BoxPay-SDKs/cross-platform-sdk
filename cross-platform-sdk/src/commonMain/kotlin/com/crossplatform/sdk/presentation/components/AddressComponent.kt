@@ -27,9 +27,13 @@ import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.address_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.deliver_at_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_location
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_user
+import crossplatformsdk.cross_platform_sdk.generated.resources.personal_details_title
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AddressComponent(
@@ -59,7 +63,7 @@ internal fun AddressComponent(
 
         // --- Case 1: Address exists ---
         if (address.isNotEmpty() && isShippingAddressEnabled) {
-            SectionTitle("Address")
+            SectionTitle(stringResource(Res.string.address_title))
 
             AddressCard(
                 onClick = {
@@ -78,7 +82,7 @@ internal fun AddressComponent(
                 ) {
                     Text(
                         text = buildAnnotatedString {
-                            append("Deliver at ")
+                            append(stringResource(Res.string.deliver_at_title))
                             withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                                 append(
                                     if (labelType == "Other") labelName ?: ""
@@ -106,7 +110,7 @@ internal fun AddressComponent(
             }
         }
         else if (showPersonalDetails) {
-            SectionTitle("Personal Details")
+            SectionTitle(stringResource(Res.string.personal_details_title))
 
             val isEditable = isFullNameEditable ||
                     isPhoneEditable ||

@@ -28,10 +28,14 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.go_back_to_home_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.payment_attempt_limit_reached_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.payment_attempt_limit_reached_header
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -74,7 +78,7 @@ internal fun CheckoutLimitReached(
 
             // Title
             Text(
-                text       = "Payment attempts limit reached",
+                text       = stringResource(Res.string.payment_attempt_limit_reached_header),
                 fontSize   = 22.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
@@ -86,7 +90,7 @@ internal fun CheckoutLimitReached(
 
             // Description
             Text(
-                text       = "The maximum number of payment attempts has been reached. Please return to the merchant website and start a new payment.",
+                text       = stringResource(Res.string.payment_attempt_limit_reached_desc),
                 fontSize   = 14.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
@@ -98,7 +102,7 @@ internal fun CheckoutLimitReached(
 
             // Exit Checkout button
             PayButton(
-                text = "Go Back to Home",
+                text = stringResource(Res.string.go_back_to_home_cta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp)

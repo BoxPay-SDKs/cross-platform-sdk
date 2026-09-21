@@ -35,6 +35,7 @@ import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.cancel_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_bnpl
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_emi
@@ -42,12 +43,16 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_wallet
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_wallet_semi_bold
+import crossplatformsdk.cross_platform_sdk.generated.resources.payment_method_limit_reached_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.payment_method_retry_limit_reached_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.try_another_payment_method_info
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -92,7 +97,7 @@ internal fun PaymentMaxRetryReached(
 
             // Title
             Text(
-                text       = "Payment method limit reached",
+                text       = stringResource(Res.string.payment_method_limit_reached_title),
                 fontSize   = 22.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
@@ -102,7 +107,7 @@ internal fun PaymentMaxRetryReached(
 
             // Description
             Text(
-                text       = "You’ve reached the maximum number of payment attempts for this payment method. Please select a different payment method to continue",
+                text       = stringResource(Res.string.payment_method_retry_limit_reached_desc),
                 fontSize   = 14.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
@@ -114,7 +119,7 @@ internal fun PaymentMaxRetryReached(
 
             // "Try another method" label
             Text(
-                text       = "Try another payment method",
+                text       = stringResource(Res.string.try_another_payment_method_info),
                 fontSize   = 13.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Medium,
@@ -164,7 +169,7 @@ internal fun PaymentMaxRetryReached(
 
             // Dismiss / Cancel button
             PayButton(
-                text = "Cancel",
+                text = stringResource(Res.string.cancel_cta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp)

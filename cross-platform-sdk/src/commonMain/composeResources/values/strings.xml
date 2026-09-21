@@ -1,0 +1,218 @@
+<!-- values/strings.xml -->
+<resources>
+<!--    Header String Resources-->
+    <string name="payment_details">Payment details</string>
+    <string name="address_title">Address</string>
+    <string name="deliver_at_title">Deliver at </string>
+    <string name="personal_details_title">Personal Details</string>
+    <string name="cards_title">Cards</string>
+    <string name="shipping_address_title">Shipping Address</string>
+    <string name="wallet_title">Wallet</string>
+    <string name="net_banking_title">Bank Transfers</string>
+    <string name="emi_title">EMI</string>
+    <string name="bnpl_title">Buy Now Pay Later</string>
+    <string name="pay_via_upi_apps_title">Pay via UPI Apps</string>
+    <string name="pay_by_any_upi_title">Pay by any UPI</string>
+    <string name="add_address_title">Add Address</string>
+    <string name="edit_address_title">Edit Address</string>
+    <string name="add_personal_details_title">Add Personal Details</string>
+    <string name="edit_personal_details_title">Edit Personal Details</string>
+    <string name="pay_via_card_title">Pay via Card</string>
+    <string name="select_bank_title">Select Bank</string>
+    <string name="select_wallet_title">Select Wallet</string>
+    <string name="your_addresses_title">Your Addresses</string>
+    <string name="select_bnpl_title">Select BNPL</string>
+    <string name="pay_now_title">PayNow</string>
+    <string name="all_banks_title">All Banks</string>
+    <string name="all_wallets_title">All Wallet</string>
+    <string name="select_tenure_title">Select Tenure</string>
+    <string name="instant_offer_title">Instant Offers</string>
+    <string name="offers_and_discount_title">Offers &amp; discounts</string>
+    <string name="express_checkout_title">Express Checkout</string>
+    <string name="choose_emi_option_title">Choose EMI Option</string>
+    <string name="recommended_title">Recommended</string>
+    <string name="credit_and_debit_card_title">Credit &amp; Debit Cards</string>
+    <string name="upi_one_time_mandate_title">UPI One Time Mandate</string>
+    <string name="payment_options_title">Payment Options</string>
+    <string name="more_payment_options_title">More Payment Options</string>
+    <string name="order_details_title">Order Details</string>
+    <string name="qr_expired_title">QR Expired</string>
+    <string name="complete_your_payment_title">Complete your payment</string>
+
+<!--    Text input fields string resources-->
+    <string name="search_title">Search</string>
+    <string name="country_title">Country*</string>
+    <string name="full_name_title">Full Name*</string>
+    <string name="mobile_code_title">Code*</string>
+    <string name="select_country_text_field">Select Country</string>
+    <string name="card_number_title">Card Number*</string>
+    <string name="expiry_title">Expiry (MM/YY)*</string>
+    <string name="cvv_title">CVV*</string>
+    <string name="mobile_number_title">Mobile Number*</string>
+    <string name="email_id_title">Email ID*</string>
+    <string name="postal_code_title">Postal code*</string>
+    <string name="city_title">City*</string>
+    <string name="state_title">State*</string>
+    <string name="house_number_title">House number, Apartment*</string>
+    <string name="area_colony_title">Area, Colony, Street, Sector</string>
+    <string name="card_holder_name_title">Cardholder Name*</string>
+    <string name="card_nick_name_title">Card NickName (for easy identification)</string>
+
+<!--    CTA string resources-->
+    <string name="know_more_cta">Know more</string>
+    <string name="pay_cta">Pay</string>
+    <string name="go_back_to_home_cta">Go Back to Home</string>
+    <string name="got_it_cta">Got it!</string>
+    <string name="exit_checkout_cta">Exit checkout</string>
+    <string name="back_to_checkout_cta">Back to Checkout</string>
+    <string name="view_more_cta">View More</string>
+    <string name="view_all_cta">View all ></string>
+    <string name="terms_and_conditions_cta">Terms &amp; Conditions</string>
+    <string name="resend_otp_cta">Resend OTP</string>
+    <string name="cancel_cta">Cancel</string>
+    <string name="remove_cta">REMOVE</string>
+    <string name="apply_cta">APPLY</string>
+    <string name="less_cta">- LESS</string>
+    <string name="change_cta">Change</string>
+    <string name="more_cta">+ MORE</string>
+    <string name="save_address_cta">Save Address</string>
+    <string name="save_personal_details_cta">Save Personal Details</string>
+    <string name="continue_on_bank_page_cta">Continue on Bank page</string>
+    <string name="more_options_cta">More Options</string>
+    <string name="retry_payment_cta">Retry Payment</string>
+    <string name="add_new_card_cta">Add new Card</string>
+    <string name="swipe_to_pay_cta">Swipe to Pay </string>
+    <string name="proceed_to_pay_cta">Proceed to Pay</string>
+    <string name="yes_cta">Yes</string>
+    <string name="no_cta">No</string>
+    <string name="ok_cta">OK</string>
+    <string name="downloading_qr_cta">Downloading QR...</string>
+    <string name="download_qr_cta">Download QR</string>
+    <string name="get_new_qr_cta">Get New QR</string>
+
+<!--    Information String Resources-->
+    <string name="set_up_si_instructions">Set up Standing Instructions (SI) for this payment.</string>
+    <string name="cvv_not_be_stored_info">CVV will not be stored</string>
+    <string name="secured_by_info">Secured by</string>
+    <string name="save_this_card_info">Save this card as per RBI guidelines.</string>
+    <string name="where_to_find_cvv_title">Where to find CVV?</string>
+    <string name="generic_position_for_cvv_title">Generic position for CVV</string>
+    <string name="generic_position_for_cvv_desc">3 digit numeric code on the back side of card</string>
+    <string name="amex_cvv_position_title">CVV for American Express Card</string>
+    <string name="amex_cvv_position_desc">4 digit numeric code on the front side of the card, just above the card number</string>
+    <string name="rbi_guideline_info_1">Your bank/card network will securely save your card information via tokenization if you consent for the same.</string>
+    <string name="rbi_guideline_info_2">In case you choose to not tokenize, you'll have to enter card details every time you pay.</string>
+    <string name="enter_otp_info">Didn't receive the code?</string>
+    <string name="resend_otp_info">No more resends left</string>
+    <string name="you_saved_info">You saved</string>
+    <string name="price_details_info">Price Details</string>
+    <string name="sub_total_info">Subtotal</string>
+    <string name="total_info">Total Amount</string>
+    <string name="taxes_and_fees_info">Taxes and Fees</string>
+    <string name="shipping_amount_info">Shipping Amount</string>
+    <string name="last_used_info">Last Used</string>
+    <string name="loading_info">Loading...</string>
+    <string name="gpay_info">GPay</string>
+    <string name="phonepe_info">PhonePe</string>
+    <string name="paytm_info">PayTm</string>
+    <string name="bhim_info">Bhim</string>
+    <string name="mobikwik_info">Mobikwik</string>
+    <string name="bharatpe_info">BharatPe</string>
+    <string name="jupiter_info">Jupiter</string>
+    <string name="upi_info">UPI</string>
+    <string name="qr_valid_info">QR is valid for</string>
+    <string name="qr_ready_info">QR Ready</string>
+    <string name="download_qr_info">Download the QR and scan using any PayNow supported app.</string>
+    <string name="upi_mandate_info">UPI Mandate</string>
+    <string name="order_summary_info">Order Summary</string>
+    <string name="last_used_payment_option_info">Last Used Payment Option</string>
+    <string name="currently_selected_info">CURRENTLY SELECTED</string>
+    <string name="try_another_payment_method_info">Try another payment method</string>
+    <string name="auto_retry_info">Only one successful charge will be processed.</string>
+    <string name="pay_now_qr_expires_info">Once the timer expires, this QR will no longer be valid.</string>
+    <string name="qr_expired_desc_info">This QR code has expired.Please fetch a new QR to continue.</string>
+    <string name="home_info">Home</string>
+    <string name="work_info">Work</string>
+    <string name="other_info">Other</string>
+    <string name="expires_in_info">Expires in</string>
+    <string name="avoid_back_button_in_upi_timer_info">Kindly avoid using the back button until the transaction process is complete</string>
+    <string name="upi_timer_info">Open your UPI application and confirm the payment before the time expires</string>
+
+<!--    String resources with values-->
+    <string name="duration_months_x">%1$s months x</string>
+    <string name="percent_title">@%1$s% p.a.</string>
+    <string name="resend_otp_timer">Resend in %1$s</string>
+    <string name="offer_code_applied">%1$s applied!</string>
+    <string name="count_more">+%1$d more</string>
+    <string name="offer_available">%1$d offers available</string>
+    <string name="native_otp_page_timer">This page will expire in %1$s</string>
+    <string name="offer_info">Applicable on all transactions made using %1$s</string>
+    <string name="extra_applied_as_surcharge">%1$s %1$d extra applied as surcharge</string>
+    <string name="mobile_number">Mobile: %1$s</string>
+    <string name="confirm_to_delete_card_header">Do you actually want to delete the saved %1$s Card?</string>
+
+<!--    Empty list string resources-->
+    <string name="no_result_found_title">Oops!! No results found</string>
+    <string name="no_result_found_desc">Please try another search</string>
+
+<!--    Bottom Sheet Headers-->
+    <string name="payment_attempt_limit_reached_header">Payment attempts limit reached</string>
+    <string name="exit_checkout_header">Exit checkout?</string>
+    <string name="rbi_guidelines_header">RBI Guidelines</string>
+    <string name="enter_otp_title">Enter OTP</string>
+    <string name="payment_failed_title">Payment Failed</string>
+    <string name="retrying_your_payment_securely_header">Retrying your payment securely</string>
+    <string name="payment_method_limit_reached_title">Payment method limit reached</string>
+    <string name="payment_successful_header">Payment Successful</string>
+    <string name="payment_expired_header">Payment session has expired.</string>
+    <string name="unable_to_remove_card_header">Unable to Remove Card</string>
+    <string name="download_complete">Download complete</string>
+    <string name="download_failed">Download failed</string>
+    <string name="how_to_pay_title">How to pay</string>
+    <string name="cancel_payment_title">Cancel Payment?</string>
+
+
+    <!--    Bottom Sheet Description-->
+    <string name="payment_attempt_limit_reached_desc">The maximum number of payment attempts has been reached. Please return to the merchant website and start a new payment.</string>
+    <string name="exit_checkout_desc">Your payment hasn't been completed yet. If you exit now, your progress will be lost.</string>
+    <string name="rbi_guidelines_desc">As per the new RBI guidelines, we can no longer store your card information with us.</string>
+    <string name="enter_otp_desc">Enter the one-time password sent to your registered mobile number.</string>
+    <string name="qr_code_save_complete_desc">QR code saved to your Downloads folder.</string>
+    <string name="qr_code_save_failed_desc">We couldn't save the QR code. Please check your storage permissions and try again.</string>
+    <string name="unable_to_remove_card_desc">We couldn't remove your saved card due to an issue. Your card is still saved.</string>
+    <string name="retrying_your_payment_securely_desc">Payment failed. Retrying with another payment partner. OTP may be required again.</string>
+    <string name="payment_method_retry_limit_reached_desc">You’ve reached the maximum number of payment attempts for this payment method. Please select a different payment method to continue</string>
+    <string name="payment_expired_desc">For your security, your session has expired due to inactivity. Please restart the payment process.</string>
+    <string name="pay_instruction_desc_1">Download the QR code and open it on another device. Launch your banking app on your mobile phone and scan the QR code to make payment.</string>
+    <string name="pay_instruction_num_1">1.</string>
+    <string name="pay_instruction_num_2">2.</string>
+    <string name="pay_instruction_num_3">3.</string>
+    <string name="pay_instruction_num_4">4.</string>
+    <string name="pay_instruction_desc_2">Your payment will be made to the recipient shown on the payment screen.</string>
+    <string name="pay_instruction_desc_3">Do not close or refresh this window as it may take up to 2 mins for payment to be processed.</string>
+    <string name="pay_instruction_desc_4">You will be taken back to the merchant once the payment process is completed.</string>
+    <string name="cancel_payment_desc">Are you sure you want to cancel this payment?</string>
+
+<!--    Error Messages-->
+    <string name="enter_otp_error_message">Invalid OTP entered. Please try again.</string>
+    <string name="required_error_message">Required</string>
+    <string name="invalid_email_error_message">Invalid Email</string>
+    <string name="invalid_expiry_error_message">Invalid Expiry</string>
+    <string name="invalid_cvv_error_message">Invalid CVV</string>
+    <string name="card_not_supported_error_message">This card is not supported for the payment</string>
+    <string name="postal_code_error_message">Postal code must be 6 digits</string>
+    <string name="enter_a_valid_number_error_message">Enter a valid number</string>
+    <string name="invalid_card_number_error_message">Invalid card number</string>
+    <string name="payment_failed_error_messages">You may have cancelled the payment or there was a delay in response. Please retry.</string>
+
+<!--    Cta with values-->
+    <string name="auto_retry_cta_with_value">Retrying in %1$s – Tap to cancel</string>
+
+<!--    Error messages with values-->
+    <string name="must_be_at_least_error_message">Must be at least %1$d</string>
+    <string name="must_be_at_most_error_message">Must be at most %1$d</string>
+    <string name="must_be_at_least_characters">Must be at least %1$d characters</string>
+    <string name="must_be_at_most_characters">Must be at most %1$d characters</string>
+    <string name="must_be_exactly_characters_error_message">Must be exactly %1$d characters</string>
+    <string name="mobile_number_error_message">Mobile number must be %1$d digits</string>
+</resources>

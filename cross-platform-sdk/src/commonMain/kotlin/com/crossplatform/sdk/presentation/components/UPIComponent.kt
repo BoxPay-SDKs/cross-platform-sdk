@@ -57,8 +57,11 @@ import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.add_icon
+import crossplatformsdk.cross_platform_sdk.generated.resources.bharatpe_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.bhim_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
 import crossplatformsdk.cross_platform_sdk.generated.resources.gpay_icon
+import crossplatformsdk.cross_platform_sdk.generated.resources.gpay_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_bharat_pe
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_bhim_upi
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_jupiter_pay
@@ -66,12 +69,18 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_mobikwik_pay
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_qr
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_upi_error
+import crossplatformsdk.cross_platform_sdk.generated.resources.jupiter_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.mobikwik_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.other_intent_icon
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_via_upi_apps_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.paytm_icon
+import crossplatformsdk.cross_platform_sdk.generated.resources.paytm_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.phonepe_icon
+import crossplatformsdk.cross_platform_sdk.generated.resources.phonepe_info
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 internal val upiRegex = Regex("^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{3,64}$")
@@ -264,7 +273,7 @@ internal fun UPIComponent(
                 if(installed.value.isNotEmpty()) {
                     UpiExpandableHeader(
                         icon        = Res.drawable.other_intent_icon, // swap for whatever icon you want here
-                        label       = "Pay via UPI Apps",
+                        label       = stringResource(Res.string.pay_via_upi_apps_title),
                         isExpanded  = expandedUpiSection == UpiSection.INTENT,
                         buttonColor = buttonColor,
                         onClick     = {
@@ -285,7 +294,7 @@ internal fun UPIComponent(
                     ) {
                         if (isGpayInstalled) {
                             UpiIntentItem(
-                                label       = "GPay",
+                                label       = stringResource(Res.string.gpay_info),
                                 icon        = Res.drawable.gpay_icon,
                                 isSelected  = selectedIntent == "GPay",
                                 buttonColor = buttonColor,
@@ -299,7 +308,7 @@ internal fun UPIComponent(
                         }
                         if (isPhonePeInstalled) {
                             UpiIntentItem(
-                                label       = "PhonePe",
+                                label       = stringResource(Res.string.phonepe_info),
                                 icon        = Res.drawable.phonepe_icon,
                                 isSelected  = selectedIntent == "PhonePe",
                                 buttonColor = buttonColor,
@@ -313,7 +322,7 @@ internal fun UPIComponent(
                         }
                         if (isPaytmInstalled) {
                             UpiIntentItem(
-                                label       = "PayTm",
+                                label       = stringResource(Res.string.paytm_info),
                                 icon        = Res.drawable.paytm_icon,
                                 isSelected  = selectedIntent == "PayTm",
                                 buttonColor = buttonColor,
@@ -327,7 +336,7 @@ internal fun UPIComponent(
                         }
                         if(isBhimUpiInstalled) {
                             UpiIntentItem(
-                                label       = "Bhim",
+                                label       = stringResource(Res.string.bhim_info),
                                 icon        = Res.drawable.ic_bhim_upi,
                                 isSelected  = selectedIntent == "BHIM",
                                 buttonColor = buttonColor,
@@ -357,7 +366,7 @@ internal fun UPIComponent(
 //                }
                         if (isMobikwikInstalled) {
                             UpiIntentItem(
-                                label       = "Mobikwik",
+                                label       = stringResource(Res.string.mobikwik_info),
                                 icon        = Res.drawable.ic_mobikwik_pay,
                                 isSelected  = selectedIntent == "Mobikwik",
                                 buttonColor = buttonColor,
@@ -371,7 +380,7 @@ internal fun UPIComponent(
                         }
                         if (isBharatPeInstalled) {
                             UpiIntentItem(
-                                label       = "BharatPe",
+                                label       = stringResource(Res.string.bharatpe_info),
                                 icon        = Res.drawable.ic_bharat_pe,
                                 isSelected  = selectedIntent == "BharatPe",
                                 buttonColor = buttonColor,
@@ -385,7 +394,7 @@ internal fun UPIComponent(
                         }
                         if (isJupiterInstalled) {
                             UpiIntentItem(
-                                label       = "Jupiter",
+                                label       = stringResource(Res.string.jupiter_info),
                                 icon        = Res.drawable.ic_jupiter_pay,
                                 isSelected  = selectedIntent == "Jupiter",
                                 buttonColor = buttonColor,

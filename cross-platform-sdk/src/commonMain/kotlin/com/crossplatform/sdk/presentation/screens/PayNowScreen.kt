@@ -55,13 +55,36 @@ import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.PayNowScreenViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.download_complete
+import crossplatformsdk.cross_platform_sdk.generated.resources.download_failed
+import crossplatformsdk.cross_platform_sdk.generated.resources.download_qr_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.downloading_qr_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.get_new_qr_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.how_to_pay_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_download
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_timer
+import crossplatformsdk.cross_platform_sdk.generated.resources.ok_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_instruction_desc_1
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_instruction_desc_2
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_instruction_desc_3
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_instruction_desc_4
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_instruction_num_1
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_instruction_num_2
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_instruction_num_3
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_instruction_num_4
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_now_qr_expires_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.paynow_reinitiate_qr_icon
+import crossplatformsdk.cross_platform_sdk.generated.resources.qr_code_save_complete_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.qr_code_save_failed_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.qr_expired_desc_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.qr_expired_icon
+import crossplatformsdk.cross_platform_sdk.generated.resources.qr_expired_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.qr_ready_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.qr_valid_info
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -200,22 +223,22 @@ internal fun PayNowScreen(
             onDismissRequest = { downloadDialogState = null },
             confirmButton = {
                 TextButton(onClick = { downloadDialogState = null }) {
-                    Text("OK", fontFamily = LocalSDKFonts.current.primary)
+                    Text(stringResource(Res.string.ok_cta), fontFamily = LocalSDKFonts.current.primary)
                 }
             },
             title = {
                 Text(
-                    text = if (dialogState is DownloadDialogState.Success) "Download complete"
-                    else "Download failed",
+                    text = if (dialogState is DownloadDialogState.Success) stringResource(Res.string.download_complete)
+                    else stringResource(Res.string.download_failed),
                     fontFamily = LocalSDKFonts.current.primary
                 )
             },
             text = {
                 Text(
                     text = if (dialogState is DownloadDialogState.Success)
-                        "QR code saved to your Downloads folder."
+                        stringResource(Res.string.qr_code_save_complete_desc)
                     else
-                        "We couldn't save the QR code. Please check your storage permissions and try again.",
+                        stringResource(Res.string.qr_code_save_failed_desc),
                     fontFamily = LocalSDKFonts.current.primary
                 )
             }
@@ -278,7 +301,7 @@ private fun PayNowReadyState(
         }
 
         Text(
-            text = "QR Ready",
+            text = stringResource(Res.string.qr_ready_info),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF363840),
@@ -288,7 +311,7 @@ private fun PayNowReadyState(
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "Download the QR and scan using any PayNow supported app.",
+            text = stringResource(Res.string.download_qr_info),
             fontSize = 15.sp,
             lineHeight = 22.sp,
             color = Color(0xFF4F4D55),
@@ -317,7 +340,7 @@ private fun PayNowReadyState(
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Text(
-                    text = "Downloading QR...",
+                    text = stringResource(Res.string.downloading_qr_cta),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = buttonColor.toComposeColor()
@@ -333,7 +356,7 @@ private fun PayNowReadyState(
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Text(
-                    text = "Download QR",
+                    text = stringResource(Res.string.download_qr_info),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = buttonColor.toComposeColor()
@@ -351,7 +374,7 @@ private fun PayNowReadyState(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "Once the timer expires, this QR will no longer be valid.",
+            text = stringResource(Res.string.pay_now_qr_expires_info),
             fontSize = 13.sp,
             color = Color(0xFF4F4D55),
             textAlign = TextAlign.Center
@@ -386,7 +409,7 @@ private fun PayNowExpiredState(
         Spacer(modifier = Modifier.height(26.dp))
 
         Text(
-            text = "QR Expired",
+            text = stringResource(Res.string.qr_expired_title),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF363840),
@@ -396,7 +419,7 @@ private fun PayNowExpiredState(
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "This QR code has expired.Please fetch a new QR to continue.",
+            text = stringResource(Res.string.qr_expired_desc_info),
             fontSize = 15.sp,
             lineHeight = 22.sp,
             color = Color(0xFF363840),
@@ -427,7 +450,7 @@ private fun PayNowExpiredState(
             Spacer(modifier = Modifier.width(10.dp))
 
             Text(
-                text = "Get New QR",
+                text = stringResource(Res.string.get_new_qr_cta),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -468,7 +491,7 @@ private fun QrTimer(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Text(
-                    text = "QR is valid for",
+                    text = stringResource(Res.string.qr_valid_info),
                     fontSize = 14.sp,
                     color = Color(0xFF363840),
                     fontWeight = FontWeight.Medium
@@ -503,7 +526,7 @@ private fun HowToPay() {
     ) {
 
         Text(
-            text = "How to pay",
+            text = stringResource(Res.string.how_to_pay_title),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF363840)
@@ -512,29 +535,29 @@ private fun HowToPay() {
         Spacer(modifier = Modifier.height(14.dp))
 
         PayInstruction(
-            number = "1.",
-            text = "Download the QR code and open it on another device. Launch your banking app on your mobile phone and scan the QR code to make payment."
+            number = stringResource(Res.string.pay_instruction_num_1),
+            text = stringResource(Res.string.pay_instruction_desc_1)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         PayInstruction(
-            number = "2.",
-            text = "Your payment will be made to the recipient shown on the payment screen."
+            number = stringResource(Res.string.pay_instruction_num_2),
+            text = stringResource(Res.string.pay_instruction_desc_2)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         PayInstruction(
-            number = "3.",
-            text = "Do not close or refresh this window as it may take up to 2 mins for payment to be processed."
+            number = stringResource(Res.string.pay_instruction_num_3),
+            text = stringResource(Res.string.pay_instruction_desc_3)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         PayInstruction(
-            number = "4.",
-            text = "You will be taken back to the merchant once the payment process is completed."
+            number = stringResource(Res.string.pay_instruction_num_4),
+            text = stringResource(Res.string.pay_instruction_desc_4)
         )
     }
 }

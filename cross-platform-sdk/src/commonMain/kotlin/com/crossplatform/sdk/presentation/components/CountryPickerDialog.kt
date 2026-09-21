@@ -44,7 +44,9 @@ import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_cross
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_search
+import crossplatformsdk.cross_platform_sdk.generated.resources.select_country_text_field
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 // commonMain
 @Composable
@@ -89,7 +91,7 @@ internal fun CountryPickerDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text       = "Select Country",
+                    text       = stringResource(Res.string.select_country_text_field),
                     fontSize   = 18.sp,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
@@ -112,7 +114,7 @@ internal fun CountryPickerDialog(
                 onValueChange = { searchQuery = it },
                 placeholder   = {
                     Text(
-                        text       = "Search country",
+                        text       = stringResource(Res.string.select_country_text_field),
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
                         color      = Color(0xFFADACAD)

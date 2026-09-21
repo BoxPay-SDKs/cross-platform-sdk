@@ -1,0 +1,218 @@
+<!-- values-mr/strings.xml -->
+<resources>
+    <!--    Header String Resources-->
+    <string name="payment_details">पेमेंट तपशील</string>
+    <string name="address_title">पत्ता</string>
+    <string name="deliver_at_title">येथे डिलिव्हर करा </string>
+    <string name="personal_details_title">वैयक्तिक तपशील</string>
+    <string name="cards_title">कार्ड्स</string>
+    <string name="shipping_address_title">शिपिंग पत्ता</string>
+    <string name="wallet_title">वॉलेट</string>
+    <string name="net_banking_title">बँक ट्रान्सफर</string>
+    <string name="emi_title">ईएमआय</string>
+    <string name="bnpl_title">आता खरेदी करा, नंतर पैसे द्या</string>
+    <string name="pay_via_upi_apps_title">UPI अ‍ॅप्सद्वारे पेमेंट करा</string>
+    <string name="pay_by_any_upi_title">कोणत्याही UPI ने पेमेंट करा</string>
+    <string name="add_address_title">पत्ता जोडा</string>
+    <string name="edit_address_title">पत्ता संपादित करा</string>
+    <string name="add_personal_details_title">वैयक्तिक तपशील जोडा</string>
+    <string name="edit_personal_details_title">वैयक्तिक तपशील संपादित करा</string>
+    <string name="pay_via_card_title">कार्डने पेमेंट करा</string>
+    <string name="select_bank_title">बँक निवडा</string>
+    <string name="select_wallet_title">वॉलेट निवडा</string>
+    <string name="your_addresses_title">तुमचे पत्ते</string>
+    <string name="select_bnpl_title">BNPL निवडा</string>
+    <string name="pay_now_title">PayNow</string>
+    <string name="all_banks_title">सर्व बँका</string>
+    <string name="all_wallets_title">सर्व वॉलेट्स</string>
+    <string name="select_tenure_title">कालावधी निवडा</string>
+    <string name="instant_offer_title">इन्स्टंट ऑफर्स</string>
+    <string name="offers_and_discount_title">ऑफर्स आणि सवलती</string>
+    <string name="express_checkout_title">एक्सप्रेस चेकआउट</string>
+    <string name="choose_emi_option_title">ईएमआय पर्याय निवडा</string>
+    <string name="recommended_title">शिफारस केलेले</string>
+    <string name="credit_and_debit_card_title">क्रेडिट आणि डेबिट कार्ड्स</string>
+    <string name="upi_one_time_mandate_title">UPI वन टाइम मॅंडेट</string>
+    <string name="payment_options_title">पेमेंट पर्याय</string>
+    <string name="more_payment_options_title">अधिक पेमेंट पर्याय</string>
+    <string name="order_details_title">ऑर्डर तपशील</string>
+    <string name="qr_expired_title">QR कालबाह्य झाला</string>
+    <string name="complete_your_payment_title">तुमचे पेमेंट पूर्ण करा</string>
+
+    <!--    Text input fields string resources-->
+    <string name="search_title">शोधा</string>
+    <string name="country_title">देश*</string>
+    <string name="full_name_title">पूर्ण नाव*</string>
+    <string name="mobile_code_title">कोड*</string>
+    <string name="select_country_text_field">देश निवडा</string>
+    <string name="card_number_title">कार्ड नंबर*</string>
+    <string name="expiry_title">एक्सपायरी (MM/YY)*</string>
+    <string name="cvv_title">CVV*</string>
+    <string name="mobile_number_title">मोबाइल नंबर*</string>
+    <string name="email_id_title">ईमेल आयडी*</string>
+    <string name="postal_code_title">पिन कोड*</string>
+    <string name="city_title">शहर*</string>
+    <string name="state_title">राज्य*</string>
+    <string name="house_number_title">घर नंबर, अपार्टमेंट*</string>
+    <string name="area_colony_title">परिसर, कॉलनी, रस्ता, सेक्टर</string>
+    <string name="card_holder_name_title">कार्डधारकाचे नाव*</string>
+    <string name="card_nick_name_title">कार्ड निकनेम (सोप्या ओळखीसाठी)</string>
+
+    <!--    CTA string resources-->
+    <string name="know_more_cta">अधिक जाणून घ्या</string>
+    <string name="pay_cta">पेमेंट करा</string>
+    <string name="go_back_to_home_cta">होमवर परत जा</string>
+    <string name="got_it_cta">समजले!</string>
+    <string name="exit_checkout_cta">चेकआउटमधून बाहेर पडा</string>
+    <string name="back_to_checkout_cta">चेकआउटवर परत जा</string>
+    <string name="view_more_cta">अधिक पहा</string>
+    <string name="view_all_cta">सर्व पहा ></string>
+    <string name="terms_and_conditions_cta">अटी आणि शर्ती</string>
+    <string name="resend_otp_cta">OTP पुन्हा पाठवा</string>
+    <string name="cancel_cta">रद्द करा</string>
+    <string name="remove_cta">काढा</string>
+    <string name="apply_cta">लागू करा</string>
+    <string name="less_cta">- कमी</string>
+    <string name="change_cta">बदला</string>
+    <string name="more_cta">+ अधिक</string>
+    <string name="save_address_cta">पत्ता सेव्ह करा</string>
+    <string name="save_personal_details_cta">वैयक्तिक तपशील सेव्ह करा</string>
+    <string name="continue_on_bank_page_cta">बँक पेजवर पुढे जा</string>
+    <string name="more_options_cta">अधिक पर्याय</string>
+    <string name="retry_payment_cta">पेमेंट पुन्हा प्रयत्न करा</string>
+    <string name="add_new_card_cta">नवीन कार्ड जोडा</string>
+    <string name="swipe_to_pay_cta">पेमेंटसाठी स्वाइप करा </string>
+    <string name="proceed_to_pay_cta">पेमेंटसाठी पुढे जा</string>
+    <string name="yes_cta">होय</string>
+    <string name="no_cta">नाही</string>
+    <string name="ok_cta">ठीक आहे</string>
+    <string name="downloading_qr_cta">QR डाउनलोड होत आहे...</string>
+    <string name="download_qr_cta">QR डाउनलोड करा</string>
+    <string name="get_new_qr_cta">नवीन QR मिळवा</string>
+
+    <!--    Information String Resources-->
+    <string name="set_up_si_instructions">या पेमेंटसाठी स्टँडिंग इन्स्ट्रक्शन्स (SI) सेट करा.</string>
+    <string name="cvv_not_be_stored_info">CVV सेव्ह केला जाणार नाही</string>
+    <string name="secured_by_info">यांच्याद्वारे सुरक्षित</string>
+    <string name="save_this_card_info">RBI मार्गदर्शक तत्त्वांनुसार हे कार्ड सेव्ह करा.</string>
+    <string name="where_to_find_cvv_title">CVV कुठे सापडेल?</string>
+    <string name="generic_position_for_cvv_title">CVV ची सर्वसाधारण जागा</string>
+    <string name="generic_position_for_cvv_desc">कार्डच्या मागील बाजूस असलेला ३ अंकी क्रमांक</string>
+    <string name="amex_cvv_position_title">अमेरिकन एक्स्प्रेस कार्डसाठी CVV</string>
+    <string name="amex_cvv_position_desc">कार्ड नंबरच्या अगदी वर, कार्डच्या पुढील बाजूस असलेला ४ अंकी क्रमांक</string>
+    <string name="rbi_guideline_info_1">तुम्ही संमती दिल्यास, तुमची बँक/कार्ड नेटवर्क टोकनायझेशनद्वारे तुमची कार्ड माहिती सुरक्षितपणे सेव्ह करेल.</string>
+    <string name="rbi_guideline_info_2">जर तुम्ही टोकनायझ न करण्याचा पर्याय निवडला, तर प्रत्येक वेळी पेमेंट करताना तुम्हाला कार्ड तपशील टाकावे लागतील.</string>
+    <string name="enter_otp_info">कोड मिळाला नाही?</string>
+    <string name="resend_otp_info">पुन्हा पाठवण्याची संधी शिल्लक नाही</string>
+    <string name="you_saved_info">तुम्ही वाचवले</string>
+    <string name="price_details_info">किंमत तपशील</string>
+    <string name="sub_total_info">उपएकूण</string>
+    <string name="total_info">एकूण रक्कम</string>
+    <string name="taxes_and_fees_info">कर आणि शुल्क</string>
+    <string name="shipping_amount_info">शिपिंग रक्कम</string>
+    <string name="last_used_info">शेवटचे वापरलेले</string>
+    <string name="loading_info">लोड होत आहे...</string>
+    <string name="gpay_info">GPay</string>
+    <string name="phonepe_info">PhonePe</string>
+    <string name="paytm_info">PayTm</string>
+    <string name="bhim_info">Bhim</string>
+    <string name="mobikwik_info">Mobikwik</string>
+    <string name="bharatpe_info">BharatPe</string>
+    <string name="jupiter_info">Jupiter</string>
+    <string name="upi_info">UPI</string>
+    <string name="qr_valid_info">QR इतक्या वेळेसाठी वैध आहे</string>
+    <string name="qr_ready_info">QR तयार आहे</string>
+    <string name="download_qr_info">QR डाउनलोड करा आणि कोणत्याही PayNow-समर्थित अ‍ॅपने स्कॅन करा.</string>
+    <string name="upi_mandate_info">UPI मॅंडेट</string>
+    <string name="order_summary_info">ऑर्डर सारांश</string>
+    <string name="last_used_payment_option_info">शेवटचा वापरलेला पेमेंट पर्याय</string>
+    <string name="currently_selected_info">सध्या निवडलेले</string>
+    <string name="try_another_payment_method_info">दुसरी पेमेंट पद्धत वापरून पहा</string>
+    <string name="auto_retry_info">फक्त एकच यशस्वी शुल्क प्रक्रिया केली जाईल.</string>
+    <string name="pay_now_qr_expires_info">टायमर संपल्यानंतर, हा QR वैध राहणार नाही.</string>
+    <string name="qr_expired_desc_info">हा QR कोड कालबाह्य झाला आहे. पुढे जाण्यासाठी कृपया नवीन QR मिळवा.</string>
+    <string name="home_info">घर</string>
+    <string name="work_info">काम</string>
+    <string name="other_info">इतर</string>
+    <string name="expires_in_info">इतक्या वेळात कालबाह्य होईल</string>
+    <string name="avoid_back_button_in_upi_timer_info">कृपया व्यवहार प्रक्रिया पूर्ण होईपर्यंत बॅक बटण वापरणे टाळा</string>
+    <string name="upi_timer_info">वेळ संपण्यापूर्वी तुमचे UPI अ‍ॅप उघडा आणि पेमेंटची पुष्टी करा</string>
+
+    <!--    String resources with values-->
+    <string name="duration_months_x">%1$s महिने x</string>
+    <string name="percent_title">@%1$s% प्रति वर्ष</string>
+    <string name="resend_otp_timer">%1$s मध्ये पुन्हा पाठवा</string>
+    <string name="offer_code_applied">%1$s लागू झाले!</string>
+    <string name="count_more">+%1$d अधिक</string>
+    <string name="offer_available">%1$d ऑफर्स उपलब्ध</string>
+    <string name="native_otp_page_timer">हे पेज %1$s मध्ये कालबाह्य होईल</string>
+    <string name="offer_info">%1$s वापरून केलेल्या सर्व व्यवहारांवर लागू</string>
+    <string name="extra_applied_as_surcharge">सरचार्ज म्हणून %1$s %1$d अतिरिक्त लागू</string>
+    <string name="mobile_number">मोबाइल: %1$s</string>
+    <string name="confirm_to_delete_card_header">तुम्हाला खरोखर सेव्ह केलेले %1$s कार्ड हटवायचे आहे का?</string>
+
+    <!--    Empty list string resources-->
+    <string name="no_result_found_title">अरेरे!! कोणतेही निकाल सापडले नाहीत</string>
+    <string name="no_result_found_desc">कृपया दुसरा शोध वापरून पहा</string>
+
+    <!--    Bottom Sheet Headers-->
+    <string name="payment_attempt_limit_reached_header">पेमेंट प्रयत्नांची मर्यादा गाठली</string>
+    <string name="exit_checkout_header">चेकआउटमधून बाहेर पडायचे?</string>
+    <string name="rbi_guidelines_header">RBI मार्गदर्शक तत्त्वे</string>
+    <string name="enter_otp_title">OTP टाका</string>
+    <string name="payment_failed_title">पेमेंट अयशस्वी</string>
+    <string name="retrying_your_payment_securely_header">तुमचे पेमेंट सुरक्षितपणे पुन्हा प्रयत्न करत आहोत</string>
+    <string name="payment_method_limit_reached_title">पेमेंट पद्धतीची मर्यादा गाठली</string>
+    <string name="payment_successful_header">पेमेंट यशस्वी</string>
+    <string name="payment_expired_header">पेमेंट सत्र कालबाह्य झाले आहे.</string>
+    <string name="unable_to_remove_card_header">कार्ड काढणे शक्य झाले नाही</string>
+    <string name="download_complete">डाउनलोड पूर्ण</string>
+    <string name="download_failed">डाउनलोड अयशस्वी</string>
+    <string name="how_to_pay_title">पेमेंट कसे करावे</string>
+    <string name="cancel_payment_title">पेमेंट रद्द करायचे?</string>
+
+
+    <!--    Bottom Sheet Description-->
+    <string name="payment_attempt_limit_reached_desc">पेमेंट प्रयत्नांची कमाल संख्या गाठली आहे. कृपया व्यापाऱ्याच्या वेबसाइटवर परत जा आणि नवीन पेमेंट सुरू करा.</string>
+    <string name="exit_checkout_desc">तुमचे पेमेंट अजून पूर्ण झालेले नाही. आता बाहेर पडल्यास, तुमची प्रगती गमावली जाईल.</string>
+    <string name="rbi_guidelines_desc">नवीन RBI मार्गदर्शक तत्त्वांनुसार, आम्ही यापुढे तुमची कार्ड माहिती आमच्याकडे सेव्ह करू शकत नाही.</string>
+    <string name="enter_otp_desc">तुमच्या नोंदणीकृत मोबाइल नंबरवर पाठवलेला वन-टाइम पासवर्ड टाका.</string>
+    <string name="qr_code_save_complete_desc">QR कोड तुमच्या डाउनलोड्स फोल्डरमध्ये सेव्ह झाला.</string>
+    <string name="qr_code_save_failed_desc">आम्ही QR कोड सेव्ह करू शकलो नाही. कृपया तुमच्या स्टोरेज परवानग्या तपासा आणि पुन्हा प्रयत्न करा.</string>
+    <string name="unable_to_remove_card_desc">एका समस्येमुळे आम्ही तुमचे सेव्ह केलेले कार्ड काढू शकलो नाही. तुमचे कार्ड अजूनही सेव्ह आहे.</string>
+    <string name="retrying_your_payment_securely_desc">पेमेंट अयशस्वी झाले. दुसऱ्या पेमेंट पार्टनरसह पुन्हा प्रयत्न करत आहोत. OTP पुन्हा आवश्यक असू शकतो.</string>
+    <string name="payment_method_retry_limit_reached_desc">या पेमेंट पद्धतीसाठी तुम्ही पेमेंट प्रयत्नांची कमाल संख्या गाठली आहे. पुढे जाण्यासाठी कृपया दुसरी पेमेंट पद्धत निवडा</string>
+    <string name="payment_expired_desc">तुमच्या सुरक्षिततेसाठी, निष्क्रियतेमुळे तुमचे सत्र कालबाह्य झाले आहे. कृपया पेमेंट प्रक्रिया पुन्हा सुरू करा.</string>
+    <string name="pay_instruction_desc_1">QR कोड डाउनलोड करा आणि दुसऱ्या डिव्हाइसवर उघडा. तुमच्या मोबाइलवर बँकिंग अ‍ॅप सुरू करा आणि पेमेंट करण्यासाठी QR कोड स्कॅन करा.</string>
+    <string name="pay_instruction_num_1">1.</string>
+    <string name="pay_instruction_num_2">2.</string>
+    <string name="pay_instruction_num_3">3.</string>
+    <string name="pay_instruction_num_4">4.</string>
+    <string name="pay_instruction_desc_2">तुमचे पेमेंट पेमेंट स्क्रीनवर दाखवलेल्या प्राप्तकर्त्याला केले जाईल.</string>
+    <string name="pay_instruction_desc_3">ही विंडो बंद किंवा रिफ्रेश करू नका, कारण पेमेंट प्रक्रिया होण्यास २ मिनिटांपर्यंत वेळ लागू शकतो.</string>
+    <string name="pay_instruction_desc_4">पेमेंट प्रक्रिया पूर्ण झाल्यावर तुम्हाला व्यापाऱ्याकडे परत नेले जाईल.</string>
+    <string name="cancel_payment_desc">तुम्हाला खरोखर हे पेमेंट रद्द करायचे आहे का?</string>
+
+    <!--    Error Messages-->
+    <string name="enter_otp_error_message">चुकीचा OTP टाकला. कृपया पुन्हा प्रयत्न करा.</string>
+    <string name="required_error_message">आवश्यक</string>
+    <string name="invalid_email_error_message">अवैध ईमेल</string>
+    <string name="invalid_expiry_error_message">अवैध एक्सपायरी</string>
+    <string name="invalid_cvv_error_message">अवैध CVV</string>
+    <string name="card_not_supported_error_message">हे कार्ड या पेमेंटसाठी समर्थित नाही</string>
+    <string name="postal_code_error_message">पिन कोड ६ अंकी असावा</string>
+    <string name="enter_a_valid_number_error_message">वैध क्रमांक टाका</string>
+    <string name="invalid_card_number_error_message">अवैध कार्ड नंबर</string>
+    <string name="payment_failed_error_messages">तुम्ही पेमेंट रद्द केले असावे किंवा प्रतिसादात विलंब झाला असावा. कृपया पुन्हा प्रयत्न करा.</string>
+
+    <!--    Cta with values-->
+    <string name="auto_retry_cta_with_value">%1$s मध्ये पुन्हा प्रयत्न करत आहोत – रद्द करण्यासाठी टॅप करा</string>
+
+    <!--    Error messages with values-->
+    <string name="must_be_at_least_error_message">किमान %1$d असणे आवश्यक आहे</string>
+    <string name="must_be_at_most_error_message">जास्तीत जास्त %1$d असणे आवश्यक आहे</string>
+    <string name="must_be_at_least_characters">किमान %1$d अक्षरे असणे आवश्यक आहे</string>
+    <string name="must_be_at_most_characters">जास्तीत जास्त %1$d अक्षरे असणे आवश्यक आहे</string>
+    <string name="must_be_exactly_characters_error_message">नेमकी %1$d अक्षरे असणे आवश्यक आहे</string>
+    <string name="mobile_number_error_message">मोबाइल नंबर %1$d अंकी असावा</string>
+</resources>

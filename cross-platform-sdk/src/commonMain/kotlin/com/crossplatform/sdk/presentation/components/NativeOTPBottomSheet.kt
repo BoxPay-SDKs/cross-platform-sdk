@@ -67,6 +67,12 @@ import com.crossplatform.sdk.presentation.rememberOtpAutoReader
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.cancel_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.continue_on_bank_page_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.enter_otp_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.enter_otp_error_message
+import crossplatformsdk.cross_platform_sdk.generated.resources.enter_otp_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.enter_otp_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_amex_safekey
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_diners
@@ -74,9 +80,15 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_maestro
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_mastercard_securecode
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_rupay
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_verified_by_visa
+import crossplatformsdk.cross_platform_sdk.generated.resources.native_otp_page_timer
+import crossplatformsdk.cross_platform_sdk.generated.resources.pay_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.resend_otp_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.resend_otp_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.resend_otp_timer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 // Reserves room at the bottom of the scrollable content so the resend row
 // isn't hidden underneath the pinned footer overlay.
@@ -167,7 +179,7 @@ internal fun NativeOTPBottomSheet(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
-                    text = "Enter OTP",
+                    text = stringResource(Res.string.enter_otp_title),
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 18.sp,
@@ -177,7 +189,7 @@ internal fun NativeOTPBottomSheet(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "Enter the one-time password sent to your registered mobile number",
+                    text = stringResource(Res.string.enter_otp_desc),
                     textAlign = TextAlign.Center,
                     color = Color(0xFF6B6D76),
                     fontFamily = LocalSDKFonts.current.primary,
@@ -229,7 +241,7 @@ internal fun NativeOTPBottomSheet(
                 if (showOtpError) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Invalid OTP entered. Please try again.",
+                        text = stringResource(Res.string.enter_otp_error_message),
                         fontFamily = LocalSDKFonts.current.primary,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
@@ -265,7 +277,7 @@ internal fun NativeOTPBottomSheet(
                     currencySymbol = currencyCode,
                     isValid = isProceedEnabled,
                     buttonTextColor = buttonTextColor.value,
-                    text = "Pay"
+                    text = stringResource(Res.string.pay_cta)
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -289,7 +301,7 @@ internal fun NativeOTPBottomSheet(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Didn't receive the code?",
+                        text = stringResource(Res.string.enter_otp_info),
                         fontFamily = LocalSDKFonts.current.primary,
                         fontSize = 14.sp,
                         color = Color(0xFF6B6D76)
@@ -305,14 +317,9 @@ internal fun NativeOTPBottomSheet(
                     ) {
                         Text(
                             text = when {
-                                resendExhausted -> "No more resends left"
-                                cooldownSecondsLeft > 0 -> "Resend in ${
-                                    formatTime(
-                                        cooldownSecondsLeft
-                                    )
-                                }"
-
-                                else -> "Resend OTP"
+                                resendExhausted -> stringResource(Res.string.resend_otp_info)
+                                cooldownSecondsLeft > 0 -> stringResource(Res.string.resend_otp_timer, formatTime(cooldownSecondsLeft))
+                                else -> stringResource(Res.string.resend_otp_cta)
                             },
                             fontFamily = LocalSDKFonts.current.primary,
                             fontSize = 14.sp,
@@ -334,7 +341,7 @@ internal fun NativeOTPBottomSheet(
                 ) {
                     TextButton(onClick = onClickCancel) {
                         Text(
-                            text = "Cancel",
+                            text = stringResource(Res.string.cancel_cta),
                             fontFamily = LocalSDKFonts.current.primary,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium,
@@ -343,7 +350,7 @@ internal fun NativeOTPBottomSheet(
                     }
                     TextButton(onClick = onClickUrl) {
                         Text(
-                            text = "Continue on Bank page",
+                            text = stringResource(Res.string.continue_on_bank_page_cta),
                             fontFamily = LocalSDKFonts.current.primary,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium,
@@ -405,7 +412,7 @@ private fun PageExpiryTimer(accentColor: Color, onExpire: () -> Unit) {
     }
 
     TimerChip(
-        text = "This page will expire in ${formatTime(secondsLeft)}",
+        text = stringResource(Res.string.native_otp_page_timer, formatTime(secondsLeft)),
         accentColor = accentColor
     )
 }

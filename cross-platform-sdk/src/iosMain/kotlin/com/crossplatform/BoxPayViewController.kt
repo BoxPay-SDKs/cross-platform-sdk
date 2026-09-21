@@ -3,6 +3,8 @@ package com.crossplatform
 import androidx.compose.ui.window.ComposeUIViewController
 import com.crossplatform.sdk.BoxPayCommonCheckout
 import com.crossplatform.sdk.data.handler.CommonSDKDismissHandler
+import com.crossplatform.sdk.presentation.components.LocaleManager
+import com.crossplatform.sdk.presentation.components.createSettings
 
 fun BoxPayViewController(
     token : String,
@@ -20,6 +22,7 @@ fun BoxPayViewController(
     fontFamily : String?
 ) = ComposeUIViewController {
     CommonSDKDismissHandler.setCloseSDK { onDismiss() }
+    val localeManager = LocaleManager(createSettings())
     BoxPayCommonCheckout(
         token = token,
         isTestEnv = isTestEnv,
@@ -32,6 +35,7 @@ fun BoxPayViewController(
         isSICheckBoxEnabled = isSICheckBoxEnabled,
         focusedTextInputBorderColor = focusedTextInputBorderColor,
         unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
-        fontFamily = fontFamily
+        fontFamily = fontFamily,
+        localeManager = localeManager
     )
 }

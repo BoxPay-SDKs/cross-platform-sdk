@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import com.crossplatform.sdk.presentation.LocalAppLocale
 import crossplatformsdk.cross_platform_sdk.generated.resources.NotoSans_Bold
 import crossplatformsdk.cross_platform_sdk.generated.resources.NotoSans_ExtraBold
 import crossplatformsdk.cross_platform_sdk.generated.resources.NotoSans_Medium
@@ -30,6 +31,7 @@ import org.jetbrains.compose.resources.Font
 
 @Composable
 internal fun ProvideSDKFonts(
+    currentLanguage : String,
     merchantFont: String? = null,
     backendFont: String? = null,
     onUnknownFontRequested: ((String) -> Unit)? = null,
@@ -55,7 +57,10 @@ internal fun ProvideSDKFonts(
         if (family != null) SDKFonts(primary = family, secondary = inter) else default
     }
 
-    CompositionLocalProvider(LocalSDKFonts provides fonts) {
+    CompositionLocalProvider(
+        LocalSDKFonts provides fonts,
+        LocalAppLocale provides currentLanguage
+    ) {
         content()
     }
 }

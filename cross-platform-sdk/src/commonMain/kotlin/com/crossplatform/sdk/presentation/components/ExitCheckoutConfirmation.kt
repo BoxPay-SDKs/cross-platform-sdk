@@ -29,9 +29,14 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.back_to_checkout_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.exit_checkout_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.exit_checkout_desc
+import crossplatformsdk.cross_platform_sdk.generated.resources.exit_checkout_header
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_exit_door
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -73,7 +78,7 @@ fun ExitCheckoutConfirmation(
             )
 
             Text(
-                text = "Exit checkout?",
+                text = stringResource(Res.string.exit_checkout_header),
                 fontFamily = LocalSDKFonts.current.primary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -84,7 +89,7 @@ fun ExitCheckoutConfirmation(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Your payment hasn't been completed yet. If you exit now, your progress will be lost.",
+                text = stringResource(Res.string.exit_checkout_desc),
                 fontFamily = LocalSDKFonts.current.primary,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
@@ -103,7 +108,7 @@ fun ExitCheckoutConfirmation(
                 )
             ) {
                 Text(
-                    "Exit checkout",
+                    stringResource(Res.string.exit_checkout_cta),
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
@@ -113,7 +118,7 @@ fun ExitCheckoutConfirmation(
             }
 
             PayButton(
-                text = "Back to Checkout",
+                text = stringResource(Res.string.back_to_checkout_cta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp)

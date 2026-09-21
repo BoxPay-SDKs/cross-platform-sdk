@@ -1,6 +1,7 @@
 package com.crossplatform.sdk.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidedValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import com.crossplatform.sdk.data.model.BrowserData
@@ -57,3 +58,8 @@ internal expect fun GooglePayButton(
     modifier: Modifier,
     config: GooglePayExpressCheckoutConfig
 )
+
+internal expect object LocalAppLocale {
+    val current: String @Composable get
+    @Composable infix fun provides(value: String?): ProvidedValue<*>
+}

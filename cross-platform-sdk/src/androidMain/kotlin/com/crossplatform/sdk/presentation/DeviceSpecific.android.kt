@@ -11,20 +11,25 @@ import android.content.res.Resources
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Environment
+import android.os.LocaleList
 import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.crossplatform.sdk.data.model.DeviceDetails
@@ -516,4 +521,23 @@ internal actual fun GooglePayButton(
         modifier = modifier.height(50.dp),
         type = ButtonType.Plain
     )
+}
+
+internal actual object LocalAppLocale {
+    private val Default = Locale.getDefault().toString()
+    private val LocalCompositionLocale = staticCompositionLocalOf { Default }
+
+    actual val current: String
+        @Composable get() = LocalCompositionLocale.current
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    @Composable
+    actual infix fun provides(value: String?): ProvidedValue<*> {
+        val newLocale = value ?: Default
+        val config = LocalConfiguration.current
+        config.setLocale(Locale(newLocale))
+        LocaleList.setDefault(LocaleList(Locale(newLocale)))
+        Locale.setDefault(Locale(newLocale))
+        return LocalCompositionLocale.provides(newLocale)
+    }
 }

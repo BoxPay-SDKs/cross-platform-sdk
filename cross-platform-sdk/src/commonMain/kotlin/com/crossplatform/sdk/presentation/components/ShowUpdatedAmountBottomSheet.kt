@@ -34,6 +34,12 @@ import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.formatAmount
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.order_summary_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.proceed_to_pay_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.sub_total_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.total_info
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,7 +87,7 @@ internal fun ShowUpdateAmountBottomSheet(
 
             // Title
             Text(
-                text = "Order Summary",
+                text = stringResource(Res.string.order_summary_info),
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
                 color = Color(0xFF010102),
@@ -97,7 +103,7 @@ internal fun ShowUpdateAmountBottomSheet(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Sub Total",
+                    text = stringResource(Res.string.sub_total_info),
                     fontWeight = FontWeight.Normal,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontSize = 14.sp,
@@ -150,7 +156,7 @@ internal fun ShowUpdateAmountBottomSheet(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Total Payable",
+                    text = stringResource(Res.string.total_info),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                     color = Color(0xFF010102),
@@ -180,7 +186,7 @@ internal fun ShowUpdateAmountBottomSheet(
                 )
             }
             PayButton(
-                text = "Proceed to Pay",
+                text = stringResource(Res.string.proceed_to_pay_cta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp, start = 16.dp, end = 16.dp)
