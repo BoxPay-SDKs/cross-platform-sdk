@@ -1,7 +1,9 @@
 package com.crossplatform.sdk.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import com.crossplatform.sdk.data.model.BrowserData
 import com.crossplatform.sdk.data.model.DeviceDetails
@@ -48,7 +50,9 @@ import platform.Foundation.NSData
 import platform.Foundation.NSDecimalNumber
 import platform.Foundation.NSNumber
 import platform.Foundation.NSNumberFormatter
+import platform.Foundation.NSUserDefaults
 import platform.Foundation.create
+import platform.Foundation.preferredLanguages
 import platform.PassKit.PKMerchantCapability3DS
 import platform.PassKit.PKPayment
 import platform.PassKit.PKPaymentAuthorizationController
@@ -381,4 +385,24 @@ internal actual fun GooglePayButton(
     config: GooglePayExpressCheckoutConfig
 ) {
     // no operation in iOS
+}
+
+internal actual object LocalAppLocale {
+    private const val LANG_KEY = "AppleLanguages"
+    private val Default = (NSLocale.preferredLanguages.firstOrNull() as? String) ?: "en"
+    private val LocalCompositionLocale = staticCompositionLocalOf { Default }
+
+    actual val current: String
+        @Composable get() = LocalCompositionLocale.current
+
+    @Composable
+    actual infix fun provides(value: String?): ProvidedValue<*> {
+        val newLocale = value ?: Default
+        if (value == null) {
+            NSUserDefaults.standardUserDefaults.removeObjectForKey(LANG_KEY)
+        } else {
+            NSUserDefaults.standardUserDefaults.setObject(listOf(newLocale), LANG_KEY)
+        }
+        return LocalCompositionLocale.provides(newLocale)
+    }
 }

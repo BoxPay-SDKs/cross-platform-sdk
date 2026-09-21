@@ -2,10 +2,12 @@ package com.crossplatform.sdk
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.di.appModule
+import com.crossplatform.sdk.presentation.components.LocaleManager
 import com.crossplatform.sdk.presentation.navigation.AppNavHost
 import com.crossplatform.sdk.presentation.theme.ProvideSDKFonts
 import org.koin.compose.KoinApplication
@@ -23,7 +25,8 @@ internal fun BoxPayCommonCheckout(
     isSICheckBoxEnabled : Boolean,
     focusedTextInputBorderColor : String,
     unfocusedTextInputBorderColor : String,
-    fontFamily: String?
+    fontFamily: String?,
+    localeManager: LocaleManager
 ) {
     KoinApplication(
         application = {
@@ -31,13 +34,17 @@ internal fun BoxPayCommonCheckout(
         }
     ) {
         val backendFont by CheckoutDetailsHandler.fontFamilyFlow.collectAsStateWithLifecycle()
+        val savedLanguage by localeManager.currentLanguage.collectAsState()
+        val activeLanguage = savedLanguage ?:  "en"
 
         ProvideSDKFonts(
+            currentLanguage = activeLanguage,
             merchantFont = fontFamily,   // priority 1
             backendFont = backendFont,   // priority 2 (default is handled inside)
             onUnknownFontRequested = { name ->
                 // will not be implemented for now
-            }
+            },
+
         ) {
             CheckoutDetailsHandler.setCheckoutToken(
                 token = token,
@@ -54,7 +61,12 @@ internal fun BoxPayCommonCheckout(
             )
 
             MaterialTheme {
-                AppNavHost()
+                AppNavHost(
+                    currentLanguage = activeLanguage,
+                    onLanguageChange = {
+                        localeManager.setLanguage(it)
+                    }
+                )
             }
         }
     }

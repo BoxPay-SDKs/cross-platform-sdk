@@ -1,4 +1,218 @@
-<!-- values-es/strings.xml -->
+<!-- values-vi/strings.xml -->
 <resources>
-    <string name="payment_details">Payment details</string>
+    <!--    Header String Resources-->
+    <string name="payment_details">Chi tiết thanh toán</string>
+    <string name="address_title">Địa chỉ</string>
+    <string name="deliver_at_title">Giao đến </string>
+    <string name="personal_details_title">Thông tin cá nhân</string>
+    <string name="cards_title">Thẻ</string>
+    <string name="shipping_address_title">Địa chỉ giao hàng</string>
+    <string name="wallet_title">Ví điện tử</string>
+    <string name="net_banking_title">Chuyển khoản ngân hàng</string>
+    <string name="emi_title">Trả góp</string>
+    <string name="bnpl_title">Mua trước, trả sau</string>
+    <string name="pay_via_upi_apps_title">Thanh toán qua ứng dụng UPI</string>
+    <string name="pay_by_any_upi_title">Thanh toán bằng UPI bất kỳ</string>
+    <string name="add_address_title">Thêm địa chỉ</string>
+    <string name="edit_address_title">Chỉnh sửa địa chỉ</string>
+    <string name="add_personal_details_title">Thêm thông tin cá nhân</string>
+    <string name="edit_personal_details_title">Chỉnh sửa thông tin cá nhân</string>
+    <string name="pay_via_card_title">Thanh toán bằng thẻ</string>
+    <string name="select_bank_title">Chọn ngân hàng</string>
+    <string name="select_wallet_title">Chọn ví điện tử</string>
+    <string name="your_addresses_title">Địa chỉ của bạn</string>
+    <string name="select_bnpl_title">Chọn dịch vụ BNPL</string>
+    <string name="pay_now_title">PayNow</string>
+    <string name="all_banks_title">Tất cả ngân hàng</string>
+    <string name="all_wallets_title">Tất cả ví điện tử</string>
+    <string name="select_tenure_title">Chọn kỳ hạn</string>
+    <string name="instant_offer_title">Ưu đãi tức thì</string>
+    <string name="offers_and_discount_title">Ưu đãi và giảm giá</string>
+    <string name="express_checkout_title">Thanh toán nhanh</string>
+    <string name="choose_emi_option_title">Chọn phương thức trả góp</string>
+    <string name="recommended_title">Được đề xuất</string>
+    <string name="credit_and_debit_card_title">Thẻ tín dụng và ghi nợ</string>
+    <string name="upi_one_time_mandate_title">Ủy quyền UPI một lần</string>
+    <string name="payment_options_title">Phương thức thanh toán</string>
+    <string name="more_payment_options_title">Thêm phương thức thanh toán</string>
+    <string name="order_details_title">Chi tiết đơn hàng</string>
+    <string name="qr_expired_title">Mã QR đã hết hạn</string>
+    <string name="complete_your_payment_title">Hoàn tất thanh toán của bạn</string>
+
+    <!--    Text input fields string resources-->
+    <string name="search_title">Tìm kiếm</string>
+    <string name="country_title">Quốc gia*</string>
+    <string name="full_name_title">Họ và tên*</string>
+    <string name="mobile_code_title">Mã*</string>
+    <string name="select_country_text_field">Chọn quốc gia</string>
+    <string name="card_number_title">Số thẻ*</string>
+    <string name="expiry_title">Ngày hết hạn (MM/YY)*</string>
+    <string name="cvv_title">CVV*</string>
+    <string name="mobile_number_title">Số điện thoại di động*</string>
+    <string name="email_id_title">Địa chỉ email*</string>
+    <string name="postal_code_title">Mã bưu điện*</string>
+    <string name="city_title">Thành phố*</string>
+    <string name="state_title">Tỉnh/Bang*</string>
+    <string name="house_number_title">Số nhà, căn hộ*</string>
+    <string name="area_colony_title">Khu vực, khu dân cư, đường, khu phố</string>
+    <string name="card_holder_name_title">Tên chủ thẻ*</string>
+    <string name="card_nick_name_title">Biệt danh thẻ (để dễ nhận diện)</string>
+
+    <!--    CTA string resources-->
+    <string name="know_more_cta">Tìm hiểu thêm</string>
+    <string name="pay_cta">Thanh toán</string>
+    <string name="go_back_to_home_cta">Quay lại trang chủ</string>
+    <string name="got_it_cta">Đã hiểu!</string>
+    <string name="exit_checkout_cta">Thoát thanh toán</string>
+    <string name="back_to_checkout_cta">Quay lại thanh toán</string>
+    <string name="view_more_cta">Xem thêm</string>
+    <string name="view_all_cta">Xem tất cả ></string>
+    <string name="terms_and_conditions_cta">Điều khoản và điều kiện</string>
+    <string name="resend_otp_cta">Gửi lại OTP</string>
+    <string name="cancel_cta">Hủy</string>
+    <string name="remove_cta">XÓA</string>
+    <string name="apply_cta">ÁP DỤNG</string>
+    <string name="less_cta">- THU GỌN</string>
+    <string name="change_cta">Thay đổi</string>
+    <string name="more_cta">+ THÊM</string>
+    <string name="save_address_cta">Lưu địa chỉ</string>
+    <string name="save_personal_details_cta">Lưu thông tin cá nhân</string>
+    <string name="continue_on_bank_page_cta">Tiếp tục trên trang ngân hàng</string>
+    <string name="more_options_cta">Thêm tùy chọn</string>
+    <string name="retry_payment_cta">Thử thanh toán lại</string>
+    <string name="add_new_card_cta">Thêm thẻ mới</string>
+    <string name="swipe_to_pay_cta">Vuốt để thanh toán </string>
+    <string name="proceed_to_pay_cta">Tiến hành thanh toán</string>
+    <string name="yes_cta">Có</string>
+    <string name="no_cta">Không</string>
+    <string name="ok_cta">OK</string>
+    <string name="downloading_qr_cta">Đang tải mã QR...</string>
+    <string name="download_qr_cta">Tải mã QR</string>
+    <string name="get_new_qr_cta">Lấy mã QR mới</string>
+
+    <!--    Information String Resources-->
+    <string name="set_up_si_instructions">Thiết lập Lệnh thanh toán định kỳ (SI) cho khoản thanh toán này.</string>
+    <string name="cvv_not_be_stored_info">CVV sẽ không được lưu trữ</string>
+    <string name="secured_by_info">Được bảo mật bởi</string>
+    <string name="save_this_card_info">Lưu thẻ này theo hướng dẫn của RBI.</string>
+    <string name="where_to_find_cvv_title">Tìm mã CVV ở đâu?</string>
+    <string name="generic_position_for_cvv_title">Vị trí thông thường của CVV</string>
+    <string name="generic_position_for_cvv_desc">Mã số gồm 3 chữ số ở mặt sau của thẻ</string>
+    <string name="amex_cvv_position_title">CVV cho thẻ American Express</string>
+    <string name="amex_cvv_position_desc">Mã số gồm 4 chữ số ở mặt trước của thẻ, ngay phía trên số thẻ</string>
+    <string name="rbi_guideline_info_1">Nếu bạn đồng ý, ngân hàng/mạng lưới thẻ của bạn sẽ lưu trữ an toàn thông tin thẻ của bạn thông qua mã hóa token.</string>
+    <string name="rbi_guideline_info_2">Nếu bạn chọn không mã hóa token, bạn sẽ phải nhập lại thông tin thẻ mỗi lần thanh toán.</string>
+    <string name="enter_otp_info">Không nhận được mã?</string>
+    <string name="resend_otp_info">Không còn lượt gửi lại</string>
+    <string name="you_saved_info">Bạn đã tiết kiệm được</string>
+    <string name="price_details_info">Chi tiết giá</string>
+    <string name="sub_total_info">Tạm tính</string>
+    <string name="total_info">Tổng số tiền</string>
+    <string name="taxes_and_fees_info">Thuế và phí</string>
+    <string name="shipping_amount_info">Phí vận chuyển</string>
+    <string name="last_used_info">Sử dụng lần cuối</string>
+    <string name="loading_info">Đang tải...</string>
+    <string name="gpay_info">GPay</string>
+    <string name="phonepe_info">PhonePe</string>
+    <string name="paytm_info">PayTm</string>
+    <string name="bhim_info">Bhim</string>
+    <string name="mobikwik_info">Mobikwik</string>
+    <string name="bharatpe_info">BharatPe</string>
+    <string name="jupiter_info">Jupiter</string>
+    <string name="upi_info">UPI</string>
+    <string name="qr_valid_info">Mã QR có hiệu lực trong</string>
+    <string name="qr_ready_info">Mã QR đã sẵn sàng</string>
+    <string name="download_qr_info">Tải mã QR xuống và quét bằng bất kỳ ứng dụng nào hỗ trợ PayNow.</string>
+    <string name="upi_mandate_info">Ủy quyền UPI</string>
+    <string name="order_summary_info">Tóm tắt đơn hàng</string>
+    <string name="last_used_payment_option_info">Phương thức thanh toán sử dụng lần cuối</string>
+    <string name="currently_selected_info">ĐANG ĐƯỢC CHỌN</string>
+    <string name="try_another_payment_method_info">Thử phương thức thanh toán khác</string>
+    <string name="auto_retry_info">Chỉ một giao dịch thành công sẽ được xử lý.</string>
+    <string name="pay_now_qr_expires_info">Sau khi hết thời gian đếm ngược, mã QR này sẽ không còn hiệu lực.</string>
+    <string name="qr_expired_desc_info">Mã QR này đã hết hạn. Vui lòng lấy mã QR mới để tiếp tục.</string>
+    <string name="home_info">Nhà riêng</string>
+    <string name="work_info">Nơi làm việc</string>
+    <string name="other_info">Khác</string>
+    <string name="expires_in_info">Hết hạn sau</string>
+    <string name="avoid_back_button_in_upi_timer_info">Vui lòng không sử dụng nút quay lại cho đến khi giao dịch hoàn tất</string>
+    <string name="upi_timer_info">Hãy mở ứng dụng UPI và xác nhận thanh toán trước khi hết thời gian</string>
+
+    <!--    String resources with values-->
+    <string name="duration_months_x">%1$s tháng x</string>
+    <string name="percent_title">@%1$s%/năm</string>
+    <string name="resend_otp_timer">Gửi lại sau %1$s</string>
+    <string name="offer_code_applied">Đã áp dụng %1$s!</string>
+    <string name="count_more">+%1$d nữa</string>
+    <string name="offer_available">Có %1$d ưu đãi</string>
+    <string name="native_otp_page_timer">Trang này sẽ hết hạn sau %1$s</string>
+    <string name="offer_info">Áp dụng cho tất cả giao dịch thực hiện bằng %1$s</string>
+    <string name="extra_applied_as_surcharge">Đã áp dụng phụ phí %1$s %1$d</string>
+    <string name="mobile_number">Di động: %1$s</string>
+    <string name="confirm_to_delete_card_header">Bạn có chắc chắn muốn xóa thẻ %1$s đã lưu không?</string>
+
+    <!--    Empty list string resources-->
+    <string name="no_result_found_title">Ồ!! Không tìm thấy kết quả</string>
+    <string name="no_result_found_desc">Vui lòng thử tìm kiếm khác</string>
+
+    <!--    Bottom Sheet Headers-->
+    <string name="payment_attempt_limit_reached_header">Đã đạt giới hạn số lần thử thanh toán</string>
+    <string name="exit_checkout_header">Thoát thanh toán?</string>
+    <string name="rbi_guidelines_header">Hướng dẫn của RBI</string>
+    <string name="enter_otp_title">Nhập OTP</string>
+    <string name="payment_failed_title">Thanh toán thất bại</string>
+    <string name="retrying_your_payment_securely_header">Đang thử lại thanh toán của bạn một cách an toàn</string>
+    <string name="payment_method_limit_reached_title">Đã đạt giới hạn phương thức thanh toán</string>
+    <string name="payment_successful_header">Thanh toán thành công</string>
+    <string name="payment_expired_header">Phiên thanh toán đã hết hạn.</string>
+    <string name="unable_to_remove_card_header">Không thể xóa thẻ</string>
+    <string name="download_complete">Tải xuống hoàn tất</string>
+    <string name="download_failed">Tải xuống thất bại</string>
+    <string name="how_to_pay_title">Cách thanh toán</string>
+    <string name="cancel_payment_title">Hủy thanh toán?</string>
+
+
+    <!--    Bottom Sheet Description-->
+    <string name="payment_attempt_limit_reached_desc">Đã đạt số lần thử thanh toán tối đa. Vui lòng quay lại trang web của người bán và bắt đầu thanh toán mới.</string>
+    <string name="exit_checkout_desc">Thanh toán của bạn chưa hoàn tất. Nếu thoát ngay bây giờ, tiến trình của bạn sẽ bị mất.</string>
+    <string name="rbi_guidelines_desc">Theo hướng dẫn mới của RBI, chúng tôi không còn có thể lưu trữ thông tin thẻ của bạn.</string>
+    <string name="enter_otp_desc">Nhập mật khẩu dùng một lần được gửi đến số điện thoại di động đã đăng ký của bạn.</string>
+    <string name="qr_code_save_complete_desc">Mã QR đã được lưu vào thư mục Tải xuống của bạn.</string>
+    <string name="qr_code_save_failed_desc">Chúng tôi không thể lưu mã QR. Vui lòng kiểm tra quyền lưu trữ và thử lại.</string>
+    <string name="unable_to_remove_card_desc">Chúng tôi không thể xóa thẻ đã lưu của bạn do gặp sự cố. Thẻ của bạn vẫn được lưu.</string>
+    <string name="retrying_your_payment_securely_desc">Thanh toán thất bại. Đang thử lại với đối tác thanh toán khác. Có thể cần nhập lại OTP.</string>
+    <string name="payment_method_retry_limit_reached_desc">Bạn đã đạt số lần thử thanh toán tối đa cho phương thức này. Vui lòng chọn phương thức thanh toán khác để tiếp tục</string>
+    <string name="payment_expired_desc">Vì lý do bảo mật, phiên của bạn đã hết hạn do không hoạt động. Vui lòng bắt đầu lại quy trình thanh toán.</string>
+    <string name="pay_instruction_desc_1">Tải mã QR xuống và mở trên thiết bị khác. Khởi chạy ứng dụng ngân hàng trên điện thoại của bạn và quét mã QR để thanh toán.</string>
+    <string name="pay_instruction_num_1">1.</string>
+    <string name="pay_instruction_num_2">2.</string>
+    <string name="pay_instruction_num_3">3.</string>
+    <string name="pay_instruction_num_4">4.</string>
+    <string name="pay_instruction_desc_2">Khoản thanh toán của bạn sẽ được chuyển đến người nhận hiển thị trên màn hình thanh toán.</string>
+    <string name="pay_instruction_desc_3">Không đóng hoặc làm mới cửa sổ này vì có thể mất đến 2 phút để xử lý thanh toán.</string>
+    <string name="pay_instruction_desc_4">Bạn sẽ được đưa trở lại trang của người bán sau khi hoàn tất quy trình thanh toán.</string>
+    <string name="cancel_payment_desc">Bạn có chắc chắn muốn hủy thanh toán này không?</string>
+
+    <!--    Error Messages-->
+    <string name="enter_otp_error_message">Mã OTP nhập vào không hợp lệ. Vui lòng thử lại.</string>
+    <string name="required_error_message">Bắt buộc</string>
+    <string name="invalid_email_error_message">Email không hợp lệ</string>
+    <string name="invalid_expiry_error_message">Ngày hết hạn không hợp lệ</string>
+    <string name="invalid_cvv_error_message">CVV không hợp lệ</string>
+    <string name="card_not_supported_error_message">Thẻ này không được hỗ trợ cho khoản thanh toán này</string>
+    <string name="postal_code_error_message">Mã bưu điện phải có 6 chữ số</string>
+    <string name="enter_a_valid_number_error_message">Nhập số hợp lệ</string>
+    <string name="invalid_card_number_error_message">Số thẻ không hợp lệ</string>
+    <string name="payment_failed_error_messages">Có thể bạn đã hủy thanh toán hoặc phản hồi bị chậm trễ. Vui lòng thử lại.</string>
+
+    <!--    Cta with values-->
+    <string name="auto_retry_cta_with_value">Đang thử lại sau %1$s – Nhấn để hủy</string>
+
+    <!--    Error messages with values-->
+    <string name="must_be_at_least_error_message">Phải ít nhất là %1$d</string>
+    <string name="must_be_at_most_error_message">Phải nhiều nhất là %1$d</string>
+    <string name="must_be_at_least_characters">Phải có ít nhất %1$d ký tự</string>
+    <string name="must_be_at_most_characters">Phải có nhiều nhất %1$d ký tự</string>
+    <string name="must_be_exactly_characters_error_message">Phải có chính xác %1$d ký tự</string>
+    <string name="mobile_number_error_message">Số điện thoại di động phải có %1$d chữ số</string>
 </resources>

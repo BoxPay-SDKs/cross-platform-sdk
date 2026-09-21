@@ -1,4 +1,218 @@
-<!-- values-es/strings.xml -->
+<!-- values-zh/strings.xml -->
 <resources>
-    <string name="payment_details">Payment details</string>
+    <!--    Header String Resources-->
+    <string name="payment_details">付款详情</string>
+    <string name="address_title">地址</string>
+    <string name="deliver_at_title">送货至 </string>
+    <string name="personal_details_title">个人信息</string>
+    <string name="cards_title">银行卡</string>
+    <string name="shipping_address_title">收货地址</string>
+    <string name="wallet_title">钱包</string>
+    <string name="net_banking_title">银行转账</string>
+    <string name="emi_title">分期付款</string>
+    <string name="bnpl_title">先买后付</string>
+    <string name="pay_via_upi_apps_title">通过 UPI 应用付款</string>
+    <string name="pay_by_any_upi_title">使用任意 UPI 付款</string>
+    <string name="add_address_title">添加地址</string>
+    <string name="edit_address_title">编辑地址</string>
+    <string name="add_personal_details_title">添加个人信息</string>
+    <string name="edit_personal_details_title">编辑个人信息</string>
+    <string name="pay_via_card_title">使用银行卡付款</string>
+    <string name="select_bank_title">选择银行</string>
+    <string name="select_wallet_title">选择钱包</string>
+    <string name="your_addresses_title">您的地址</string>
+    <string name="select_bnpl_title">选择先买后付方式</string>
+    <string name="pay_now_title">PayNow</string>
+    <string name="all_banks_title">所有银行</string>
+    <string name="all_wallets_title">所有钱包</string>
+    <string name="select_tenure_title">选择分期期限</string>
+    <string name="instant_offer_title">即时优惠</string>
+    <string name="offers_and_discount_title">优惠与折扣</string>
+    <string name="express_checkout_title">快速结账</string>
+    <string name="choose_emi_option_title">选择分期方案</string>
+    <string name="recommended_title">推荐</string>
+    <string name="credit_and_debit_card_title">信用卡和借记卡</string>
+    <string name="upi_one_time_mandate_title">UPI 一次性授权</string>
+    <string name="payment_options_title">付款方式</string>
+    <string name="more_payment_options_title">更多付款方式</string>
+    <string name="order_details_title">订单详情</string>
+    <string name="qr_expired_title">二维码已过期</string>
+    <string name="complete_your_payment_title">完成付款</string>
+
+    <!--    Text input fields string resources-->
+    <string name="search_title">搜索</string>
+    <string name="country_title">国家*</string>
+    <string name="full_name_title">全名*</string>
+    <string name="mobile_code_title">区号*</string>
+    <string name="select_country_text_field">选择国家</string>
+    <string name="card_number_title">卡号*</string>
+    <string name="expiry_title">有效期 (MM/YY)*</string>
+    <string name="cvv_title">CVV*</string>
+    <string name="mobile_number_title">手机号码*</string>
+    <string name="email_id_title">电子邮箱*</string>
+    <string name="postal_code_title">邮政编码*</string>
+    <string name="city_title">城市*</string>
+    <string name="state_title">州/省*</string>
+    <string name="house_number_title">门牌号、公寓号*</string>
+    <string name="area_colony_title">区域、小区、街道、区块</string>
+    <string name="card_holder_name_title">持卡人姓名*</string>
+    <string name="card_nick_name_title">卡片昵称（便于识别）</string>
+
+    <!--    CTA string resources-->
+    <string name="know_more_cta">了解更多</string>
+    <string name="pay_cta">付款</string>
+    <string name="go_back_to_home_cta">返回首页</string>
+    <string name="got_it_cta">知道了！</string>
+    <string name="exit_checkout_cta">退出结账</string>
+    <string name="back_to_checkout_cta">返回结账</string>
+    <string name="view_more_cta">查看更多</string>
+    <string name="view_all_cta">查看全部 ></string>
+    <string name="terms_and_conditions_cta">条款和条件</string>
+    <string name="resend_otp_cta">重新发送验证码</string>
+    <string name="cancel_cta">取消</string>
+    <string name="remove_cta">移除</string>
+    <string name="apply_cta">应用</string>
+    <string name="less_cta">- 收起</string>
+    <string name="change_cta">更改</string>
+    <string name="more_cta">+ 更多</string>
+    <string name="save_address_cta">保存地址</string>
+    <string name="save_personal_details_cta">保存个人信息</string>
+    <string name="continue_on_bank_page_cta">在银行页面继续</string>
+    <string name="more_options_cta">更多选项</string>
+    <string name="retry_payment_cta">重试付款</string>
+    <string name="add_new_card_cta">添加新卡</string>
+    <string name="swipe_to_pay_cta">滑动以付款 </string>
+    <string name="proceed_to_pay_cta">继续付款</string>
+    <string name="yes_cta">是</string>
+    <string name="no_cta">否</string>
+    <string name="ok_cta">确定</string>
+    <string name="downloading_qr_cta">正在下载二维码...</string>
+    <string name="download_qr_cta">下载二维码</string>
+    <string name="get_new_qr_cta">获取新二维码</string>
+
+    <!--    Information String Resources-->
+    <string name="set_up_si_instructions">为此次付款设置长期指令（SI）。</string>
+    <string name="cvv_not_be_stored_info">CVV 不会被存储</string>
+    <string name="secured_by_info">安全保障提供方</string>
+    <string name="save_this_card_info">按照 RBI 准则保存此卡。</string>
+    <string name="where_to_find_cvv_title">在哪里可以找到 CVV？</string>
+    <string name="generic_position_for_cvv_title">CVV 的常见位置</string>
+    <string name="generic_position_for_cvv_desc">卡片背面的 3 位数字代码</string>
+    <string name="amex_cvv_position_title">美国运通卡的 CVV</string>
+    <string name="amex_cvv_position_desc">卡片正面卡号上方的 4 位数字代码</string>
+    <string name="rbi_guideline_info_1">如果您同意，您的银行/卡组织将通过令牌化技术安全保存您的卡信息。</string>
+    <string name="rbi_guideline_info_2">如果您选择不进行令牌化，每次付款时都需要重新输入卡详情。</string>
+    <string name="enter_otp_info">没有收到验证码？</string>
+    <string name="resend_otp_info">没有更多重新发送次数</string>
+    <string name="you_saved_info">您已节省</string>
+    <string name="price_details_info">价格详情</string>
+    <string name="sub_total_info">小计</string>
+    <string name="total_info">总金额</string>
+    <string name="taxes_and_fees_info">税费</string>
+    <string name="shipping_amount_info">运费</string>
+    <string name="last_used_info">上次使用</string>
+    <string name="loading_info">加载中...</string>
+    <string name="gpay_info">GPay</string>
+    <string name="phonepe_info">PhonePe</string>
+    <string name="paytm_info">PayTm</string>
+    <string name="bhim_info">Bhim</string>
+    <string name="mobikwik_info">Mobikwik</string>
+    <string name="bharatpe_info">BharatPe</string>
+    <string name="jupiter_info">Jupiter</string>
+    <string name="upi_info">UPI</string>
+    <string name="qr_valid_info">二维码有效期为</string>
+    <string name="qr_ready_info">二维码已就绪</string>
+    <string name="download_qr_info">下载二维码并使用任意支持 PayNow 的应用扫描。</string>
+    <string name="upi_mandate_info">UPI 授权</string>
+    <string name="order_summary_info">订单摘要</string>
+    <string name="last_used_payment_option_info">上次使用的付款方式</string>
+    <string name="currently_selected_info">当前已选择</string>
+    <string name="try_another_payment_method_info">尝试其他付款方式</string>
+    <string name="auto_retry_info">只有一次成功扣款会被处理。</string>
+    <string name="pay_now_qr_expires_info">计时器结束后，此二维码将失效。</string>
+    <string name="qr_expired_desc_info">此二维码已过期，请获取新的二维码以继续。</string>
+    <string name="home_info">家</string>
+    <string name="work_info">公司</string>
+    <string name="other_info">其他</string>
+    <string name="expires_in_info">将在以下时间后过期</string>
+    <string name="avoid_back_button_in_upi_timer_info">在交易完成之前，请勿使用返回按钮</string>
+    <string name="upi_timer_info">请在时间到期前打开您的 UPI 应用并确认付款</string>
+
+    <!--    String resources with values-->
+    <string name="duration_months_x">%1$s 个月 x</string>
+    <string name="percent_title">@%1$s% 年利率</string>
+    <string name="resend_otp_timer">%1$s 后重新发送</string>
+    <string name="offer_code_applied">%1$s 已应用！</string>
+    <string name="count_more">+%1$d 更多</string>
+    <string name="offer_available">%1$d 个优惠可用</string>
+    <string name="native_otp_page_timer">此页面将在 %1$s 后过期</string>
+    <string name="offer_info">适用于通过 %1$s 进行的所有交易</string>
+    <string name="extra_applied_as_surcharge">已额外收取 %1$s %1$d 附加费</string>
+    <string name="mobile_number">手机：%1$s</string>
+    <string name="confirm_to_delete_card_header">您确定要删除已保存的 %1$s 卡吗？</string>
+
+    <!--    Empty list string resources-->
+    <string name="no_result_found_title">哎呀！未找到结果</string>
+    <string name="no_result_found_desc">请尝试其他搜索内容</string>
+
+    <!--    Bottom Sheet Headers-->
+    <string name="payment_attempt_limit_reached_header">已达到付款尝试次数上限</string>
+    <string name="exit_checkout_header">退出结账？</string>
+    <string name="rbi_guidelines_header">RBI 准则</string>
+    <string name="enter_otp_title">输入验证码</string>
+    <string name="payment_failed_title">付款失败</string>
+    <string name="retrying_your_payment_securely_header">正在安全地重试您的付款</string>
+    <string name="payment_method_limit_reached_title">已达到该付款方式的使用上限</string>
+    <string name="payment_successful_header">付款成功</string>
+    <string name="payment_expired_header">付款会话已过期。</string>
+    <string name="unable_to_remove_card_header">无法移除银行卡</string>
+    <string name="download_complete">下载完成</string>
+    <string name="download_failed">下载失败</string>
+    <string name="how_to_pay_title">如何付款</string>
+    <string name="cancel_payment_title">取消付款？</string>
+
+
+    <!--    Bottom Sheet Description-->
+    <string name="payment_attempt_limit_reached_desc">已达到最大付款尝试次数。请返回商家网站并开始新的付款。</string>
+    <string name="exit_checkout_desc">您的付款尚未完成。如果现在退出，您的进度将丢失。</string>
+    <string name="rbi_guidelines_desc">根据新的 RBI 准则，我们不能再存储您的银行卡信息。</string>
+    <string name="enter_otp_desc">请输入发送到您注册手机号码的一次性密码。</string>
+    <string name="qr_code_save_complete_desc">二维码已保存到您的下载文件夹。</string>
+    <string name="qr_code_save_failed_desc">我们无法保存二维码。请检查您的存储权限并重试。</string>
+    <string name="unable_to_remove_card_desc">由于出现问题，我们无法移除您已保存的银行卡。您的卡仍然已保存。</string>
+    <string name="retrying_your_payment_securely_desc">付款失败，正在使用其他付款渠道重试。可能需要再次输入验证码。</string>
+    <string name="payment_method_retry_limit_reached_desc">您已达到此付款方式的最大付款尝试次数。请选择其他付款方式以继续</string>
+    <string name="payment_expired_desc">为了您的安全，由于长时间未操作，您的会话已过期。请重新开始付款流程。</string>
+    <string name="pay_instruction_desc_1">下载二维码并在其他设备上打开。在手机上启动您的银行应用并扫描二维码以完成付款。</string>
+    <string name="pay_instruction_num_1">1.</string>
+    <string name="pay_instruction_num_2">2.</string>
+    <string name="pay_instruction_num_3">3.</string>
+    <string name="pay_instruction_num_4">4.</string>
+    <string name="pay_instruction_desc_2">您的付款将支付给付款页面上显示的收款人。</string>
+    <string name="pay_instruction_desc_3">请勿关闭或刷新此窗口，付款处理可能需要长达 2 分钟。</string>
+    <string name="pay_instruction_desc_4">付款流程完成后，您将被带回商家页面。</string>
+    <string name="cancel_payment_desc">您确定要取消此付款吗？</string>
+
+    <!--    Error Messages-->
+    <string name="enter_otp_error_message">输入的验证码无效，请重试。</string>
+    <string name="required_error_message">必填</string>
+    <string name="invalid_email_error_message">邮箱无效</string>
+    <string name="invalid_expiry_error_message">有效期无效</string>
+    <string name="invalid_cvv_error_message">CVV 无效</string>
+    <string name="card_not_supported_error_message">此卡不支持用于本次付款</string>
+    <string name="postal_code_error_message">邮政编码必须为 6 位数字</string>
+    <string name="enter_a_valid_number_error_message">请输入有效号码</string>
+    <string name="invalid_card_number_error_message">卡号无效</string>
+    <string name="payment_failed_error_messages">您可能取消了付款，或响应出现延迟，请重试。</string>
+
+    <!--    Cta with values-->
+    <string name="auto_retry_cta_with_value">%1$s 后重试 – 点击取消</string>
+
+    <!--    Error messages with values-->
+    <string name="must_be_at_least_error_message">必须至少为 %1$d</string>
+    <string name="must_be_at_most_error_message">必须最多为 %1$d</string>
+    <string name="must_be_at_least_characters">必须至少 %1$d 个字符</string>
+    <string name="must_be_at_most_characters">必须最多 %1$d 个字符</string>
+    <string name="must_be_exactly_characters_error_message">必须恰好为 %1$d 个字符</string>
+    <string name="mobile_number_error_message">手机号码必须为 %1$d 位数字</string>
 </resources>

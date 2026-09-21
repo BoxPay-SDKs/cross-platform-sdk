@@ -107,6 +107,7 @@ kotlin {
                     exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-slf4j")
                 }
                 implementation("media.kamel:kamel-image:0.9.5")
+                implementation("com.russhwolf:multiplatform-settings:1.3.0")
             }
         }
         val androidMain by getting {

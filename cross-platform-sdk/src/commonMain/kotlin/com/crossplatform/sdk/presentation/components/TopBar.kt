@@ -4,7 +4,9 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,11 +16,17 @@ import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,11 +40,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.domain.model.AppLanguage
 import com.crossplatform.sdk.presentation.formatAmount
 import com.crossplatform.sdk.presentation.formatTimer
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.arrow_left
+import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_language
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_timer
 import org.jetbrains.compose.resources.painterResource
 
@@ -45,18 +56,28 @@ internal fun TopBar(
     showDesc: Boolean,
     text: String,
     onBackPress: () -> Unit,
-    sessionSeconds: Long? = null
+    sessionSeconds: Long?,
+    currentLanguage: String,
+    onLanguageChange: (String) -> Unit
 ) {
-
-//    val isMerchantLogoVisible = CheckoutDetailsHandler.isMerchantLogoVisibleFlow.collectAsStateWithLifecycle()
-//    val merchantLogo = CheckoutDetailsHandler.merchantLogoFlow.collectAsStateWithLifecycle()
-//    val merchantName = CheckoutDetailsHandler.merchantNameFlow.collectAsStateWithLifecycle()
     val itemsLength = CheckoutDetailsHandler.itemsLengthFlow.collectAsStateWithLifecycle()
     val currency = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
     val (_, currencyCode) = currency.value
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val isSessionExpiryVisible = CheckoutDetailsHandler.isSessionExpiryVisibleFlow.collectAsStateWithLifecycle()
     // Timer urgency threshold — turns red under 2 minutes
+    val isLanguageSelectorVisible = true
+
+    val isTimerVisible = sessionSeconds != null && isSessionExpiryVisible.value
+
+    // Four possible states, driven purely by these two booleans:
+    //   isTimerVisible=true,  isLanguageSelectorVisible=true   -> State A: timer in main row, language gets its own row
+    //   isTimerVisible=false, isLanguageSelectorVisible=true   -> State B: language takes the timer's spot in main row
+    //   isTimerVisible=true,  isLanguageSelectorVisible=false  -> State D: timer alone, no second row (unchanged)
+    //   isTimerVisible=false, isLanguageSelectorVisible=false  -> State E: nothing shown, no second row (unchanged)
+    val languageTakesTimerSpot = isLanguageSelectorVisible && !isTimerVisible
+    val languageNeedsOwnRow = isLanguageSelectorVisible && isTimerVisible
+
     val isUrgent = (sessionSeconds ?: Long.MAX_VALUE) <= 120L
 
     val timerBg by animateColorAsState(
@@ -192,7 +213,10 @@ internal fun TopBar(
                     )
                 }
             }
-            if (sessionSeconds != null && isSessionExpiryVisible.value) {
+
+            // Main-row trailing slot: at most ONE of these two is ever true at once.
+            if (isTimerVisible) {
+                // States A & D: timer occupies this slot regardless of language visibility
                 Spacer(modifier = Modifier.width(8.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -202,7 +226,7 @@ internal fun TopBar(
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.ic_timer),
-                        contentDescription = "Back",
+                        contentDescription = "back",
                         modifier = Modifier.size(24.dp),
                         colorFilter = ColorFilter.tint(timerTextColor)
                     )
@@ -214,8 +238,87 @@ internal fun TopBar(
                         color = timerTextColor
                     )
                 }
+            } else if (languageTakesTimerSpot) {
+                // State B only: timer is hidden, language steps into its spot
+                Spacer(modifier = Modifier.width(8.dp))
+                LanguagePill(
+                    currentLanguage = currentLanguage,
+                    onLanguageChange = onLanguageChange
+                )
+            }
+            // else: State E — neither renders, title column just gets the full width
+        }
+
+        // Second row only ever renders for State A — every other state skips it entirely
+        if (languageNeedsOwnRow) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                LanguagePill(
+                    currentLanguage = currentLanguage,
+                    onLanguageChange = onLanguageChange
+                )
             }
         }
+
         HorizontalDivider()
+    }
+}
+
+@Composable
+private fun LanguagePill(
+    currentLanguage: String,
+    onLanguageChange: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val selected = AppLanguage.entries.find { it.code == currentLanguage } ?: AppLanguage.ENGLISH
+
+    Box {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .background(color = Color(0xFFF5F5F7), shape = RoundedCornerShape(20.dp))
+                .clickable { expanded = true }
+                .padding(horizontal = 8.dp, vertical = 3.dp)
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.ic_language),
+                contentDescription = "language",
+                tint = Color(0xFF4F4D55),
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = selected.code.uppercase(),
+                fontSize = 12.sp,
+                fontFamily = LocalSDKFonts.current.primary,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF4F4D55)
+            )
+            Icon(
+                painter = painterResource(Res.drawable.chervon_down),
+                contentDescription = null,
+                tint = Color(0xFF4F4D55),
+                modifier = Modifier.size(14.dp)
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            AppLanguage.entries.forEach { lang ->
+                DropdownMenuItem(
+                    text = { Text(lang.displayName) },
+                    onClick = {
+                        onLanguageChange(lang.code)
+                        expanded = false
+                    }
+                )
+            }
+        }
     }
 }

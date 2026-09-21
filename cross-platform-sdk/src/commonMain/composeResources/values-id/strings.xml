@@ -1,4 +1,218 @@
-<!-- values-es/strings.xml -->
+<!-- values-id/strings.xml -->
 <resources>
-    <string name="payment_details">Payment details</string>
+    <!--    Header String Resources-->
+    <string name="payment_details">Detail Pembayaran</string>
+    <string name="address_title">Alamat</string>
+    <string name="deliver_at_title">Kirim ke </string>
+    <string name="personal_details_title">Detail Pribadi</string>
+    <string name="cards_title">Kartu</string>
+    <string name="shipping_address_title">Alamat Pengiriman</string>
+    <string name="wallet_title">Dompet</string>
+    <string name="net_banking_title">Transfer Bank</string>
+    <string name="emi_title">Cicilan (EMI)</string>
+    <string name="bnpl_title">Beli Sekarang, Bayar Nanti</string>
+    <string name="pay_via_upi_apps_title">Bayar via Aplikasi UPI</string>
+    <string name="pay_by_any_upi_title">Bayar dengan UPI apa pun</string>
+    <string name="add_address_title">Tambah Alamat</string>
+    <string name="edit_address_title">Edit Alamat</string>
+    <string name="add_personal_details_title">Tambah Detail Pribadi</string>
+    <string name="edit_personal_details_title">Edit Detail Pribadi</string>
+    <string name="pay_via_card_title">Bayar dengan Kartu</string>
+    <string name="select_bank_title">Pilih Bank</string>
+    <string name="select_wallet_title">Pilih Dompet</string>
+    <string name="your_addresses_title">Alamat Anda</string>
+    <string name="select_bnpl_title">Pilih BNPL</string>
+    <string name="pay_now_title">PayNow</string>
+    <string name="all_banks_title">Semua Bank</string>
+    <string name="all_wallets_title">Semua Dompet</string>
+    <string name="select_tenure_title">Pilih Tenor</string>
+    <string name="instant_offer_title">Penawaran Instan</string>
+    <string name="offers_and_discount_title">Penawaran &amp; diskon</string>
+    <string name="express_checkout_title">Checkout Cepat</string>
+    <string name="choose_emi_option_title">Pilih Opsi Cicilan</string>
+    <string name="recommended_title">Direkomendasikan</string>
+    <string name="credit_and_debit_card_title">Kartu Kredit &amp; Debit</string>
+    <string name="upi_one_time_mandate_title">Mandat UPI Sekali Pakai</string>
+    <string name="payment_options_title">Opsi Pembayaran</string>
+    <string name="more_payment_options_title">Opsi Pembayaran Lainnya</string>
+    <string name="order_details_title">Detail Pesanan</string>
+    <string name="qr_expired_title">QR Kedaluwarsa</string>
+    <string name="complete_your_payment_title">Selesaikan pembayaran Anda</string>
+
+    <!--    Text input fields string resources-->
+    <string name="search_title">Cari</string>
+    <string name="country_title">Negara*</string>
+    <string name="full_name_title">Nama Lengkap*</string>
+    <string name="mobile_code_title">Kode*</string>
+    <string name="select_country_text_field">Pilih Negara</string>
+    <string name="card_number_title">Nomor Kartu*</string>
+    <string name="expiry_title">Masa Berlaku (MM/YY)*</string>
+    <string name="cvv_title">CVV*</string>
+    <string name="mobile_number_title">Nomor Ponsel*</string>
+    <string name="email_id_title">ID Email*</string>
+    <string name="postal_code_title">Kode Pos*</string>
+    <string name="city_title">Kota*</string>
+    <string name="state_title">Provinsi*</string>
+    <string name="house_number_title">Nomor rumah, Apartemen*</string>
+    <string name="area_colony_title">Area, Perumahan, Jalan, Sektor</string>
+    <string name="card_holder_name_title">Nama Pemegang Kartu*</string>
+    <string name="card_nick_name_title">Nama Panggilan Kartu (untuk identifikasi mudah)</string>
+
+    <!--    CTA string resources-->
+    <string name="know_more_cta">Pelajari lebih lanjut</string>
+    <string name="pay_cta">Bayar</string>
+    <string name="go_back_to_home_cta">Kembali ke Beranda</string>
+    <string name="got_it_cta">Mengerti!</string>
+    <string name="exit_checkout_cta">Keluar dari checkout</string>
+    <string name="back_to_checkout_cta">Kembali ke Checkout</string>
+    <string name="view_more_cta">Lihat Selengkapnya</string>
+    <string name="view_all_cta">Lihat semua ></string>
+    <string name="terms_and_conditions_cta">Syarat &amp; Ketentuan</string>
+    <string name="resend_otp_cta">Kirim Ulang OTP</string>
+    <string name="cancel_cta">Batal</string>
+    <string name="remove_cta">HAPUS</string>
+    <string name="apply_cta">TERAPKAN</string>
+    <string name="less_cta">- SEDIKIT</string>
+    <string name="change_cta">Ubah</string>
+    <string name="more_cta">+ LEBIH BANYAK</string>
+    <string name="save_address_cta">Simpan Alamat</string>
+    <string name="save_personal_details_cta">Simpan Detail Pribadi</string>
+    <string name="continue_on_bank_page_cta">Lanjutkan di halaman Bank</string>
+    <string name="more_options_cta">Opsi Lainnya</string>
+    <string name="retry_payment_cta">Coba Bayar Lagi</string>
+    <string name="add_new_card_cta">Tambah Kartu Baru</string>
+    <string name="swipe_to_pay_cta">Geser untuk Membayar </string>
+    <string name="proceed_to_pay_cta">Lanjutkan Pembayaran</string>
+    <string name="yes_cta">Ya</string>
+    <string name="no_cta">Tidak</string>
+    <string name="ok_cta">OK</string>
+    <string name="downloading_qr_cta">Mengunduh QR...</string>
+    <string name="download_qr_cta">Unduh QR</string>
+    <string name="get_new_qr_cta">Dapatkan QR Baru</string>
+
+    <!--    Information String Resources-->
+    <string name="set_up_si_instructions">Siapkan Instruksi Tetap (SI) untuk pembayaran ini.</string>
+    <string name="cvv_not_be_stored_info">CVV tidak akan disimpan</string>
+    <string name="secured_by_info">Diamankan oleh</string>
+    <string name="save_this_card_info">Simpan kartu ini sesuai pedoman RBI.</string>
+    <string name="where_to_find_cvv_title">Di mana menemukan CVV?</string>
+    <string name="generic_position_for_cvv_title">Posisi umum CVV</string>
+    <string name="generic_position_for_cvv_desc">Kode numerik 3 digit di bagian belakang kartu</string>
+    <string name="amex_cvv_position_title">CVV untuk Kartu American Express</string>
+    <string name="amex_cvv_position_desc">Kode numerik 4 digit di bagian depan kartu, tepat di atas nomor kartu</string>
+    <string name="rbi_guideline_info_1">Bank/jaringan kartu Anda akan menyimpan informasi kartu Anda dengan aman melalui tokenisasi jika Anda menyetujuinya.</string>
+    <string name="rbi_guideline_info_2">Jika Anda memilih untuk tidak melakukan tokenisasi, Anda harus memasukkan detail kartu setiap kali membayar.</string>
+    <string name="enter_otp_info">Tidak menerima kode?</string>
+    <string name="resend_otp_info">Tidak ada lagi pengiriman ulang tersisa</string>
+    <string name="you_saved_info">Anda hemat</string>
+    <string name="price_details_info">Detail Harga</string>
+    <string name="sub_total_info">Subtotal</string>
+    <string name="total_info">Jumlah Total</string>
+    <string name="taxes_and_fees_info">Pajak dan Biaya</string>
+    <string name="shipping_amount_info">Biaya Pengiriman</string>
+    <string name="last_used_info">Terakhir Digunakan</string>
+    <string name="loading_info">Memuat...</string>
+    <string name="gpay_info">GPay</string>
+    <string name="phonepe_info">PhonePe</string>
+    <string name="paytm_info">PayTm</string>
+    <string name="bhim_info">Bhim</string>
+    <string name="mobikwik_info">Mobikwik</string>
+    <string name="bharatpe_info">BharatPe</string>
+    <string name="jupiter_info">Jupiter</string>
+    <string name="upi_info">UPI</string>
+    <string name="qr_valid_info">QR berlaku selama</string>
+    <string name="qr_ready_info">QR Siap</string>
+    <string name="download_qr_info">Unduh QR dan pindai menggunakan aplikasi apa pun yang mendukung PayNow.</string>
+    <string name="upi_mandate_info">Mandat UPI</string>
+    <string name="order_summary_info">Ringkasan Pesanan</string>
+    <string name="last_used_payment_option_info">Opsi Pembayaran Terakhir Digunakan</string>
+    <string name="currently_selected_info">SAAT INI DIPILIH</string>
+    <string name="try_another_payment_method_info">Coba metode pembayaran lain</string>
+    <string name="auto_retry_info">Hanya satu tagihan yang berhasil akan diproses.</string>
+    <string name="pay_now_qr_expires_info">Setelah timer berakhir, QR ini tidak akan berlaku lagi.</string>
+    <string name="qr_expired_desc_info">Kode QR ini telah kedaluwarsa. Silakan ambil QR baru untuk melanjutkan.</string>
+    <string name="home_info">Rumah</string>
+    <string name="work_info">Kantor</string>
+    <string name="other_info">Lainnya</string>
+    <string name="expires_in_info">Kedaluwarsa dalam</string>
+    <string name="avoid_back_button_in_upi_timer_info">Mohon hindari menggunakan tombol kembali hingga proses transaksi selesai</string>
+    <string name="upi_timer_info">Buka aplikasi UPI Anda dan konfirmasi pembayaran sebelum waktu habis</string>
+
+    <!--    String resources with values-->
+    <string name="duration_months_x">%1$s bulan x</string>
+    <string name="percent_title">@%1$s% per tahun</string>
+    <string name="resend_otp_timer">Kirim ulang dalam %1$s</string>
+    <string name="offer_code_applied">%1$s diterapkan!</string>
+    <string name="count_more">+%1$d lagi</string>
+    <string name="offer_available">%1$d penawaran tersedia</string>
+    <string name="native_otp_page_timer">Halaman ini akan kedaluwarsa dalam %1$s</string>
+    <string name="offer_info">Berlaku untuk semua transaksi yang dilakukan menggunakan %1$s</string>
+    <string name="extra_applied_as_surcharge">%1$s %1$d tambahan diterapkan sebagai biaya tambahan</string>
+    <string name="mobile_number">Ponsel: %1$s</string>
+    <string name="confirm_to_delete_card_header">Apakah Anda yakin ingin menghapus Kartu %1$s yang tersimpan?</string>
+
+    <!--    Empty list string resources-->
+    <string name="no_result_found_title">Ups!! Tidak ada hasil ditemukan</string>
+    <string name="no_result_found_desc">Silakan coba pencarian lain</string>
+
+    <!--    Bottom Sheet Headers-->
+    <string name="payment_attempt_limit_reached_header">Batas percobaan pembayaran tercapai</string>
+    <string name="exit_checkout_header">Keluar dari checkout?</string>
+    <string name="rbi_guidelines_header">Pedoman RBI</string>
+    <string name="enter_otp_title">Masukkan OTP</string>
+    <string name="payment_failed_title">Pembayaran Gagal</string>
+    <string name="retrying_your_payment_securely_header">Mencoba ulang pembayaran Anda dengan aman</string>
+    <string name="payment_method_limit_reached_title">Batas metode pembayaran tercapai</string>
+    <string name="payment_successful_header">Pembayaran Berhasil</string>
+    <string name="payment_expired_header">Sesi pembayaran telah berakhir.</string>
+    <string name="unable_to_remove_card_header">Tidak Dapat Menghapus Kartu</string>
+    <string name="download_complete">Unduhan selesai</string>
+    <string name="download_failed">Unduhan gagal</string>
+    <string name="how_to_pay_title">Cara membayar</string>
+    <string name="cancel_payment_title">Batalkan Pembayaran?</string>
+
+
+    <!--    Bottom Sheet Description-->
+    <string name="payment_attempt_limit_reached_desc">Jumlah maksimum percobaan pembayaran telah tercapai. Silakan kembali ke situs web merchant dan mulai pembayaran baru.</string>
+    <string name="exit_checkout_desc">Pembayaran Anda belum selesai. Jika Anda keluar sekarang, progres Anda akan hilang.</string>
+    <string name="rbi_guidelines_desc">Sesuai pedoman RBI terbaru, kami tidak dapat lagi menyimpan informasi kartu Anda.</string>
+    <string name="enter_otp_desc">Masukkan kata sandi sekali pakai yang dikirim ke nomor ponsel terdaftar Anda.</string>
+    <string name="qr_code_save_complete_desc">Kode QR disimpan ke folder Unduhan Anda.</string>
+    <string name="qr_code_save_failed_desc">Kami tidak dapat menyimpan kode QR. Silakan periksa izin penyimpanan Anda dan coba lagi.</string>
+    <string name="unable_to_remove_card_desc">Kami tidak dapat menghapus kartu tersimpan Anda karena suatu masalah. Kartu Anda masih tersimpan.</string>
+    <string name="retrying_your_payment_securely_desc">Pembayaran gagal. Mencoba ulang dengan mitra pembayaran lain. OTP mungkin diperlukan kembali.</string>
+    <string name="payment_method_retry_limit_reached_desc">Anda telah mencapai jumlah maksimum percobaan pembayaran untuk metode ini. Silakan pilih metode pembayaran lain untuk melanjutkan</string>
+    <string name="payment_expired_desc">Demi keamanan Anda, sesi Anda telah berakhir karena tidak aktif. Silakan mulai ulang proses pembayaran.</string>
+    <string name="pay_instruction_desc_1">Unduh kode QR dan buka di perangkat lain. Buka aplikasi perbankan di ponsel Anda dan pindai kode QR untuk melakukan pembayaran.</string>
+    <string name="pay_instruction_num_1">1.</string>
+    <string name="pay_instruction_num_2">2.</string>
+    <string name="pay_instruction_num_3">3.</string>
+    <string name="pay_instruction_num_4">4.</string>
+    <string name="pay_instruction_desc_2">Pembayaran Anda akan dilakukan kepada penerima yang ditampilkan di layar pembayaran.</string>
+    <string name="pay_instruction_desc_3">Jangan tutup atau segarkan jendela ini karena mungkin butuh waktu hingga 2 menit untuk memproses pembayaran.</string>
+    <string name="pay_instruction_desc_4">Anda akan dibawa kembali ke merchant setelah proses pembayaran selesai.</string>
+    <string name="cancel_payment_desc">Apakah Anda yakin ingin membatalkan pembayaran ini?</string>
+
+    <!--    Error Messages-->
+    <string name="enter_otp_error_message">OTP yang dimasukkan tidak valid. Silakan coba lagi.</string>
+    <string name="required_error_message">Wajib diisi</string>
+    <string name="invalid_email_error_message">Email tidak valid</string>
+    <string name="invalid_expiry_error_message">Masa berlaku tidak valid</string>
+    <string name="invalid_cvv_error_message">CVV tidak valid</string>
+    <string name="card_not_supported_error_message">Kartu ini tidak didukung untuk pembayaran ini</string>
+    <string name="postal_code_error_message">Kode pos harus 6 digit</string>
+    <string name="enter_a_valid_number_error_message">Masukkan nomor yang valid</string>
+    <string name="invalid_card_number_error_message">Nomor kartu tidak valid</string>
+    <string name="payment_failed_error_messages">Anda mungkin telah membatalkan pembayaran atau ada penundaan respons. Silakan coba lagi.</string>
+
+    <!--    Cta with values-->
+    <string name="auto_retry_cta_with_value">Mencoba ulang dalam %1$s – Ketuk untuk membatalkan</string>
+
+    <!--    Error messages with values-->
+    <string name="must_be_at_least_error_message">Harus minimal %1$d</string>
+    <string name="must_be_at_most_error_message">Harus maksimal %1$d</string>
+    <string name="must_be_at_least_characters">Harus minimal %1$d karakter</string>
+    <string name="must_be_at_most_characters">Harus maksimal %1$d karakter</string>
+    <string name="must_be_exactly_characters_error_message">Harus tepat %1$d karakter</string>
+    <string name="mobile_number_error_message">Nomor ponsel harus %1$d digit</string>
 </resources>

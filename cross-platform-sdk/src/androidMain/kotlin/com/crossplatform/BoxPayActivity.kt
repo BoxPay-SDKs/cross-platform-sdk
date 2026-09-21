@@ -16,6 +16,8 @@ import com.crossplatform.sdk.BoxPayCommonCheckout
 import com.crossplatform.sdk.data.handler.CommonSDKDismissHandler
 import com.crossplatform.sdk.payments.RevolutPaySDK
 import com.crossplatform.sdk.payments.RevolutPaySupport
+import com.crossplatform.sdk.presentation.components.LocaleManager
+import com.crossplatform.sdk.presentation.components.createSettings
 
 // New activity inside your SDK
 class BoxPayActivity : ComponentActivity() {
@@ -37,6 +39,7 @@ class BoxPayActivity : ComponentActivity() {
         val focusedTextInputBorderColor = intent.getStringExtra("focusedTextInputBorderColor") ?: ""
         val unfocusedTextInputBorderColor = intent.getStringExtra("unfocusedTextInputBorderColor") ?: ""
         val fontFamily = intent.getStringExtra("fontFamily")
+        val localeManager = LocaleManager(createSettings(applicationContext))
         enableEdgeToEdge()
 
         CommonSDKDismissHandler.setCloseSDK { finish() }
@@ -59,7 +62,8 @@ class BoxPayActivity : ComponentActivity() {
                     isSICheckBoxEnabled = isSICheckBoxEnabled,
                     focusedTextInputBorderColor = focusedTextInputBorderColor,
                     unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
-                    fontFamily = fontFamily
+                    fontFamily = fontFamily,
+                    localeManager = localeManager
                 )
             }
         }

@@ -68,7 +68,7 @@ internal fun MorePaymentMethods(
         label       = "chevron"
     )
     val bnplRotation by animateFloatAsState(
-        targetValue = if (isNetBankingVisible.value) 180f else 0f,
+        targetValue = if (isBNPLVisible.value) 180f else 0f,
         label       = "chevron"
     )
     val selectedWalletId = remember {
