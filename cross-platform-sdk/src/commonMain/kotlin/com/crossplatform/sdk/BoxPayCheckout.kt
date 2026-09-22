@@ -41,7 +41,7 @@ internal fun BoxPayCommonCheckout(
             currentLanguage = activeLanguage,
             merchantFont = fontFamily,   // priority 1
             backendFont = backendFont,   // priority 2 (default is handled inside)
-            onUnknownFontRequested = { name ->
+            onUnknownFontRequested = { _ ->
                 // will not be implemented for now
             },
 
@@ -62,7 +62,6 @@ internal fun BoxPayCommonCheckout(
 
             MaterialTheme {
                 AppNavHost(
-                    currentLanguage = activeLanguage,
                     onLanguageChange = {
                         localeManager.setLanguage(it)
                     }

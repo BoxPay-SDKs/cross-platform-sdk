@@ -2,16 +2,12 @@ package com.crossplatform.sdk
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.crossplatform.sdk.data.handler.BoxPayElementsHandler
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.di.appModule
 import com.crossplatform.sdk.domain.model.PaymentMethodTab
-import com.crossplatform.sdk.presentation.navigation.AppNavHost
 import com.crossplatform.sdk.presentation.screens.BoxPayElementsComponent
 import com.crossplatform.sdk.presentation.theme.ProvideSDKFonts
 import org.koin.compose.KoinApplication
@@ -42,6 +38,7 @@ internal fun BoxPayCommonElements(
         ProvideSDKFonts(
             merchantFont = fontFamily,
             backendFont = backendFont,
+            currentLanguage = "en"
         ) {
             CheckoutDetailsHandler.setCheckoutTokenForBoxPayElements(
                 token = token,

@@ -215,4 +215,10 @@
     <string name="must_be_at_most_characters">최대 %1$d자여야 합니다</string>
     <string name="must_be_exactly_characters_error_message">정확히 %1$d자여야 합니다</string>
     <string name="mobile_number_error_message">휴대폰 번호는 %1$d자리여야 합니다</string>
+
+    <string name="scan_card_cta">카드 스캔</string>
+    <string name="scan_card_hint">카드를 프레임 안에 유지하세요. 세부 정보는 사용자의 기기에서만 읽힙니다.</string>
+    <string name="scan_card_cancel">취소</string>
+    <string name="scan_card_permission_denied">카메라 접근이 꺼져 있습니다. 카드를 스캔하려면 설정에서 활성화하세요.</string>
+    <string name="scan_card_camera_unavailable">이 기기에서는 카메라를 사용할 수 없습니다.</string>
 </resources>
