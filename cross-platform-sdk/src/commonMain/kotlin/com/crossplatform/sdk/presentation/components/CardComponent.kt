@@ -64,10 +64,12 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.expiry_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_cvv_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_scan_card
 import crossplatformsdk.cross_platform_sdk.generated.resources.know_more_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.pay_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.percent_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.save_this_card_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.scan_card_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.set_up_si_instructions
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -133,9 +135,31 @@ internal fun CardComponent(
     shopperToken : String?,
     modifier: Modifier,
     appliedSurcharge : List<SurchargeModel>,
-    normalCheckout : Boolean = true
+    normalCheckout : Boolean = true,
+    isCardScanEnabled : Boolean = true
 ) {
 //    val acceptedCardList = CheckoutDetailsHandler.acceptedCardsListFlow.collectAsStateWithLifecycle()
+    var showCardScanner by remember { mutableStateOf(false) }
+
+    if (showCardScanner) {
+        CardScanDialog(
+            accentColor = buttonColor.toComposeColor(),
+            onDismiss   = { showCardScanner = false },
+            onScanned   = { card ->
+                showCardScanner = false
+                // Fed through the same handlers as typing, so brand detection, max length,
+                // validation and cardValid all behave exactly as if the user had typed it.
+                card.cardNumber?.let { handleCardNumberChange(it.take(maxCardNumberLength)) }
+                // Digits only ("MMYY"), the format the user would type into ExpiryVisualTransformation.
+                // If handleExpiryChange expects "MM/YY", change this to "${month}/${year}".
+                val month = card.expiryMonth
+                val year  = card.expiryYear
+                if (month != null && year != null) handleExpiryChange(month + year)
+                card.holderName?.let { handleCardHolderNameChange(it) }
+            }
+        )
+    }
+
     Column(modifier = modifier.fillMaxWidth().background(Color.White)) {
         // --- EMI Bank Info ---
         if (!bankName.isNullOrEmpty()) {
@@ -215,6 +239,39 @@ internal fun CardComponent(
             }
         }
 
+        // --- Scan card ---
+        if (isCardScanEnabled) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .clickable { showCardScanner = true }
+                        .padding(horizontal = 4.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter            = painterResource(Res.drawable.ic_scan_card),
+                        contentDescription = null,
+                        modifier           = Modifier.size(18.dp),
+                        colorFilter        = ColorFilter.tint(buttonColor.toComposeColor())
+                    )
+                    Text(
+                        text       = stringResource(Res.string.scan_card_cta),
+                        fontFamily = LocalSDKFonts.current.primary,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize   = 13.sp,
+                        color      = buttonColor.toComposeColor(),
+                        modifier   = Modifier.padding(start = 6.dp)
+                    )
+                }
+            }
+        }
+
         // --- Card Number ---
         CardTextField(
             value         = cardNumberText,
@@ -223,7 +280,11 @@ internal fun CardComponent(
             isError       = cardNumberError,
             keyboardType  = KeyboardType.Number,
             maxLength     = maxCardNumberLength,
-            modifier      = Modifier.padding(start = 16.dp, end = 16.dp, top = 28.dp),
+            modifier      = Modifier.padding(
+                start = 16.dp,
+                end   = 16.dp,
+                top   = if (isCardScanEnabled) 8.dp else 28.dp
+            ),
             trailingIcon  = {
                 Image(
                     painter            = painterResource(cardSelectedIcon),

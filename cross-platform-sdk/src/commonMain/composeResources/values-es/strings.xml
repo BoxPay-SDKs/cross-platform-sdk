@@ -215,4 +215,10 @@
     <string name="must_be_at_most_characters">Debe tener como máximo %1$d caracteres</string>
     <string name="must_be_exactly_characters_error_message">Debe tener exactamente %1$d caracteres</string>
     <string name="mobile_number_error_message">El número de móvil debe tener %1$d dígitos</string>
+
+    <string name="scan_card_cta">Escanear tarjeta</string>
+    <string name="scan_card_hint">Mantén tu tarjeta dentro del recuadro. Los datos se leen únicamente en tu dispositivo.</string>
+    <string name="scan_card_cancel">Cancelar</string>
+    <string name="scan_card_permission_denied">El acceso a la cámara está desactivado. Actívalo en Configuración para escanear tu tarjeta.</string>
+    <string name="scan_card_camera_unavailable">La cámara no está disponible en este dispositivo.</string>
 </resources>

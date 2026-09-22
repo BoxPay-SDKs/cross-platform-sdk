@@ -215,4 +215,10 @@
     <string name="must_be_at_most_characters">Doit contenir au plus %1$d caractères</string>
     <string name="must_be_exactly_characters_error_message">Doit contenir exactement %1$d caractères</string>
     <string name="mobile_number_error_message">Le numéro de mobile doit comporter %1$d chiffres</string>
+
+    <string name="scan_card_cta">Scanner la carte</string>
+    <string name="scan_card_hint">Maintenez votre carte dans le cadre. Les informations sont lues uniquement sur votre appareil.</string>
+    <string name="scan_card_cancel">Annuler</string>
+    <string name="scan_card_permission_denied">L'accès à la caméra est désactivé. Activez-le dans les Réglages pour scanner votre carte.</string>
+    <string name="scan_card_camera_unavailable">La caméra n'est pas disponible sur cet appareil.</string>
 </resources>

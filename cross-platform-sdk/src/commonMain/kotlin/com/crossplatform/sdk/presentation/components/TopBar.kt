@@ -4,7 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,7 +46,6 @@ import com.crossplatform.sdk.presentation.formatTimer
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.arrow_left
-import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_language
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_timer
 import org.jetbrains.compose.resources.painterResource
@@ -57,7 +56,6 @@ internal fun TopBar(
     text: String,
     onBackPress: () -> Unit,
     sessionSeconds: Long?,
-    currentLanguage: String,
     onLanguageChange: (String) -> Unit
 ) {
     val itemsLength = CheckoutDetailsHandler.itemsLengthFlow.collectAsStateWithLifecycle()
@@ -70,14 +68,7 @@ internal fun TopBar(
 
     val isTimerVisible = sessionSeconds != null && isSessionExpiryVisible.value
 
-    // Four possible states, driven purely by these two booleans:
-    //   isTimerVisible=true,  isLanguageSelectorVisible=true   -> State A: timer in main row, language gets its own row
-    //   isTimerVisible=false, isLanguageSelectorVisible=true   -> State B: language takes the timer's spot in main row
-    //   isTimerVisible=true,  isLanguageSelectorVisible=false  -> State D: timer alone, no second row (unchanged)
-    //   isTimerVisible=false, isLanguageSelectorVisible=false  -> State E: nothing shown, no second row (unchanged)
-    val languageTakesTimerSpot = isLanguageSelectorVisible && !isTimerVisible
-    val languageNeedsOwnRow = isLanguageSelectorVisible && isTimerVisible
-
+    // Timer urgency threshold — turns red under 2 minutes
     val isUrgent = (sessionSeconds ?: Long.MAX_VALUE) <= 120L
 
     val timerBg by animateColorAsState(
@@ -209,6 +200,8 @@ internal fun TopBar(
                         },
                         fontSize = 12.sp,
                         color = Color(0xFF4F4D55),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.paddingFromBaseline(top = 2.dp)
                     )
                 }
@@ -238,27 +231,10 @@ internal fun TopBar(
                         color = timerTextColor
                     )
                 }
-            } else if (languageTakesTimerSpot) {
-                // State B only: timer is hidden, language steps into its spot
-                Spacer(modifier = Modifier.width(8.dp))
-                LanguagePill(
-                    currentLanguage = currentLanguage,
-                    onLanguageChange = onLanguageChange
-                )
             }
-            // else: State E — neither renders, title column just gets the full width
-        }
 
-        // Second row only ever renders for State A — every other state skips it entirely
-        if (languageNeedsOwnRow) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                LanguagePill(
-                    currentLanguage = currentLanguage,
+            if (isLanguageSelectorVisible) {
+                LanguageIconButton(
                     onLanguageChange = onLanguageChange
                 )
             }
@@ -269,40 +245,21 @@ internal fun TopBar(
 }
 
 @Composable
-private fun LanguagePill(
-    currentLanguage: String,
+private fun LanguageIconButton(
     onLanguageChange: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val selected = AppLanguage.entries.find { it.code == currentLanguage } ?: AppLanguage.ENGLISH
 
     Box {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .background(color = Color(0xFFF5F5F7), shape = RoundedCornerShape(20.dp))
-                .clickable { expanded = true }
-                .padding(horizontal = 8.dp, vertical = 3.dp)
+        IconButton(
+            onClick = { expanded = true },
+            modifier = Modifier.size(30.dp).border(1.dp, Color(0xFF4F4D55), RoundedCornerShape(8.dp)).padding(horizontal = 8.dp)
         ) {
             Icon(
                 painter = painterResource(Res.drawable.ic_language),
-                contentDescription = "language",
+                contentDescription = "Select language",
                 tint = Color(0xFF4F4D55),
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = selected.code.uppercase(),
-                fontSize = 12.sp,
-                fontFamily = LocalSDKFonts.current.primary,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF4F4D55)
-            )
-            Icon(
-                painter = painterResource(Res.drawable.chervon_down),
-                contentDescription = null,
-                tint = Color(0xFF4F4D55),
-                modifier = Modifier.size(14.dp)
+                modifier = Modifier.size(20.dp)
             )
         }
 

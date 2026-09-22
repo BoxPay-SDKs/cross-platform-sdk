@@ -215,4 +215,10 @@
     <string name="must_be_at_most_characters">அதிகபட்சம் %1$d எழுத்துகள் இருக்க வேண்டும்</string>
     <string name="must_be_exactly_characters_error_message">சரியாக %1$d எழுத்துகள் இருக்க வேண்டும்</string>
     <string name="mobile_number_error_message">மொபைல் எண் %1$d இலக்கங்களாக இருக்க வேண்டும்</string>
+
+    <string name="scan_card_cta">கார்டை ஸ்கேன் செய்யவும்</string>
+    <string name="scan_card_hint">உங்கள் கார்டை ஃபிரேமுக்குள் வையுங்கள். விவரங்கள் உங்கள் சாதனத்தில் மட்டுமே படிக்கப்படும்.</string>
+    <string name="scan_card_cancel">ரத்து செய்</string>
+    <string name="scan_card_permission_denied">கேமரா அணுகல் முடக்கப்பட்டுள்ளது. உங்கள் கார்டை ஸ்கேன் செய்ய அமைப்புகளில் அதை இயக்கவும்.</string>
+    <string name="scan_card_camera_unavailable">இந்த சாதனத்தில் கேமரா கிடைக்கவில்லை.</string>
 </resources>

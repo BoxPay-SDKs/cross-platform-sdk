@@ -123,6 +123,13 @@ kotlin {
                     exclude(group = "com.squareup.okhttp3", module = "logging-interceptor")
                 }
                 implementation("com.google.android.gms:play-services-auth:21.2.0") // ✅ Android-only
+                implementation("androidx.camera:camera-camera2:1.4.2")
+                implementation("androidx.camera:camera-lifecycle:1.4.2")
+                implementation("androidx.camera:camera-view:1.4.2")
+
+                implementation("com.google.mlkit:text-recognition:16.0.1")
+
+                implementation("androidx.activity:activity-compose:1.13.0")
             }
         }
         val iosMain by creating {

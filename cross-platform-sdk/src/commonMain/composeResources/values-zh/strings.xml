@@ -215,4 +215,10 @@
     <string name="must_be_at_most_characters">必须最多 %1$d 个字符</string>
     <string name="must_be_exactly_characters_error_message">必须恰好为 %1$d 个字符</string>
     <string name="mobile_number_error_message">手机号码必须为 %1$d 位数字</string>
+
+    <string name="scan_card_cta">扫描卡片</string>
+    <string name="scan_card_hint">将卡片保持在取景框内。卡片信息仅在您的设备上读取。</string>
+    <string name="scan_card_cancel">取消</string>
+    <string name="scan_card_permission_denied">相机权限已关闭。请在设置中启用以扫描您的卡片。</string>
+    <string name="scan_card_camera_unavailable">此设备上无法使用相机。</string>
 </resources>

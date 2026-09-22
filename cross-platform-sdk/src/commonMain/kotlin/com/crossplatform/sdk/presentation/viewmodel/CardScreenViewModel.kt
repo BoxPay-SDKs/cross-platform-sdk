@@ -88,6 +88,7 @@ internal class CardScreenViewModel(
     val isNativeOtpLoading = mutableStateOf(false)
 
     private var fetchStatusJob: Job? = null
+    private var lastFetchedBin: String? = null
 
     val appliedSurcharge = mutableStateOf<List<SurchargeModel>>(emptyList())
 
@@ -162,6 +163,7 @@ internal class CardScreenViewModel(
             cardSelectedIcon.value    = Res.drawable.ic_card
             maxCvvLength.value        = 3
             maxCardNumberLength.value = 19
+            lastFetchedBin            = null
             return
         }
 
@@ -170,9 +172,14 @@ internal class CardScreenViewModel(
         if (cleaned.length == 16 || (cleaned.length == 15 && maxCardNumberLength.value == 18)) {
             cardNumberValid.value = isValidCardNumberByLuhn(cleaned)
         }
-
-        if (cleaned.length == 9) {
-            fetchCardDetails(cardNumber = cleaned.take(9), isTestEnv)
+        if (cleaned.length >= 9) {
+            val bin = cleaned.take(9)
+            if (bin != lastFetchedBin) {
+                lastFetchedBin = bin
+                fetchCardDetails(cardNumber = bin, isTestEnv)
+            }
+        } else {
+            lastFetchedBin = null
         }
 
         if (cleaned.length < 9) {
@@ -448,7 +455,7 @@ internal class CardScreenViewModel(
             isNativeOtpLoading.value = false
             when (response) {
                 else -> {
-                   // no op
+                    // no op
                 }
             }
         }

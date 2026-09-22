@@ -215,4 +215,10 @@
     <string name="must_be_at_most_characters">Phải có nhiều nhất %1$d ký tự</string>
     <string name="must_be_exactly_characters_error_message">Phải có chính xác %1$d ký tự</string>
     <string name="mobile_number_error_message">Số điện thoại di động phải có %1$d chữ số</string>
+
+    <string name="scan_card_cta">Quét thẻ</string>
+    <string name="scan_card_hint">Giữ thẻ của bạn trong khung hình. Thông tin chỉ được đọc trên thiết bị của bạn.</string>
+    <string name="scan_card_cancel">Hủy</string>
+    <string name="scan_card_permission_denied">Quyền truy cập camera đang tắt. Bật quyền này trong Cài đặt để quét thẻ của bạn.</string>
+    <string name="scan_card_camera_unavailable">Camera không khả dụng trên thiết bị này.</string>
 </resources>

@@ -215,4 +215,10 @@
     <string name="must_be_at_most_characters">Harus maksimal %1$d karakter</string>
     <string name="must_be_exactly_characters_error_message">Harus tepat %1$d karakter</string>
     <string name="mobile_number_error_message">Nomor ponsel harus %1$d digit</string>
+
+    <string name="scan_card_cta">Pindai kartu</string>
+    <string name="scan_card_hint">Tahan kartu Anda di dalam bingkai. Detail hanya dibaca di perangkat Anda.</string>
+    <string name="scan_card_cancel">Batal</string>
+    <string name="scan_card_permission_denied">Akses kamera dimatikan. Aktifkan di Pengaturan untuk memindai kartu Anda.</string>
+    <string name="scan_card_camera_unavailable">Kamera tidak tersedia di perangkat ini.</string>
 </resources>
