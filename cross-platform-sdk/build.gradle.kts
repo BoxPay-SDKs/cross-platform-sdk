@@ -122,6 +122,9 @@ kotlin {
                 implementation("com.revolut.payments:revolutpay:3.2.1") {
                     exclude(group = "com.squareup.okhttp3", module = "logging-interceptor")
                 }
+                implementation("com.affirm:affirm-android-sdk:2.0.36") {
+                    exclude(group = "org.jetbrains.kotlin", module = "kotlin-android-extensions-runtime")
+                }
                 implementation("com.google.android.gms:play-services-auth:21.2.0") // ✅ Android-only
                 implementation("androidx.camera:camera-camera2:1.4.2")
                 implementation("androidx.camera:camera-lifecycle:1.4.2")

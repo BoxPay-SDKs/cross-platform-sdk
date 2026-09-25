@@ -24,6 +24,7 @@ import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
 import com.crossplatform.sdk.presentation.GooglePayButton
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_affirm
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_apple_pay
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_revolut_pay
 import org.jetbrains.compose.resources.painterResource
@@ -33,9 +34,11 @@ internal fun ExpressCheckout(
     showApplePay : Boolean,
     showGooglePay : Boolean,
     showRevolutPay : Boolean,
+    showAffirm : Boolean,
     onClickRevolut : () -> Unit,
     onClickGooglePay : () -> Unit,
     onClickApplePay : () -> Unit,
+    onClickAffirm : () -> Unit,
     config: GooglePayExpressCheckoutConfig
 ) {
     FlowRow(
@@ -73,6 +76,16 @@ internal fun ExpressCheckout(
                     .defaultMinSize(minWidth = 140.dp),
                 onClick = {
                     onClickRevolut()
+                }
+            )
+        }
+        if (showAffirm) {
+            AffirmButton(
+                modifier = Modifier
+                    .weight(1f)
+                    .defaultMinSize(minWidth = 140.dp),
+                onClick = {
+                    onClickAffirm()
                 }
             )
         }
@@ -114,6 +127,24 @@ private fun ApplePayButton(
             contentDescription = "apple pay "
         )
         Text("Pay", color = Color.Black, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, fontFamily = LocalSDKFonts.current.primary)
+    }
+}
+
+@Composable
+private fun AffirmButton(
+    onClick: () -> Unit,
+    modifier: Modifier
+) {
+    Button(
+        onClick = onClick,
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+        modifier = modifier.height(50.dp).border(1.dp, Color.Black, RoundedCornerShape(8.dp))
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.ic_affirm),
+            contentDescription = "affirm pay "
+        )
     }
 }
 

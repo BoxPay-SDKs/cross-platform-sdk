@@ -34,6 +34,7 @@ import platform.UIKit.UIUserInterfaceIdiomPad
 import kotlin.collections.component1
 import kotlin.collections.component2
 import androidx.compose.ui.graphics.ImageBitmap
+import com.crossplatform.sdk.domain.handler.AffirmExpressCheckoutConfig
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import com.crossplatform.sdk.domain.handler.ApplePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
@@ -41,6 +42,8 @@ import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
 import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.RevolutPayExpressCheckoutConfig
+import com.crossplatform.sdk.payments.AffirmBridgeRegistry
+import com.crossplatform.sdk.payments.AffirmExecutorItem
 import com.crossplatform.sdk.payments.RevolutPayBridgeRegistry
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.addressOf
@@ -256,6 +259,9 @@ internal class IosPaymentHandler() : ExpressCheckoutPaymentHandler {
     override suspend fun isGooglePayAvailable(config: GooglePayExpressCheckoutConfig) = false
 
     override fun isRevolutPayAvailable(): Boolean = true
+    // true only once the host app has registered an AffirmExecutor -- see
+    // AffirmExecutor.kt for the Swift-side integration sketch.
+    override fun isAffirmAvailable(): Boolean = AffirmBridgeRegistry.executor != null
 
     override fun launchApplePay(
         request: ExpressCheckoutPaymentRequest,
@@ -291,6 +297,38 @@ internal class IosPaymentHandler() : ExpressCheckoutPaymentHandler {
                 activeDelegate = null
                 onResult(ExpressCheckoutPaymentResult.Failure("Could not present Apple Pay sheet"))
             }
+        }
+    }
+
+    override fun launchAffirm(
+        request: ExpressCheckoutPaymentRequest,
+        config: AffirmExpressCheckoutConfig,
+        isSandbox: Boolean,
+        onResult: (ExpressCheckoutPaymentResult) -> Unit
+    ) {
+        val executor = AffirmBridgeRegistry.executor
+            ?: return onResult(ExpressCheckoutPaymentResult.Failure("AffirmExecutor not registered"))
+
+        executor.launch(
+            publicKey = config.publicKey,
+            merchantName = config.merchantName,
+            items = config.items.map {
+                AffirmExecutorItem(
+                    name = it.name,
+                    sku = it.sku,
+                    unitPrice = it.unitPrice,
+                    quantity = it.quantity
+                )
+            },
+            shippingAmount = config.shippingAmount,
+            taxAmount = config.taxAmount,
+            totalAmount = request.amount,
+            isSandbox = isSandbox
+        ) { success, checkoutToken, error ->
+            onResult(
+                if (success) ExpressCheckoutPaymentResult.Success(checkoutToken = checkoutToken)
+                else ExpressCheckoutPaymentResult.Failure(error ?: "Unknown error")
+            )
         }
     }
 

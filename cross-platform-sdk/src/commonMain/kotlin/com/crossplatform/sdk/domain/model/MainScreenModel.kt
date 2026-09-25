@@ -9,11 +9,13 @@ internal data class MainScreenModel(
     val successfulTimeStamp : String,
     val successfulPaymentMethod : String,
     val currencySymbol : String,
+    val countryCode: String,
     val currencyCode : String,
     val methodFlags: MethodFlags,
     val orderDetails: OrderDetails?,
     val sessionExpiryTimer : String,
     val revolutPublicKey : String?,
+    val affirmPublicKey : String?,
     val googlePayAdditionData : GooglePayAdditionData?,
     val applePayAdditionData : ApplePayAdditionData?,
     val walletPaymentMethod : List<SelectedPaymentMethod>,
@@ -38,6 +40,7 @@ internal data class MainScreenModel(
         val isGooglePayVisible : Boolean = false,
         val isApplePayVisible : Boolean = false,
         val isRevolutPayVisible : Boolean = false,
+        val isAffirmPayVisible : Boolean = false,
         val additionalPaymentMethods : List<AdditionalPaymentMethod> = emptyList()
     )
 

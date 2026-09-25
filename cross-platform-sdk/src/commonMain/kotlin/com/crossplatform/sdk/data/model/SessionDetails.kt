@@ -172,6 +172,7 @@ internal data class PaymentMethod(
 @Serializable
 internal data class AdditionalData(
     @SerialName("publicKey") val publicKey : String? = null,
+    @SerialName("publicApiKey") val affirmPublicApiKey : String? = null,
     @SerialName("gatewayMerchantId") val merchantId : String? = null,
     @SerialName("merchantName") val merchantName : String? = null,
     @SerialName("gateway") val gateway : String? = null,
