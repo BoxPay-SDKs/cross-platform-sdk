@@ -46,7 +46,8 @@ internal data class PaymentDetails(
 @Serializable
 internal data class PaymentContext(
     @SerialName("countryCode") val countryCode: String,
-    @SerialName("localeCode") val localeCode: String
+    @SerialName("localeCode") val localeCode: String? = null,
+    @SerialName("orderId") val orderId : String? = null,
 )
 
 @Serializable

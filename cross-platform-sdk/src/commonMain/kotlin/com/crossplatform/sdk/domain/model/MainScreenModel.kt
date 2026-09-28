@@ -5,6 +5,7 @@ import com.crossplatform.sdk.data.model.AllowedPaymentMethods
 internal data class MainScreenModel(
     val status: TransactionStatusEnum,
     val transactionId: String,
+    val orderId : String,
     val totalAmount : Double,
     val successfulTimeStamp : String,
     val successfulPaymentMethod : String,

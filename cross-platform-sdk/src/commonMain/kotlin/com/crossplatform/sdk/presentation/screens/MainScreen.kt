@@ -47,6 +47,7 @@ import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.components.ShowUpdateAmountBottomSheet
 import com.crossplatform.sdk.presentation.components.UPIComponent
+import com.crossplatform.sdk.presentation.getAffirmAddress
 import com.crossplatform.sdk.presentation.isPresentInSurchargeModel
 import com.crossplatform.sdk.presentation.launchUpiIntent
 import com.crossplatform.sdk.presentation.rememberExpressCheckoutPaymentHandler
@@ -293,9 +294,6 @@ internal fun MainScreen(
                         quantity = item.imageQty ?: 1
                     )
                 } ?: listOf(
-                    // Fallback: Affirm requires at least one line item -- use
-                    // the order total as a single generic item when BoxPay
-                    // doesn't send an itemised order breakdown.
                     AffirmCheckoutItem(
                         name = "Order total",
                         sku = "order-total",
@@ -304,7 +302,9 @@ internal fun MainScreen(
                     )
                 ),
                 shippingAmount = response.orderDetails?.shippingAmount ?: 0.0,
-                taxAmount = response.orderDetails?.taxAmount ?: 0.0
+                taxAmount = response.orderDetails?.taxAmount ?: 0.0,
+                shippingAddress = getAffirmAddress(),
+                orderId = response.orderId
             )
 
             expressCheckoutCountryCode.value = response.countryCode
@@ -437,11 +437,7 @@ internal fun MainScreen(
                                         )
                                     paymentHandler.launchAffirm(
                                         request = expressCheckoutPaymentRequest!!,
-                                        config = affirmCheckout ?: AffirmExpressCheckoutConfig(
-                                                publicKey = "",
-                                                merchantName = merchantNameFlow.value,
-                                                items = emptyList()
-                                                    ),
+                                        config = affirmCheckout,
                                         isSandbox = isTestEnv.value,
                                         onResult = { result ->
                                             when(result) {

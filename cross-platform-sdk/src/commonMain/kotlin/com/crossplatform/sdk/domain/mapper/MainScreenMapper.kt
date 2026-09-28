@@ -206,6 +206,7 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
         status = status,
         transactionId = this.lastTransactionId ?: "",
         totalAmount = moneyObject.amount,
+        orderId = this.paymentDetails.context.orderId ?: "",
         successfulPaymentMethod = this.lastTransactionDetails?.paymentMethod?.brand ?: "",
         successfulTimeStamp = this.lastTransactionDetails?.timeStampLocale ?: "",
         currencySymbol = moneyObject.currencySymbol,

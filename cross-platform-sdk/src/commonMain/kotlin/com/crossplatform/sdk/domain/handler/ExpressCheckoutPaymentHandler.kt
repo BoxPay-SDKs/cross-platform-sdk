@@ -39,10 +39,12 @@ internal data class RevolutPayExpressCheckoutConfig(
 // key (same shape as how GooglePay's token is sent to initiatePayment).
 internal data class AffirmExpressCheckoutConfig(
     val publicKey: String,
+    val orderId : String,
     val merchantName: String,
     val items: List<AffirmCheckoutItem>,
     val shippingAmount: Double = 0.0,
-    val taxAmount: Double = 0.0
+    val taxAmount: Double = 0.0,
+    val shippingAddress: AffirmAddress
 )
 
 internal data class AffirmCheckoutItem(
@@ -50,6 +52,16 @@ internal data class AffirmCheckoutItem(
     val sku: String,
     val unitPrice: Double,
     val quantity: Int
+)
+
+internal data class AffirmAddress(
+    val fullName: String,
+    val street1: String,
+    val street2: String? = null,
+    val city: String,
+    val regionCode: String,
+    val postalCode: String,
+    val country: String = "USA"
 )
 
 internal data class GooglePayExpressCheckoutConfig(
