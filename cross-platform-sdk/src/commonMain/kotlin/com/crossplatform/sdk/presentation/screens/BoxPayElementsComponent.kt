@@ -101,8 +101,9 @@ internal fun BoxPayElementsComponent(
                 upiMethodFlags   = response.methodFlags,
                 selectedMethod   = selectedMethod.value,
                 savedUpiList     = viewModel.upiRecommendedList.value,
+                savedCardsList = viewModel.cardsRecommendedList.value,
                 isBoxPayProceedButtonVisible = isBoxPayProceedButtonVisible,
-
+                handler = handler,
                 uiConfig = ElementsUiConfig(
                     ctaBorderRadius      = ctaBorderRadius,
                     buttonColor          = buttonColor,

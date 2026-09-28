@@ -1,12 +1,15 @@
 package com.crossplatform.sdk.presentation.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -30,6 +33,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.crossplatform.sdk.data.handler.BoxPayElementsHandler
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.domain.model.MainScreenModel
@@ -52,6 +57,7 @@ import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.components.BankComponent
 import com.crossplatform.sdk.presentation.components.CardComponent
 import com.crossplatform.sdk.presentation.components.Footer
+import com.crossplatform.sdk.presentation.components.SavedCardComponent
 import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.UPIComponent
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
@@ -108,10 +114,12 @@ private object PaymentTypes {
 @Composable
 internal fun ElementsContent(
     viewModel                : BoxPayElementsViewModel,
+    handler                  : BoxPayElementsHandler?,
     availableMethods         : List<PaymentMethodTab>,
     upiMethodFlags           : MainScreenModel.MethodFlags,
     selectedMethod           : PaymentMethodTab,
     savedUpiList             : List<SelectedPaymentMethod>,
+    savedCardsList : List<SelectedPaymentMethod>,
     isBoxPayProceedButtonVisible: Boolean,
     uiConfig                 : ElementsUiConfig,
     qrState                  : QrState,
@@ -128,6 +136,17 @@ internal fun ElementsContent(
     var selectedBankInstrumentId    by rememberSaveable { mutableStateOf("") }
     var selectedWalletInstrumentId  by rememberSaveable { mutableStateOf("") }
     var selectedBnplInstrumentId    by rememberSaveable { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        viewModel.isPayable.collect { payable ->
+            handler?.setPayable(payable)
+        }
+    }
+
+    DisposableEffect(Unit) {
+        handler?.onSubmit = { viewModel.submitSelectedInstrument() }
+        onDispose { handler?.onSubmit = null }
+    }
 
     Column(modifier = Modifier.fillMaxWidth().wrapContentHeight()) {
 
@@ -183,7 +202,8 @@ internal fun ElementsContent(
                             uiConfig             = uiConfig,
                             shopperToken         = shopperToken,
                             onProceedCardRequest = onProceedCardRequest,
-                            isBoxPayPayButtonVisible = isBoxPayProceedButtonVisible
+                            isBoxPayPayButtonVisible = isBoxPayProceedButtonVisible,
+                            savedCardsList = savedCardsList
                         )
 
                     PaymentMethodTab.NETBANKING ->
@@ -369,30 +389,162 @@ private fun CardsTab(
     uiConfig             : ElementsUiConfig,
     shopperToken         : String,
     isBoxPayPayButtonVisible : Boolean,
-    onProceedCardRequest : (Boolean) -> Unit,
+    onProceedCardRequest     : (Boolean) -> Unit,
+    savedCardsList           : List<SelectedPaymentMethod>,
 ) {
-    // Collect flows once here — not repeatedly inside sub-expressions
-    LaunchedEffect(Unit) {
-        viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.Card)
-    }
-    val isSICheckboxChecked   by CheckoutDetailsHandler.isSICheckboxCheckedFlow.collectAsStateWithLifecycle()
-    val isSICheckboxEnabled   by CheckoutDetailsHandler.isSICheckboxEnabledFlow.collectAsStateWithLifecycle()
+    // ── Flows from the checkout-details handler ────────────────────────────
+    val isSICheckboxChecked    by CheckoutDetailsHandler.isSICheckboxCheckedFlow.collectAsStateWithLifecycle()
+    val isSICheckboxEnabled    by CheckoutDetailsHandler.isSICheckboxEnabledFlow.collectAsStateWithLifecycle()
     val isSubscriptionCheckout by CheckoutDetailsHandler.isSubscriptionCheckoutFlow.collectAsStateWithLifecycle()
     val subscription           by CheckoutDetailsHandler.subscriptionFlow.collectAsStateWithLifecycle()
     val isTestEnv              by CheckoutDetailsHandler.isTestEnvFlow.collectAsStateWithLifecycle()
 
-    // Local copy synced with the external source of truth via LaunchedEffect
+    // Local copy synced with the external source of truth
     var isSiCheckBoxChecked by remember { mutableStateOf(isSICheckboxChecked) }
     LaunchedEffect(isSICheckboxChecked) { isSiCheckBoxChecked = isSICheckboxChecked }
 
     val isSubscriptionDetailsVisible = isSubscriptionCheckout && isSiCheckBoxChecked
 
+    if (savedCardsList.isEmpty()) {
+        // ── No saved cards: show the new-card form directly ──────────────────
+        LaunchedEffect(Unit) {
+            viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.Card)
+        }
+
+        NewCardForm(
+            viewModel                    = viewModel,
+            uiConfig                     = uiConfig,
+            shopperToken                 = shopperToken,
+            isBoxPayPayButtonVisible     = isBoxPayPayButtonVisible,
+            onProceedCardRequest         = onProceedCardRequest,
+            isSiCheckBoxChecked          = isSiCheckBoxChecked,
+            isSICheckboxEnabled          = isSICheckboxEnabled,
+            isSubscriptionCheckout       = isSubscriptionCheckout,
+            isSubscriptionDetailsVisible = isSubscriptionDetailsVisible,
+            subscription                 = subscription,
+            isTestEnv                    = isTestEnv,
+            onSiCheckBoxChanged          = { isSiCheckBoxChecked = it },
+        )
+    } else {
+        // ── Saved cards present ───────────────────────────────────────────────
+
+        // Which saved card is currently highlighted (empty = none)
+        var selectedSavedCardId    by rememberSaveable { mutableStateOf("") }
+        // Whether the inline "Add New Card" form is open
+        var isAddNewCardExpanded   by rememberSaveable { mutableStateOf(false) }
+
+        // Keep PaySelection in sync with the expanded state
+        LaunchedEffect(isAddNewCardExpanded) {
+            if (isAddNewCardExpanded) {
+                viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.Card)
+            } else if (selectedSavedCardId.isEmpty()) {
+                viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.None)
+            }
+        }
+
+        Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+            SavedCardComponent(
+                savedCards     = viewModel.cardsRecommendedList.value,
+                onClickRadio = {
+                    isAddNewCardExpanded = false        // collapse new-card form
+                    viewModel.callUiAnalytics(
+                        event      = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
+                        screenName = "MainScreen",
+                        message    = "Payment Category selected through saved card",
+                    )
+                },
+                onProceedForward = { instrumentRef, siChecked ->
+                    viewModel.callUiAnalytics(
+                        event      = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
+                        screenName = "MainScreen",
+                        message    = "Payment Category selected through saved card",
+                    )
+                    viewModel.callUiAnalytics(
+                        event      = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
+                        screenName = "MainScreen",
+                        message    = "Payment Category selected through saved card",
+                    )
+                    viewModel.postSavedCardRequest(
+                        instrumentRef      = instrumentRef,
+                        isSICheckboxChecked = siChecked,
+                    )
+                },
+
+                // ── "Add New Card" button tapped → toggle the inline form ─────
+                onClickAddCard = {
+                    isAddNewCardExpanded = !isAddNewCardExpanded
+                    if (isAddNewCardExpanded) {
+                        // Deselect every saved-card radio button
+                        selectedSavedCardId = ""
+                    }
+                },
+
+                // ── Delete card ───────────────────────────────────────────────
+                onClickDeleteCard = { _, _ ->
+
+                },
+
+                // ── Theme / amounts from uiConfig ─────────────────────────────
+                buttonColor         = uiConfig.buttonColor,
+                buttonTextColor     = uiConfig.buttonTextColor,
+                currencySymbol      = uiConfig.currencySymbol,
+                amount              = uiConfig.amount,
+                ctaBorderRadius     = uiConfig.ctaBorderRadius,
+                isSICheckboxChecked = isSiCheckBoxChecked,
+                isSICheckboxEnabled = isSICheckboxEnabled,
+                isBoxPayPayButtonVisible = isBoxPayPayButtonVisible
+            )
+
+            // ── Expandable new-card form ──────────────────────────────────────
+            AnimatedVisibility(
+                visible = isAddNewCardExpanded,
+                enter   = expandVertically(animationSpec = tween(250)) + fadeIn(tween(200)),
+                exit    = shrinkVertically(animationSpec = tween(200)) + fadeOut(tween(150)),
+            ) {
+                NewCardForm(
+                    viewModel                    = viewModel,
+                    uiConfig                     = uiConfig,
+                    shopperToken                 = shopperToken,
+                    isBoxPayPayButtonVisible     = isBoxPayPayButtonVisible,
+                    onProceedCardRequest         = onProceedCardRequest,
+                    isSiCheckBoxChecked          = isSiCheckBoxChecked,
+                    isSICheckboxEnabled          = isSICheckboxEnabled,
+                    isSubscriptionCheckout       = isSubscriptionCheckout,
+                    isSubscriptionDetailsVisible = isSubscriptionDetailsVisible,
+                    subscription                 = subscription,
+                    isTestEnv                    = isTestEnv,
+                    onSiCheckBoxChanged          = { isSiCheckBoxChecked = it },
+                )
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// New-card form — extracted so it can be reused in both branches of CardsTab
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun NewCardForm(
+    viewModel                    : BoxPayElementsViewModel,
+    uiConfig                     : ElementsUiConfig,
+    shopperToken                 : String,
+    isBoxPayPayButtonVisible     : Boolean,
+    onProceedCardRequest         : (Boolean) -> Unit,
+    isSiCheckBoxChecked          : Boolean,
+    isSICheckboxEnabled          : Boolean,
+    isSubscriptionCheckout       : Boolean,
+    isSubscriptionDetailsVisible : Boolean,
+    subscription                 : List<Pair<String, String>>?,
+    isTestEnv                    : Boolean,
+    onSiCheckBoxChanged          : (Boolean) -> Unit,
+) {
     CardComponent(
         isSICheckboxChecked          = isSiCheckBoxChecked,
         isSICheckboxEnabled          = isSICheckboxEnabled,
         isSubscriptionCheckout       = isSubscriptionCheckout,
         isSubscriptionDetailsVisible = isSubscriptionDetailsVisible,
-        onClickCheckBoxItem          = { isSiCheckBoxChecked = it },
+        onClickCheckBoxItem          = onSiCheckBoxChanged,
         onClickShowKnowMoreDialog    = { viewModel.showKnowMoreDialog.value = true },
         onClickCVVInfo               = { viewModel.showCvvInfo.value = true },
         onClickSavedCardCheckBox     = {
@@ -404,17 +556,17 @@ private fun CardsTab(
         currencySymbol   = uiConfig.currencySymbol,
 
         // Card field values
-        cardNumberText    = viewModel.cardNumberText.value,
+        cardNumberText     = viewModel.cardNumberText.value,
         cardHolderNameText = viewModel.cardHolderNameText.value,
-        cardExpiryText    = viewModel.cardExpiryText.value,
-        cardCvvText       = viewModel.cardCvvText.value,
-        cardNickNameText  = viewModel.cardNickNameText.value,
+        cardExpiryText     = viewModel.cardExpiryText.value,
+        cardCvvText        = viewModel.cardCvvText.value,
+        cardNickNameText   = viewModel.cardNickNameText.value,
 
         // Error flags
-        cardNumberError    = viewModel.cardNumberError.value,
+        cardNumberError     = viewModel.cardNumberError.value,
         cardHolderNameError = viewModel.cardHolderNameError.value,
-        cardExpiryError    = viewModel.cardExpiryError.value,
-        cardCvvError       = viewModel.cardCvvError.value,
+        cardExpiryError     = viewModel.cardExpiryError.value,
+        cardCvvError        = viewModel.cardCvvError.value,
 
         // Constraints
         maxCardNumberLength = viewModel.maxCardNumberLength.value,
@@ -434,12 +586,11 @@ private fun CardsTab(
         },
         handleCvvChange = { cvv ->
             viewModel.cardCvvText.value = cvv
-            // Only clear the error once the CVV meets the required length
             viewModel.cardCvvError.value = cvv.length < viewModel.maxCvvLength.value
             viewModel.cardCvvErrorText.value = when {
-                cvv.isEmpty()                           -> "Required"
+                cvv.isEmpty()                              -> "Required"
                 cvv.length < viewModel.maxCvvLength.value -> "Invalid CVV"
-                else                                    -> ""
+                else                                       -> ""
             }
             viewModel.checkCardValid(isTestEnv)
         },
@@ -447,10 +598,10 @@ private fun CardsTab(
         cardSelectedIcon = viewModel.cardSelectedIcon.value,
 
         // Clear-error callbacks
-        setCardNumberError    = { viewModel.cardNumberError.value = false },
+        setCardNumberError     = { viewModel.cardNumberError.value = false },
         setCardHolderNameError = { viewModel.cardHolderNameError.value = false },
-        setCardExpiryError    = { viewModel.cardExpiryError.value = false },
-        setCardCvvError       = { viewModel.cardCvvError.value = false },
+        setCardExpiryError     = { viewModel.cardExpiryError.value = false },
+        setCardCvvError        = { viewModel.cardCvvError.value = false },
 
         // Blur / validation callbacks
         onBlurCardNumber = {
@@ -465,42 +616,43 @@ private fun CardsTab(
             }
         },
         onBlurCardName = {
-            viewModel.cardHolderNameError.value    = viewModel.cardHolderNameText.value.trim().isEmpty()
-            viewModel.cardHolderNameErrorText.value = if (viewModel.cardHolderNameError.value) "Required" else ""
+            viewModel.cardHolderNameError.value     = viewModel.cardHolderNameText.value.trim().isEmpty()
+            viewModel.cardHolderNameErrorText.value =
+                if (viewModel.cardHolderNameError.value) "Required" else ""
         },
         onBlurCardExpiry = {
-            // Require at least 5 chars (MM/YY) AND pass the domain-level validity check
             val expiry = viewModel.cardExpiryText.value
-            viewModel.cardExpiryError.value = expiry.length < 5 || !viewModel.cardExpiryValid.value
+            viewModel.cardExpiryError.value     = expiry.length < 5 || !viewModel.cardExpiryValid.value
             viewModel.cardExpiryErrorText.value = when {
                 expiry.isEmpty() -> "Required"
                 else             -> "Invalid Expiry"
             }
         },
         onBlurCardCVV = {
-            viewModel.cardCvvError.value    = viewModel.cardCvvText.value.length < viewModel.maxCvvLength.value
-            viewModel.cardCvvErrorText.value = if (viewModel.cardCvvText.value.isEmpty()) "Required" else "Invalid CVV"
+            viewModel.cardCvvError.value     = viewModel.cardCvvText.value.length < viewModel.maxCvvLength.value
+            viewModel.cardCvvErrorText.value =
+                if (viewModel.cardCvvText.value.isEmpty()) "Required" else "Invalid CVV"
         },
 
         // Error text strings
-        cardNumberErrorText    = viewModel.cardNumberErrorText.value,
+        cardNumberErrorText     = viewModel.cardNumberErrorText.value,
         cardHolderNameErrorText = viewModel.cardHolderNameErrorText.value,
-        cardExpiryErrorText    = viewModel.cardExpiryErrorText.value,
-        cardCvvErrorText       = viewModel.cardCvvErrorText.value,
+        cardExpiryErrorText     = viewModel.cardExpiryErrorText.value,
+        cardCvvErrorText        = viewModel.cardCvvErrorText.value,
 
-        amount                   = uiConfig.amount,
-        cardValid                = viewModel.cardValid.value,
-        postCardRequest          = onProceedCardRequest,
-        buttonColor              = uiConfig.buttonColor,
-        buttonTextColor          = uiConfig.buttonTextColor,
-        ctaBorderRadius          = uiConfig.ctaBorderRadius,
+        amount                       = uiConfig.amount,
+        cardValid                    = viewModel.cardValid.value,
+        postCardRequest              = onProceedCardRequest,
+        buttonColor                  = uiConfig.buttonColor,
+        buttonTextColor              = uiConfig.buttonTextColor,
+        ctaBorderRadius              = uiConfig.ctaBorderRadius,
         unfocusedTextInputBorderColor = uiConfig.unfocusedBorderColor,
         focusedTextInputBorderColor   = uiConfig.focusedBorderColor,
-        isBoxPayPayButtonVisible = isBoxPayPayButtonVisible,
-        isSavedCardCheckBoxClicked = viewModel.isSavedCardCheckBoxClicked.value,
-        modifier                 = Modifier.fillMaxWidth().wrapContentHeight(),
-        normalCheckout = false,
-        appliedSurcharge = emptyList()
+        isBoxPayPayButtonVisible     = isBoxPayPayButtonVisible,
+        isSavedCardCheckBoxClicked   = viewModel.isSavedCardCheckBoxClicked.value,
+        modifier                     = Modifier.fillMaxWidth().wrapContentHeight(),
+        normalCheckout               = false,
+        appliedSurcharge             = emptyList(),
     )
 }
 
