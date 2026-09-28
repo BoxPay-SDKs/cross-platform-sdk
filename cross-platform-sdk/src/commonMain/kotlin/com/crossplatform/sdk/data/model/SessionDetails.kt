@@ -46,7 +46,8 @@ internal data class PaymentDetails(
 @Serializable
 internal data class PaymentContext(
     @SerialName("countryCode") val countryCode: String,
-    @SerialName("localeCode") val localeCode: String
+    @SerialName("localeCode") val localeCode: String? = null,
+    @SerialName("orderId") val orderId : String? = null,
 )
 
 @Serializable
@@ -172,6 +173,7 @@ internal data class PaymentMethod(
 @Serializable
 internal data class AdditionalData(
     @SerialName("publicKey") val publicKey : String? = null,
+    @SerialName("publicApiKey") val affirmPublicApiKey : String? = null,
     @SerialName("gatewayMerchantId") val merchantId : String? = null,
     @SerialName("merchantName") val merchantName : String? = null,
     @SerialName("gateway") val gateway : String? = null,

@@ -234,6 +234,7 @@ internal fun TopBar(
             }
 
             if (isLanguageSelectorVisible) {
+                Spacer(modifier = Modifier.width(8.dp))
                 LanguageIconButton(
                     onLanguageChange = onLanguageChange
                 )
@@ -253,7 +254,7 @@ private fun LanguageIconButton(
     Box {
         IconButton(
             onClick = { expanded = true },
-            modifier = Modifier.size(30.dp).border(1.dp, Color(0xFF4F4D55), RoundedCornerShape(8.dp)).padding(horizontal = 8.dp)
+            modifier = Modifier.padding(horizontal = 8.dp).size(30.dp).border(1.dp, Color(0xFF4F4D55), RoundedCornerShape(8.dp))
         ) {
             Icon(
                 painter = painterResource(Res.drawable.ic_language),

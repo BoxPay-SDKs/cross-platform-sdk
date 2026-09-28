@@ -66,6 +66,7 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
 
     var methodFlags = MainScreenModel.MethodFlags()
     var revolutPublicKey: String? = null
+    var affirmPublicKey: String? = null
     var googlePayAdditionData: MainScreenModel.GooglePayAdditionData? = null
     var applePayAdditionData: MainScreenModel.ApplePayAdditionData? = null
 
@@ -120,7 +121,15 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
             }
             "NetBanking" -> methodFlags.copy(isNetBankingVisible = true)
             "Emi" -> methodFlags.copy(isEMIVisible = true)
-            "BuyNowPayLater" -> methodFlags.copy(isBNPLVisible = true)
+            "BuyNowPayLater" -> {
+                when (method.brand) {
+                    "Affirm" -> {
+                        affirmPublicKey = method.additionalData?.affirmPublicApiKey
+                        methodFlags.copy(isAffirmPayVisible = true)
+                    }
+                    else -> methodFlags.copy(isBNPLVisible = true)
+                }
+            }
             "Paynow" -> methodFlags.copy(
                 additionalPaymentMethods = methodFlags.additionalPaymentMethods + MainScreenModel.AdditionalPaymentMethod(
                     title = method.typeTitle ?: "",
@@ -197,6 +206,7 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
         status = status,
         transactionId = this.lastTransactionId ?: "",
         totalAmount = moneyObject.amount,
+        orderId = this.paymentDetails.context.orderId ?: "",
         successfulPaymentMethod = this.lastTransactionDetails?.paymentMethod?.brand ?: "",
         successfulTimeStamp = this.lastTransactionDetails?.timeStampLocale ?: "",
         currencySymbol = moneyObject.currencySymbol,
@@ -205,11 +215,13 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
         orderDetails = orderDetails,
         sessionExpiryTimer = this.sessionExpiryTimestamp ?: "",
         revolutPublicKey = revolutPublicKey,
+        affirmPublicKey = affirmPublicKey,
         googlePayAdditionData = googlePayAdditionData,
         applePayAdditionData = applePayAdditionData,
         walletPaymentMethod = walletList,
         netBankingPaymentMethod = netBankingList,
-        bnplPaymentMethod = bnplList
+        bnplPaymentMethod = bnplList,
+        countryCode = paymentDetails.context.countryCode
     )
 }
 

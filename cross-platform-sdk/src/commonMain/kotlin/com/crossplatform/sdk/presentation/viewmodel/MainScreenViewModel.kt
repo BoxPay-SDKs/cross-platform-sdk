@@ -761,6 +761,48 @@ internal class MainScreenViewModel(
         }
     }
 
+    fun onProceedAffirm(affirmCheckoutToken: String, surchargeList: List<String>?) {
+        viewModelScope.launch {
+            callUiAnalytics(
+                event = AnalyticsEvents.PAYMENT_INITIATED.value,
+                screenName = "MainScreenViewModel in onProceedAffirm",
+                message = "Payment initiated"
+            )
+            isBoxPayAnimationLoading.value = true
+            val response = otherPaymentMethodRepo.initiatePayment(
+                instrumentDetails = "bnpl/affirm",
+                paymentType = "buynowpaylater",
+                token = affirmCheckoutToken,
+                surchargeList
+            )
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentHtml = { html ->
+                    setWebViewHtml.value = html
+                    setWebViewScreen(true)
+                },
+                onOpenUpiIntent = {
+                    // no operations
+                },
+                onNavigateToTimer = {
+                    // no operations
+                },
+                onOpenQr = { _, _ ->
+                    // no operations
+                },
+                onSetPaymentUrl = { responseUrl ->
+                    setWebViewUrl.value = responseUrl
+                    setWebViewScreen(true)
+                },
+                setIsBoxPayAnimationVisible = { isBoxPayAnimationLoading.value = it },
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                onRevolutPay = { _, _ ->
+                    // no operation
+                }
+            )
+        }
+    }
+
     fun onProceedGooglePay(googlePayToken : String, surchargeList : List<String>?) {
         viewModelScope.launch {
             callUiAnalytics(

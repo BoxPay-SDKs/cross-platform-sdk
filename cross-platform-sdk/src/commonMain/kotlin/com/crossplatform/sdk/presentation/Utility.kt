@@ -6,6 +6,7 @@ import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.DeliveryAddress
 import com.crossplatform.sdk.data.model.requestBody.CustomFieldsRequest
 import com.crossplatform.sdk.data.model.requestBody.ShopperRequest
+import com.crossplatform.sdk.domain.handler.AffirmAddress
 import com.crossplatform.sdk.domain.model.CountryDetailsModel
 import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
@@ -73,6 +74,30 @@ private fun isDeliveryAddressEmpty(address: DeliveryAddress): Boolean {
         address.state,
         address.postalCode
     ).all { it.isNullOrEmpty() }
+}
+
+internal fun getAffirmAddress(): AffirmAddress {
+    val userData = UserDataHandler.userData
+
+    val fullName = listOfNotNull(
+        userData.firstName?.takeIf { it.isNotBlank() },
+        userData.lastName?.takeIf { it.isNotBlank() }
+    ).joinToString(" ")
+
+    val address1 = userData.address1
+    val city = userData.city
+    val state = userData.state
+    val postalCode = userData.pincode
+
+    return AffirmAddress(
+        fullName = fullName,
+        street1 = address1 ?: "",
+        street2 = userData.address2,
+        city = city ?: "",
+        regionCode = state ?: "",
+        postalCode = postalCode ?: "",
+        country = userData.countryCode ?: "USA"
+    )
 }
 
 internal fun String.toComposeColor(): Color {

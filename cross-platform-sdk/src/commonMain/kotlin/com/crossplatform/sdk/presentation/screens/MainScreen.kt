@@ -24,6 +24,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
+import com.crossplatform.sdk.domain.handler.AffirmCheckoutItem
+import com.crossplatform.sdk.domain.handler.AffirmExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.ApplePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
@@ -45,6 +47,7 @@ import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.components.ShowUpdateAmountBottomSheet
 import com.crossplatform.sdk.presentation.components.UPIComponent
+import com.crossplatform.sdk.presentation.getAffirmAddress
 import com.crossplatform.sdk.presentation.isPresentInSurchargeModel
 import com.crossplatform.sdk.presentation.launchUpiIntent
 import com.crossplatform.sdk.presentation.rememberExpressCheckoutPaymentHandler
@@ -121,10 +124,12 @@ internal fun MainScreen(
     val showQROnLoad = CheckoutDetailsHandler.showQROnLoadFlow.collectAsStateWithLifecycle()
     val isTestEnv = CheckoutDetailsHandler.isTestEnvFlow.collectAsStateWithLifecycle()
     val errorMessage = CheckoutDetailsHandler.errorMessageFlow.collectAsStateWithLifecycle()
+    val merchantNameFlow = CheckoutDetailsHandler.merchantNameFlow.collectAsStateWithLifecycle()
 
     val paymentHandler = rememberExpressCheckoutPaymentHandler(isTestEnv.value)
     var googleConfig : GooglePayExpressCheckoutConfig? = null
     var revolutPay : RevolutPayExpressCheckoutConfig? = null
+    var affirmCheckout : AffirmExpressCheckoutConfig? = null
     var expressCheckoutPaymentRequest : ExpressCheckoutPaymentRequest? = null
     val payNowInstrumentRef = remember {
         mutableStateOf("")
@@ -278,7 +283,31 @@ internal fun MainScreen(
                 merchantPublicKey = response.revolutPublicKey ?: ""
             )
 
-            expressCheckoutCountryCode.value = response.googlePayAdditionData?.countryCode ?: "IN"
+            affirmCheckout = AffirmExpressCheckoutConfig(
+                publicKey = response.affirmPublicKey ?: "",
+                merchantName = merchantNameFlow.value,
+                items = response.orderDetails?.items?.map { item ->
+                    AffirmCheckoutItem(
+                        name = item.imageTitle ?: "Item",
+                        sku = item.imageTitle ?: "",
+                        unitPrice = item.amount ?: 0.0,
+                        quantity = item.imageQty ?: 1
+                    )
+                } ?: listOf(
+                    AffirmCheckoutItem(
+                        name = "Order total",
+                        sku = "order-total",
+                        unitPrice = amount.value,
+                        quantity = 1
+                    )
+                ),
+                shippingAmount = response.orderDetails?.shippingAmount ?: 0.0,
+                taxAmount = response.orderDetails?.taxAmount ?: 0.0,
+                shippingAddress = getAffirmAddress(),
+                orderId = response.orderId
+            )
+
+            expressCheckoutCountryCode.value = response.countryCode
 
             googleConfig = GooglePayExpressCheckoutConfig(
                 gateway = response.googlePayAdditionData?.gateway ?: "",
@@ -293,6 +322,7 @@ internal fun MainScreen(
                 value = paymentHandler.isGooglePayAvailable(googleConfig)
             }
             val showRevolutPay = paymentHandler.isRevolutPayAvailable()
+            val showAffirm = paymentHandler.isAffirmAvailable()
 
             Column(
                 modifier = Modifier
@@ -327,8 +357,7 @@ internal fun MainScreen(
                     )
                 }
 
-                val isExpressCheckoutVisible = (response.methodFlags.isApplePayVisible && showApplePay) || (response.methodFlags.isGooglePayVisible && showGooglePay) || (response.methodFlags.isRevolutPayVisible && showRevolutPay)
-
+                val isExpressCheckoutVisible = (response.methodFlags.isApplePayVisible && showApplePay) || (response.methodFlags.isGooglePayVisible && showGooglePay) || (response.methodFlags.isRevolutPayVisible && showRevolutPay) || (response.methodFlags.isAffirmPayVisible && showAffirm)
                 if (isExpressCheckoutVisible) {
                     SectionTitle(stringResource(Res.string.express_checkout_title))
                     ExpressCheckout(
@@ -395,10 +424,39 @@ internal fun MainScreen(
                                 )
                             }
                         },
+                        onClickAffirm = {
+                            if(isPresentInSurchargeModel(surchargeDetails.value, "affirm")) {
+                                    selectedMethod.value = "affirm"
+                                    showUpdatedAmountBottomSheet.value = true
+                                } else {
+                                    viewModel.isBoxPayAnimationLoading.value = true
+                                    expressCheckoutPaymentRequest = ExpressCheckoutPaymentRequest(
+                                            amount = amount.value,
+                                            currencyCode = currencyCode,
+                                            countryCode = expressCheckoutCountryCode.value,
+                                        )
+                                    paymentHandler.launchAffirm(
+                                        request = expressCheckoutPaymentRequest!!,
+                                        config = affirmCheckout,
+                                        isSandbox = isTestEnv.value,
+                                        onResult = { result ->
+                                            when(result) {
+                                                is ExpressCheckoutPaymentResult.Cancelled, is ExpressCheckoutPaymentResult.Failure -> {
+                                                    viewModel.isBoxPayAnimationLoading.value = false
+                                                }
+                                                is ExpressCheckoutPaymentResult.Success -> {
+                                                    viewModel.onProceedAffirm(result.checkoutToken ?: "", surchargeList = null)
+                                                }
+                                            }
+                                        }
+                                    )
+                                }
+                        },
                         showApplePay = showApplePay && response.methodFlags.isApplePayVisible,
                         showGooglePay = showGooglePay && response.methodFlags.isGooglePayVisible,
                         showRevolutPay = showRevolutPay && response.methodFlags.isRevolutPayVisible,
-                        config = googleConfig
+                        showAffirm = showAffirm && response.methodFlags.isAffirmPayVisible,
+                        config = googleConfig,
                     )
                 }
 

@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.bundle.Bundle
 import com.crossplatform.sdk.BoxPayCommonCheckout
 import com.crossplatform.sdk.data.handler.CommonSDKDismissHandler
+import com.crossplatform.sdk.payments.AffirmSDK
 import com.crossplatform.sdk.payments.RevolutPaySDK
 import com.crossplatform.sdk.payments.RevolutPaySupport
 import com.crossplatform.sdk.presentation.components.LocaleManager
@@ -27,6 +28,7 @@ class BoxPayActivity : ComponentActivity() {
         if(RevolutPaySupport.isAvailable()) {
             RevolutPaySDK.register(this)
         }
+        AffirmSDK.register(this)
         val token = intent.getStringExtra("token") ?: return finish()
         val env   = intent.getBooleanExtra("isTestEnv", false)
         val shopperToken = intent.getStringExtra("shopperToken")
@@ -67,6 +69,15 @@ class BoxPayActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (AffirmSDK.handleActivityResult(this, requestCode, resultCode, data)) {
+            return
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     companion object {

@@ -40,6 +40,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.crossplatform.sdk.data.model.AllowedPaymentMethods
 import com.crossplatform.sdk.data.model.GooglePayExpressCheckoutResponse
+import com.crossplatform.sdk.domain.handler.AffirmExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.ApplePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
@@ -47,6 +48,7 @@ import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
 import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.RevolutPayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.model.AppLifecycleState
+import com.crossplatform.sdk.payments.AffirmSDK
 import com.crossplatform.sdk.payments.RevolutPaySDK
 import com.crossplatform.sdk.payments.RevolutPaySupport
 import com.google.android.gms.common.api.CommonStatusCodes
@@ -334,6 +336,12 @@ internal class AndroidPaymentHandler(
     // that fails when tapped.
     override fun isRevolutPayAvailable(): Boolean =  RevolutPaySupport.isAvailable() && RevolutPaySDK.isAvailable(activity)
 
+        // false if the merchant forgot to call AffirmSDK.register(this) in
+        // their Activity.onCreate -- hides the button rather than showing one
+        // that fails when tapped.
+        override fun isAffirmAvailable(): Boolean = AffirmSDK.isAvailable(activity)
+    
+
     override fun launchGooglePay(
         request: ExpressCheckoutPaymentRequest,
         config: GooglePayExpressCheckoutConfig,
@@ -347,6 +355,27 @@ internal class AndroidPaymentHandler(
 
         client.loadPaymentData(paymentRequest)
             .addOnCompleteListener(launcher::launch)
+    }
+
+    override fun launchAffirm(
+        request: ExpressCheckoutPaymentRequest,
+        config: AffirmExpressCheckoutConfig,
+        isSandbox: Boolean,
+        onResult: (ExpressCheckoutPaymentResult) -> Unit
+    ) {
+        AffirmSDK.configure(
+            publicKey = config.publicKey,
+            merchantName = config.merchantName,
+            isSandbox = isSandbox
+        )
+
+        AffirmSDK.pay(
+            activity = activity,
+            request = request,
+            config = config
+        ) { result ->
+            onResult(result)
+        }
     }
 
     override fun launchApplePay(
