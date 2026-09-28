@@ -135,8 +135,7 @@ internal fun CardComponent(
     shopperToken : String?,
     modifier: Modifier,
     appliedSurcharge : List<SurchargeModel>,
-    normalCheckout : Boolean = true,
-    isCardScanEnabled : Boolean = true
+    normalCheckout : Boolean = true
 ) {
 //    val acceptedCardList = CheckoutDetailsHandler.acceptedCardsListFlow.collectAsStateWithLifecycle()
     var showCardScanner by remember { mutableStateOf(false) }
@@ -240,7 +239,7 @@ internal fun CardComponent(
         }
 
         // --- Scan card ---
-        if (isCardScanEnabled) {
+        if (normalCheckout) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -283,7 +282,7 @@ internal fun CardComponent(
             modifier      = Modifier.padding(
                 start = 16.dp,
                 end   = 16.dp,
-                top   = if (isCardScanEnabled) 8.dp else 28.dp
+                top   = if (normalCheckout) 8.dp else 28.dp
             ),
             trailingIcon  = {
                 Image(

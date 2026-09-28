@@ -60,7 +60,8 @@ internal fun SavedCardComponent(
     isSICheckboxChecked: Boolean,
     isSICheckboxEnabled : Boolean,
     onClickDeleteCard: (String, String) -> Unit,
-    onClickRadio : () -> Unit
+    onClickRadio : () -> Unit,
+    isBoxPayPayButtonVisible : Boolean = true,
 ) {
     val selectedId = remember {
         mutableStateOf("")
@@ -100,6 +101,7 @@ internal fun SavedCardComponent(
                 ctaBorderRadius = ctaBorderRadius,
                 isSICheckboxChecked = isSICheckboxChecked,
                 isSICheckboxEnabled  = isSICheckboxEnabled,
+                isBoxPayPayButtonVisible = isBoxPayPayButtonVisible
             )
             HorizontalDivider(color = Color(0xFFECECED), thickness = 1.dp, modifier = Modifier.padding(horizontal = 12.dp))
         }
@@ -154,7 +156,8 @@ private fun SavedCardRow(
     ctaBorderRadius : Int,
     isSICheckboxChecked: Boolean,
     isSICheckboxEnabled : Boolean,
-    onClickDeleteCard : (String, String) -> Unit
+    onClickDeleteCard : (String, String) -> Unit,
+    isBoxPayPayButtonVisible: Boolean
 ) {
     var isSICheckBoxChecked by remember { mutableStateOf(false) }
 
@@ -274,7 +277,7 @@ private fun SavedCardRow(
         }
 
         // Pay button
-        if (isSelected) {
+        if (isSelected && isBoxPayPayButtonVisible) {
             PayButton(
                 text = stringResource(Res.string.pay_cta),
                 modifier = Modifier
