@@ -38,6 +38,7 @@
     <string name="order_details_title">ऑर्डर तपशील</string>
     <string name="qr_expired_title">QR कालबाह्य झाला</string>
     <string name="complete_your_payment_title">तुमचे पेमेंट पूर्ण करा</string>
+    <string name="saved_addresses_title">सेव्ह केलेले पत्ते</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">शोधा</string>
@@ -89,6 +90,7 @@
     <string name="downloading_qr_cta">QR डाउनलोड होत आहे...</string>
     <string name="download_qr_cta">QR डाउनलोड करा</string>
     <string name="get_new_qr_cta">नवीन QR मिळवा</string>
+    <string name="add_new_address_cta">नवीन पत्ता जोडा</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">या पेमेंटसाठी स्टँडिंग इन्स्ट्रक्शन्स (SI) सेट करा.</string>

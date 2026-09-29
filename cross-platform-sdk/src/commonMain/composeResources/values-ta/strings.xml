@@ -38,6 +38,7 @@
     <string name="order_details_title">ஆர்டர் விவரங்கள்</string>
     <string name="qr_expired_title">QR காலாவதியானது</string>
     <string name="complete_your_payment_title">உங்கள் கட்டணத்தை முடிக்கவும்</string>
+    <string name="saved_addresses_title">சேமிக்கப்பட்ட முகவரிகள்</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">தேடு</string>
@@ -89,6 +90,7 @@
     <string name="downloading_qr_cta">QR பதிவிறக்கம் ஆகிறது...</string>
     <string name="download_qr_cta">QR பதிவிறக்கு</string>
     <string name="get_new_qr_cta">புதிய QR பெறு</string>
+    <string name="add_new_address_cta">புதிய முகவரியைச் சேர்</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">இந்த கட்டணத்திற்கான ஸ்டாண்டிங் இன்ஸ்ட்ரக்ஷன்ஸ் (SI) அமைக்கவும்.</string>

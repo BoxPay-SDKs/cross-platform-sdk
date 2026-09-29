@@ -38,6 +38,7 @@
     <string name="order_details_title">주문 세부정보</string>
     <string name="qr_expired_title">QR 코드 만료됨</string>
     <string name="complete_your_payment_title">결제를 완료하세요</string>
+    <string name="saved_addresses_title">저장된 주소</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">검색</string>
@@ -88,6 +89,7 @@
     <string name="ok_cta">확인</string>
     <string name="downloading_qr_cta">QR 코드 다운로드 중...</string>
     <string name="download_qr_cta">QR 코드 다운로드</string>
+    <string name="add_new_address_cta">새 주소 추가</string>
     <string name="get_new_qr_cta">새 QR 코드 받기</string>
 
     <!--    Information String Resources-->

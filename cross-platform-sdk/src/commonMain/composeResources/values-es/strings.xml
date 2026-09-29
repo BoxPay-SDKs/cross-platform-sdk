@@ -38,6 +38,7 @@
     <string name="order_details_title">Detalles del pedido</string>
     <string name="qr_expired_title">Código QR vencido</string>
     <string name="complete_your_payment_title">Completa tu pago</string>
+    <string name="saved_addresses_title">Direcciones guardadas</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">Buscar</string>
@@ -89,6 +90,7 @@
     <string name="downloading_qr_cta">Descargando QR...</string>
     <string name="download_qr_cta">Descargar QR</string>
     <string name="get_new_qr_cta">Obtener nuevo QR</string>
+    <string name="add_new_address_cta">Agregar nueva dirección</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">Configura las Instrucciones Permanentes (SI) para este pago.</string>

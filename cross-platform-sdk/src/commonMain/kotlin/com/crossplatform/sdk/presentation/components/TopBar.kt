@@ -64,7 +64,7 @@ internal fun TopBar(
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val isSessionExpiryVisible = CheckoutDetailsHandler.isSessionExpiryVisibleFlow.collectAsStateWithLifecycle()
     // Timer urgency threshold — turns red under 2 minutes
-    val isLanguageSelectorVisible = true
+    val isLanguageSelectorVisible = CheckoutDetailsHandler.isMultipleLanguageSupportedFlow.collectAsStateWithLifecycle()
 
     val isTimerVisible = sessionSeconds != null && isSessionExpiryVisible.value
 
@@ -233,7 +233,7 @@ internal fun TopBar(
                 }
             }
 
-            if (isLanguageSelectorVisible) {
+            if (isLanguageSelectorVisible.value) {
                 Spacer(modifier = Modifier.width(8.dp))
                 LanguageIconButton(
                     onLanguageChange = onLanguageChange

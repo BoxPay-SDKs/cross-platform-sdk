@@ -38,6 +38,7 @@
     <string name="order_details_title">Chi tiết đơn hàng</string>
     <string name="qr_expired_title">Mã QR đã hết hạn</string>
     <string name="complete_your_payment_title">Hoàn tất thanh toán của bạn</string>
+    <string name="saved_addresses_title">Địa chỉ đã lưu</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">Tìm kiếm</string>
@@ -89,6 +90,7 @@
     <string name="downloading_qr_cta">Đang tải mã QR...</string>
     <string name="download_qr_cta">Tải mã QR</string>
     <string name="get_new_qr_cta">Lấy mã QR mới</string>
+    <string name="add_new_address_cta">Thêm địa chỉ mới</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">Thiết lập Lệnh thanh toán định kỳ (SI) cho khoản thanh toán này.</string>

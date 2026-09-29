@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -52,11 +53,12 @@ internal fun SavedAddressCard(
     selectedCtaColor: String,
     editAddressIcon: DrawableResource,
 ) {
-    val borderColor = if (isCurrentlySelected) selectedCtaColor.toComposeColor() else Color.White
+    val borderColor = if (isCurrentlySelected) selectedCtaColor.toComposeColor() else Color(0xFFE6E6E6)
     val shape = RoundedCornerShape(12.dp)
 
     Column(
         modifier = modifier
+            .padding(top = 12.dp, start = 16.dp, end = 16.dp)
             .fillMaxWidth()
             .wrapContentHeight()
             .background(Color.White, shape)
@@ -74,7 +76,8 @@ internal fun SavedAddressCard(
             Image(
                 painter = painterResource(addressIcon),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(20.dp),
+                colorFilter = ColorFilter.tint(Color(0xFF2D2B32))
             )
             Spacer(Modifier.width(2.dp))
 
