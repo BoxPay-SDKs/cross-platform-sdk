@@ -180,7 +180,7 @@ internal fun AddressComponent(
 }
 
 @Composable
-private fun AddressCard(
+internal fun AddressCard(
     onClick: () -> Unit,
     content: @Composable RowScope.() -> Unit
 ) {

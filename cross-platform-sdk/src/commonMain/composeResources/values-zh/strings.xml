@@ -38,6 +38,7 @@
     <string name="order_details_title">订单详情</string>
     <string name="qr_expired_title">二维码已过期</string>
     <string name="complete_your_payment_title">完成付款</string>
+    <string name="saved_addresses_title">已保存的地址</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">搜索</string>
@@ -89,6 +90,7 @@
     <string name="downloading_qr_cta">正在下载二维码...</string>
     <string name="download_qr_cta">下载二维码</string>
     <string name="get_new_qr_cta">获取新二维码</string>
+    <string name="add_new_address_cta">添加新地址</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">为此次付款设置长期指令（SI）。</string>

@@ -38,6 +38,7 @@
     <string name="order_details_title">ऑर्डर विवरण</string>
     <string name="qr_expired_title">QR समाप्त हो गया</string>
     <string name="complete_your_payment_title">अपना भुगतान पूरा करें</string>
+    <string name="saved_addresses_title">सहेजे गए पते</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">खोजें</string>
@@ -89,6 +90,7 @@
     <string name="downloading_qr_cta">QR डाउनलोड हो रहा है...</string>
     <string name="download_qr_cta">QR डाउनलोड करें</string>
     <string name="get_new_qr_cta">नया QR प्राप्त करें</string>
+    <string name="add_new_address_cta">नया पता जोड़ें</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">इस भुगतान के लिए स्टैंडिंग इंस्ट्रक्शन (SI) सेट करें।</string>

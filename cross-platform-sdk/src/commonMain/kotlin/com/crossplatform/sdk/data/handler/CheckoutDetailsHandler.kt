@@ -53,6 +53,7 @@ internal object CheckoutDetailsHandler {
         isDOBEnabled = false,
         isDOBEditable = false,
         isOrderItemDetailsVisible = true,
+        isMultiLanguageSupported = false,
         isSICheckboxEnabled = false,
         isSICheckboxChecked = false,
         isSubscriptionCheckout = false,
@@ -325,6 +326,11 @@ internal object CheckoutDetailsHandler {
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, true)
 
+    val isMultipleLanguageSupportedFlow: StateFlow<Boolean> = _checkoutDetailsFlow
+        .map { it.isMultiLanguageSupported }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, false)
+
     val itemsLengthFlow: StateFlow<Int> = _checkoutDetailsFlow
         .map { it.itemsLength }
         .distinctUntilChanged()
@@ -383,6 +389,7 @@ internal object CheckoutDetailsHandler {
         isDOBEnabled: Boolean,
         isDOBEditable: Boolean,
         isOrderItemDetailsVisible: Boolean,
+        isMultipleLanguageSupported: Boolean,
         isSubscriptionCheckout: Boolean,
         isMerchantLogoVisible: Boolean,
         isSessionExpiryVisible: Boolean,
@@ -420,6 +427,7 @@ internal object CheckoutDetailsHandler {
             isDOBEnabled              = isDOBEnabled,
             isDOBEditable             = isDOBEditable,
             isOrderItemDetailsVisible = isOrderItemDetailsVisible,
+            isMultiLanguageSupported = isMultipleLanguageSupported,
             isSubscriptionCheckout    = isSubscriptionCheckout,
             isSessionExpiryVisible    = isSessionExpiryVisible,
             isMerchantLogoVisible     = isMerchantLogoVisible,

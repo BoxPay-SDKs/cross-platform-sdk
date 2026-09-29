@@ -357,7 +357,13 @@ internal fun AppNavHost(
                     onBackPress = {
                         navController.popBackStack()
                     },
-                    buttonColor = buttonColor.value
+                    buttonColor = buttonColor.value,
+                    onProceedAddNewAddress = {
+                        navController.navigate("${Routes.AddressScreen.route}/true")
+                    },
+                    onClickSelectAddress = {
+                        navController.navigate("${Routes.AddressScreen.route}/false")
+                    }
                 )
             }
 

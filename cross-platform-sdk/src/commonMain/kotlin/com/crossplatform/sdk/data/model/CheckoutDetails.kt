@@ -39,6 +39,7 @@ internal data class CheckoutDetails(
     val isSuccessScreenVisible: Boolean,
     val isFailedScreenVisible : Boolean,
     val isOrderItemDetailsVisible: Boolean,
+    val isMultiLanguageSupported : Boolean,
     val isSICheckboxChecked: Boolean,
     val isSICheckboxEnabled : Boolean,
     val isSubscriptionCheckout: Boolean,

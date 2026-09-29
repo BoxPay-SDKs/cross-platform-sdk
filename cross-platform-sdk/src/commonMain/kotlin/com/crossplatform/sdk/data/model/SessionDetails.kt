@@ -46,7 +46,6 @@ internal data class PaymentDetails(
 @Serializable
 internal data class PaymentContext(
     @SerialName("countryCode") val countryCode: String,
-    @SerialName("localeCode") val localeCode: String? = null,
     @SerialName("orderId") val orderId : String? = null,
 )
 
@@ -127,7 +126,8 @@ internal data class MerchantDetails(
     @SerialName("merchantName") val merchantName : String?,
     @SerialName("logoUrl") val merchantLogo : String?,
     @SerialName("checkoutTheme") val checkoutTheme: CheckoutTheme,
-    @SerialName("customFields") val customFields : List<CustomFields>? = null
+    @SerialName("customFields") val customFields : List<CustomFields>? = null,
+    @SerialName("enableLocalisation") val enableLocalisation : Boolean
 )
 
 @Serializable

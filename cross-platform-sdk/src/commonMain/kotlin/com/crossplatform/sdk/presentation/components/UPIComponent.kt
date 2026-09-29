@@ -727,7 +727,7 @@ private fun UpiIntentItem(
 
 // --- Reusable: Expandable Header ---
 @Composable
-private fun UpiExpandableHeader(
+internal fun UpiExpandableHeader(
     icon       : DrawableResource,
     label      : String,
     isExpanded : Boolean,

@@ -38,6 +38,7 @@
     <string name="order_details_title">Detail Pesanan</string>
     <string name="qr_expired_title">QR Kedaluwarsa</string>
     <string name="complete_your_payment_title">Selesaikan pembayaran Anda</string>
+    <string name="saved_addresses_title">Alamat Tersimpan</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">Cari</string>
@@ -89,6 +90,7 @@
     <string name="downloading_qr_cta">Mengunduh QR...</string>
     <string name="download_qr_cta">Unduh QR</string>
     <string name="get_new_qr_cta">Dapatkan QR Baru</string>
+    <string name="add_new_address_cta">Tambah Alamat Baru</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">Siapkan Instruksi Tetap (SI) untuk pembayaran ini.</string>
