@@ -40,6 +40,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.scan_card_cancel
 import crossplatformsdk.cross_platform_sdk.generated.resources.scan_card_hint
 import crossplatformsdk.cross_platform_sdk.generated.resources.scan_card_permission_denied
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 /**
  * Platform camera + on-device text recognition.
@@ -99,7 +100,7 @@ internal fun CardScanDialog(
 
                 Text(
                     text = stringResource(Res.string.scan_card_hint),
-                    color = Color.White,
+                    color = LocalSDKColors.current.background,
                     fontFamily = fontFamily,
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center,
@@ -113,7 +114,7 @@ internal fun CardScanDialog(
                         if (error == CardScanError.PermissionDenied) Res.string.scan_card_permission_denied
                         else Res.string.scan_card_camera_unavailable
                     ),
-                    color = Color.White,
+                    color = LocalSDKColors.current.background,
                     fontFamily = fontFamily,
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center,
@@ -123,7 +124,7 @@ internal fun CardScanDialog(
 
             Text(
                 text = stringResource(Res.string.scan_card_cancel),
-                color = Color.White,
+                color = LocalSDKColors.current.background,
                 fontFamily = fontFamily,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,

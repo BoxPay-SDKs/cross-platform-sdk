@@ -43,6 +43,7 @@ import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.PayButton
 import com.crossplatform.sdk.presentation.formatTimer
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.UpiTimerViewModel
@@ -61,6 +62,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.yes_cta
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun UpiTimerScreen(
@@ -80,7 +82,7 @@ internal fun UpiTimerScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(LocalSDKColors.current.background)
             .padding(16.dp)
             .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally

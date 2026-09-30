@@ -65,6 +65,7 @@ import com.crossplatform.sdk.presentation.components.PayButton
 import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.formatPercent
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.EMIScreenViewModel
@@ -89,6 +90,7 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun EMIScreen(
@@ -392,11 +394,11 @@ internal fun EmiContentScreen(
         .fold(Pair(false, false)) { (noCost, lowCost), bank ->
             Pair(noCost || bank.noCostApplied, lowCost || bank.lowCostApplied)
         }
-    Column(modifier = Modifier.fillMaxSize().background(Color(0xFFF5F6FB))) {
+    Column(modifier = Modifier.fillMaxSize().background(LocalSDKColors.current.surface)) {
 
         // ── Header ─────────────────────────────────────────────────
         Column(
-            modifier = Modifier.fillMaxWidth().wrapContentHeight().background(Color.White)
+            modifier = Modifier.fillMaxWidth().wrapContentHeight().background(LocalSDKColors.current.background)
         ) {
             EmiCardTypeTabRow(
                 cards      = emiModel.cards,
@@ -450,7 +452,7 @@ internal fun EmiContentScreen(
 
                 else -> {
                     Column(
-                        modifier = Modifier.padding(horizontal = 16.dp).background(Color.White, RoundedCornerShape(12.dp))
+                        modifier = Modifier.padding(horizontal = 16.dp).background(LocalSDKColors.current.background, RoundedCornerShape(12.dp))
                     ) {
                         cardData.banks.mapIndexed { index, bank ->
                             BankCard(
@@ -609,7 +611,7 @@ private fun OthersPaymentList(
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
             .background(
-                color =  Color.White,
+                color =  LocalSDKColors.current.background,
                 shape = RoundedCornerShape(12.dp)
             )
             .border(
@@ -689,7 +691,7 @@ internal fun BankCard(
             modifier           = Modifier.size(32.dp),
             onLoading = {
                 Box(
-                    modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFFE0E0E0), CircleShape)
+                    modifier = Modifier.size(32.dp).clip(CircleShape).background(LocalSDKColors.current.divider, CircleShape)
                 )
             },
             onFailure = {
@@ -712,7 +714,7 @@ internal fun BankCard(
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = LocalSDKFonts.current.primary,
-                color      = Color(0xFF4F4D55),
+                color      = LocalSDKColors.current.textSecondary,
             )
             if (hasNoCostEmi || hasLowCostEmi) {
                 Spacer(modifier = Modifier.height(4.dp))
@@ -728,7 +730,7 @@ internal fun BankCard(
             fontSize   = 14.sp,
             fontWeight = FontWeight.SemiBold,
             fontFamily = LocalSDKFonts.current.primary,
-            color      = Color(0xFF4F4D55),
+            color      = LocalSDKColors.current.textSecondary,
         )
         // ── Chevron ───────────────────────────────────────────────────────────
         ChevronIcon()

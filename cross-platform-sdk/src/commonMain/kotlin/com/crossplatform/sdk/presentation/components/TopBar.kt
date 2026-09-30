@@ -43,6 +43,7 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.domain.model.AppLanguage
 import com.crossplatform.sdk.presentation.formatAmount
 import com.crossplatform.sdk.presentation.formatTimer
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.arrow_left
@@ -84,7 +85,7 @@ internal fun TopBar(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(LocalSDKColors.current.background)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -115,7 +116,7 @@ internal fun TopBar(
 //                    modifier           = Modifier.size(32.dp),
 //                    onLoading = {
 //                        Box(
-//                            modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFFE0E0E0), CircleShape)
+//                            modifier = Modifier.size(32.dp).clip(CircleShape).background(LocalSDKColors.current.divider, CircleShape)
 //                        )
 //                    },
 //                    onFailure = {
@@ -139,7 +140,7 @@ internal fun TopBar(
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
-                    color = Color(0xFF363840),
+                    color = LocalSDKColors.current.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -154,7 +155,7 @@ internal fun TopBar(
                                 style = SpanStyle(
                                     fontSize = 12.sp,
                                     fontFamily = LocalSDKFonts.current.primary,
-                                    color = Color(0xFF4F4D55)
+                                    color = LocalSDKColors.current.textSecondary
                                 )
                             ) {
                                 if (itemsLength.value > 0) {
@@ -170,7 +171,7 @@ internal fun TopBar(
                                 style = SpanStyle(
                                     fontSize = 12.sp,
                                     fontFamily = LocalSDKFonts.current.primary,
-                                    color = Color(0xFF4F4D55)
+                                    color = LocalSDKColors.current.textSecondary
                                 )
                             ) {
                                 append("Total: ")
@@ -181,7 +182,7 @@ internal fun TopBar(
                                 style = SpanStyle(
                                     fontSize = 12.sp,
                                     fontFamily = LocalSDKFonts.current.secondary,
-                                    color = Color(0xFF4F4D55)
+                                    color = LocalSDKColors.current.textSecondary
                                 )
                             ) {
                                 append(" $currencyCode")
@@ -192,14 +193,14 @@ internal fun TopBar(
                                 style = SpanStyle(
                                     fontSize = 12.sp,
                                     fontFamily = LocalSDKFonts.current.primary,
-                                    color = Color(0xFF4F4D55)
+                                    color = LocalSDKColors.current.textSecondary
                                 )
                             ) {
                                 append(" ${formatAmount(amount.value)}")
                             }
                         },
                         fontSize = 12.sp,
-                        color = Color(0xFF4F4D55),
+                        color = LocalSDKColors.current.textSecondary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.paddingFromBaseline(top = 2.dp)
@@ -254,12 +255,12 @@ private fun LanguageIconButton(
     Box {
         IconButton(
             onClick = { expanded = true },
-            modifier = Modifier.padding(horizontal = 8.dp).size(30.dp).border(1.dp, Color(0xFF4F4D55), RoundedCornerShape(8.dp))
+            modifier = Modifier.padding(horizontal = 8.dp).size(30.dp).border(1.dp, LocalSDKColors.current.textSecondary, RoundedCornerShape(8.dp))
         ) {
             Icon(
                 painter = painterResource(Res.drawable.ic_language),
                 contentDescription = "Select language",
-                tint = Color(0xFF4F4D55),
+                tint = LocalSDKColors.current.textSecondary,
                 modifier = Modifier.size(20.dp)
             )
         }

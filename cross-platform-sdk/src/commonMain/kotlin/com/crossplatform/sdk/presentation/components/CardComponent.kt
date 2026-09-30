@@ -51,6 +51,7 @@ import com.crossplatform.sdk.presentation.screens.CardNumberVisualTransformation
 import com.crossplatform.sdk.presentation.screens.CheckboxItem
 import com.crossplatform.sdk.presentation.screens.ExpiryVisualTransformation
 import com.crossplatform.sdk.presentation.screens.SubscriptionRow
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -76,6 +77,7 @@ import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun CardComponent(
@@ -159,7 +161,7 @@ internal fun CardComponent(
         )
     }
 
-    Column(modifier = modifier.fillMaxWidth().background(Color.White)) {
+    Column(modifier = modifier.fillMaxWidth().background(LocalSDKColors.current.background)) {
         // --- EMI Bank Info ---
         if (!bankName.isNullOrEmpty()) {
             Row(
@@ -179,7 +181,7 @@ internal fun CardComponent(
                         modifier           = Modifier.size(32.dp),
                         onLoading = {
                             Box(
-                                modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFFE0E0E0), CircleShape)
+                                modifier = Modifier.size(32.dp).clip(CircleShape).background(LocalSDKColors.current.divider, CircleShape)
                             )
                         },
                         onFailure = {

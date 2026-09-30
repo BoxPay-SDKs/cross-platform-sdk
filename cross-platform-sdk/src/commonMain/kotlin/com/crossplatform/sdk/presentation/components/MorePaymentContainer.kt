@@ -23,11 +23,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.ChevronIcon
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun MorePaymentContainer(
@@ -47,7 +49,7 @@ internal fun MorePaymentContainer(
                 color = LocalSDKColors.current.divider,
                 RoundedCornerShape(12.dp)
             )
-            .background(Color.White)
+            .background(LocalSDKColors.current.background)
             .padding(start = 16.dp, bottom = 10.dp, top = 10.dp, end = 8.dp)
             .clickable{
                 onClick()

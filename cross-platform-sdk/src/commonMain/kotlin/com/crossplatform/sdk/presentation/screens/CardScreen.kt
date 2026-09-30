@@ -45,6 +45,7 @@ import com.crossplatform.sdk.presentation.components.CvvInfoBottomSheet
 import com.crossplatform.sdk.presentation.components.KnowMoreBottomSheet
 import com.crossplatform.sdk.presentation.components.NativeOTPBottomSheet
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.CardScreenViewModel
@@ -58,6 +59,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalTime::class, ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -295,7 +297,7 @@ internal fun CheckboxItem(
         contentAlignment = Alignment.Center
     ) {
         if (isChecked) {
-            Text(text = "✓", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = LocalSDKFonts.current.primary)
+            Text(text = "✓", color = LocalSDKColors.current.background, fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = LocalSDKFonts.current.primary)
         }
     }
 }
@@ -380,7 +382,7 @@ internal fun SubscriptionRow(
                     style = SpanStyle(
                         fontSize = 12.sp,
                         fontFamily = LocalSDKFonts.current.secondary,
-                        color = Color(0xFF4F4D55)
+                        color = LocalSDKColors.current.textSecondary
                     )
                 ) {
                     append(currencySymbol)

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.ChevronIcon
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
@@ -34,6 +35,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.view_more_cta
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun ExpandablePaymentSection(
@@ -65,14 +67,14 @@ internal fun ExpandablePaymentSection(
                 color = LocalSDKColors.current.divider,
                 RoundedCornerShape(12.dp)
             )
-            .background(Color.White)
+            .background(LocalSDKColors.current.background)
     ) {
 
         // Header row — same as MorePaymentContainer, but toggles expansion
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(LocalSDKColors.current.background)
                 .padding(start = 16.dp, bottom = 12.dp, top = 12.dp, end = 10.dp)
                 .clickable { setIsExpanded() },
             verticalAlignment = Alignment.CenterVertically

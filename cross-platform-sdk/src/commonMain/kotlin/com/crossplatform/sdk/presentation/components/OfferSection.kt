@@ -38,6 +38,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.OfferItem
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.apply_cta
@@ -101,8 +102,8 @@ internal fun SingleOfferCard(
     val appliedGreenDark = Color(0xFF085041)
     val removeRed = Color(0xFFA32D2D)
 
-    val bgColor = if (isApplied) appliedGreenBg else Color.White
-    val borderColor = if (isApplied) appliedGreen else Color(0xFFE0E0E0)
+    val bgColor = if (isApplied) appliedGreenBg else LocalSDKColors.current.background
+    val borderColor = if (isApplied) appliedGreen else LocalSDKColors.current.divider
 
     Column(
         modifier = modifier
@@ -179,7 +180,7 @@ internal fun SingleOfferCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White.copy(alpha = 0.55f))
+                    .background(LocalSDKColors.current.background.copy(alpha = 0.55f))
                     .padding(horizontal = 12.dp, vertical = 7.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -234,8 +235,8 @@ internal fun MultiOfferCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.White)
-            .border(1.dp, Color(0xFFE0E0E0), RoundedCornerShape(12.dp))
+            .background(LocalSDKColors.current.background)
+            .border(1.dp, LocalSDKColors.current.divider, RoundedCornerShape(12.dp))
     ) {
         // ── Header row ──
         Row(

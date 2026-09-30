@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 // --- Shimmer Effect Modifier ---
 
@@ -62,7 +63,7 @@ private val shimmerItems = listOf(
 internal fun ShimmerView(modifier: Modifier) {
     Column(
         modifier = modifier
-            .background(Color.White)
+            .background(LocalSDKColors.current.background)
     ) {
         shimmerItems.forEach { item ->
             Spacer(modifier = Modifier.height(item.marginTop))

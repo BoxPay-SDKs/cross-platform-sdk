@@ -87,7 +87,7 @@ internal fun OfferCard(
                 } else Modifier
             ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = LocalSDKColors.current.background),
     ) {
         Row(
             modifier = Modifier
@@ -125,7 +125,7 @@ internal fun OfferCard(
                 Text(
                     text = discountType,
                     modifier = Modifier.rotate(-90f),
-                    color = Color.White,
+                    color = LocalSDKColors.current.background,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     fontFamily = LocalSDKFonts.current.primary

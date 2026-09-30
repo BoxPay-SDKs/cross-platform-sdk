@@ -27,6 +27,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -35,6 +36,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.mobile_number
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun SavedAddressCard(
@@ -61,7 +63,7 @@ internal fun SavedAddressCard(
             .padding(top = 12.dp, start = 16.dp, end = 16.dp)
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(Color.White, shape)
+            .background(LocalSDKColors.current.background, shape)
             .border(1.dp, borderColor, shape)
             .clickable { onClickSelectAddress() }
             .padding(horizontal = 12.dp)

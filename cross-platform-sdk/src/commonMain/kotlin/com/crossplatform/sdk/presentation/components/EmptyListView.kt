@@ -20,10 +20,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.no_results_found
 import org.jetbrains.compose.resources.painterResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun EmptyListView(
@@ -40,7 +42,7 @@ internal fun EmptyListView(
                 color = LocalSDKColors.current.surface,
                 shape = RoundedCornerShape(12.dp)
             )
-            .background(Color.White, RoundedCornerShape(12.dp)),
+            .background(LocalSDKColors.current.background, RoundedCornerShape(12.dp)),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -68,7 +70,7 @@ internal fun EmptyListView(
             Text(
                 text = subHeading,
                 fontSize = 14.sp,
-                color = Color(0xFF4F4D55),
+                color = LocalSDKColors.current.textSecondary,
                 fontWeight = FontWeight.Normal
             )
         }

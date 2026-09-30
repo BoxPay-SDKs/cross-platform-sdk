@@ -30,6 +30,7 @@ import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.viewmodel.BoxPayElementsViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -163,7 +164,7 @@ internal fun BoxPayElementsComponent(
             },
             sheetState         = webViewSheetState,
             dragHandle         = null,       // full height, no handle needed
-            containerColor     = Color.White,
+            containerColor     = LocalSDKColors.current.background,
             modifier           = Modifier.fillMaxSize(),
         ) {
             WebViewScreen(
@@ -185,7 +186,7 @@ internal fun BoxPayElementsComponent(
             },
             sheetState         = webViewSheetState,
             dragHandle         = null,       // full height, no handle needed
-            containerColor     = Color.White,
+            containerColor     = LocalSDKColors.current.background,
             modifier           = Modifier.fillMaxSize(),
         ) {
             CvvInfoBottomSheet(
@@ -207,7 +208,7 @@ internal fun BoxPayElementsComponent(
             },
             sheetState         = webViewSheetState,
             dragHandle         = null,       // full height, no handle needed
-            containerColor     = Color.White,
+            containerColor     = LocalSDKColors.current.background,
             modifier           = Modifier.fillMaxSize(),
         ) {
             KnowMoreBottomSheet(
@@ -229,7 +230,7 @@ internal fun BoxPayElementsComponent(
             },
             sheetState         = upiTimerSheetState,
             dragHandle         = null,
-            containerColor     = Color.White,
+            containerColor     = LocalSDKColors.current.background,
             modifier           = Modifier.fillMaxSize(),
         ) {
             UpiTimerScreen(

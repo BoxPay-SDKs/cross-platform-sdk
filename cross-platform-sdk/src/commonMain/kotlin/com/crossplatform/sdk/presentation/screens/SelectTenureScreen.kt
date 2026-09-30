@@ -41,6 +41,7 @@ import com.crossplatform.sdk.presentation.components.FilterTag
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.PayButton
 import com.crossplatform.sdk.presentation.formatPercent
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -48,6 +49,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun SelectTenureScreen(
@@ -87,7 +89,7 @@ internal fun SelectTenureScreen(
                     modifier           = Modifier.size(32.dp),
                     onLoading = {
                         Box(
-                            modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFFE0E0E0), CircleShape)
+                            modifier = Modifier.size(32.dp).clip(CircleShape).background(LocalSDKColors.current.divider, CircleShape)
                         )
                     },
                     onFailure = {
@@ -179,7 +181,7 @@ internal fun EmiAmountDetails(
 ) {
     Column(
         modifier = modifier
-            .background(if (isSelected) Color(0xFFEFF3FA) else Color.White)
+            .background(if (isSelected) Color(0xFFEFF3FA) else LocalSDKColors.current.background)
             .padding(bottom = 8.dp)
     ) {
         // ── Radio + heading + tags row ────────────────────────────────────
@@ -240,7 +242,7 @@ internal fun EmiAmountDetails(
                         )
                     }
                 },
-                color = Color(0xFF4F4D55),
+                color = LocalSDKColors.current.textSecondary,
                 modifier = Modifier.padding(start = 8.dp)
             )
 
@@ -407,7 +409,7 @@ internal fun TableDetails(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    Color.White,
+                    LocalSDKColors.current.background,
                     RoundedCornerShape(bottomEnd = 12.dp, bottomStart = 12.dp)
                 ),
             verticalAlignment = Alignment.CenterVertically,

@@ -33,6 +33,7 @@ import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.SavedAddressCard
 import com.crossplatform.sdk.presentation.components.ShimmerView
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.AddressScreenViewModel
@@ -51,6 +52,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.work_info
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun SavedAddressScreen(

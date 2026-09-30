@@ -47,6 +47,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.search_title
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun InstantOfferScreen(
@@ -95,7 +96,7 @@ internal fun InstantOfferScreen(
                         onValueChange = {
                             codeTextField.value = it
                         },
-                        modifier = Modifier.fillMaxWidth().background(Color.White).padding(16.dp),
+                        modifier = Modifier.fillMaxWidth().background(LocalSDKColors.current.background).padding(16.dp),
                         label = { Text(stringResource(Res.string.search_title), fontFamily = LocalSDKFonts.current.primary) },
                         singleLine = true,
                         leadingIcon = {

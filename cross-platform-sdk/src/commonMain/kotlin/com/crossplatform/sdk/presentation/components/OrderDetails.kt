@@ -46,6 +46,7 @@ import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.formatAmount
 import com.crossplatform.sdk.presentation.isTabletDevice
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -60,6 +61,7 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun OrderDetails(
@@ -135,7 +137,7 @@ internal fun OrderDetails(
                 Text(
                     text = stringResource(Res.string.price_details_info),
                     fontSize = 14.sp,
-                    color = Color(0xFF363840),
+                    color = LocalSDKColors.current.textPrimary,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -320,7 +322,7 @@ internal fun OrderDetails(
             Text(
                 text = stringResource(Res.string.price_details_info),
                 fontSize = 14.sp,
-                color = Color(0xFF363840),
+                color = LocalSDKColors.current.textPrimary,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold
             )
@@ -334,7 +336,7 @@ internal fun OrderDetails(
                         append(" ${formatAmount(amountAfterSurcharge.value)}")
                     },
                     fontSize = 14.sp,
-                    color = Color(0xFF363840),
+                    color = LocalSDKColors.current.textPrimary,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -445,7 +447,7 @@ private fun InfoTooltip(
                     text = text,
                     fontSize = 13.sp,
                     fontFamily = LocalSDKFonts.current.primary,
-                    color = Color.White,
+                    color = LocalSDKColors.current.background,
                     lineHeight = 17.sp
                 )
             }

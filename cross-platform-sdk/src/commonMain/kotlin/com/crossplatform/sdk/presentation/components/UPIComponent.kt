@@ -53,6 +53,7 @@ import com.crossplatform.sdk.presentation.getInstalledUpiApps
 import com.crossplatform.sdk.presentation.getPlatformContext
 import com.crossplatform.sdk.presentation.isTabletDevice
 import com.crossplatform.sdk.presentation.screens.CheckboxItem
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -82,6 +83,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.io.encoding.ExperimentalEncodingApi
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 internal val upiRegex = Regex("^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{3,64}$")
 
@@ -626,7 +628,7 @@ internal fun UPIComponent(
                                 color    = buttonColor.toComposeColor(),
                                 fontFamily = LocalSDKFonts.current.primary,
                                 fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.clickable { onClickUpiQRPayButton() }.background(Color.White, RoundedCornerShape(12.dp)).padding(horizontal = 6.dp, vertical = 2.dp)
+                                modifier = Modifier.clickable { onClickUpiQRPayButton() }.background(LocalSDKColors.current.background, RoundedCornerShape(12.dp)).padding(horizontal = 6.dp, vertical = 2.dp)
                             )
                         }
                     }
@@ -672,7 +674,7 @@ internal fun UPIComponent(
                 Text(
                     text = collapsedLabel,
                     fontSize = 14.sp,
-                    color = Color(0xFF363840),
+                    color = LocalSDKColors.current.textPrimary,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -706,7 +708,7 @@ private fun UpiIntentItem(
                 .clip(RoundedCornerShape(12.dp))
                 .border(
                     width = if (isSelected) 2.dp else 1.dp,
-                    color = if (isSelected) buttonColor.toComposeColor() else Color(0xFFFFFFFF),
+                    color = if (isSelected) buttonColor.toComposeColor() else LocalSDKColors.current.background,
                     shape = RoundedCornerShape(12.dp)
                 )
                 .clickable { onClick() },

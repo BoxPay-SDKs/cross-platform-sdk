@@ -75,6 +75,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.upi_one_time_mand
 import crossplatformsdk.cross_platform_sdk.generated.resources.yes_cta
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -327,7 +328,7 @@ internal fun MainScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFF5F6FB))
+                    .background(LocalSDKColors.current.surface)
                     .verticalScroll(rememberScrollState())
             ) {
 

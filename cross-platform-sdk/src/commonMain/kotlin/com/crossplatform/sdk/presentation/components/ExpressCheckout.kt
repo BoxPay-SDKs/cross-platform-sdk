@@ -28,6 +28,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_affirm
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_apple_pay
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_revolut_pay
 import org.jetbrains.compose.resources.painterResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun ExpressCheckout(
@@ -118,7 +119,7 @@ private fun ApplePayButton(
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+        colors = ButtonDefaults.buttonColors(containerColor = LocalSDKColors.current.background),
         modifier = modifier.height(50.dp).border(1.dp, Color.Black, RoundedCornerShape(8.dp))
     ) {
         Image(
@@ -138,7 +139,7 @@ private fun AffirmButton(
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+        colors = ButtonDefaults.buttonColors(containerColor = LocalSDKColors.current.background),
         modifier = modifier.height(50.dp).border(1.dp, Color.Black, RoundedCornerShape(8.dp))
     ) {
         Image(
