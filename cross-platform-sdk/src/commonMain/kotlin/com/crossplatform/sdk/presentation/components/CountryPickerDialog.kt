@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.crossplatform.sdk.domain.model.CountryDetailsModel
 import com.crossplatform.sdk.presentation.loadCountryData
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -47,6 +48,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_search
 import crossplatformsdk.cross_platform_sdk.generated.resources.select_country_text_field
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 // commonMain
 @Composable
@@ -80,7 +82,7 @@ internal fun CountryPickerDialog(
                 .fillMaxWidth()
                 .fillMaxHeight(0.8f)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
+                .background(LocalSDKColors.current.background)
         ) {
 
             // --- Header ---
@@ -106,7 +108,7 @@ internal fun CountryPickerDialog(
                 )
             }
 
-            HorizontalDivider(color = Color(0xFFECECED))
+            HorizontalDivider(color = LocalSDKColors.current.divider)
 
             // --- Search ---
             OutlinedTextField(
@@ -117,14 +119,14 @@ internal fun CountryPickerDialog(
                         text       = stringResource(Res.string.select_country_text_field),
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
-                        color      = Color(0xFFADACAD)
+                        color      = LocalSDKColors.current.textSecondary
                     )
                 },
                 leadingIcon = {
                     Image(
                         painter        = painterResource(Res.drawable.ic_search),
                         contentDescription = null,
-                        colorFilter    = ColorFilter.tint(Color(0xFFADACAD))
+                        colorFilter    = ColorFilter.tint(LocalSDKColors.current.textSecondary)
                     )
                 },
                 shape    = RoundedCornerShape(8.dp),
@@ -185,7 +187,7 @@ internal fun CountryPickerDialog(
                         )
                     }
                     HorizontalDivider(
-                        color    = Color(0xFFECECED),
+                        color    = LocalSDKColors.current.divider,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }

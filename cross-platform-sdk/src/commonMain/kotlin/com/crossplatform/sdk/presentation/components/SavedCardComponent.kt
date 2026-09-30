@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.screens.CheckboxItem
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -46,6 +47,7 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun SavedCardComponent(
@@ -70,12 +72,12 @@ internal fun SavedCardComponent(
         .fillMaxWidth()
         .padding(horizontal = 12.dp)
         .background(
-            color        = Color.White,
+            color        = LocalSDKColors.current.background,
             shape        = RoundedCornerShape(12.dp)
         )
         .border(
             width = 1.dp,
-            color = Color(0xFFE6E6E6),
+            color = LocalSDKColors.current.divider,
             RoundedCornerShape(12.dp)
         )
     ) {
@@ -103,7 +105,7 @@ internal fun SavedCardComponent(
                 isSICheckboxEnabled  = isSICheckboxEnabled,
                 isBoxPayPayButtonVisible = isBoxPayPayButtonVisible
             )
-            HorizontalDivider(color = Color(0xFFECECED), thickness = 1.dp, modifier = Modifier.padding(horizontal = 12.dp))
+            HorizontalDivider(color = LocalSDKColors.current.divider, thickness = 1.dp, modifier = Modifier.padding(horizontal = 12.dp))
         }
 
         // Add new card row
@@ -165,7 +167,7 @@ private fun SavedCardRow(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color        = if (isSelected) Color(0xFFEDF8F4) else Color.White,
+                color        = if (isSelected) Color(0xFFEDF8F4) else LocalSDKColors.current.background,
                 shape        = RoundedCornerShape(if (isSelected) 0.dp else 12.dp)
             )
             .padding(vertical = 16.dp, horizontal = 12.dp)
@@ -185,7 +187,7 @@ private fun SavedCardRow(
                         modifier = Modifier
                             .size(32.dp)
                             .background(
-                                color = Color(0xFFE6E6E6),
+                                color = LocalSDKColors.current.divider,
                                 RoundedCornerShape(12.dp)
                             )
                     )
@@ -210,7 +212,7 @@ private fun SavedCardRow(
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.SemiBold,
                         fontSize   = 12.sp,
-                        color      = Color(0xFF4F4D55),
+                        color      = LocalSDKColors.current.textSecondary,
                         maxLines   = 1,
                         overflow   = TextOverflow.Ellipsis,
                         modifier   = Modifier.clickable { onPress(id) }
@@ -221,7 +223,7 @@ private fun SavedCardRow(
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize   = 12.sp,
-                    color      = Color(0xFF4F4D55),
+                    color      = LocalSDKColors.current.textSecondary,
                     maxLines   = 1,
                     overflow   = TextOverflow.Ellipsis,
                     modifier   = Modifier.clickable { onPress(id) }
@@ -270,7 +272,7 @@ private fun SavedCardRow(
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize   = 14.sp,
-                    color      = Color(0xFF2D2B32),
+                    color      = LocalSDKColors.current.textPrimary,
                     modifier   = Modifier.padding(start = 6.dp)
                 )
             }

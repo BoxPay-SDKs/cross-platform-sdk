@@ -89,6 +89,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 // Reserves room at the bottom of the scrollable content so the resend row
 // isn't hidden underneath the pinned footer overlay.
@@ -183,7 +184,7 @@ internal fun NativeOTPBottomSheet(
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 18.sp,
-                    color = Color(0xFF0A090B)
+                    color = LocalSDKColors.current.textPrimary
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -268,7 +269,7 @@ internal fun NativeOTPBottomSheet(
                         .clip(RoundedCornerShape(ctaBorderRadius.value.dp))
                         .background(
                             if (isProceedEnabled) accentColor
-                            else Color(0xFFE6E6E6)
+                            else LocalSDKColors.current.divider
                         )
                         .clickable(enabled = isProceedEnabled) {
                             onClickProceed(enteredOtp)
@@ -381,7 +382,7 @@ internal fun KeyboardDoneBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF2F2F5))
+                .background(LocalSDKColors.current.surface)
                 .padding(horizontal = 16.dp, vertical = 6.dp),
             horizontalArrangement = Arrangement.End
         ) {
@@ -484,7 +485,7 @@ private fun OtpBoxRow(
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 20.sp,
-                    color = Color(0xFF0A090B)
+                    color = LocalSDKColors.current.textPrimary
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = if (isError) errorColor else accentColor,
@@ -498,7 +499,7 @@ private fun OtpBoxRow(
                     unfocusedContainerColor = when {
                         isError -> errorColor.copy(alpha = 0.06f)
                         hasDigit -> accentColor.copy(alpha = 0.06f)
-                        else -> Color(0xFFFAFAFC)
+                        else -> LocalSDKColors.current.surface
                     },
                     errorContainerColor = errorColor.copy(alpha = 0.06f),
                     cursorColor = if (isError) errorColor else accentColor

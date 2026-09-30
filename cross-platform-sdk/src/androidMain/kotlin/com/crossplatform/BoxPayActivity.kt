@@ -19,6 +19,7 @@ import com.crossplatform.sdk.payments.RevolutPaySDK
 import com.crossplatform.sdk.payments.RevolutPaySupport
 import com.crossplatform.sdk.presentation.components.LocaleManager
 import com.crossplatform.sdk.presentation.components.createSettings
+import com.crossplatform.sdk.presentation.theme.BoxPayThemeMode
 
 // New activity inside your SDK
 class BoxPayActivity : ComponentActivity() {
@@ -41,6 +42,7 @@ class BoxPayActivity : ComponentActivity() {
         val focusedTextInputBorderColor = intent.getStringExtra("focusedTextInputBorderColor") ?: ""
         val unfocusedTextInputBorderColor = intent.getStringExtra("unfocusedTextInputBorderColor") ?: ""
         val fontFamily = intent.getStringExtra("fontFamily")
+        val themeMode = BoxPayThemeMode.fromString(intent.getStringExtra("themeMode"))
         val localeManager = LocaleManager(createSettings(applicationContext))
         enableEdgeToEdge()
 
@@ -65,7 +67,8 @@ class BoxPayActivity : ComponentActivity() {
                     focusedTextInputBorderColor = focusedTextInputBorderColor,
                     unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
                     fontFamily = fontFamily,
-                    localeManager = localeManager
+                    localeManager = localeManager,
+                    themeMode = themeMode,
                 )
             }
         }
@@ -94,7 +97,8 @@ class BoxPayActivity : ComponentActivity() {
             ctaBorderRadius : Int ,
             focusedTextInputBorderColor : String ,
             unfocusedTextInputBorderColor : String,
-            fontFamily : String?
+            fontFamily : String?,
+            themeMode: BoxPayThemeMode = BoxPayThemeMode.SYSTEM,
         ) =
             Intent(context, BoxPayActivity::class.java).apply {
                 putExtra("token", token)
@@ -109,6 +113,7 @@ class BoxPayActivity : ComponentActivity() {
                 putExtra("focusedTextInputBorderColor", focusedTextInputBorderColor)
                 putExtra("unfocusedTextInputBorderColor", unfocusedTextInputBorderColor)
                 putExtra("fontFamily", fontFamily)
+                putExtra("themeMode", themeMode.name)
             }
     }
 }

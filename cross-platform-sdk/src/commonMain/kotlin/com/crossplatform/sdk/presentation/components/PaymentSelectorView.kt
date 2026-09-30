@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -38,6 +39,7 @@ import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun PaymentSelectorView(
@@ -58,12 +60,12 @@ internal fun PaymentSelectorView(
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
             .background(
-                color =  Color.White,
+                color =  LocalSDKColors.current.background,
                 shape = RoundedCornerShape(12.dp)
             )
             .border(
                 width = 1.dp,
-                color = Color(0xFFE6E6E6),
+                color = LocalSDKColors.current.divider,
                 RoundedCornerShape(12.dp)
             )
     ) {
@@ -91,7 +93,7 @@ internal fun PaymentSelectorView(
             )
             if (index != providerList.lastIndex) {
                 HorizontalDivider(
-                    color     = Color(0xFFECECED),
+                    color     = LocalSDKColors.current.divider,
                     thickness = 1.dp
                 )
             }
@@ -137,7 +139,7 @@ internal fun PaymentSelector(
                         modifier = Modifier
                             .size(32.dp)
                             .background(
-                                color = Color(0xFFE6E6E6),
+                                color = LocalSDKColors.current.divider,
                                 RoundedCornerShape(12.dp)
                             )
                     )
@@ -162,7 +164,7 @@ internal fun PaymentSelector(
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize   = 14.sp,
-                    color      = Color(0xFF4F4D55),
+                    color      = LocalSDKColors.current.textSecondary,
                     maxLines   = 1,
                     overflow   = TextOverflow.Ellipsis,
                     modifier   = Modifier.clickable { onPress(id) }
@@ -204,7 +206,7 @@ internal fun PaymentSelector(
                 onClick  = { onPress(id) },
                 colors   = RadioButtonDefaults.colors(
                     selectedColor   = brandColor.toComposeColor(),
-                    unselectedColor = Color(0x7301010A)
+                    unselectedColor = LocalSDKColors.current.textSecondary.copy(alpha = 0.45f)
                 )
             )
         }

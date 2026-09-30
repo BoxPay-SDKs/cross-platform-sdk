@@ -65,6 +65,7 @@ import com.crossplatform.sdk.presentation.components.PayButton
 import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.formatPercent
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.EMIScreenViewModel
@@ -89,6 +90,7 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun EMIScreen(
@@ -392,11 +394,11 @@ internal fun EmiContentScreen(
         .fold(Pair(false, false)) { (noCost, lowCost), bank ->
             Pair(noCost || bank.noCostApplied, lowCost || bank.lowCostApplied)
         }
-    Column(modifier = Modifier.fillMaxSize().background(Color(0xFFF5F6FB))) {
+    Column(modifier = Modifier.fillMaxSize().background(LocalSDKColors.current.surface)) {
 
         // ── Header ─────────────────────────────────────────────────
         Column(
-            modifier = Modifier.fillMaxWidth().wrapContentHeight().background(Color.White)
+            modifier = Modifier.fillMaxWidth().wrapContentHeight().background(LocalSDKColors.current.background)
         ) {
             EmiCardTypeTabRow(
                 cards      = emiModel.cards,
@@ -405,7 +407,7 @@ internal fun EmiContentScreen(
                 onSelect   = { onClickCard(it) },
             )
 
-            HorizontalDivider(color = Color(0xFFE6E6E6))
+            HorizontalDivider(color = LocalSDKColors.current.divider)
 
             // ── Search bar ────────────────────────────────────────────────────────
             EmiSearchBar(
@@ -450,7 +452,7 @@ internal fun EmiContentScreen(
 
                 else -> {
                     Column(
-                        modifier = Modifier.padding(horizontal = 16.dp).background(Color.White, RoundedCornerShape(12.dp))
+                        modifier = Modifier.padding(horizontal = 16.dp).background(LocalSDKColors.current.background, RoundedCornerShape(12.dp))
                     ) {
                         cardData.banks.mapIndexed { index, bank ->
                             BankCard(
@@ -462,7 +464,7 @@ internal fun EmiContentScreen(
                                 percent = bank.percent
                             )
                             if (index < cardData.banks.lastIndex) {
-                                HorizontalDivider(color = Color(0xFFE6E6E6))
+                                HorizontalDivider(color = LocalSDKColors.current.divider)
                             }
                         }
                     }
@@ -495,7 +497,7 @@ private fun EmiCardTypeTabRow(
             ) {
                 Text(
                     text       = group.cardType,
-                    color      = if (isSelected) brandColor else Color(0xFF010102),
+                    color      = if (isSelected) brandColor else LocalSDKColors.current.textPrimary,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontSize   = 14.sp,
@@ -574,19 +576,19 @@ private fun EmiFilterRow(
 private fun FilterChipItem(text : String, onClick: () -> Unit, isSelected : Boolean) {
     Row(
         modifier = Modifier
-            .border(1.dp, if (isSelected) Color(0xFF1CA672) else Color(0xFFE6E6E6), RoundedCornerShape(20.dp))
-            .background(if (isSelected) Color(0xFFE8F6F1) else Color.White, RoundedCornerShape(20.dp))
+            .border(1.dp, if (isSelected) Color(0xFF1CA672) else LocalSDKColors.current.divider, RoundedCornerShape(20.dp))
+            .background(if (isSelected) Color(0xFFE8F6F1) else LocalSDKColors.current.background, RoundedCornerShape(20.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Text(text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2D2B32), fontFamily = LocalSDKFonts.current.primary)
+        Text(text, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = LocalSDKColors.current.textPrimary, fontFamily = LocalSDKFonts.current.primary)
         Image(
             painter   = painterResource(if (isSelected) Res.drawable.ic_tick_arrow else Res.drawable.add_icon),
             contentDescription = "",
             modifier      = Modifier.size(14.dp),
-            colorFilter          = ColorFilter.tint(if (isSelected) Color(0xFF2D2B32) else Color(0xFF7F7D83)),
+            colorFilter          = ColorFilter.tint(if (isSelected) LocalSDKColors.current.textPrimary else LocalSDKColors.current.textSecondary),
         )
     }
 }
@@ -609,12 +611,12 @@ private fun OthersPaymentList(
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
             .background(
-                color =  Color.White,
+                color =  LocalSDKColors.current.background,
                 shape = RoundedCornerShape(12.dp)
             )
             .border(
                 width = 1.dp,
-                color = Color(0xFFE6E6E6),
+                color = LocalSDKColors.current.divider,
                 RoundedCornerShape(12.dp)
             )
     ) {
@@ -634,7 +636,7 @@ private fun OthersPaymentList(
                         onClick  = { onSelect(bank.cardLessEmiValue) },
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text(bank.name, fontSize = 14.sp, color = Color(0xFF2D2B32), fontFamily = LocalSDKFonts.current.primary)
+                    Text(bank.name, fontSize = 14.sp, color = LocalSDKColors.current.textPrimary, fontFamily = LocalSDKFonts.current.primary)
                 }
 
                 if (selectedValue == bank.cardLessEmiValue) {
@@ -658,7 +660,7 @@ private fun OthersPaymentList(
                 }
 
                 if (index != banks.lastIndex) {
-                    HorizontalDivider(color = Color(0xFFE6E6E6))
+                    HorizontalDivider(color = LocalSDKColors.current.divider)
                 }
             }
         }
@@ -689,7 +691,7 @@ internal fun BankCard(
             modifier           = Modifier.size(32.dp),
             onLoading = {
                 Box(
-                    modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFFE0E0E0), CircleShape)
+                    modifier = Modifier.size(32.dp).clip(CircleShape).background(LocalSDKColors.current.divider, CircleShape)
                 )
             },
             onFailure = {
@@ -712,7 +714,7 @@ internal fun BankCard(
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = LocalSDKFonts.current.primary,
-                color      = Color(0xFF4F4D55),
+                color      = LocalSDKColors.current.textSecondary,
             )
             if (hasNoCostEmi || hasLowCostEmi) {
                 Spacer(modifier = Modifier.height(4.dp))
@@ -728,7 +730,7 @@ internal fun BankCard(
             fontSize   = 14.sp,
             fontWeight = FontWeight.SemiBold,
             fontFamily = LocalSDKFonts.current.primary,
-            color      = Color(0xFF4F4D55),
+            color      = LocalSDKColors.current.textSecondary,
         )
         // ── Chevron ───────────────────────────────────────────────────────────
         ChevronIcon()

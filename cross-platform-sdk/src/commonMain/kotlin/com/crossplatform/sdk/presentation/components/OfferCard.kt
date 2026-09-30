@@ -48,8 +48,8 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.offer_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.remove_cta
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
-val DarkGrey = Color(0xFF333333)
 val MediumGrey = Color(0xFF616161)
 
 @Composable
@@ -70,6 +70,7 @@ internal fun OfferCard(
     onClickRemove : () -> Unit
 ) {
     val showMore = remember { mutableStateOf(false) }
+    val DarkGrey = LocalSDKColors.current.textPrimary
 
     Card(
         modifier = modifier
@@ -86,7 +87,7 @@ internal fun OfferCard(
                 } else Modifier
             ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = LocalSDKColors.current.background),
     ) {
         Row(
             modifier = Modifier
@@ -124,7 +125,7 @@ internal fun OfferCard(
                 Text(
                     text = discountType,
                     modifier = Modifier.rotate(-90f),
-                    color = Color.White,
+                    color = LocalSDKColors.current.background,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     fontFamily = LocalSDKFonts.current.primary

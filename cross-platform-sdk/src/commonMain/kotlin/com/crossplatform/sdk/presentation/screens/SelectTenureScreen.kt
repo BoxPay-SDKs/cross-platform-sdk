@@ -41,6 +41,7 @@ import com.crossplatform.sdk.presentation.components.FilterTag
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.PayButton
 import com.crossplatform.sdk.presentation.formatPercent
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -48,6 +49,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun SelectTenureScreen(
@@ -70,8 +72,8 @@ internal fun SelectTenureScreen(
                 .padding(top = 12.dp, bottom = 30.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .background(Color.White, RoundedCornerShape(12.dp))
-                .border(1.dp, Color(0xFFE6E6E6), RoundedCornerShape(12.dp))
+                .background(LocalSDKColors.current.background, RoundedCornerShape(12.dp))
+                .border(1.dp, LocalSDKColors.current.divider, RoundedCornerShape(12.dp))
                 .clip(RoundedCornerShape(12.dp))
         ) {
             // ── Bank header row ──────────────────────────────────────────
@@ -87,7 +89,7 @@ internal fun SelectTenureScreen(
                     modifier           = Modifier.size(32.dp),
                     onLoading = {
                         Box(
-                            modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFFE0E0E0), CircleShape)
+                            modifier = Modifier.size(32.dp).clip(CircleShape).background(LocalSDKColors.current.divider, CircleShape)
                         )
                     },
                     onFailure = {
@@ -101,7 +103,7 @@ internal fun SelectTenureScreen(
                 Text(
                     text = "${selectedBank?.name} | $cardType EMI",
                     style = TextStyle(fontFamily = LocalSDKFonts.current.primary, fontSize = 16.sp, fontWeight = FontWeight(600)),
-                    color = Color(0xFF2D2B32),
+                    color = LocalSDKColors.current.textPrimary,
                     modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -179,7 +181,7 @@ internal fun EmiAmountDetails(
 ) {
     Column(
         modifier = modifier
-            .background(if (isSelected) Color(0xFFEFF3FA) else Color.White)
+            .background(if (isSelected) Color(0xFFEFF3FA) else LocalSDKColors.current.background)
             .padding(bottom = 8.dp)
     ) {
         // ── Radio + heading + tags row ────────────────────────────────────
@@ -240,7 +242,7 @@ internal fun EmiAmountDetails(
                         )
                     }
                 },
-                color = Color(0xFF4F4D55),
+                color = LocalSDKColors.current.textSecondary,
                 modifier = Modifier.padding(start = 8.dp)
             )
 
@@ -283,7 +285,7 @@ internal fun EmiAmountDetails(
                     AppendCurrency(currencySymbol)
                     AppendStyled(total, 600)
                 },
-                color = Color(0xFF2D2B32),
+                color = LocalSDKColors.current.textPrimary,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -301,7 +303,7 @@ internal fun EmiAmountDetails(
                         AppendStyled(" will be charged by $bankName as one-time processing fee.", 400)
                     }
                 },
-                color = Color(0xFF2D2B32),
+                color = LocalSDKColors.current.textPrimary,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -341,12 +343,12 @@ internal fun TableDetails(
     isNoCostApplied: Boolean,
     currencySymbol: String
 ) {
-    Column(modifier.border(1.dp, Color(0xFFE6E6E6), RoundedCornerShape(12.dp))) {
+    Column(modifier.border(1.dp, LocalSDKColors.current.divider, RoundedCornerShape(12.dp))) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    Color(0xFFF1F1F1),
+                    LocalSDKColors.current.surface,
                     RoundedCornerShape(topEnd = 12.dp, topStart = 12.dp)
                 ),
             verticalAlignment = Alignment.CenterVertically,
@@ -359,7 +361,7 @@ internal fun TableDetails(
                     fontSize = 12.sp,
                     fontWeight = FontWeight(600)
                 ),
-                color = Color(0xFF2D2B32),
+                color = LocalSDKColors.current.textPrimary,
                 modifier = Modifier
                     .weight(0.3f)
                     .padding(8.dp)
@@ -371,7 +373,7 @@ internal fun TableDetails(
                     fontSize = 12.sp,
                     fontWeight = FontWeight(600)
                 ),
-                color = Color(0xFF2D2B32),
+                color = LocalSDKColors.current.textPrimary,
                 modifier = Modifier
                     .weight(0.3f)
                     .padding(8.dp)
@@ -384,7 +386,7 @@ internal fun TableDetails(
                         fontSize = 12.sp,
                         fontWeight = FontWeight(600)
                     ),
-                    color = Color(0xFF2D2B32),
+                    color = LocalSDKColors.current.textPrimary,
                     modifier = Modifier
                         .weight(0.3f)
                         .padding(8.dp)
@@ -397,7 +399,7 @@ internal fun TableDetails(
                     fontSize = 12.sp,
                     fontWeight = FontWeight(600)
                 ),
-                color = Color(0xFF2D2B32),
+                color = LocalSDKColors.current.textPrimary,
                 modifier = Modifier
                     .weight(0.3f)
                     .padding(8.dp)
@@ -407,7 +409,7 @@ internal fun TableDetails(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    Color.White,
+                    LocalSDKColors.current.background,
                     RoundedCornerShape(bottomEnd = 12.dp, bottomStart = 12.dp)
                 ),
             verticalAlignment = Alignment.CenterVertically,
@@ -436,7 +438,7 @@ internal fun TableDetails(
                         )
                     )
                 },
-                color = Color(0xFF2D2B32),
+                color = LocalSDKColors.current.textPrimary,
                 modifier = Modifier
                     .weight(0.3f)
                     .padding(10.dp)
@@ -464,7 +466,7 @@ internal fun TableDetails(
                         )
                     )
                 },
-                color = Color(0xFF2D2B32),
+                color = LocalSDKColors.current.textPrimary,
                 modifier = Modifier
                     .weight(0.3f)
                     .padding(10.dp)
@@ -522,7 +524,7 @@ internal fun TableDetails(
                         )
                     )
                 },
-                color = Color(0xFF2D2B32),
+                color = LocalSDKColors.current.textPrimary,
                 modifier = Modifier
                     .weight(0.3f)
                     .padding(10.dp)

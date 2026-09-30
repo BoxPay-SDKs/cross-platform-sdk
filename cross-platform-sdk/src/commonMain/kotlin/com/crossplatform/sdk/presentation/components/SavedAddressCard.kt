@@ -27,6 +27,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -35,6 +36,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.mobile_number
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun SavedAddressCard(
@@ -53,7 +55,7 @@ internal fun SavedAddressCard(
     selectedCtaColor: String,
     editAddressIcon: DrawableResource,
 ) {
-    val borderColor = if (isCurrentlySelected) selectedCtaColor.toComposeColor() else Color(0xFFE6E6E6)
+    val borderColor = if (isCurrentlySelected) selectedCtaColor.toComposeColor() else LocalSDKColors.current.divider
     val shape = RoundedCornerShape(12.dp)
 
     Column(
@@ -61,7 +63,7 @@ internal fun SavedAddressCard(
             .padding(top = 12.dp, start = 16.dp, end = 16.dp)
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(Color.White, shape)
+            .background(LocalSDKColors.current.background, shape)
             .border(1.dp, borderColor, shape)
             .clickable { onClickSelectAddress() }
             .padding(horizontal = 12.dp)
@@ -77,7 +79,7 @@ internal fun SavedAddressCard(
                 painter = painterResource(addressIcon),
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
-                colorFilter = ColorFilter.tint(Color(0xFF2D2B32))
+                colorFilter = ColorFilter.tint(LocalSDKColors.current.textPrimary)
             )
             Spacer(Modifier.width(2.dp))
 
@@ -89,7 +91,7 @@ internal fun SavedAddressCard(
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = LocalSDKFonts.current.primary
                 ),
-                color = Color(0xFF2D2B32),
+                color = LocalSDKColors.current.textPrimary,
                 modifier = Modifier.weight(1f)
             )
 
@@ -117,7 +119,7 @@ internal fun SavedAddressCard(
             val addressSpan = SpanStyle(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,
-                color = Color(0xFF7F7D83),
+                color = LocalSDKColors.current.textSecondary,
                  fontFamily = LocalSDKFonts.current.primary
             )
             if (!address1.isNullOrEmpty()) append(AnnotatedString("$address1, ", addressSpan))
@@ -140,7 +142,7 @@ internal fun SavedAddressCard(
                 fontWeight = FontWeight.Normal,
                  fontFamily = LocalSDKFonts.current.primary
             ),
-            color = Color(0xFF7F7D83),
+            color = LocalSDKColors.current.textSecondary,
             modifier = Modifier.fillMaxWidth()
         )
     }

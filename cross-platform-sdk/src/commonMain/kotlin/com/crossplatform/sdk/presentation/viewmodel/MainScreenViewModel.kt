@@ -307,7 +307,7 @@ internal class MainScreenViewModel(
         CheckoutDetailsHandler.setSessionSuccess()
     }
 
-    fun postUpiCollectRequest(shopperVpa : String, type : String, instrumentRef : String? = null, saveInstrument : Boolean? = null,surchargeList : List<String>?) {
+    fun postUpiCollectRequest(shopperVpa : String, type : String, instrumentRef : String? = null, saveInstrument : Boolean = false,surchargeList : List<String>?) {
         viewModelScope.launch {
             isBoxPayAnimationLoading.value = true
             upiId.value = shopperVpa

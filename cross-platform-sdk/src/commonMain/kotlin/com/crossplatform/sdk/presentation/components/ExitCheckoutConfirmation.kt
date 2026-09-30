@@ -37,6 +37,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_exit_door
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +63,7 @@ fun ExitCheckoutConfirmation(
         onDismissRequest = onStay,
         sheetState = sheetState,
         dragHandle       = null,
-        containerColor   = Color.White,
+        containerColor   = LocalSDKColors.current.background,
         shape            = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     ) {
         Column(
@@ -82,7 +83,7 @@ fun ExitCheckoutConfirmation(
                 fontFamily = LocalSDKFonts.current.primary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF4F4D55),
+                color = LocalSDKColors.current.textSecondary,
                 textAlign = TextAlign.Center,
             )
 

@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -36,6 +37,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.rbi_guidelines_he
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +52,7 @@ internal fun KnowMoreBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState       = sheetState,
-        containerColor   = Color.White,
+        containerColor   = LocalSDKColors.current.background,
         dragHandle       = null,        // remove default drag handle if not needed
         shape            = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     ) {
@@ -66,7 +68,7 @@ internal fun KnowMoreBottomSheet(
                 text       = stringResource(Res.string.rbi_guidelines_header),
                 fontSize   = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = Color(0xFF2D2B32),
+                color      = LocalSDKColors.current.textPrimary,
                 fontFamily = LocalSDKFonts.current.primary
             )
 
@@ -74,7 +76,7 @@ internal fun KnowMoreBottomSheet(
             Text(
                 text     = stringResource(Res.string.rbi_guidelines_desc),
                 fontSize = 14.sp,
-                color    = Color(0xFF2D2B32),
+                color    = LocalSDKColors.current.textPrimary,
                 modifier = Modifier.padding(top = 12.dp),
                 fontFamily = LocalSDKFonts.current.primary
             )
@@ -129,7 +131,7 @@ private fun InfoRow(
         Text(
             text     = text,
             fontSize = 14.sp,
-            color    = Color(0xFF2D2B32),
+            color    = LocalSDKColors.current.textPrimary,
             fontFamily = LocalSDKFonts.current.primary
         )
     }

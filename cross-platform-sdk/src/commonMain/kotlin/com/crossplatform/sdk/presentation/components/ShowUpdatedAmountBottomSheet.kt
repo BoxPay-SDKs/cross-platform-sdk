@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.formatAmount
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -40,6 +41,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.proceed_to_pay_ct
 import crossplatformsdk.cross_platform_sdk.generated.resources.sub_total_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.total_info
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +77,7 @@ internal fun ShowUpdateAmountBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onClick,
         dragHandle       = null,
-        containerColor   = Color.White,
+        containerColor   = LocalSDKColors.current.background,
         shape            = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     ) {
         Column(
@@ -90,7 +92,7 @@ internal fun ShowUpdateAmountBottomSheet(
                 text = stringResource(Res.string.order_summary_info),
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
-                color = Color(0xFF010102),
+                color = LocalSDKColors.current.textPrimary,
                 modifier = Modifier.padding(bottom = 12.dp, start = 12.dp, end = 16.dp)
             )
 
@@ -107,7 +109,7 @@ internal fun ShowUpdateAmountBottomSheet(
                     fontWeight = FontWeight.Normal,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontSize = 14.sp,
-                    color = Color(0xFF010102)
+                    color = LocalSDKColors.current.textPrimary
                 )
                 Text(
                     text  = buildAnnotatedString {
@@ -129,7 +131,7 @@ internal fun ShowUpdateAmountBottomSheet(
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp,
                     fontFamily = LocalSDKFonts.current.primary,
-                    color = Color(0xFF010102)
+                    color = LocalSDKColors.current.textPrimary
                 )
             }
 
@@ -145,7 +147,7 @@ internal fun ShowUpdateAmountBottomSheet(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(color = LocalSDKColors.current.divider, thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
@@ -159,7 +161,7 @@ internal fun ShowUpdateAmountBottomSheet(
                     text = stringResource(Res.string.total_info),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
-                    color = Color(0xFF010102),
+                    color = LocalSDKColors.current.textPrimary,
                     fontFamily = LocalSDKFonts.current.primary
                 )
                 Text(
@@ -182,7 +184,7 @@ internal fun ShowUpdateAmountBottomSheet(
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontSize = 16.sp,
-                    color = Color(0xFF010102)
+                    color = LocalSDKColors.current.textPrimary
                 )
             }
             PayButton(

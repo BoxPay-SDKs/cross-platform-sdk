@@ -33,6 +33,7 @@ import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.SavedAddressCard
 import com.crossplatform.sdk.presentation.components.ShimmerView
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.AddressScreenViewModel
@@ -51,6 +52,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.work_info
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun SavedAddressScreen(
@@ -86,10 +88,10 @@ internal fun SavedAddressScreen(
                             .padding(16.dp)
                             .border(
                                 width = 1.dp,
-                                color = Color(0xFFE6E6E6),
+                                color = LocalSDKColors.current.divider,
                                 RoundedCornerShape(12.dp)
                             )
-                            .background(Color.White, RoundedCornerShape(12.dp))
+                            .background(LocalSDKColors.current.background, RoundedCornerShape(12.dp))
                             .clickable { onProceedAddNewAddress() }
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -113,6 +115,7 @@ internal fun SavedAddressScreen(
                         Image(
                             painter            = painterResource(Res.drawable.chervon_down),
                             contentDescription = null,
+                    colorFilter        = ColorFilter.tint(LocalSDKColors.current.textSecondary),
                             modifier           = Modifier
                                 .size(width = 20.dp, height = 30.dp)
                                 .rotate(-90f)
@@ -142,6 +145,9 @@ internal fun SavedAddressScreen(
                         selectedCtaColor = buttonColor,
                         editAddressIcon = Res.drawable.ic_more
                     )
+                }
+                item {
+                    Footer()
                 }
                 item {
                     Footer()

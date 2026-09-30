@@ -51,6 +51,7 @@ import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.formatTimer
 import com.crossplatform.sdk.presentation.rememberQrImageSaver
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import com.crossplatform.sdk.presentation.viewmodel.PayNowScreenViewModel
@@ -88,6 +89,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun PayNowScreen(
@@ -141,7 +143,7 @@ internal fun PayNowScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF5F6FB))
+                .background(LocalSDKColors.current.surface)
                 .verticalScroll(rememberScrollState())
         ) {
             when (val state = qrState) {
@@ -282,7 +284,7 @@ private fun PayNowReadyState(
 
 
     Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 20.dp).background(Color.White, RoundedCornerShape(12.dp)).padding(vertical = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 20.dp).background(LocalSDKColors.current.background, RoundedCornerShape(12.dp)).padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -304,7 +306,7 @@ private fun PayNowReadyState(
             text = stringResource(Res.string.qr_ready_info),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF363840),
+            color = LocalSDKColors.current.textPrimary,
             fontFamily = LocalSDKFonts.current.primary
         )
 
@@ -314,7 +316,7 @@ private fun PayNowReadyState(
             text = stringResource(Res.string.download_qr_info),
             fontSize = 15.sp,
             lineHeight = 22.sp,
-            color = Color(0xFF4F4D55),
+            color = LocalSDKColors.current.textSecondary,
             textAlign = TextAlign.Center
         )
 
@@ -376,7 +378,7 @@ private fun PayNowReadyState(
         Text(
             text = stringResource(Res.string.pay_now_qr_expires_info),
             fontSize = 13.sp,
-            color = Color(0xFF4F4D55),
+            color = LocalSDKColors.current.textSecondary,
             textAlign = TextAlign.Center
         )
 
@@ -395,7 +397,7 @@ private fun PayNowExpiredState(
 ) {
 
     Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 20.dp).background(Color.White, RoundedCornerShape(12.dp)).padding(vertical = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 20.dp).background(LocalSDKColors.current.background, RoundedCornerShape(12.dp)).padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -412,7 +414,7 @@ private fun PayNowExpiredState(
             text = stringResource(Res.string.qr_expired_title),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF363840),
+            color = LocalSDKColors.current.textPrimary,
             fontFamily = LocalSDKFonts.current.primary
         )
 
@@ -422,7 +424,7 @@ private fun PayNowExpiredState(
             text = stringResource(Res.string.qr_expired_desc_info),
             fontSize = 15.sp,
             lineHeight = 22.sp,
-            color = Color(0xFF363840),
+            color = LocalSDKColors.current.textPrimary,
             textAlign = TextAlign.Center
         )
 
@@ -467,7 +469,7 @@ private fun QrTimer(
         modifier = Modifier
             .wrapContentWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFF3F4F6))
+            .background(LocalSDKColors.current.surface)
             .padding(vertical = 18.dp, horizontal = 16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -493,7 +495,7 @@ private fun QrTimer(
                 Text(
                     text = stringResource(Res.string.qr_valid_info),
                     fontSize = 14.sp,
-                    color = Color(0xFF363840),
+                    color = LocalSDKColors.current.textPrimary,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -518,7 +520,7 @@ private fun HowToPay() {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFF3F4F6))
+            .background(LocalSDKColors.current.surface)
             .padding(
                 horizontal = 20.dp,
                 vertical = 12.dp
@@ -529,7 +531,7 @@ private fun HowToPay() {
             text = stringResource(Res.string.how_to_pay_title),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF363840)
+            color = LocalSDKColors.current.textPrimary
         )
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -578,7 +580,7 @@ private fun PayInstruction(
             fontSize = 15.sp,
             lineHeight = 22.sp,
             fontWeight = FontWeight.Medium,
-            color = Color(0xFF363840)
+            color = LocalSDKColors.current.textPrimary
         )
 
         Text(
@@ -586,7 +588,7 @@ private fun PayInstruction(
             modifier = Modifier.weight(1f),
             fontSize = 15.sp,
             lineHeight = 22.sp,
-            color = Color(0xFF363840)
+            color = LocalSDKColors.current.textPrimary
         )
     }
 }

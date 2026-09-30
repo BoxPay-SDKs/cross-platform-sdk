@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,6 +54,7 @@ import com.crossplatform.sdk.presentation.screens.SavedAddressScreen
 import com.crossplatform.sdk.presentation.screens.ScreenBackInterceptor
 import com.crossplatform.sdk.presentation.screens.UpiTimerScreen
 import com.crossplatform.sdk.presentation.screens.WalletScreen
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.viewmodel.MainScreenViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.add_address_title
@@ -71,6 +73,7 @@ import io.ktor.http.encodeURLParameter
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -201,7 +204,7 @@ internal fun AppNavHost(
         mutableStateOf("")
     }
 
-    Column (modifier = Modifier.fillMaxSize()) {
+    Column (modifier = Modifier.fillMaxSize().background(LocalSDKColors.current.background)) {
         BackHandler {
             callSDKPaymentResponse()
         }
@@ -470,7 +473,7 @@ internal fun AppNavHost(
                 showSwipeToPay = false
             },
             dragHandle       = null,
-            containerColor   = Color.White,
+            containerColor   = LocalSDKColors.current.surface,
             shape            = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
         ) {
             SwipeToPayComponent(

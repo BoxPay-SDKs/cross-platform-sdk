@@ -139,7 +139,8 @@ class MainActivity : ComponentActivity() {
             ctaBorderRadius = config.ctaBorderRadius,
             focusedTextInputBorderColor = config.focusedTextInputBorderColor,
             unfocusedTextInputBorderColor = config.unfocusedTextInputBorderColor,
-            fontFamily = config.fontFamily
+            fontFamily = config.fontFamily,
+            themeMode = config.themeMode,
         )
         startActivity(intent)
     }

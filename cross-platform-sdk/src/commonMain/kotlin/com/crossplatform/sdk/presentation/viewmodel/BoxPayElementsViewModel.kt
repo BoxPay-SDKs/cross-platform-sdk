@@ -294,13 +294,13 @@ internal class BoxPayElementsViewModel (
         countdownJob?.cancel()
     }
 
-    fun postUpiCollectRequest(shopperVpa : String, type : String, instrumentRef : String? = null, saveInstrument : Boolean? = null) {
+    fun postUpiCollectRequest(shopperVpa : String, type : String, instrumentRef : String? = null, saveInstrument : Boolean = false) {
         viewModelScope.launch {
             isBoxPayAnimationLoading.value = true
             upiId.value = shopperVpa
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_INITIATED.value,
-                screenName = "MainScreenViewModel",
+                screenName = "BoxPayElementsViewModel",
                 message = "Payment initiated though collect method and function is postUpiCollectRequest"
             )
             val response = repo.postUpiCollectRequest(type = type,shopperVpa = shopperVpa, instrumentRef = instrumentRef , saveInstrument = saveInstrument, surcharges = null)

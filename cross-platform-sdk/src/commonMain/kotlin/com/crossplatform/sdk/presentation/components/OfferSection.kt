@@ -38,6 +38,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.domain.model.OfferItem
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.apply_cta
@@ -101,8 +102,8 @@ internal fun SingleOfferCard(
     val appliedGreenDark = Color(0xFF085041)
     val removeRed = Color(0xFFA32D2D)
 
-    val bgColor = if (isApplied) appliedGreenBg else Color.White
-    val borderColor = if (isApplied) appliedGreen else Color(0xFFE0E0E0)
+    val bgColor = if (isApplied) appliedGreenBg else LocalSDKColors.current.background
+    val borderColor = if (isApplied) appliedGreen else LocalSDKColors.current.divider
 
     Column(
         modifier = modifier
@@ -147,7 +148,7 @@ internal fun SingleOfferCard(
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = LocalSDKFonts.current.primary,
-                    color = if (isApplied) appliedGreenDark else Color(0xFF1A1A1A)
+                    color = if (isApplied) appliedGreenDark else LocalSDKColors.current.textPrimary
                 )
                 Text(
                     text = offer.description,
@@ -179,7 +180,7 @@ internal fun SingleOfferCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White.copy(alpha = 0.55f))
+                    .background(LocalSDKColors.current.background.copy(alpha = 0.55f))
                     .padding(horizontal = 12.dp, vertical = 7.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -234,8 +235,8 @@ internal fun MultiOfferCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.White)
-            .border(1.dp, Color(0xFFE0E0E0), RoundedCornerShape(12.dp))
+            .background(LocalSDKColors.current.background)
+            .border(1.dp, LocalSDKColors.current.divider, RoundedCornerShape(12.dp))
     ) {
         // ── Header row ──
         Row(
@@ -259,7 +260,7 @@ internal fun MultiOfferCard(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = LocalSDKFonts.current.primary,
-                    color = Color(0xFF1A1A1A)
+                    color = LocalSDKColors.current.textPrimary
                 )
                 Text(
                     text = if (appliedOffer != null) "1 applied" else "Tap to apply",
@@ -279,7 +280,7 @@ internal fun MultiOfferCard(
             )
         }
 
-        HorizontalDivider(color     = Color(0xFFECECED),modifier = Modifier.padding(horizontal = 8.dp))
+        HorizontalDivider(color     = LocalSDKColors.current.divider,modifier = Modifier.padding(horizontal = 8.dp))
 
         // ── Chips row ──
         Row(
@@ -312,7 +313,7 @@ internal fun MultiOfferCard(
             exit = fadeOut() + shrinkVertically()
         ) {
             appliedOffer?.let { offer ->
-                HorizontalDivider(color = Color(0xFFECECED))
+                HorizontalDivider(color = LocalSDKColors.current.divider)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -368,9 +369,9 @@ private fun OfferChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bgColor = if (isSelected) Color(0xFFE1F5EE) else Color(0xFFFFFFFF)
-    val borderColor = if (isSelected) Color(0xFF1D9E75) else Color(0xFFE0E0E0)
-    val textColor = if (isSelected) Color(0xFF085041) else Color(0xFF555555)
+    val bgColor = if (isSelected) Color(0xFFE1F5EE) else LocalSDKColors.current.background
+    val borderColor = if (isSelected) Color(0xFF1D9E75) else LocalSDKColors.current.divider
+    val textColor = if (isSelected) Color(0xFF085041) else LocalSDKColors.current.textSecondary
 
     Row(
         modifier = Modifier
@@ -412,7 +413,7 @@ private fun MoreChip(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(20.dp))
-            .background(Color(0xFFF4F4F4))
+            .background(LocalSDKColors.current.surface)
             .border(0.5.dp, Color(0xFFCCCCCC), RoundedCornerShape(20.dp))
             .clickable { onClick() }
             .padding(horizontal = 12.dp, vertical = 5.dp)

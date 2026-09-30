@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import com.crossplatform.sdk.presentation.theme.BoxPayThemeMode
 
 data class BoxPayConfig(
     val token: String,
@@ -56,7 +57,9 @@ data class BoxPayConfig(
     val unfocusedTextInputBorderColor: String,
     val paymentMethodList : List<String>,
     val isBoxPayPayButtonVisible : Boolean,
-    val fontFamily : String
+    val fontFamily : String,
+    /** Theme the merchant wants the SDK to use. */
+    val themeMode: BoxPayThemeMode = BoxPayThemeMode.SYSTEM,
 )
 
 @SuppressLint("MutableCollectionMutableState")
@@ -77,6 +80,7 @@ fun TokenScreen(onProceed: (BoxPayConfig) -> Unit) {
     val unfocusedTextInputBorderColor = remember { mutableStateOf("#ADACB0") }
     val focusedDropdownExpanded   = remember { mutableStateOf(false) }
     val unfocusedDropdownExpanded = remember { mutableStateOf(false) }
+    val selectedThemeMode           = remember { mutableStateOf(BoxPayThemeMode.SYSTEM) }
 
     val paymentMethods = remember {
         mutableStateOf(
@@ -181,6 +185,12 @@ fun TokenScreen(onProceed: (BoxPayConfig) -> Unit) {
             onSelect = { fontFamily.value = it }
         )
 
+        // ── Theme Mode selector ────────────────────────────────
+        ThemeModeSelector(
+            selected = selectedThemeMode.value,
+            onSelect = { selectedThemeMode.value = it }
+        )
+
         // ── Toggle switches ────────────────────────────────────
         ToggleRow(label = "Test Environment",        checked = isTestEnv.value)              { isTestEnv.value = it }
         ToggleRow(label = "BoxPay Pay Button Visible (Only eligible in Elements)", checked = isBoxPayPayButtonVisible.value)    { isBoxPayPayButtonVisible.value = it }
@@ -213,7 +223,8 @@ fun TokenScreen(onProceed: (BoxPayConfig) -> Unit) {
                             unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.value,
                             paymentMethodList = paymentMethods.value.toList(),
                             isBoxPayPayButtonVisible = isBoxPayPayButtonVisible.value,
-                            fontFamily = if (fontFamily.value == "Default") "" else fontFamily.value
+                            fontFamily = if (fontFamily.value == "Default") "" else fontFamily.value,
+                            themeMode = selectedThemeMode.value,
                         )
                     )
                 },
@@ -260,6 +271,70 @@ private fun ToggleRow(label: String, checked: Boolean, onCheckedChange: (Boolean
     ) {
         Text(text = label, fontSize = 14.sp, fontWeight = FontWeight.Medium)
         Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
+}
+
+/**
+ * Three-segment button that lets testers pick the theme mode for the SDK
+ * without touching system settings.
+ */
+@Composable
+private fun ThemeModeSelector(
+    selected: BoxPayThemeMode,
+    onSelect: (BoxPayThemeMode) -> Unit,
+) {
+    val options = listOf(
+        BoxPayThemeMode.LIGHT  to "☀ Light",
+        BoxPayThemeMode.DARK   to "🌙 Dark",
+        BoxPayThemeMode.SYSTEM to "⚙ System",
+    )
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = "SDK Theme",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .border(1.dp, Color(0xFFD0D0D0), RoundedCornerShape(8.dp)),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            options.forEachIndexed { index, (mode, label) ->
+                val isSelected = mode == selected
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(
+                            if (isSelected) Color(0xFF1CA672) else Color.Transparent
+                        )
+                        .clickable { onSelect(mode) }
+                        .then(
+                            // left/right borders between segments
+                            if (index > 0) Modifier.border(
+                                width = 1.dp,
+                                color = Color(0xFFD0D0D0),
+                                shape = RoundedCornerShape(0.dp)
+                            ) else Modifier
+                        )
+                        .padding(vertical = 10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = label,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = if (isSelected) Color.White else Color(0xFF4F4D55)
+                    )
+                }
+            }
+        }
     }
 }
 

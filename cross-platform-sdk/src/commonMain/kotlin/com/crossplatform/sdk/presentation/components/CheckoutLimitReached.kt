@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -36,6 +37,7 @@ import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +59,7 @@ internal fun CheckoutLimitReached(
         onDismissRequest = onExitCheckout,
         sheetState = sheetState,
         dragHandle       = null,
-        containerColor   = Color.White,
+        containerColor   = LocalSDKColors.current.background,
         shape            = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     ) {
         Column(
@@ -94,7 +96,7 @@ internal fun CheckoutLimitReached(
                 fontSize   = 14.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
-                color      = Color.Black,
+                color      = LocalSDKColors.current.textSecondary,
                 textAlign  = TextAlign.Left,
                 lineHeight = 20.sp,
                 modifier   = Modifier.padding(top = 8.dp, bottom = 16.dp)

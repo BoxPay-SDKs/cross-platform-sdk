@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.ChevronIcon
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -53,6 +54,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +78,7 @@ internal fun PaymentMaxRetryReached(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         dragHandle       = null,
-        containerColor   = Color.White,
+        containerColor   = LocalSDKColors.current.background,
         shape            = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     ) {
         Column(
@@ -111,7 +113,7 @@ internal fun PaymentMaxRetryReached(
                 fontSize   = 14.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
-                color      = Color.Black,
+                color      = LocalSDKColors.current.textSecondary,
                 textAlign  = TextAlign.Center,
                 lineHeight = 20.sp,
                 modifier   = Modifier.padding(top = 8.dp, bottom = 16.dp)
@@ -132,7 +134,7 @@ internal fun PaymentMaxRetryReached(
             // Alternate payment methods list
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
-                    .background(Color(0xFFF5F6FB), RoundedCornerShape(12.dp))
+                    .background(LocalSDKColors.current.surface, RoundedCornerShape(12.dp))
                     .clip(RoundedCornerShape(12.dp))
             ) {
                 itemsIndexed(availableMethods) { index, method ->
@@ -155,14 +157,14 @@ internal fun PaymentMaxRetryReached(
                             fontSize   = 15.sp,
                             fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Normal,
-                            color      = Color.Black,
+                            color      = LocalSDKColors.current.textSecondary,
                             modifier   = Modifier.padding(start = 12.dp)
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         ChevronIcon()
                     }
                     if(index != availableMethods.lastIndex) {
-                        HorizontalDivider(color = Color(0xFFE6E6E6))
+                        HorizontalDivider(color = LocalSDKColors.current.divider)
                     }
                 }
             }

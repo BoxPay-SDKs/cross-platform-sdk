@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.formatAmount
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -65,6 +66,7 @@ import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun SwipeToPayComponent(
@@ -92,7 +94,7 @@ internal fun SwipeToPayComponent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(LocalSDKColors.current.background)
                 .padding(horizontal = 16.dp)
         ) {
             // ── Address / Personal Details section ──────────────────────
@@ -106,7 +108,7 @@ internal fun SwipeToPayComponent(
                 ) {
                     Text(
                         text = if (toShowPersonal) stringResource(Res.string.personal_details_title) else stringResource(Res.string.shipping_address_title),
-                        color = Color(0xFF2D2B32),
+                        color = LocalSDKColors.current.textPrimary,
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -138,7 +140,7 @@ internal fun SwipeToPayComponent(
 
                 Text(
                     text = address,
-                    color = Color(0xFF7F7D83),
+                    color = LocalSDKColors.current.textSecondary,
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
@@ -193,7 +195,7 @@ internal fun SwipeToPayComponent(
                             )
                         )
                     },
-                    color = Color(0xFF2D2B32),
+                    color = LocalSDKColors.current.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -220,7 +222,7 @@ internal fun SwipeToPayComponent(
 
             Text(
                 text = stringResource(Res.string.last_used_payment_option_info),
-                color = Color(0xFF7F7D83),
+                color = LocalSDKColors.current.textSecondary,
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
@@ -253,7 +255,7 @@ internal fun SwipeToPayComponent(
                             modifier = Modifier
                                 .size(32.dp)
                                 .background(
-                                    color = Color(0xFFE6E6E6),
+                                    color = LocalSDKColors.current.divider,
                                     RoundedCornerShape(12.dp)
                                 )
                         )
@@ -271,7 +273,7 @@ internal fun SwipeToPayComponent(
 
                 Text(
                     text = lastUsedUpi,
-                    color = Color(0xFF4F4D55),
+                    color = LocalSDKColors.current.textSecondary,
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -381,7 +383,7 @@ internal fun SwipeToPayButtonComponent(
                 .offset { IntOffset(swipePosition.value.roundToInt(), 0) }
                 .size(height)
                 .padding(vertical = 3.dp, horizontal = 4.dp)
-                .background(Color.White, shape = RoundedCornerShape(10.dp))
+                .background(LocalSDKColors.current.background, shape = RoundedCornerShape(10.dp))
                 .draggable(
                     orientation = Orientation.Horizontal,
                     state = rememberDraggableState { delta ->

@@ -46,6 +46,7 @@ import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.formatAmount
 import com.crossplatform.sdk.presentation.isTabletDevice
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -60,6 +61,7 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun OrderDetails(
@@ -118,8 +120,8 @@ internal fun OrderDetails(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-                .background(Color.White, cardShape)
-                .border(1.dp, Color(0xFFF1F1F1), cardShape)
+                .background(LocalSDKColors.current.background, cardShape)
+                .border(1.dp, LocalSDKColors.current.surface, cardShape)
                 .clip(cardShape)
                 .padding(vertical = 16.dp)
         ) {
@@ -135,7 +137,7 @@ internal fun OrderDetails(
                 Text(
                     text = stringResource(Res.string.price_details_info),
                     fontSize = 14.sp,
-                    color = Color(0xFF363840),
+                    color = LocalSDKColors.current.textPrimary,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -170,7 +172,7 @@ internal fun OrderDetails(
                                         modifier = Modifier
                                             .size(40.dp)
                                             .background(
-                                                color = Color(0xFFE6E6E6),
+                                                color = LocalSDKColors.current.divider,
                                                 RoundedCornerShape(12.dp)
                                             )
                                     )
@@ -194,7 +196,7 @@ internal fun OrderDetails(
                             Text(
                                 text = item.imageTitle ?: "",
                                 fontSize = 12.sp,
-                                color = Color(0xFF2D2B32),
+                                color = LocalSDKColors.current.textPrimary,
                                 fontFamily = LocalSDKFonts.current.primary,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis
@@ -202,7 +204,7 @@ internal fun OrderDetails(
                             Text(
                                 text = "Qty: ${item.imageQty}",
                                 fontSize = 12.sp,
-                                color = Color(0xFF2D2B32),
+                                color = LocalSDKColors.current.textPrimary,
                                 fontFamily = LocalSDKFonts.current.primary,
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -215,7 +217,7 @@ internal fun OrderDetails(
                                 append(" ${item.amount}")
                             },
                             fontSize = 12.sp,
-                            color = Color(0xFF2D2B32),
+                            color = LocalSDKColors.current.textPrimary,
                             fontFamily = LocalSDKFonts.current.primary
                         )
                     }
@@ -277,7 +279,7 @@ internal fun OrderDetails(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp)
-                    .background(Color(0xFFF1F1F1), RoundedCornerShape(8.dp))
+                    .background(LocalSDKColors.current.surface, RoundedCornerShape(8.dp))
                     .padding(horizontal = 8.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -285,7 +287,7 @@ internal fun OrderDetails(
                 Text(
                     text = stringResource(Res.string.total_info),
                     fontSize = 16.sp,
-                    color = Color(0xFF1D1C20),
+                    color = LocalSDKColors.current.textPrimary,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -297,7 +299,7 @@ internal fun OrderDetails(
                         append(" ${formatAmount(amountAfterSurcharge.value)}")
                     },
                     fontSize = 16.sp,
-                    color = Color(0xFF1D1C20),
+                    color = LocalSDKColors.current.textPrimary,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -309,8 +311,8 @@ internal fun OrderDetails(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .background(Color.White, cardShape)
-                .border(1.dp, Color(0xFFF1F1F1), cardShape)
+                .background(LocalSDKColors.current.background, cardShape)
+                .border(1.dp, LocalSDKColors.current.surface, cardShape)
                 .clip(cardShape)
                 .clickable { isExpanded = true }
                 .padding(horizontal = 12.dp, vertical = 16.dp),
@@ -320,7 +322,7 @@ internal fun OrderDetails(
             Text(
                 text = stringResource(Res.string.price_details_info),
                 fontSize = 14.sp,
-                color = Color(0xFF363840),
+                color = LocalSDKColors.current.textPrimary,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold
             )
@@ -334,7 +336,7 @@ internal fun OrderDetails(
                         append(" ${formatAmount(amountAfterSurcharge.value)}")
                     },
                     fontSize = 14.sp,
-                    color = Color(0xFF363840),
+                    color = LocalSDKColors.current.textPrimary,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -372,7 +374,7 @@ internal fun SummaryRow(
             Text(
                 text = label,
                 fontSize = 14.sp,
-                color = Color(0xFF2D2B32),
+                color = LocalSDKColors.current.textPrimary,
                 fontFamily = LocalSDKFonts.current.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -410,7 +412,7 @@ internal fun SummaryRow(
                 append(" ${formatAmount(amount)}")
             },
             fontSize = 14.sp,
-            color = Color(0xFF2D2B32),
+            color = LocalSDKColors.current.textPrimary,
             fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.SemiBold
             // no weight, no textAlign needed — it now sits flush right naturally
@@ -435,7 +437,7 @@ private fun InfoTooltip(
             Box(
                 modifier = Modifier
                     .background(
-                        color = Color(0xFF2D2B32),
+                        color = LocalSDKColors.current.textPrimary,
                         shape = RoundedCornerShape(10.dp)
                     )
                     .widthIn(max = 220.dp)
@@ -445,7 +447,7 @@ private fun InfoTooltip(
                     text = text,
                     fontSize = 13.sp,
                     fontFamily = LocalSDKFonts.current.primary,
-                    color = Color.White,
+                    color = LocalSDKColors.current.background,
                     lineHeight = 17.sp
                 )
             }
@@ -457,9 +459,10 @@ private fun InfoTooltip(
 // Dashed divider drawn with Canvas (DrawScope supports PathEffect natively).
 @Composable
 private fun DashedDivider(modifier: Modifier = Modifier) {
+    val dividerColor = LocalSDKColors.current.divider
     androidx.compose.foundation.Canvas(modifier = modifier.height(1.5.dp)) {
         drawLine(
-            color = Color(0xFFE6E6E6),
+            color = dividerColor,
             start = androidx.compose.ui.geometry.Offset(0f, 0f),
             end = androidx.compose.ui.geometry.Offset(size.width, 0f),
             strokeWidth = 1.5.dp.toPx(),

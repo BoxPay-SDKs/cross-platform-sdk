@@ -17,7 +17,7 @@ internal data class UPICollectRequestBody(
     internal data class Instrument(
         @SerialName("type") val type : String, // 'upi/collect' | 'upiotm/collect'
         @SerialName("upi") val upi : UPIDetails,
-        @SerialName("saveInstrument") val saveInstrument: Boolean?,
+        @SerialName("saveInstrument") val saveInstrument: Boolean,
     )
 
     @Serializable

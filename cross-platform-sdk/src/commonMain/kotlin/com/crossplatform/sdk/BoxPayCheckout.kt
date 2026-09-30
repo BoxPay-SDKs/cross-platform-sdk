@@ -1,6 +1,5 @@
 package com.crossplatform.sdk
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -9,7 +8,9 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.di.appModule
 import com.crossplatform.sdk.presentation.components.LocaleManager
 import com.crossplatform.sdk.presentation.navigation.AppNavHost
+import com.crossplatform.sdk.presentation.theme.BoxPayThemeMode
 import com.crossplatform.sdk.presentation.theme.ProvideSDKFonts
+import com.crossplatform.sdk.presentation.theme.SDKThemeProvider
 import org.koin.compose.KoinApplication
 
 @Composable
@@ -26,7 +27,8 @@ internal fun BoxPayCommonCheckout(
     focusedTextInputBorderColor : String,
     unfocusedTextInputBorderColor : String,
     fontFamily: String?,
-    localeManager: LocaleManager
+    localeManager: LocaleManager,
+    themeMode: BoxPayThemeMode = BoxPayThemeMode.SYSTEM,
 ) {
     KoinApplication(
         application = {
@@ -35,7 +37,7 @@ internal fun BoxPayCommonCheckout(
     ) {
         val backendFont by CheckoutDetailsHandler.fontFamilyFlow.collectAsStateWithLifecycle()
         val savedLanguage by localeManager.currentLanguage.collectAsState()
-        val activeLanguage = savedLanguage ?:  "en"
+        val activeLanguage = savedLanguage ?: "en"
 
         ProvideSDKFonts(
             currentLanguage = activeLanguage,
@@ -44,7 +46,6 @@ internal fun BoxPayCommonCheckout(
             onUnknownFontRequested = { _ ->
                 // will not be implemented for now
             },
-
         ) {
             CheckoutDetailsHandler.setCheckoutToken(
                 token = token,
@@ -60,7 +61,9 @@ internal fun BoxPayCommonCheckout(
                 showQROnLoad = showQROnLoad
             )
 
-            MaterialTheme {
+            // SDKThemeProvider resolves LIGHT / DARK / SYSTEM and wraps
+            // MaterialTheme so every component in the SDK uses the correct palette.
+            SDKThemeProvider(themeMode = themeMode) {
                 AppNavHost(
                     onLanguageChange = {
                         localeManager.setLanguage(it)

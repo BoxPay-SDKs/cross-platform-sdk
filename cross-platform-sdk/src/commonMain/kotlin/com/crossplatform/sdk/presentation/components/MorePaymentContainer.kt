@@ -23,11 +23,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.ChevronIcon
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun MorePaymentContainer(
@@ -44,10 +46,10 @@ internal fun MorePaymentContainer(
             .clip(RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
-                color = Color(0xFFE6E6E6),
+                color = LocalSDKColors.current.divider,
                 RoundedCornerShape(12.dp)
             )
-            .background(Color.White)
+            .background(LocalSDKColors.current.background)
             .padding(start = 16.dp, bottom = 10.dp, top = 10.dp, end = 8.dp)
             .clickable{
                 onClick()
@@ -76,7 +78,7 @@ internal fun MorePaymentContainer(
                         modifier = Modifier
                             .size(32.dp)
                             .background(
-                                color = Color(0xFFE6E6E6),
+                                color = LocalSDKColors.current.divider,
                                 RoundedCornerShape(12.dp)
                             )
                     )
@@ -95,7 +97,8 @@ internal fun MorePaymentContainer(
                 text     = title,
                 fontSize = 14.sp,
                 fontFamily = LocalSDKFonts.current.primary,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                color    = LocalSDKColors.current.textPrimary
             )
 //            if (surchargeFee != 0.0 && surchargeFee != null) {
 //                Text(

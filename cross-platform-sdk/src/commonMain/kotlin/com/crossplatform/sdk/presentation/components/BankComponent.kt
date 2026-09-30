@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.SectionTitle
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -36,6 +37,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.no_result_found_t
 import crossplatformsdk.cross_platform_sdk.generated.resources.search_title
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun BankComponent(
@@ -67,7 +69,7 @@ internal fun BankComponent(
             onValueChange = {
                onSetSearchQuery(it)
             },
-            modifier = Modifier.fillMaxWidth().background(Color.White).padding(16.dp),
+            modifier = Modifier.fillMaxWidth().background(LocalSDKColors.current.background).padding(16.dp),
             label = { Text(stringResource(Res.string.search_title), fontFamily = LocalSDKFonts.current.primary) },
             singleLine = true,
             leadingIcon = {
@@ -110,12 +112,12 @@ internal fun BankComponent(
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp)
                     .background(
-                        color =  Color.White,
+                        color =  LocalSDKColors.current.background,
                         shape = RoundedCornerShape(12.dp)
                     )
                     .border(
                         width = 1.dp,
-                        color = Color(0xFFE6E6E6),
+                        color = LocalSDKColors.current.divider,
                         RoundedCornerShape(12.dp)
                     )
             ) {
@@ -146,7 +148,7 @@ internal fun BankComponent(
                     )
                     if(index != list.lastIndex) {
                         HorizontalDivider(
-                            color     = Color(0xFFECECED),
+                            color     = LocalSDKColors.current.divider,
                             thickness = 1.dp,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )

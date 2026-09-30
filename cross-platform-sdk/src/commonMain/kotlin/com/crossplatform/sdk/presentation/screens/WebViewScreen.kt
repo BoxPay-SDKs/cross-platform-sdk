@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal expect fun WebViewScreen(
@@ -28,10 +29,10 @@ internal fun WebViewUrlBar(currentUrl: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFF1F1F1))
+            .background(LocalSDKColors.current.surface)
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
-        Text(text = currentUrl.ifEmpty { "Loading…" }, fontSize = 12.sp, color = Color(0xFF333333), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(text = currentUrl.ifEmpty { "Loading…" }, fontSize = 12.sp, color = LocalSDKColors.current.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 

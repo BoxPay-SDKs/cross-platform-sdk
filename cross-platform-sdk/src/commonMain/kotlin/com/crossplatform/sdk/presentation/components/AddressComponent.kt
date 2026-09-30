@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.SectionTitle
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.address_title
@@ -34,6 +35,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_user
 import crossplatformsdk.cross_platform_sdk.generated.resources.personal_details_title
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun AddressComponent(
@@ -92,7 +94,8 @@ internal fun AddressComponent(
                         },
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
-                        fontSize   = 14.sp
+                        fontSize   = 14.sp,
+                        color      = LocalSDKColors.current.textPrimary,
                     )
                     Text(
                         text       = address,
@@ -100,7 +103,8 @@ internal fun AddressComponent(
                         fontWeight = FontWeight.SemiBold,
                         fontSize   = 14.sp,
                         maxLines   = 1,
-                        overflow   = TextOverflow.Ellipsis
+                        overflow   = TextOverflow.Ellipsis,
+                        color      = LocalSDKColors.current.textPrimary,
                     )
                 }
 
@@ -154,7 +158,8 @@ internal fun AddressComponent(
                                 },
                                 fontFamily = LocalSDKFonts.current.primary,
                                 fontWeight = FontWeight.Medium,
-                                fontSize   = 14.sp
+                                fontSize   = 14.sp,
+                                color      = LocalSDKColors.current.textPrimary,
                             )
                         }
                         // show email only if enabled
@@ -165,7 +170,8 @@ internal fun AddressComponent(
                                 fontWeight = FontWeight.Medium,
                                 fontSize   = 14.sp,
                                 maxLines   = 1,
-                                overflow   = TextOverflow.Ellipsis
+                                overflow   = TextOverflow.Ellipsis,
+                                color      = LocalSDKColors.current.textPrimary,
                             )
                         }
                     }
@@ -188,10 +194,10 @@ internal fun AddressCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .background(Color.White, RoundedCornerShape(12.dp))
+            .background(LocalSDKColors.current.background, RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
-                color = Color(0xFFE6E6E6),
+                color = LocalSDKColors.current.divider,
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable { onClick() }
