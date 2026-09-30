@@ -126,7 +126,7 @@ internal fun ElementsContent(
     shopperToken             : String,
     onMethodSelected         : (PaymentMethodTab) -> Unit,
     stopFetchStatusPolling   : () -> Unit,
-    postUpiCollectRequest    : (shopperVpa: String, type: String, instrumentRef: String?, saveInstrument: Boolean?) -> Unit,
+    postUpiCollectRequest    : (shopperVpa: String, type: String, instrumentRef: String?, saveInstrument: Boolean) -> Unit,
     postUpiIntentRequest     : (selectedIntent: String, type: String) -> Unit,
     postUPIQrRequest         : (type: String) -> Unit,
     onProceedCardRequest     : (Boolean) -> Unit,
@@ -272,7 +272,7 @@ private fun UpiTab(
     selectedId             : String,
     onSelectId             : (String) -> Unit,
     stopFetchStatusPolling : () -> Unit,
-    postUpiCollectRequest  : (shopperVpa: String, type: String, instrumentRef: String?, saveInstrument: Boolean?) -> Unit,
+    postUpiCollectRequest  : (shopperVpa: String, type: String, instrumentRef: String?, saveInstrument: Boolean) -> Unit,
     postUpiIntentRequest   : (selectedIntent: String, type: String) -> Unit,
     postUPIQrRequest       : (type: String) -> Unit,
 ) {
@@ -290,7 +290,7 @@ private fun UpiTab(
                     "Boxpay elements upi",
                     "Payment Category selected through saved upi",
                 )
-                postUpiCollectRequest(shopperVpa, PaymentTypes.UPI_COLLECT, instrumentRef, null)
+                postUpiCollectRequest(shopperVpa, PaymentTypes.UPI_COLLECT, instrumentRef, false)
             },
             onVpaChanged = { vpa ->
                 viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.UpiCollect(vpa))

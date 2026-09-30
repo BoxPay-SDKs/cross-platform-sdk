@@ -79,7 +79,7 @@ internal interface ApiService {
         type : String,
         instrumentRef : String?,
         shopperVpa : String?,
-        saveInstrument : Boolean?,
+        saveInstrument : Boolean,
         surcharges : List<String>?
     ) : ApiResponse<PaymentMethodPostResponse>
 
