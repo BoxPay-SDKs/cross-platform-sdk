@@ -19,6 +19,7 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.formatAmount
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun PayButton(
@@ -64,7 +65,7 @@ internal fun PayButton(
             },
             fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.SemiBold,
-            color      = if (isValid) buttonTextColor.toComposeColor() else Color(0xFFADACAD),
+            color      = if (isValid) buttonTextColor.toComposeColor() else LocalSDKColors.current.textSecondary,
             fontSize   = ctaTextSize.sp,
             modifier   = Modifier.padding(vertical = 14.dp)
         )

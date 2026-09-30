@@ -86,7 +86,7 @@ internal fun CvvInfoBottomSheet(onClick: () -> Unit, buttonColor : String, borde
 
             // --- Divider ---
             HorizontalDivider(
-                color    = Color(0xFFECECED),
+                color    = LocalSDKColors.current.divider,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 

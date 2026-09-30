@@ -111,7 +111,7 @@ internal fun PaymentMaxRetryReached(
                 fontSize   = 14.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
-                color      = Color.Black,
+                color      = LocalSDKColors.current.textSecondary,
                 textAlign  = TextAlign.Center,
                 lineHeight = 20.sp,
                 modifier   = Modifier.padding(top = 8.dp, bottom = 16.dp)
@@ -155,14 +155,14 @@ internal fun PaymentMaxRetryReached(
                             fontSize   = 15.sp,
                             fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Normal,
-                            color      = Color.Black,
+                            color      = LocalSDKColors.current.textSecondary,
                             modifier   = Modifier.padding(start = 12.dp)
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         ChevronIcon()
                     }
                     if(index != availableMethods.lastIndex) {
-                        HorizontalDivider(color = Color(0xFFE6E6E6))
+                        HorizontalDivider(color = LocalSDKColors.current.divider)
                     }
                 }
             }

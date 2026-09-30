@@ -79,6 +79,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.save_address_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.save_personal_details_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.state_title
 import org.jetbrains.compose.resources.stringResource
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun AddressScreen(
@@ -662,7 +663,7 @@ internal fun AddressTextField(
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
                 fontSize   = 16.sp,
-                color      = Color(0xFF0A090B)
+                color      = LocalSDKColors.current.textPrimary
             ),
             maxLines = 1,
             colors = OutlinedTextFieldDefaults.colors(
@@ -717,7 +718,7 @@ internal fun CustomDropdownField(
             label = { Text(label, fontFamily = LocalSDKFonts.current.primary, fontSize = 16.sp) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             shape = RoundedCornerShape(8.dp),
-            textStyle = TextStyle(fontFamily = LocalSDKFonts.current.primary, fontSize = 16.sp, color = Color(0xFF0A090B)),
+            textStyle = TextStyle(fontFamily = LocalSDKFonts.current.primary, fontSize = 16.sp, color = LocalSDKColors.current.textPrimary),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = focusedBorderColor.toComposeColor(),
                 unfocusedBorderColor = unfocusedBorderColor.toComposeColor(),

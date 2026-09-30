@@ -50,7 +50,8 @@ internal fun ShowLoadingComponent(modifier: Modifier) {
             text       = stringResource(Res.string.loading_info),
             fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Normal,
-            fontSize   = 14.sp
+            fontSize   = 14.sp,
+            color = LocalSDKColors.current.textPrimary
         )
     }
 }

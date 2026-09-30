@@ -92,7 +92,7 @@ internal fun UpiTimerScreen(
             text = stringResource(Res.string.complete_your_payment_title),
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF1A1A1A),
+            color = LocalSDKColors.current.textPrimary,
             fontFamily = LocalSDKFonts.current.primary
         )
 
@@ -114,7 +114,7 @@ internal fun UpiTimerScreen(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .padding(vertical = 16.dp)
-                .border(2.dp, Color(0xFFECECED), RoundedCornerShape(12.dp))
+                .border(2.dp, LocalSDKColors.current.divider, RoundedCornerShape(12.dp))
                 .padding(12.dp)
         ) {
             // UPI icon placeholder (replace with painterResource on Android/iOS)
@@ -126,7 +126,7 @@ internal fun UpiTimerScreen(
             Text(
                 text = "UPI Id: $shopperVpa",
                 fontSize = 14.sp,
-                color = Color(0xFF333333),
+                color = LocalSDKColors.current.textPrimary,
                 fontFamily = LocalSDKFonts.current.primary
             )
         }
@@ -171,7 +171,7 @@ internal fun UpiTimerScreen(
             Text(
                 text = stringResource(Res.string.avoid_back_button_in_upi_timer_info),
                 fontSize = 12.sp,
-                color = Color(0xFF555555),
+                color = LocalSDKColors.current.textSecondary,
                 fontFamily = LocalSDKFonts.current.primary,
                 lineHeight = 12.sp
             )
@@ -232,7 +232,7 @@ internal fun CircularCountdownTimer(
     formattedTime: String
 ) {
     val sweepAngle = (progress.toFloat() / totalTime.toFloat()) * 360f
-    val trackColor = Color(0xFFEEEEEE)
+    val trackColor = LocalSDKColors.current.divider
 
     Box(contentAlignment = Alignment.Center, modifier = Modifier.size(size)) {
         Canvas(modifier = Modifier.size(size)) {

@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,7 +62,7 @@ internal fun ExpandablePaymentSection(
             .clip(RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
-                color = Color(0xFFE6E6E6),
+                color = LocalSDKColors.current.divider,
                 RoundedCornerShape(12.dp)
             )
             .background(Color.White)
@@ -86,13 +87,15 @@ internal fun ExpandablePaymentSection(
                     text = title,
                     fontSize = 14.sp,
                     fontFamily = LocalSDKFonts.current.primary,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    color = LocalSDKColors.current.textPrimary
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
             Image(
                 painter            = painterResource(Res.drawable.chervon_down),
                 contentDescription = null,
+                colorFilter        = ColorFilter.tint(LocalSDKColors.current.textSecondary),
                 modifier           = Modifier
                     .size(width = 20.dp, height = 30.dp)
                     .rotate(rotate)
@@ -127,7 +130,7 @@ internal fun ExpandablePaymentSection(
                         it.network.replace(" ", "").equals(provider.displayName.replace(" ", ""), true)
                     }?.amount                )
                 HorizontalDivider(
-                    color     = Color(0xFFECECED),
+                    color     = LocalSDKColors.current.divider,
                     thickness = 1.dp,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )

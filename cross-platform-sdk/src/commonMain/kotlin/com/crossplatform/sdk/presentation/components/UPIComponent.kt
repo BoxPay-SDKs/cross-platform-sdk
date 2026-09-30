@@ -174,7 +174,7 @@ internal fun UPIComponent(
     }
 
     LaunchedEffect(Unit) {
-        if (showQROnLoad && !isQRLoaded) {
+        if (showQROnLoad && !isQRLoaded && isTablet) {
             expandedUpiSection = UpiSection.QR
             onClickUpiQRPayButton()
         }
@@ -226,8 +226,8 @@ internal fun UPIComponent(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(12.dp))
-            .border(1.dp, Color(0xFFE6E6E6), RoundedCornerShape(12.dp))
-            .background(Color.White)
+            .border(1.dp, LocalSDKColors.current.divider, RoundedCornerShape(12.dp))
+            .background(LocalSDKColors.current.background)
             .padding(bottom = 12.dp)
     ) {
 
@@ -260,7 +260,7 @@ internal fun UPIComponent(
                         isBoxPayPayButtonVisible = isBoxPayPayButtonVisible
                     )
                     HorizontalDivider(
-                        color     = Color(0xFFECECED),
+                        color     = LocalSDKColors.current.divider,
                         thickness = 1.dp,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
@@ -465,7 +465,7 @@ internal fun UPIComponent(
                 val showDivider = (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) && (installed.value.isNotEmpty())
                 if (showDivider) {
                     HorizontalDivider(
-                        color    = Color(0xFFE6E6E6),
+                        color    = LocalSDKColors.current.divider,
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                     )
                 }
@@ -493,7 +493,8 @@ internal fun UPIComponent(
                             Text(
                                 text       = "Enter UPI Id",
                                 fontFamily = LocalSDKFonts.current.primary,
-                                fontWeight = FontWeight.Normal
+                                fontWeight = FontWeight.Normal,
+                                color      = LocalSDKColors.current.textPrimary,
                             )
                         },
                         isError      = upiCollectError,
@@ -551,7 +552,7 @@ internal fun UPIComponent(
                                 fontFamily = LocalSDKFonts.current.primary,
                                 fontWeight = FontWeight.Normal,
                                 fontSize   = 14.sp,
-                                color      = Color(0xFF2D2B32),
+                                color      = LocalSDKColors.current.textPrimary,
                                 modifier   = Modifier.padding(start = 6.dp)
                             )
                         }
@@ -566,7 +567,7 @@ internal fun UPIComponent(
                                 .padding(horizontal = 12.dp)
                                 .clip(RoundedCornerShape(ctaBorderRadius.dp))
                                 .background(if (upiCollectValid) buttonColor.toComposeColor()
-                                else Color(0xFFE6E6E6))
+                                else LocalSDKColors.current.divider)
                                 .clickable(enabled = upiCollectValid) {
                                     onClickUpiCollectPayButton(upiCollectTextInput, isSaveInstrumentCheckBoxClicked.value)
                                 },
@@ -586,7 +587,7 @@ internal fun UPIComponent(
                     methodFlags.isUPICollectVisible || methodFlags.isUPIOtmCollectVisible
                 ) {
                     HorizontalDivider(
-                        color    = Color(0xFFE6E6E6),
+                        color    = LocalSDKColors.current.divider,
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                     )
                 }
@@ -637,13 +638,15 @@ internal fun UPIComponent(
                             text       = "Scan & Pay with UPI Application",
                             fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Normal,
-                            fontSize   = 14.sp
+                            fontSize   = 14.sp,
+                            color      = LocalSDKColors.current.textPrimary,
                         )
                         Text(
                             text       = "QR code will expire in",
                             fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Normal,
-                            fontSize   = 14.sp
+                            fontSize   = 14.sp,
+                            color      = LocalSDKColors.current.textPrimary,
                         )
                         Text(
                             text       = formatTime(remainingTime),
@@ -678,6 +681,7 @@ internal fun UPIComponent(
                 Image(
                     painter            = painterResource(Res.drawable.chervon_down),
                     contentDescription = null,
+                    colorFilter        = ColorFilter.tint(LocalSDKColors.current.textSecondary),
                     modifier           = Modifier
                         .size(width = 20.dp, height = 30.dp)
                         .rotate(rotation)
@@ -720,7 +724,7 @@ private fun UpiIntentItem(
             fontSize   = 12.sp,
             fontFamily = LocalSDKFonts.current.primary,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-            color      = if (isSelected) buttonColor.toComposeColor() else Color.Black
+            color      = if (isSelected) buttonColor.toComposeColor() else LocalSDKColors.current.textPrimary
         )
     }
 }
@@ -765,6 +769,7 @@ internal fun UpiExpandableHeader(
         Image(
             painter            = painterResource(Res.drawable.chervon_down),
             contentDescription = null,
+                    colorFilter        = ColorFilter.tint(LocalSDKColors.current.textSecondary),
             modifier           = Modifier
                 .size(width = 20.dp, height = 30.dp)
                 .rotate(rotation)

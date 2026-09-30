@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -201,7 +202,7 @@ internal fun AppNavHost(
         mutableStateOf("")
     }
 
-    Column (modifier = Modifier.fillMaxSize()) {
+    Column (modifier = Modifier.fillMaxSize().background(LocalSDKColors.current.background)) {
         BackHandler {
             callSDKPaymentResponse()
         }

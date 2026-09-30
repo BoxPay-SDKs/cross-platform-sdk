@@ -44,7 +44,7 @@ internal fun MorePaymentContainer(
             .clip(RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
-                color = Color(0xFFE6E6E6),
+                color = LocalSDKColors.current.divider,
                 RoundedCornerShape(12.dp)
             )
             .background(Color.White)
@@ -76,7 +76,7 @@ internal fun MorePaymentContainer(
                         modifier = Modifier
                             .size(32.dp)
                             .background(
-                                color = Color(0xFFE6E6E6),
+                                color = LocalSDKColors.current.divider,
                                 RoundedCornerShape(12.dp)
                             )
                     )
@@ -95,7 +95,8 @@ internal fun MorePaymentContainer(
                 text     = title,
                 fontSize = 14.sp,
                 fontFamily = LocalSDKFonts.current.primary,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                color    = LocalSDKColors.current.textPrimary
             )
 //            if (surchargeFee != 0.0 && surchargeFee != null) {
 //                Text(

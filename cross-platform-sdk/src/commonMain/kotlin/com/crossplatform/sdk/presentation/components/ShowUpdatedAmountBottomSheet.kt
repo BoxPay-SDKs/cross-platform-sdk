@@ -90,7 +90,7 @@ internal fun ShowUpdateAmountBottomSheet(
                 text = stringResource(Res.string.order_summary_info),
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
-                color = Color(0xFF010102),
+                color = LocalSDKColors.current.textPrimary,
                 modifier = Modifier.padding(bottom = 12.dp, start = 12.dp, end = 16.dp)
             )
 
@@ -107,7 +107,7 @@ internal fun ShowUpdateAmountBottomSheet(
                     fontWeight = FontWeight.Normal,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontSize = 14.sp,
-                    color = Color(0xFF010102)
+                    color = LocalSDKColors.current.textPrimary
                 )
                 Text(
                     text  = buildAnnotatedString {
@@ -129,7 +129,7 @@ internal fun ShowUpdateAmountBottomSheet(
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp,
                     fontFamily = LocalSDKFonts.current.primary,
-                    color = Color(0xFF010102)
+                    color = LocalSDKColors.current.textPrimary
                 )
             }
 
@@ -159,7 +159,7 @@ internal fun ShowUpdateAmountBottomSheet(
                     text = stringResource(Res.string.total_info),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
-                    color = Color(0xFF010102),
+                    color = LocalSDKColors.current.textPrimary,
                     fontFamily = LocalSDKFonts.current.primary
                 )
                 Text(
@@ -182,7 +182,7 @@ internal fun ShowUpdateAmountBottomSheet(
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = LocalSDKFonts.current.primary,
                     fontSize = 16.sp,
-                    color = Color(0xFF010102)
+                    color = LocalSDKColors.current.textPrimary
                 )
             }
             PayButton(

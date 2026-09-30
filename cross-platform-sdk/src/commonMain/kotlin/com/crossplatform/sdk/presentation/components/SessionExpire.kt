@@ -87,7 +87,7 @@ internal fun SessionExpire(
                 fontSize   = 14.sp,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
-                color      = Color.Black,
+                color      = LocalSDKColors.current.textSecondary,
                 textAlign  = TextAlign.Left,
                 lineHeight = 20.sp,
                 modifier   = Modifier.padding(top = 8.dp, bottom = 16.dp)

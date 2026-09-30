@@ -115,7 +115,7 @@ internal fun BankComponent(
                     )
                     .border(
                         width = 1.dp,
-                        color = Color(0xFFE6E6E6),
+                        color = LocalSDKColors.current.divider,
                         RoundedCornerShape(12.dp)
                     )
             ) {
@@ -146,7 +146,7 @@ internal fun BankComponent(
                     )
                     if(index != list.lastIndex) {
                         HorizontalDivider(
-                            color     = Color(0xFFECECED),
+                            color     = LocalSDKColors.current.divider,
                             thickness = 1.dp,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )

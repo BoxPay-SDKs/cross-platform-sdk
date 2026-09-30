@@ -66,7 +66,7 @@ internal fun KnowMoreBottomSheet(
                 text       = stringResource(Res.string.rbi_guidelines_header),
                 fontSize   = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = Color(0xFF2D2B32),
+                color      = LocalSDKColors.current.textPrimary,
                 fontFamily = LocalSDKFonts.current.primary
             )
 
@@ -74,7 +74,7 @@ internal fun KnowMoreBottomSheet(
             Text(
                 text     = stringResource(Res.string.rbi_guidelines_desc),
                 fontSize = 14.sp,
-                color    = Color(0xFF2D2B32),
+                color    = LocalSDKColors.current.textPrimary,
                 modifier = Modifier.padding(top = 12.dp),
                 fontFamily = LocalSDKFonts.current.primary
             )
@@ -129,7 +129,7 @@ private fun InfoRow(
         Text(
             text     = text,
             fontSize = 14.sp,
-            color    = Color(0xFF2D2B32),
+            color    = LocalSDKColors.current.textPrimary,
             fontFamily = LocalSDKFonts.current.primary
         )
     }

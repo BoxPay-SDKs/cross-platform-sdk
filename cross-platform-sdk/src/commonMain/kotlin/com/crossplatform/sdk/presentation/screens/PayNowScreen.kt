@@ -467,7 +467,7 @@ private fun QrTimer(
         modifier = Modifier
             .wrapContentWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFF3F4F6))
+            .background(LocalSDKColors.current.surface)
             .padding(vertical = 18.dp, horizontal = 16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -518,7 +518,7 @@ private fun HowToPay() {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFF3F4F6))
+            .background(LocalSDKColors.current.surface)
             .padding(
                 horizontal = 20.dp,
                 vertical = 12.dp

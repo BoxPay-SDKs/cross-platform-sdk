@@ -37,7 +37,7 @@ internal fun EmptyListView(
             .padding(horizontal = 16.dp)
             .border(
                 width = 1.dp,
-                color = Color(0xFFF1F1F1),
+                color = LocalSDKColors.current.surface,
                 shape = RoundedCornerShape(12.dp)
             )
             .background(Color.White, RoundedCornerShape(12.dp)),

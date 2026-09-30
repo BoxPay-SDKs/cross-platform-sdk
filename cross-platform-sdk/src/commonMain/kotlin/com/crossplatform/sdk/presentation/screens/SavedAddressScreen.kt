@@ -86,10 +86,10 @@ internal fun SavedAddressScreen(
                             .padding(16.dp)
                             .border(
                                 width = 1.dp,
-                                color = Color(0xFFE6E6E6),
+                                color = LocalSDKColors.current.divider,
                                 RoundedCornerShape(12.dp)
                             )
-                            .background(Color.White, RoundedCornerShape(12.dp))
+                            .background(LocalSDKColors.current.background, RoundedCornerShape(12.dp))
                             .clickable { onProceedAddNewAddress() }
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -113,6 +113,7 @@ internal fun SavedAddressScreen(
                         Image(
                             painter            = painterResource(Res.drawable.chervon_down),
                             contentDescription = null,
+                    colorFilter        = ColorFilter.tint(LocalSDKColors.current.textSecondary),
                             modifier           = Modifier
                                 .size(width = 20.dp, height = 30.dp)
                                 .rotate(-90f)
@@ -142,6 +143,9 @@ internal fun SavedAddressScreen(
                         selectedCtaColor = buttonColor,
                         editAddressIcon = Res.drawable.ic_more
                     )
+                }
+                item {
+                    Footer()
                 }
                 item {
                     Footer()

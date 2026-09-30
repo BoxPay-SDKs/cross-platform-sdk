@@ -372,7 +372,7 @@ internal fun SubscriptionRow(
         Text(
             text = heading,
             fontFamily = LocalSDKFonts.current.primary,
-            color = Color(0xFF2D2B32)
+            color = LocalSDKColors.current.textPrimary
         )
         Text(
             text = if(heading.contains("amount", true) || heading.contains("paid", true)) {buildAnnotatedString {
@@ -405,7 +405,7 @@ internal fun SubscriptionRow(
                     append(value)
                 }
             },
-            color = Color(0xFF2D2B32)
+            color = LocalSDKColors.current.textPrimary
         )
     }
 }

@@ -30,9 +30,9 @@ internal fun Modifier.shimmerEffect(): Modifier = composed {
     )
 
     val shimmerColors = listOf(
-        Color(0xFFE0E0E0),
-        Color(0xFFF5F5F5),
-        Color(0xFFE0E0E0),
+        LocalSDKColors.current.divider,
+        LocalSDKColors.current.surface,
+        LocalSDKColors.current.divider,
     )
 
     val brush = Brush.linearGradient(

@@ -8,9 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.chervon_down
@@ -21,6 +23,7 @@ internal fun ChevronIcon() {
     Image(
         painter = painterResource(Res.drawable.chervon_down),
         contentDescription = null,
+        colorFilter = ColorFilter.tint(LocalSDKColors.current.textSecondary),
         modifier = Modifier
             .padding(bottom = 10.dp)
             .size(width = 30.dp, height = 30.dp)
@@ -36,6 +39,7 @@ internal fun SectionTitle(title: String) {
         fontFamily = LocalSDKFonts.current.primary,
         fontWeight = FontWeight.SemiBold,
         fontSize   = 14.sp,
+        color      = LocalSDKColors.current.textPrimary,
         modifier   = Modifier.padding(bottom = 8.dp, start = 16.dp, end = 16.dp, top = 16.dp)
     )
 }

@@ -92,7 +92,8 @@ internal fun AddressComponent(
                         },
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
-                        fontSize   = 14.sp
+                        fontSize   = 14.sp,
+                        color      = LocalSDKColors.current.textPrimary,
                     )
                     Text(
                         text       = address,
@@ -100,7 +101,8 @@ internal fun AddressComponent(
                         fontWeight = FontWeight.SemiBold,
                         fontSize   = 14.sp,
                         maxLines   = 1,
-                        overflow   = TextOverflow.Ellipsis
+                        overflow   = TextOverflow.Ellipsis,
+                        color      = LocalSDKColors.current.textPrimary,
                     )
                 }
 
@@ -154,7 +156,8 @@ internal fun AddressComponent(
                                 },
                                 fontFamily = LocalSDKFonts.current.primary,
                                 fontWeight = FontWeight.Medium,
-                                fontSize   = 14.sp
+                                fontSize   = 14.sp,
+                                color      = LocalSDKColors.current.textPrimary,
                             )
                         }
                         // show email only if enabled
@@ -165,7 +168,8 @@ internal fun AddressComponent(
                                 fontWeight = FontWeight.Medium,
                                 fontSize   = 14.sp,
                                 maxLines   = 1,
-                                overflow   = TextOverflow.Ellipsis
+                                overflow   = TextOverflow.Ellipsis,
+                                color      = LocalSDKColors.current.textPrimary,
                             )
                         }
                     }
@@ -191,7 +195,7 @@ internal fun AddressCard(
             .background(Color.White, RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
-                color = Color(0xFFE6E6E6),
+                color = LocalSDKColors.current.divider,
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable { onClick() }

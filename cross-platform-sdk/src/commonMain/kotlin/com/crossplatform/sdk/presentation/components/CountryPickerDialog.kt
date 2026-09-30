@@ -106,7 +106,7 @@ internal fun CountryPickerDialog(
                 )
             }
 
-            HorizontalDivider(color = Color(0xFFECECED))
+            HorizontalDivider(color = LocalSDKColors.current.divider)
 
             // --- Search ---
             OutlinedTextField(
@@ -117,14 +117,14 @@ internal fun CountryPickerDialog(
                         text       = stringResource(Res.string.select_country_text_field),
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
-                        color      = Color(0xFFADACAD)
+                        color      = LocalSDKColors.current.textSecondary
                     )
                 },
                 leadingIcon = {
                     Image(
                         painter        = painterResource(Res.drawable.ic_search),
                         contentDescription = null,
-                        colorFilter    = ColorFilter.tint(Color(0xFFADACAD))
+                        colorFilter    = ColorFilter.tint(LocalSDKColors.current.textSecondary)
                     )
                 },
                 shape    = RoundedCornerShape(8.dp),
@@ -185,7 +185,7 @@ internal fun CountryPickerDialog(
                         )
                     }
                     HorizontalDivider(
-                        color    = Color(0xFFECECED),
+                        color    = LocalSDKColors.current.divider,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }

@@ -106,7 +106,7 @@ internal fun SwipeToPayComponent(
                 ) {
                     Text(
                         text = if (toShowPersonal) stringResource(Res.string.personal_details_title) else stringResource(Res.string.shipping_address_title),
-                        color = Color(0xFF2D2B32),
+                        color = LocalSDKColors.current.textPrimary,
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -138,7 +138,7 @@ internal fun SwipeToPayComponent(
 
                 Text(
                     text = address,
-                    color = Color(0xFF7F7D83),
+                    color = LocalSDKColors.current.textSecondary,
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
@@ -193,7 +193,7 @@ internal fun SwipeToPayComponent(
                             )
                         )
                     },
-                    color = Color(0xFF2D2B32),
+                    color = LocalSDKColors.current.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -220,7 +220,7 @@ internal fun SwipeToPayComponent(
 
             Text(
                 text = stringResource(Res.string.last_used_payment_option_info),
-                color = Color(0xFF7F7D83),
+                color = LocalSDKColors.current.textSecondary,
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
@@ -253,7 +253,7 @@ internal fun SwipeToPayComponent(
                             modifier = Modifier
                                 .size(32.dp)
                                 .background(
-                                    color = Color(0xFFE6E6E6),
+                                    color = LocalSDKColors.current.divider,
                                     RoundedCornerShape(12.dp)
                                 )
                         )

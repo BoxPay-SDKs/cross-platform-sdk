@@ -48,8 +48,8 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.offer_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.remove_cta
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
-val DarkGrey = Color(0xFF333333)
 val MediumGrey = Color(0xFF616161)
 
 @Composable
@@ -70,6 +70,7 @@ internal fun OfferCard(
     onClickRemove : () -> Unit
 ) {
     val showMore = remember { mutableStateOf(false) }
+    val DarkGrey = LocalSDKColors.current.textPrimary
 
     Card(
         modifier = modifier

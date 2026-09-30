@@ -167,7 +167,7 @@ internal fun CardComponent(
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 12.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .border(1.dp, Color(0xFFE6E6E6), RoundedCornerShape(8.dp))
+                    .border(1.dp, LocalSDKColors.current.divider, RoundedCornerShape(8.dp))
                     .padding(12.dp),
                 verticalAlignment     = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -195,7 +195,8 @@ internal fun CardComponent(
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.SemiBold,
                         fontSize   = 14.sp,
-                        modifier   = Modifier.padding(start = 8.dp)
+                        modifier   = Modifier.padding(start = 8.dp),
+                        color      = LocalSDKColors.current.textPrimary,
                     )
                 }
                 Row {
@@ -225,14 +226,14 @@ internal fun CardComponent(
                         },
                         fontWeight = FontWeight.SemiBold,
                         fontSize   = 12.sp,
-                        color      = Color(0xFF2D2B32)
+                        color      = LocalSDKColors.current.textPrimary
                     )
                     Text(
                         text       = stringResource(Res.string.percent_title, percent ?: ""),
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
                         fontSize   = 12.sp,
-                        color      = Color(0xFF2D2B32)
+                        color      = LocalSDKColors.current.textPrimary
                     )
                 }
             }
@@ -396,7 +397,7 @@ internal fun CardComponent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 16.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .background(Color(0xFFE8F6F1))
+                    .background(LocalSDKColors.current.surfaceVariant)
                     .padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -404,14 +405,14 @@ internal fun CardComponent(
                     painter            = painterResource(Res.drawable.ic_info),
                     contentDescription = null,
                     modifier           = Modifier.size(20.dp),
-                    colorFilter        = ColorFilter.tint(Color(0xFF2D2B32))
+                    colorFilter        = ColorFilter.tint(LocalSDKColors.current.textPrimary)
                 )
                 Text(
                     text       = stringResource(Res.string.cvv_not_be_stored_info),
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize   = 12.sp,
-                    color      = Color(0xFF2D2B32),
+                    color      = LocalSDKColors.current.textPrimary,
                     modifier   = Modifier.padding(start = 8.dp)
                 )
             }
@@ -433,7 +434,7 @@ internal fun CardComponent(
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize   = 14.sp,
-                    color      = Color(0xFF2D2B32),
+                    color      = LocalSDKColors.current.textPrimary,
                     modifier   = Modifier.padding(start = 6.dp)
                 )
                 Text(
@@ -474,7 +475,7 @@ internal fun CardComponent(
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize   = 14.sp,
-                    color      = Color(0xFF2D2B32),
+                    color      = LocalSDKColors.current.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier   = Modifier.padding(start = 6.dp)
@@ -533,7 +534,7 @@ internal fun CardComponent(
                     .clip(RoundedCornerShape(ctaBorderRadius.dp))
                     .background(
                         if (cardValid) buttonColor.toComposeColor()
-                        else Color(0xFFE6E6E6)
+                        else LocalSDKColors.current.divider
                     )
                     .clickable(enabled = cardValid) {
                         postCardRequest(isSICheckboxChecked)
@@ -586,7 +587,8 @@ private fun CardTextField(
                 text       = label,
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
-                fontSize   = 14.sp
+                fontSize   = 14.sp,
+                color      = LocalSDKColors.current.textPrimary,
             )
         },
         isError              = isError,
@@ -618,7 +620,7 @@ private fun CardTextField(
             fontFamily = LocalSDKFonts.current.primary,
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
-            color = Color(0xFF0A090B)
+            color = LocalSDKColors.current.textPrimary
         ),
         colors = OutlinedTextFieldDefaults.colors(
             // Border
