@@ -4,16 +4,15 @@ import androidx.compose.ui.window.ComposeUIViewController
 import com.crossplatform.sdk.BoxPayCommonCheckout
 import com.crossplatform.sdk.data.handler.CommonSDKDismissHandler
 import com.crossplatform.sdk.presentation.components.LocaleManager
-import com.crossplatform.sdk.presentation.components.createSettings
 import com.crossplatform.sdk.presentation.theme.BoxPayThemeMode
 
 /**
  * KMP entry point consumed from Swift / Objective-C.
  *
  * @param themeMode Controls the colour scheme the SDK uses.
- *   Pass [BoxPayThemeMode.LIGHT], [BoxPayThemeMode.DARK], or
+ *   Pass [BoxPayThemeMode.DEFAULT], [BoxPayThemeMode.DARK], or
  *   [BoxPayThemeMode.SYSTEM] (default – follows the device dark-mode setting).
- *   Use [BoxPayThemeMode.LIGHT] or [BoxPayThemeMode.DARK] when your app manages
+ *   Use [BoxPayThemeMode.DEFAULT] or [BoxPayThemeMode.DARK] when your app manages
  *   its own theme and does not rely on the system setting.
  */
 fun BoxPayViewController(
@@ -33,7 +32,7 @@ fun BoxPayViewController(
     themeMode: BoxPayThemeMode = BoxPayThemeMode.SYSTEM,
 ) = ComposeUIViewController {
     CommonSDKDismissHandler.setCloseSDK { onDismiss() }
-    val localeManager = LocaleManager(createSettings())
+    val localeManager = LocaleManager()
     BoxPayCommonCheckout(
         token = token,
         isTestEnv = isTestEnv,

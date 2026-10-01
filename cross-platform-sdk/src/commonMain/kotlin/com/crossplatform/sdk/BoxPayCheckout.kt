@@ -28,7 +28,7 @@ internal fun BoxPayCommonCheckout(
     unfocusedTextInputBorderColor : String,
     fontFamily: String?,
     localeManager: LocaleManager,
-    themeMode: BoxPayThemeMode = BoxPayThemeMode.SYSTEM,
+    themeMode: BoxPayThemeMode = BoxPayThemeMode.DEFAULT,
 ) {
     KoinApplication(
         application = {

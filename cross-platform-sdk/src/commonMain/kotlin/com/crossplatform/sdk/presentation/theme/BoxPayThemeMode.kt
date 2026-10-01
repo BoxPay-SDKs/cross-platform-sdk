@@ -3,7 +3,7 @@ package com.crossplatform.sdk.presentation.theme
 /**
  * Controls which colour scheme the BoxPay SDK renders with.
  *
- * - [LIGHT]  – always light, regardless of what the host app or device is using.
+ * - [DEFAULT]  – always light, regardless of what the host app or device is using.
  * - [DARK]   – always dark, regardless of what the host app or device is using.
  * - [SYSTEM] – follows the device system theme (default).  Use this when the
  *              merchant app can already detect the system theme; it guarantees
@@ -14,7 +14,7 @@ package com.crossplatform.sdk.presentation.theme
  * the merchant's choice at launch time.
  */
 enum class BoxPayThemeMode {
-    LIGHT,
+    DEFAULT,
     DARK,
     SYSTEM;
 
