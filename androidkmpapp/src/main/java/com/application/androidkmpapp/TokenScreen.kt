@@ -284,7 +284,7 @@ private fun ThemeModeSelector(
     onSelect: (BoxPayThemeMode) -> Unit,
 ) {
     val options = listOf(
-        BoxPayThemeMode.LIGHT  to "☀ Light",
+        BoxPayThemeMode.DEFAULT  to "☀ Light",
         BoxPayThemeMode.DARK   to "🌙 Dark",
         BoxPayThemeMode.SYSTEM to "⚙ System",
     )

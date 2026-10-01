@@ -18,7 +18,6 @@ import com.crossplatform.sdk.payments.AffirmSDK
 import com.crossplatform.sdk.payments.RevolutPaySDK
 import com.crossplatform.sdk.payments.RevolutPaySupport
 import com.crossplatform.sdk.presentation.components.LocaleManager
-import com.crossplatform.sdk.presentation.components.createSettings
 import com.crossplatform.sdk.presentation.theme.BoxPayThemeMode
 
 // New activity inside your SDK
@@ -43,7 +42,7 @@ class BoxPayActivity : ComponentActivity() {
         val unfocusedTextInputBorderColor = intent.getStringExtra("unfocusedTextInputBorderColor") ?: ""
         val fontFamily = intent.getStringExtra("fontFamily")
         val themeMode = BoxPayThemeMode.fromString(intent.getStringExtra("themeMode"))
-        val localeManager = LocaleManager(createSettings(applicationContext))
+        val localeManager = LocaleManager()
         enableEdgeToEdge()
 
         CommonSDKDismissHandler.setCloseSDK { finish() }

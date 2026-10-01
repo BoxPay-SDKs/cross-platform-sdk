@@ -178,7 +178,7 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
         inputFocusBorderColor = CheckoutDetailsHandler.checkoutDetails.focusedTextInputBorderColor.ifEmpty { merchantDetails.checkoutTheme.focusedTextInputBorderColor },
         ctaTextFontSize = ctaTextSizeInt,
         acceptedCardList = acceptedCardsList,
-        isMultipleLanguageSupported = merchantDetails.enableLocalisation
+        isMultipleLanguageSupported = merchantDetails.enableLocalisation ?: false
     )
 
     val orderDetails: MainScreenModel.OrderDetails? = this.paymentDetails.order?.let { order ->

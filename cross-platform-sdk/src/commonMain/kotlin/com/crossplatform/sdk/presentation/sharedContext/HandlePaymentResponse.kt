@@ -47,7 +47,23 @@ internal suspend fun handlePaymentResponse(
                             onSetPaymentHtml?.invoke(action.htmlPageString ?: "")
                         }
                         else if (action.type == "redirect"  && secondAction == null) {
-                            onSetPaymentUrl?.invoke(action.url ?: "")
+                            val method = action.method ?: "POST"
+                            if (method.uppercase() == "POST" && !action.data.isNullOrEmpty()) {
+                                // Build a self-submitting HTML form — exactly what React does
+                                val fields = action.data.entries.joinToString("\n") { (k, v) ->
+                                    """<input type="hidden" name="$k" value="$v"/>"""
+                                }
+                                val html = """
+                                    <html><body onload="document.forms[0].submit()">
+                                      <form method="POST" action="${action.url}">
+                                        $fields
+                                      </form>
+                                    </body></html>
+                                """.trimIndent()
+                                onSetPaymentHtml?.invoke(html)    // reuse the existing html path
+                            } else {
+                                onSetPaymentUrl?.invoke(action.url ?: "")   // GET — safe as-is
+                            }
                         }
                         else if (action.type == "appRedirect"  && secondAction == null) {
                             onOpenUpiIntent?.invoke(action.url ?: "")

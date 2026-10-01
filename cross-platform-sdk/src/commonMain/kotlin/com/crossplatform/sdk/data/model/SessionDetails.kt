@@ -127,7 +127,7 @@ internal data class MerchantDetails(
     @SerialName("logoUrl") val merchantLogo : String?,
     @SerialName("checkoutTheme") val checkoutTheme: CheckoutTheme,
     @SerialName("customFields") val customFields : List<CustomFields>? = null,
-    @SerialName("enableLocalisation") val enableLocalisation : Boolean
+    @SerialName("enableLocalisation") val enableLocalisation : Boolean? = null
 )
 
 @Serializable

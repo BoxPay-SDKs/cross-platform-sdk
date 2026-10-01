@@ -97,7 +97,7 @@ private val sdkDarkColorScheme = darkColorScheme(
  * Material3 components) use the correct colour scheme.
  *
  * Resolution order:
- * 1. [BoxPayThemeMode.LIGHT] → always [SDKLightColors]
+ * 1. [BoxPayThemeMode.DEFAULT] → always [SDKLightColors]
  * 2. [BoxPayThemeMode.DARK]  → always [SDKDarkColors]
  * 3. [BoxPayThemeMode.SYSTEM] → follows [isSystemInDarkTheme]
  */
@@ -107,7 +107,7 @@ internal fun SDKThemeProvider(
     content: @Composable () -> Unit,
 ) {
     val useDark = when (themeMode) {
-        BoxPayThemeMode.LIGHT  -> false
+        BoxPayThemeMode.DEFAULT  -> false
         BoxPayThemeMode.DARK   -> true
         BoxPayThemeMode.SYSTEM -> isSystemInDarkTheme()
     }

@@ -29,7 +29,8 @@ internal data class PaymentActions(
     @SerialName("token") val token : String? = null,
     @SerialName("expirySec") val expirySec : Int? = null,
     @SerialName("minLength") val minLength : Int? = null,
-    @SerialName("maxLength") val maxLength: Int? = null
+    @SerialName("maxLength") val maxLength: Int? = null,
+    @SerialName("data") val data: Map<String, String>? = null
 )
 
 @Serializable
