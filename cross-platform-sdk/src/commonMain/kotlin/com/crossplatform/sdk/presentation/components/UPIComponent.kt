@@ -272,7 +272,7 @@ internal fun UPIComponent(
             Spacer(Modifier.padding(vertical = 6.dp))
             // --- UPI Intent ---
             if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) {
-                if(installed.value.isNotEmpty()) {
+                if(installed.value.isNotEmpty() || !getDeviceDetails().browser.equals("ios", true)) {
                     UpiExpandableHeader(
                         icon        = Res.drawable.other_intent_icon, // swap for whatever icon you want here
                         label       = stringResource(Res.string.pay_via_upi_apps_title),
@@ -585,8 +585,8 @@ internal fun UPIComponent(
 
             // --- UPI QR (Tablet only) ---
             if ((methodFlags.isUPIQRVisible || methodFlags.isUPIOtmQRVisible) && isTablet) {
-                if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible ||
-                    methodFlags.isUPICollectVisible || methodFlags.isUPIOtmCollectVisible
+                if (((methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) && installed.value.isNotEmpty()) ||
+                    (methodFlags.isUPICollectVisible || methodFlags.isUPIOtmCollectVisible)
                 ) {
                     HorizontalDivider(
                         color    = LocalSDKColors.current.divider,
