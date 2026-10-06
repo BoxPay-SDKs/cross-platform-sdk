@@ -343,7 +343,7 @@ internal fun AppNavHost(
                             screenName = "App nav host",
                             message = "Address Updated successfully"
                         )
-                        navController.popBackStack()
+                        navController.popBackStack(Routes.MainScreen.route, inclusive = false)
                     },
                     onBackPress = {
                         navController.popBackStack()

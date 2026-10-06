@@ -133,6 +133,7 @@ internal fun UPIComponent(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val isTablet = isTabletDevice()
+    val isIosDevice = getDeviceDetails().browser.equals("ios", true)
     var upiCollectTextInput  by remember { mutableStateOf("") }
     var upiCollectError      by remember { mutableStateOf(false) }
     var upiCollectValid      by remember { mutableStateOf(false) }
@@ -272,7 +273,7 @@ internal fun UPIComponent(
             Spacer(Modifier.padding(vertical = 6.dp))
             // --- UPI Intent ---
             if (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) {
-                if(installed.value.isNotEmpty() || !getDeviceDetails().browser.equals("ios", true)) {
+                if(installed.value.isNotEmpty() || !isIosDevice) {
                     UpiExpandableHeader(
                         icon        = Res.drawable.other_intent_icon, // swap for whatever icon you want here
                         label       = stringResource(Res.string.pay_via_upi_apps_title),
@@ -424,7 +425,7 @@ internal fun UPIComponent(
 //                        }
 //                    )
 //                }
-                        if(!getDeviceDetails().browser.equals("ios", true)) {
+                        if(!isIosDevice) {
                             UpiIntentItem(
                                 label       = "Others",
                                 icon        = Res.drawable.other_intent_icon,
@@ -464,7 +465,7 @@ internal fun UPIComponent(
 
             // --- UPI Collect ---
             if (methodFlags.isUPICollectVisible || methodFlags.isUPIOtmCollectVisible) {
-                val showDivider = (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) && (installed.value.isNotEmpty())
+                val showDivider = (methodFlags.isUPIIntentVisible || methodFlags.isUPIOtmIntentVisible) && (installed.value.isNotEmpty() || !isIosDevice)
                 if (showDivider) {
                     HorizontalDivider(
                         color    = LocalSDKColors.current.divider,
