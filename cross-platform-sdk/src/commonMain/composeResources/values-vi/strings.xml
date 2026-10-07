@@ -149,7 +149,7 @@
     <string name="offer_available">Có %1$d ưu đãi</string>
     <string name="native_otp_page_timer">Trang này sẽ hết hạn sau %1$s</string>
     <string name="offer_info">Áp dụng cho tất cả giao dịch thực hiện bằng %1$s</string>
-    <string name="extra_applied_as_surcharge">Đã áp dụng phụ phí %1$s %1$d</string>
+    <string name="extra_applied_as_surcharge">Đã áp dụng phụ phí %1$s %2$d</string>
     <string name="mobile_number">Di động: %1$s</string>
     <string name="confirm_to_delete_card_header">Bạn có chắc chắn muốn xóa thẻ %1$s đã lưu không?</string>
 

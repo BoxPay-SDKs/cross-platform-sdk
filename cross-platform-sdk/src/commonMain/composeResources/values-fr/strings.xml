@@ -149,7 +149,7 @@
     <string name="offer_available">%1$d offres disponibles</string>
     <string name="native_otp_page_timer">Cette page expirera dans %1$s</string>
     <string name="offer_info">Applicable sur toutes les transactions effectuées avec %1$s</string>
-    <string name="extra_applied_as_surcharge">%1$s %1$d appliqué en supplément</string>
+    <string name="extra_applied_as_surcharge">%1$s %2$d appliqué en supplément</string>
     <string name="mobile_number">Mobile : %1$s</string>
     <string name="confirm_to_delete_card_header">Voulez-vous vraiment supprimer la carte %1$s enregistrée ?</string>
 

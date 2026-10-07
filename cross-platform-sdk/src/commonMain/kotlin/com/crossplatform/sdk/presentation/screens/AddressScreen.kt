@@ -47,12 +47,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.CustomFields
+import com.crossplatform.sdk.domain.model.CountryDetailsModel
 import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.ChevronIcon
 import com.crossplatform.sdk.presentation.ErrorText
 import com.crossplatform.sdk.presentation.components.CountryPickerDialog
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.PayButton
+import com.crossplatform.sdk.presentation.loadCountryData
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -106,7 +108,10 @@ internal fun AddressScreen(
     val phoneCode = UserDataHandler.phoneCodeFlow.collectAsStateWithLifecycle()
     val completePhoneNumber = UserDataHandler.completePhoneNumberFlow.collectAsStateWithLifecycle()
     val customFields = UserDataHandler.customFieldsFlow.collectAsStateWithLifecycle()
-    
+    val labelFlow = UserDataHandler.labelFlow.collectAsStateWithLifecycle()
+
+    val countryData = remember { mutableStateOf<Map<String, CountryDetailsModel>>(emptyMap()) }
+
     val focusedBorderColor = CheckoutDetailsHandler.focusedBorderColorFlow.collectAsStateWithLifecycle()
     val unfocusedBorderColor = CheckoutDetailsHandler.unfocusedBorderColorFlow.collectAsStateWithLifecycle()
     val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
@@ -172,6 +177,8 @@ internal fun AddressScreen(
 
     // --- Pre-fill fields ---
     LaunchedEffect(Unit) {
+        countryData.value = loadCountryData()
+
         val firstName = firstName.value ?: ""
         val lastName  = lastName.value ?: ""
         fullNameTextField         = "$firstName $lastName".trim()
@@ -182,12 +189,31 @@ internal fun AddressScreen(
         stateTextField            = state ?: ""
         pinTextField              = pincode ?: ""
         selectedCountryCode       = countryCode ?: "IN"
-        selectedPhoneCode = phoneCode.value
-        countryTextField  = countryName ?: "India"
+        countryTextField          = countryName ?: "India"
 
-        val rawNumber = completePhoneNumber.value
-            ?.removePrefix(selectedPhoneCode) ?: ""
-        phoneNumberTextField = rawNumber
+        // --- mirrors handlePhoneDialCode ---
+        val raw = completePhoneNumber.value ?: ""
+
+        // 1. Normalize: ensure the number starts with "+"
+        val normalizedPhone = when {
+            raw.startsWith("+") -> raw
+            raw.isNotEmpty()    -> "+$raw"
+            else                -> ""
+        }
+
+        val matchedCountry = countryData.value.values.find { country ->
+            normalizedPhone.startsWith(country.isdCode)
+        }
+
+        val localNumber = if (matchedCountry != null)
+            normalizedPhone.removePrefix(matchedCountry.isdCode)
+        else
+            normalizedPhone
+
+        selectedPhoneCode    = matchedCountry?.isdCode
+            ?: "+91"
+
+        phoneNumberTextField = localNumber
     }
 
     val customFieldValues = remember { mutableStateMapOf<String, String>() }
@@ -296,7 +322,7 @@ internal fun AddressScreen(
     fun validatePin(text: String) {
         when {
             text.trim().isEmpty() -> { pinError = requiredErrorMessage; isPinValid = false }
-            selectedPhoneCode == "+91" && text.length < 6 -> {
+            selectedCountryCode == "IN" && text.length < 6 -> {
                 pinError = postalCodeErrorMessage; isPinValid = false
             }
             else -> { pinError = ""; isPinValid = true }
@@ -585,8 +611,8 @@ internal fun AddressScreen(
                             city                = cityTextField,
                             state               = stateTextField,
                             pincode             = pinTextField,
-                            labelType           =  "",
-                            labelName           = "",
+                            labelType           =  labelFlow.value.first,
+                            labelName           = labelFlow.value.second,
                             uniqueId            = uniqueId.value,
                             dob                 = null,
                             pan                 = null
@@ -618,7 +644,6 @@ internal fun AddressScreen(
             unfocusedBorderColor = unfocusedBorderColor.value,
             onSelect  = { code, isdCode, fullName, phoneLengths ->
                 selectedCountryCode            = code
-                selectedPhoneCode              = isdCode
                 countryTextField               = fullName
                 phoneNumberLengthList.value    = phoneLengths
                 showCountryPicker              = false

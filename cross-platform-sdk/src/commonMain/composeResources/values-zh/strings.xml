@@ -149,7 +149,7 @@
     <string name="offer_available">%1$d 个优惠可用</string>
     <string name="native_otp_page_timer">此页面将在 %1$s 后过期</string>
     <string name="offer_info">适用于通过 %1$s 进行的所有交易</string>
-    <string name="extra_applied_as_surcharge">已额外收取 %1$s %1$d 附加费</string>
+    <string name="extra_applied_as_surcharge">已额外收取 %1$s %2$d 附加费</string>
     <string name="mobile_number">手机：%1$s</string>
     <string name="confirm_to_delete_card_header">您确定要删除已保存的 %1$s 卡吗？</string>
 

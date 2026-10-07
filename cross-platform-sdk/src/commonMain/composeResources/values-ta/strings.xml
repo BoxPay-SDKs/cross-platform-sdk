@@ -149,7 +149,7 @@
     <string name="offer_available">%1$d சலுகைகள் உள்ளன</string>
     <string name="native_otp_page_timer">இந்தப் பக்கம் %1$s-இல் காலாவதியாகும்</string>
     <string name="offer_info">%1$s பயன்படுத்தி செய்யப்படும் அனைத்து பரிவர்த்தனைகளுக்கும் பொருந்தும்</string>
-    <string name="extra_applied_as_surcharge">%1$s %1$d கூடுதலாக சர்ச்சார்ஜாக பயன்படுத்தப்பட்டது</string>
+    <string name="extra_applied_as_surcharge">%1$s %2$d கூடுதலாக சர்ச்சார்ஜாக பயன்படுத்தப்பட்டது</string>
     <string name="mobile_number">மொபைல்: %1$s</string>
     <string name="confirm_to_delete_card_header">சேமிக்கப்பட்ட %1$s கார்டை நீக்க விரும்புகிறீர்களா?</string>
 
