@@ -149,7 +149,7 @@
     <string name="offer_available">%1$d penawaran tersedia</string>
     <string name="native_otp_page_timer">Halaman ini akan kedaluwarsa dalam %1$s</string>
     <string name="offer_info">Berlaku untuk semua transaksi yang dilakukan menggunakan %1$s</string>
-    <string name="extra_applied_as_surcharge">%1$s %1$d tambahan diterapkan sebagai biaya tambahan</string>
+    <string name="extra_applied_as_surcharge">%1$s %2$d tambahan diterapkan sebagai biaya tambahan</string>
     <string name="mobile_number">Ponsel: %1$s</string>
     <string name="confirm_to_delete_card_header">Apakah Anda yakin ingin menghapus Kartu %1$s yang tersimpan?</string>
 

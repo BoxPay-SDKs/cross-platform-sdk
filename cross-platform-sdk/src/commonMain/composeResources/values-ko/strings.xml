@@ -149,7 +149,7 @@
     <string name="offer_available">%1$d개 혜택 이용 가능</string>
     <string name="native_otp_page_timer">이 페이지는 %1$s 후 만료됩니다</string>
     <string name="offer_info">%1$s(으)로 진행된 모든 거래에 적용됩니다</string>
-    <string name="extra_applied_as_surcharge">추가 수수료로 %1$s %1$d 적용됨</string>
+    <string name="extra_applied_as_surcharge">추가 수수료로 %1$s %2$d 적용됨</string>
     <string name="mobile_number">휴대폰: %1$s</string>
     <string name="confirm_to_delete_card_header">저장된 %1$s 카드를 정말 삭제하시겠습니까?</string>
 

@@ -149,7 +149,7 @@
     <string name="offer_available">%1$d ऑफर्स उपलब्ध</string>
     <string name="native_otp_page_timer">हे पेज %1$s मध्ये कालबाह्य होईल</string>
     <string name="offer_info">%1$s वापरून केलेल्या सर्व व्यवहारांवर लागू</string>
-    <string name="extra_applied_as_surcharge">सरचार्ज म्हणून %1$s %1$d अतिरिक्त लागू</string>
+    <string name="extra_applied_as_surcharge">सरचार्ज म्हणून %1$s %2$d अतिरिक्त लागू</string>
     <string name="mobile_number">मोबाइल: %1$s</string>
     <string name="confirm_to_delete_card_header">तुम्हाला खरोखर सेव्ह केलेले %1$s कार्ड हटवायचे आहे का?</string>
 
