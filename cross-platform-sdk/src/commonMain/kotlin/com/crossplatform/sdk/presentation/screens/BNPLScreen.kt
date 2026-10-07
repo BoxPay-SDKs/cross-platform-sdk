@@ -47,6 +47,9 @@ internal fun BNPLScreen(
     val selectedInstrumentId = remember {
         mutableStateOf("")
     }
+    val localAmount = remember {
+        mutableStateOf(amount.value)
+    }
 
     LaunchedEffect(isAutoNavigationEnabled) {
         if(isAutoNavigationEnabled) {
@@ -81,7 +84,7 @@ internal fun BNPLScreen(
                 selectedInstrumentId = selectedInstrumentId.value,
                 onClickRadio = {id , name ->
                     selectedInstrumentId.value = id
-                    CheckoutDetailsHandler.setAmount(amount = amount.value + (surchargeList.find {
+                    CheckoutDetailsHandler.setAmount(amount = localAmount.value + (surchargeList.find {
                         it.network.replace(" ", "").equals(name.replace(" ", ""), ignoreCase = true)
                     }?.amount ?: 0.0))
                     viewModel.callUiAnalytics(

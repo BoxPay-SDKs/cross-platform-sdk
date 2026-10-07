@@ -41,6 +41,9 @@ internal fun NetBankingScreen(
     val currencyFlow = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
     val (_, currencyCode) = currencyFlow.value
     val amount = CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
+    val localAmount = remember {
+        mutableStateOf(amount.value)
+    }
     val ctaBorderRadius = CheckoutDetailsHandler.ctaBorderRadiusFlow.collectAsStateWithLifecycle()
     val isBoxPayAnimationVisible by viewModel.isBoxPayAnimationVisible.collectAsStateWithLifecycle()
     val showWebView by viewModel.showWebview.collectAsStateWithLifecycle()
@@ -82,7 +85,7 @@ internal fun NetBankingScreen(
                 selectedInstrumentId = selectedInstrumentId.value,
                 onClickRadio = {id , name ->
                     selectedInstrumentId.value = id
-                    CheckoutDetailsHandler.setAmount(amount = amount.value + (surchargeList.find {
+                    CheckoutDetailsHandler.setAmount(amount = localAmount.value + (surchargeList.find {
                         it.network.replace(" ", "").equals(name.replace(" ", ""), ignoreCase = true)
                     }?.amount ?: 0.0))
                     viewModel.callUiAnalytics(

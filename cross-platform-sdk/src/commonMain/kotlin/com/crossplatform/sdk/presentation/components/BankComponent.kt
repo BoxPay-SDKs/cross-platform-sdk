@@ -130,7 +130,9 @@ internal fun BankComponent(
                         instrumentTypeValue = provider.instrumentType,
                         isLastUsed          = false,
                         onPress             = {
-                            onClickRadio(it, provider.displayName)
+                            if(provider.id != selectedInstrumentId) {
+                                onClickRadio(it, provider.displayName)
+                            }
                         },
                         onProceedForward    = { displayValue, instrumentValue ->
                             onProceedForward(displayValue, instrumentValue, provider.type)
