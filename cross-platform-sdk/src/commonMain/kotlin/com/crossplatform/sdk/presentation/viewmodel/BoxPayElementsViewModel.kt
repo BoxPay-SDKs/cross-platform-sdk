@@ -670,7 +670,7 @@ internal class BoxPayElementsViewModel (
             cardNumberValid.value = isValidCardNumberByLuhn(cleaned)
         }
 
-        if (cleaned.length == 9) {
+        if (cleaned.length == 9 && !cleaned.startsWith("0")) {
             fetchCardDetails(cardNumber = cleaned.take(9), isTestEnv)
         }
 

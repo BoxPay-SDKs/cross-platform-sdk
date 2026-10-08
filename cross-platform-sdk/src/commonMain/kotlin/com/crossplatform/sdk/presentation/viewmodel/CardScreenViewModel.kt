@@ -172,7 +172,7 @@ internal class CardScreenViewModel(
         if (cleaned.length == 16 || (cleaned.length == 15 && maxCardNumberLength.value == 18)) {
             cardNumberValid.value = isValidCardNumberByLuhn(cleaned)
         }
-        if (cleaned.length >= 9) {
+        if (cleaned.length >= 9 && !cleaned.startsWith("0")) {
             val bin = cleaned.take(9)
             if (bin != lastFetchedBin) {
                 lastFetchedBin = bin
