@@ -1,12 +1,17 @@
 package com.crossplatform.sdk.presentation.screens
 
+import android.app.AlertDialog
 import android.graphics.Bitmap
 import android.webkit.CookieManager
+import android.webkit.JsResult
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -54,15 +59,21 @@ internal actual fun WebViewScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         // ── Top bar: back icon + URL bar ─────────────────────────────
-        IconButton(onClick = {
-            onBackPress("")
-        }) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                modifier = Modifier.size(24.dp),
-                tint = Color.Black
-            )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White),        // solid background blocks WebView content behind it
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { onBackPress("") }) {
+                Icon(
+                    imageVector        = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    modifier           = Modifier.size(24.dp),
+                    tint               = Color.Black
+                )
+            }
         }
         WebViewUrlBar(currentUrl = state.currentUrl)
 
@@ -114,6 +125,38 @@ internal actual fun WebViewScreen(
                             request: WebResourceRequest,
                         ): Boolean {
                             return false
+                        }
+                    }
+
+                    webView.webChromeClient = object : WebChromeClient() {
+                        override fun onJsConfirm(
+                            view: WebView,
+                            url: String?,
+                            message: String?,
+                            result: JsResult
+                        ): Boolean {
+                            AlertDialog.Builder(context)
+                                .setMessage(message)
+                                .setPositiveButton("OK") { _, _ -> result.confirm() }
+                                .setNegativeButton("Cancel") { _, _ -> result.cancel() }
+                                .setOnCancelListener { result.cancel() }   // handles back-press on dialog
+                                .show()
+                            return true   // ← tells WebView "we handled it, don't drop it"
+                        }
+
+                        // Optional but good to have — prevents silent drops of alert/prompt too
+                        override fun onJsAlert(
+                            view: WebView,
+                            url: String?,
+                            message: String?,
+                            result: JsResult
+                        ): Boolean {
+                            AlertDialog.Builder(context)
+                                .setMessage(message)
+                                .setPositiveButton("OK") { _, _ -> result.confirm() }
+                                .setOnCancelListener { result.confirm() }
+                                .show()
+                            return true
                         }
                     }
                     when {

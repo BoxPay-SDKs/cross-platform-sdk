@@ -27,9 +27,19 @@ import platform.WebKit.WKNavigationDelegateProtocol
 import platform.WebKit.WKWebView
 import platform.darwin.NSObject
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import platform.UIKit.UIAlertAction
+import platform.UIKit.UIAlertActionStyleCancel
+import platform.UIKit.UIAlertActionStyleDefault
+import platform.UIKit.UIAlertController
+import platform.UIKit.UIAlertControllerStyleAlert
+import platform.UIKit.UIApplication
+import platform.WebKit.WKFrameInfo
+import platform.WebKit.WKUIDelegateProtocol
 
 @Composable
 internal actual fun WebViewScreen(
@@ -101,13 +111,79 @@ internal actual fun WebViewScreen(
         }
     }
 
+    //Alert Dialog delegate
+    val uiDelegate = remember {
+        object : NSObject(), WKUIDelegateProtocol {
+
+            // JS confirm() → "Are you sure to cancel this transaction?"
+            override fun webView(
+                webView: WKWebView,
+                runJavaScriptConfirmPanelWithMessage: String,
+                initiatedByFrame: WKFrameInfo,
+                completionHandler: (Boolean) -> Unit
+            ) {
+                val alert = UIAlertController.alertControllerWithTitle(
+                    title          = null,
+                    message        = runJavaScriptConfirmPanelWithMessage,
+                    preferredStyle = UIAlertControllerStyleAlert
+                )
+                alert.addAction(
+                    UIAlertAction.actionWithTitle(
+                        title   = "OK",
+                        style   = UIAlertActionStyleDefault,
+                        handler = { completionHandler(true) }
+                    )
+                )
+                alert.addAction(
+                    UIAlertAction.actionWithTitle(
+                        title   = "Cancel",
+                        style   = UIAlertActionStyleCancel,
+                        handler = { completionHandler(false) }
+                    )
+                )
+                UIApplication.sharedApplication.keyWindow
+                    ?.rootViewController
+                    ?.presentViewController(alert, animated = true, completion = null)
+            }
+
+            // JS alert()
+            override fun webView(
+                webView: WKWebView,
+                runJavaScriptAlertPanelWithMessage: String,
+                initiatedByFrame: WKFrameInfo,
+                completionHandler: () -> Unit
+            ) {
+                val alert = UIAlertController.alertControllerWithTitle(
+                    title          = null,
+                    message        = runJavaScriptAlertPanelWithMessage,
+                    preferredStyle = UIAlertControllerStyleAlert
+                )
+                alert.addAction(
+                    UIAlertAction.actionWithTitle(
+                        title   = "OK",
+                        style   = UIAlertActionStyleDefault,
+                        handler = { completionHandler() }
+                    )
+                )
+                UIApplication.sharedApplication.keyWindow
+                    ?.rootViewController
+                    ?.presentViewController(alert, animated = true, completion = null)
+            }
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
 
         // ── Top bar: back icon + URL bar ─────────────────────────────
-        IconButton(onClick = {
-            onBackPress("")
-        }) {
-            BackArrowIcon()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { onBackPress("") }) {
+                BackArrowIcon()
+            }
         }
         WebViewUrlBar(currentUrl = state.currentUrl)
 

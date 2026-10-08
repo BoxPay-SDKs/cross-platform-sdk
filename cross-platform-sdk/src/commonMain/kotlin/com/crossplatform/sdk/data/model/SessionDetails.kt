@@ -149,8 +149,8 @@ internal data class CheckoutTheme(
     @SerialName("buttonTextColor") val buttonTextColor: String,
     @SerialName("headerColor") val headerColor: String,
     @SerialName("headerTextColor") val headerTextColor: String,
-    @SerialName("inputBorderColor") val focusedTextInputBorderColor: String,
-    @SerialName("inputFocusBorderColor") val unfocusedTextInputBorderColor: String,
+    @SerialName("inputFocusBorderColor") val focusedTextInputBorderColor: String,
+    @SerialName("inputBorderColor") val unfocusedTextInputBorderColor: String,
     @SerialName("payBtnFontSize") val payButtonFontSize : String,
     @SerialName("font") val font : String,
     @SerialName("payBtnBorderRadius") val payButtonBorderRadius : String

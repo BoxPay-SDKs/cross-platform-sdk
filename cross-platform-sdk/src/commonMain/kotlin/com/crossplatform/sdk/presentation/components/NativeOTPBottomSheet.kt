@@ -119,6 +119,10 @@ internal fun NativeOTPBottomSheet(
     val accentColor = buttonColor.value.toComposeColor()
     var contentHeightPx by remember { mutableStateOf(0) }
     val density = LocalDensity.current
+    val resendCount = remember { mutableStateOf(0) }
+    val cooldownSecondsLeft = remember { mutableStateOf(0) }
+    val resendExhausted = resendCount.value >= MAX_RESEND_ATTEMPTS
+    val resendEnabled = !resendExhausted && cooldownSecondsLeft.value <= 0
 
     val cardSelectedIcon = when(cardBrand.lowercase()) {
         "visa" -> Res.drawable.ic_verified_by_visa
@@ -283,19 +287,12 @@ internal fun NativeOTPBottomSheet(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // ---- Resend OTP (max 3 uses, 1 min cooldown each) ----
-                var resendCount by remember { mutableStateOf(0) }
-                var cooldownSecondsLeft by remember { mutableStateOf(0) }
-
-                LaunchedEffect(cooldownSecondsLeft > 0, resendCount) {
-                    while (isActive && cooldownSecondsLeft > 0) {
+                LaunchedEffect(cooldownSecondsLeft.value > 0, resendCount) {
+                    while (isActive && cooldownSecondsLeft.value > 0) {
                         delay(1_000)
-                        cooldownSecondsLeft -= 1
+                        cooldownSecondsLeft.value -= 1
                     }
                 }
-
-                val resendExhausted = resendCount >= MAX_RESEND_ATTEMPTS
-                val resendEnabled = !resendExhausted && cooldownSecondsLeft <= 0
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -310,8 +307,8 @@ internal fun NativeOTPBottomSheet(
                     Spacer(modifier = Modifier.width(2.dp))
                     TextButton(
                         onClick = {
-                            resendCount += 1
-                            cooldownSecondsLeft = RESEND_COOLDOWN_SECONDS
+                            resendCount.value += 1
+                            cooldownSecondsLeft.value = RESEND_COOLDOWN_SECONDS
                             if (resendEnabled) onClickResend()
                         },
                         enabled = resendEnabled
@@ -319,7 +316,7 @@ internal fun NativeOTPBottomSheet(
                         Text(
                             text = when {
                                 resendExhausted -> stringResource(Res.string.resend_otp_info)
-                                cooldownSecondsLeft > 0 -> stringResource(Res.string.resend_otp_timer, formatTime(cooldownSecondsLeft))
+                                cooldownSecondsLeft.value > 0 -> stringResource(Res.string.resend_otp_timer, formatTime(cooldownSecondsLeft.value))
                                 else -> stringResource(Res.string.resend_otp_cta)
                             },
                             fontFamily = LocalSDKFonts.current.primary,
