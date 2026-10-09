@@ -3,10 +3,18 @@ package com.crossplatform.sdk.presentation.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -37,8 +46,12 @@ import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.scan_card_camera_unavailable
 import crossplatformsdk.cross_platform_sdk.generated.resources.scan_card_cancel
+import crossplatformsdk.cross_platform_sdk.generated.resources.scan_card_error
 import crossplatformsdk.cross_platform_sdk.generated.resources.scan_card_hint
 import crossplatformsdk.cross_platform_sdk.generated.resources.scan_card_permission_denied
+import crossplatformsdk.cross_platform_sdk.generated.resources.scan_card_step1_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.scan_card_step2_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.scan_card_step3_title
 import org.jetbrains.compose.resources.stringResource
 import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
@@ -98,25 +111,41 @@ internal fun CardScanDialog(
                     drawRoundRect(accentColor, topLeft, Size(w, h), radius, style = Stroke(width = 3.dp.toPx()))
                 }
 
-                Text(
-                    text = stringResource(Res.string.scan_card_hint),
-                    color = LocalSDKColors.current.background,
-                    fontFamily = fontFamily,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.Center,
+                // Hint + how-to steps below the card frame
+                Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(start = 32.dp, end = 32.dp, bottom = 96.dp)
-                )
+                        .padding(start = 32.dp, end = 32.dp, bottom = 64.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+                    Text(
+                        text = stringResource(Res.string.scan_card_hint),
+                        color = LocalSDKColors.current.background,
+                        fontFamily = fontFamily,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(20.dp))
+                    ScanStepRow(number = "1", text = stringResource(Res.string.scan_card_step1_title), accentColor = accentColor)
+                    Spacer(Modifier.height(10.dp))
+                    ScanStepRow(number = "2", text = stringResource(Res.string.scan_card_step2_title), accentColor = accentColor)
+                    Spacer(Modifier.height(10.dp))
+                    ScanStepRow(number = "3", text = stringResource(Res.string.scan_card_step3_title), accentColor = accentColor)
+                }
             } else {
                 Text(
                     text = stringResource(
-                        if (error == CardScanError.PermissionDenied) Res.string.scan_card_permission_denied
-                        else Res.string.scan_card_camera_unavailable
+                        when (error) {
+                            CardScanError.PermissionDenied  -> Res.string.scan_card_permission_denied
+                            CardScanError.CameraUnavailable -> Res.string.scan_card_camera_unavailable
+                            null                            -> Res.string.scan_card_error
+                        }
                     ),
                     color = LocalSDKColors.current.background,
                     fontFamily = fontFamily,
-                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.Center).padding(horizontal = 32.dp)
                 )
@@ -135,5 +164,37 @@ internal fun CardScanDialog(
                     .padding(16.dp)
             )
         }
+    }
+}
+
+@Composable
+internal fun ScanStepRow(number: String, text: String, accentColor: Color) {
+    val fontFamily = LocalSDKFonts.current.primary
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(accentColor)
+        ) {
+            Text(
+                text = number,
+                color = Color.White,
+                fontFamily = fontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp
+            )
+        }
+        Text(
+            text = text,
+            color = Color.White.copy(alpha = 0.90f),
+            fontFamily = fontFamily,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(start = 12.dp)
+        )
     }
 }
