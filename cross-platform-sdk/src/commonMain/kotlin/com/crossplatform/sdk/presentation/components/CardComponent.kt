@@ -51,6 +51,8 @@ import com.crossplatform.sdk.presentation.screens.CardNumberVisualTransformation
 import com.crossplatform.sdk.presentation.screens.CheckboxItem
 import com.crossplatform.sdk.presentation.screens.ExpiryVisualTransformation
 import com.crossplatform.sdk.presentation.screens.SubscriptionRow
+import com.crossplatform.sdk.presentation.components.scanner.NfcAvailability
+import com.crossplatform.sdk.presentation.components.scanner.rememberNfcAvailability
 import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
@@ -65,8 +67,10 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.expiry_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_cvv_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_info
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_nfc_scan
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_scan_card
 import crossplatformsdk.cross_platform_sdk.generated.resources.know_more_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.nfc_scan_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.pay_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.percent_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.save_this_card_info
@@ -141,6 +145,30 @@ internal fun CardComponent(
 ) {
 //    val acceptedCardList = CheckoutDetailsHandler.acceptedCardsListFlow.collectAsStateWithLifecycle()
     var showCardScanner by remember { mutableStateOf(false) }
+    var showNfcScanner  by remember { mutableStateOf(false) }
+    // Must be called unconditionally (Compose rules) — not inside if(normalCheckout)
+    val nfcAvailability = rememberNfcAvailability()
+    val nfcAvailable    = nfcAvailability == NfcAvailability.Available
+
+    // Helper: fills card fields from any scan source (camera or NFC)
+    fun fillFromScan(card: com.crossplatform.sdk.presentation.components.scanner.ScannedCard) {
+        card.cardNumber?.let { handleCardNumberChange(it.take(maxCardNumberLength)) }
+        val month = card.expiryMonth
+        val year  = card.expiryYear
+        if (month != null && year != null) handleExpiryChange(month + year)
+        card.holderName?.let { handleCardHolderNameChange(it) }
+    }
+
+    if (showNfcScanner) {
+        NfcScanDialog(
+            accentColor = buttonColor.toComposeColor(),
+            onDismiss   = { showNfcScanner = false },
+            onScanned   = { card ->
+                showNfcScanner = false
+                fillFromScan(card)
+            }
+        )
+    }
 
     if (showCardScanner) {
         CardScanDialog(
@@ -148,15 +176,7 @@ internal fun CardComponent(
             onDismiss   = { showCardScanner = false },
             onScanned   = { card ->
                 showCardScanner = false
-                // Fed through the same handlers as typing, so brand detection, max length,
-                // validation and cardValid all behave exactly as if the user had typed it.
-                card.cardNumber?.let { handleCardNumberChange(it.take(maxCardNumberLength)) }
-                // Digits only ("MMYY"), the format the user would type into ExpiryVisualTransformation.
-                // If handleExpiryChange expects "MM/YY", change this to "${month}/${year}".
-                val month = card.expiryMonth
-                val year  = card.expiryYear
-                if (month != null && year != null) handleExpiryChange(month + year)
-                card.holderName?.let { handleCardHolderNameChange(it) }
+                fillFromScan(card)
             }
         )
     }
@@ -241,20 +261,25 @@ internal fun CardComponent(
             }
         }
 
-        // --- Scan card ---
+        // --- Scan card (camera + NFC) ---
         if (normalCheckout) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                // Camera scan button — always visible
                 Row(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
+                        .weight(1f)
+                        .border(1.dp, buttonColor.toComposeColor(), RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .clickable { showCardScanner = true }
-                        .padding(horizontal = 4.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     Image(
                         painter            = painterResource(Res.drawable.ic_scan_card),
@@ -270,6 +295,35 @@ internal fun CardComponent(
                         color      = buttonColor.toComposeColor(),
                         modifier   = Modifier.padding(start = 6.dp)
                     )
+                }
+
+                // NFC scan button — only when NFC hardware is available
+                if (nfcAvailable) {
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .border(1.dp, buttonColor.toComposeColor(), RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { showNfcScanner = true }
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Image(
+                            painter            = painterResource(Res.drawable.ic_nfc_scan),
+                            contentDescription = null,
+                            modifier           = Modifier.size(18.dp),
+                            colorFilter        = ColorFilter.tint(buttonColor.toComposeColor())
+                        )
+                        Text(
+                            text       = stringResource(Res.string.nfc_scan_cta),
+                            fontFamily = LocalSDKFonts.current.primary,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize   = 13.sp,
+                            color      = buttonColor.toComposeColor(),
+                            modifier   = Modifier.padding(start = 6.dp)
+                        )
+                    }
                 }
             }
         }
