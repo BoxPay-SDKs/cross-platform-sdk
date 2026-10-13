@@ -16,6 +16,8 @@ import platform.CoreNFC.NFCTagProtocol
 import platform.CoreNFC.NFCTagReaderSession
 import platform.CoreNFC.NFCTagReaderSessionDelegateProtocol
 import platform.Foundation.NSData
+import platform.Foundation.dataWithBytes
+import platform.darwin.DISPATCH_TIME_FOREVER
 import platform.darwin.NSObject
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_global_queue
@@ -23,7 +25,6 @@ import platform.darwin.dispatch_get_main_queue
 import platform.darwin.dispatch_semaphore_create
 import platform.darwin.dispatch_semaphore_signal
 import platform.darwin.dispatch_semaphore_wait
-import platform.posix.DISPATCH_TIME_FOREVER
 import platform.posix.QOS_CLASS_USER_INITIATED
 import platform.posix.memcpy
 
@@ -65,7 +66,7 @@ internal actual fun NfcReaderEffect(
 
         // pollingOption 0x03 = NFC_TAG_TYPE_ISO_DEP (ISO 14443-A + B — covers all payment cards)
         val session = NFCTagReaderSession(
-            pollingOption = 0x03UL,
+            pollingOption = 0x03L,
             delegate      = delegate,
             queue         = null     // nil → main queue for delegate callbacks
         ) ?: run {
@@ -262,13 +263,6 @@ private fun readEmvCard(
 // APDU builder
 // ─────────────────────────────────────────────────────────────────────────────
 
-/**
- * Wraps a raw APDU byte array into [NFCISO7816APDU].
- * Byte layout: CLA INS P1 P2 [Lc [data...] [Le]]
- *
- * Note: NFCISO7816APDU init params (instructionClass, instructionCode, p1Parameter, p2Parameter)
- * are uint8_t in ObjC, which maps to UByte in Kotlin/Native.
- */
 private fun buildApdu(bytes: ByteArray): NFCISO7816APDU? {
     if (bytes.size < 4) return null
     val cla = (bytes[0].toInt() and 0xFF).toUByte()

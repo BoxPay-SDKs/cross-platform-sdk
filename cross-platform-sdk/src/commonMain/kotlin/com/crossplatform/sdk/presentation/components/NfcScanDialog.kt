@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,7 +36,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.crossplatform.sdk.presentation.components.scanner.NfcAvailability
-import com.crossplatform.sdk.presentation.components.scanner.NfcScanError
 import com.crossplatform.sdk.presentation.components.scanner.ScannedCard
 import com.crossplatform.sdk.presentation.components.scanner.rememberNfcAvailability
 import com.crossplatform.sdk.presentation.components.scanner.NfcReaderEffect
@@ -65,7 +63,8 @@ import org.jetbrains.compose.resources.stringResource
 internal fun NfcScanDialog(
     accentColor: Color,
     onDismiss: () -> Unit,
-    onScanned: (ScannedCard) -> Unit
+    onScanned: (ScannedCard) -> Unit,
+    onShowError :() -> Unit
 ) {
     val nfcAvailability = rememberNfcAvailability()
     val fontFamily = LocalSDKFonts.current.primary
@@ -92,7 +91,10 @@ internal fun NfcScanDialog(
                             onDismiss()
                             onScanned(card)
                         },
-                        onError = { onDismiss() }
+                        onError = {
+                            onDismiss()
+                            onShowError()
+                        }
                     )
 
                     Column(
