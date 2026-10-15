@@ -58,6 +58,11 @@ internal object ServiceRequest {
                     isLenient = true
                 })
             }
+            install(HttpTimeout) {                        // ← add this block
+                requestTimeoutMillis = 60_000
+                connectTimeoutMillis = 30_000
+                socketTimeoutMillis  = 60_000
+            }
             install(DefaultRequest) {
                 url("${getEndpoint(isTestEnv)}$token/")
                 header("X-Request-Id", generateRandomAlphanumericString(10))

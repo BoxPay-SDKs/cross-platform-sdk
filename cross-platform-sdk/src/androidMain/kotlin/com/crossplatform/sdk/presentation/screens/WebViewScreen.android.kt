@@ -101,8 +101,10 @@ internal actual fun WebViewScreen(
                         domStorageEnabled = true
                     }
 
+                    // Third-party cookies required for 3DS ACS redirect chains (PayU, bank pages, etc.)
+                    // Safe because WebView URL navigation is restricted to known BoxPay domains only (BP-006)
                     CookieManager.getInstance().apply {
-                        setAcceptThirdPartyCookies(webView, true)   // ← the critical one for this flow
+                        setAcceptThirdPartyCookies(webView, true)
                     }
                     webView.webViewClient = object : WebViewClient() {
                         override fun onPageStarted(
