@@ -47,6 +47,7 @@ import com.crossplatform.sdk.payments.AffirmExecutorItem
 import com.crossplatform.sdk.payments.RevolutPayBridgeRegistry
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.refTo
 import kotlinx.cinterop.usePinned
 import org.jetbrains.skia.Image
 import platform.Foundation.NSData
@@ -67,6 +68,8 @@ import platform.PassKit.PKPaymentNetworkMasterCard
 import platform.PassKit.PKPaymentNetworkVisa
 import platform.PassKit.PKPaymentRequest
 import platform.PassKit.PKPaymentSummaryItem
+import platform.Security.SecRandomCopyBytes
+import platform.Security.kSecRandomDefault
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageWriteToSavedPhotosAlbum
 import platform.darwin.NSObject
@@ -443,4 +446,11 @@ internal actual object LocalAppLocale {
         }
         return LocalCompositionLocale.provides(newLocale)
     }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+internal actual fun generateSecureRandomBytes(length: Int): ByteArray {
+    val bytes = ByteArray(length)
+    SecRandomCopyBytes(kSecRandomDefault, length.toULong(), bytes.refTo(0))
+    return bytes
 }

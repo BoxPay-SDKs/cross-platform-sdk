@@ -70,6 +70,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
+import java.security.SecureRandom
 import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
@@ -569,4 +570,10 @@ internal actual object LocalAppLocale {
         Locale.setDefault(Locale(newLocale))
         return LocalCompositionLocale.provides(newLocale)
     }
+}
+
+internal actual fun generateSecureRandomBytes(length: Int): ByteArray {
+    val bytes = ByteArray(length)
+    SecureRandom().nextBytes(bytes)
+    return bytes
 }

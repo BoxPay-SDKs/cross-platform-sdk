@@ -187,7 +187,6 @@ android {
     buildFeatures.buildConfig  = true
     defaultConfig {
         minSdk = 21
-        buildConfigField("String", "SDK_VERSION", "\"$sdkVersion\"")  // Android
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -211,6 +210,9 @@ buildkonfig {
             "SDK_VERSION",
             sdkVersion
         )
+        buildConfigField(com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING, "PROD_API_URL", "https://apis.boxpay.in/")
+        buildConfigField(com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING, "TEST_API_URL", "https://test-apis.boxpay.tech/")
+        buildConfigField(com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING, "ROUTE", "v0/checkout/sessions/")
     }
 }
 

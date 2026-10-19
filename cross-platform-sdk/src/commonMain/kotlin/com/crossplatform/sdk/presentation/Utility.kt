@@ -1,6 +1,7 @@
 package com.crossplatform.sdk.presentation
 
 import androidx.compose.ui.graphics.Color
+import com.crossplatform.sdk.BuildKonfig
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.DeliveryAddress
@@ -14,19 +15,16 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
-private const val TEST_API_URL = "https://test-apis.boxpay.tech/"
-private const val PROD_API_URL = "https://apis.boxpay.in/"
-private const val ROUTE = "v0/checkout/sessions/"
-
 internal fun getEndpoint(isTestEnv: Boolean) : String {
-    val baseUrl = if (isTestEnv) TEST_API_URL else PROD_API_URL
-    return "${baseUrl}${ROUTE}"
+    val baseUrl = if (isTestEnv) BuildKonfig.TEST_API_URL else BuildKonfig.PROD_API_URL
+    return "${baseUrl}${BuildKonfig.ROUTE}"
 }
 
 internal fun generateRandomAlphanumericString(length: Int): String {
-    val charPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    return (1..length)
-        .map { charPool.random() }
+    val charPool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    val randomBytes = generateSecureRandomBytes(length)
+    return randomBytes
+        .map { byte -> charPool[(byte.toInt() and 0xFF) % charPool.length] }
         .joinToString("")
 }
 

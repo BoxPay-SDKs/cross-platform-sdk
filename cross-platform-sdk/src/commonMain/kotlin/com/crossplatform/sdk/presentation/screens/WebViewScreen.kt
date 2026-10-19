@@ -63,7 +63,7 @@ internal fun WebViewLoader() {
 internal fun parseRedirectionResult(navUrl: String): String? {
     // Only act when both markers are present — mirrors:
     // navUrl.includes('payment-completion-handler') && navUrl.includes('boxpay')
-    if (!navUrl.contains("payment-completion-handler") && !navUrl.contains("boxpay")) {
+    if (!navUrl.contains("payment-completion-handler")) {
         return null
     }
 

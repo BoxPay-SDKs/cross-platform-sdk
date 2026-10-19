@@ -80,7 +80,7 @@ actual fun rememberOtpAutoReader(
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     ContextCompat.registerReceiver(
-                        context, newReceiver, filter, ContextCompat.RECEIVER_EXPORTED
+                        context, newReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED
                     )
                 } else {
                     @Suppress("UnspecifiedRegisterReceiverFlag")
