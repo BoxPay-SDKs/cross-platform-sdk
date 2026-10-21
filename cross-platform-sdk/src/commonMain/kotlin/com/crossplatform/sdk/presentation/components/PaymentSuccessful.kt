@@ -2,6 +2,7 @@ package com.crossplatform.sdk.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
@@ -18,32 +20,43 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.domain.model.ReceiptData
 import com.crossplatform.sdk.presentation.formatAmount
 import com.crossplatform.sdk.presentation.formatTransactionTimestamp
+import com.crossplatform.sdk.presentation.getPlatformContext
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.go_back_to_home_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_download
 import crossplatformsdk.cross_platform_sdk.generated.resources.payment_successful_header
 import crossplatformsdk.cross_platform_sdk.generated.resources.total_info
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +66,9 @@ internal fun PaymentSuccessful(
     paymentMethod : String,
     onClick: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
+    val context = getPlatformContext()
+
     val isSuccessScreenVisible = CheckoutDetailsHandler.isSuccessScreenVisibleFlow.collectAsStateWithLifecycle()
     val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
     val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
@@ -61,7 +77,13 @@ internal fun PaymentSuccessful(
     val currencyDetails = CheckoutDetailsHandler.currencyFlow.collectAsStateWithLifecycle()
     val (_, currencyCode) = currencyDetails.value
     val transactionDetail = CheckoutDetailsHandler.transactionFlow.collectAsStateWithLifecycle()
+    val merchantName = CheckoutDetailsHandler.merchantNameFlow.collectAsStateWithLifecycle()
     val (_, transactionId) = transactionDetail.value
+
+    // Toast-like feedback for the download action
+    var downloadStatusMessage by remember { mutableStateOf<String?>(null) }
+    val isDownloading = remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         if(!isSuccessScreenVisible.value) {
             onClick()
@@ -74,11 +96,14 @@ internal fun PaymentSuccessful(
     }
 
     val dateNTimeExtracted = formatTransactionTimestamp(dateNTime)
+    val formattedAmount    = formatAmount(amount.value)
+
     val uiRows = listOf(
-        Pair("Transaction ID", transactionId),
-        Pair("Date", dateNTimeExtracted?.first ?: ""),
-        Pair("Time", dateNTimeExtracted?.second ?: ""),
-        Pair("Payment Method", paymentMethod)
+        "Merchant Name" to merchantName.value,
+        "Transaction ID" to transactionId,
+        "Date"           to (dateNTimeExtracted?.first  ?: ""),
+        "Time"           to (dateNTimeExtracted?.second ?: ""),
+        "Payment Method" to paymentMethod,
     )
 
     ModalBottomSheet(
@@ -114,21 +139,22 @@ internal fun PaymentSuccessful(
                 modifier   = Modifier.padding(top = 8.dp)
             )
 
-            uiRows.map {item ->
+            // ── Detail rows ───────────────────────────────────────────────────
+            uiRows.forEach { (label, value) ->
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = item.first,
-                        fontSize = 14.sp,
+                        text       = label,
+                        fontSize   = 14.sp,
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
                     )
                     Text(
-                        text = item.second,
-                        fontSize = 14.sp,
+                        text       = value,
+                        fontSize   = 14.sp,
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -157,12 +183,8 @@ internal fun PaymentSuccessful(
                         ) {
                             append(currencyCode)
                         }
-                        withStyle(
-                            style = SpanStyle(
-                                fontFamily = LocalSDKFonts.current.primary
-                            )
-                        ) {
-                            append(" ${formatAmount(amount.value)}")
+                        withStyle(SpanStyle(fontFamily = LocalSDKFonts.current.primary)) {
+                            append(" $formattedAmount")
                         }
                     },
                     fontSize = 16.sp,
@@ -173,7 +195,75 @@ internal fun PaymentSuccessful(
 
             HorizontalDivider()
 
-            // Button
+            // ── Download Receipt button ────────────────────────────────────────
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+                    .clip(RoundedCornerShape(ctaBorderRadius.value.dp))
+                    .border(
+                        width = 1.5.dp,
+                        color = buttonColor.value.toComposeColor(),
+                        shape = RoundedCornerShape(ctaBorderRadius.value.dp),
+                    )
+                    .clickable(enabled = !isDownloading.value) {
+                        scope.launch {
+                            isDownloading.value = true
+                            downloadStatusMessage = null
+                            val receiptData = ReceiptData(
+                                transactionId = transactionId,
+                                date = dateNTimeExtracted?.first ?: "",
+                                time = dateNTimeExtracted?.second ?: "",
+                                paymentMethod = paymentMethod,
+                                formattedAmount = formattedAmount,
+                                currencyCode = currencyCode,
+                            )
+                            PdfReceiptGenerator.generateAndDownload(receiptData, context) { success, message ->
+                                isDownloading.value = false
+                                downloadStatusMessage = message
+                            }
+                        }
+                    }
+                    .padding(vertical = 14.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment     = Alignment.CenterVertically,
+            ) {
+                if (isDownloading.value) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = buttonColor.value.toComposeColor(),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(Res.drawable.ic_download),
+                        contentDescription = "",
+                        modifier = Modifier.size(32.dp),
+                        colorFilter = ColorFilter.tint(buttonColor.value.toComposeColor())
+                    )
+                }
+                Text(
+                    text       = if (isDownloading.value) "Downloading…" else "Download Receipt",
+                    fontSize   = 15.sp,
+                    fontFamily = LocalSDKFonts.current.primary,
+                    fontWeight = FontWeight.SemiBold,
+                    color      = buttonColor.value.toComposeColor(),
+                    textAlign  = TextAlign.Center,
+                )
+            }
+
+            // Inline feedback message (replaces a toast in a KMP-friendly way)
+            downloadStatusMessage?.let { msg ->
+                Text(
+                    text      = msg,
+                    fontSize  = 12.sp,
+                    color     = if (msg.startsWith("Receipt")) Color(0xFF019939) else Color.Red,
+                    modifier  = Modifier.padding(top = 6.dp),
+                    textAlign = TextAlign.Center,
+                )
+            }
+
+            // ── Go back to Home button ────────────────────────────────────────
             PayButton(
                 text = stringResource(Res.string.go_back_to_home_cta),
                 modifier = Modifier
@@ -189,4 +279,12 @@ internal fun PaymentSuccessful(
             )
         }
     }
+}
+
+internal expect object PdfReceiptGenerator {
+    fun generateAndDownload(
+        receiptData: ReceiptData,
+        context : Any?,
+        onResult: (success: Boolean, message: String) -> Unit,
+    )
 }
