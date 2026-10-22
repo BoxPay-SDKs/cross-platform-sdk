@@ -30,7 +30,12 @@ internal data class PaymentActions(
     @SerialName("expirySec") val expirySec : Int? = null,
     @SerialName("minLength") val minLength : Int? = null,
     @SerialName("maxLength") val maxLength: Int? = null,
-    @SerialName("data") val data: Map<String, String>? = null
+    @SerialName("data") val data: Map<String, String>? = null,
+    @SerialName("encryptionKey") val encryptionKey : String? = null,
+    @SerialName("algo") val algo : String? = null,
+    @SerialName("keyId") val keyId : String? = null,
+    @SerialName("certificateFingerprint") val certificateFingerprint : String? = null,
+    @SerialName("outputField") val outputField : String? = null,
 )
 
 @Serializable

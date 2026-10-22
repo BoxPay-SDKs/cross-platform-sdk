@@ -13,6 +13,8 @@ import android.os.Build
 import android.os.Environment
 import android.os.LocaleList
 import android.provider.MediaStore
+import android.util.DisplayMetrics
+import android.webkit.WebSettings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -48,6 +50,7 @@ import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
 import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.RevolutPayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.model.AppLifecycleState
+import com.crossplatform.sdk.domain.model.CardEncryption
 import com.crossplatform.sdk.payments.AffirmSDK
 import com.crossplatform.sdk.payments.RevolutPaySDK
 import com.crossplatform.sdk.payments.RevolutPaySupport
@@ -61,6 +64,11 @@ import com.google.android.gms.wallet.Wallet
 import com.google.android.gms.wallet.WalletConstants
 import com.google.android.gms.wallet.contract.TaskResultContracts
 import com.google.pay.button.ButtonType
+import com.nimbusds.jose.*
+import com.nimbusds.jose.JWEHeader
+import com.nimbusds.jose.crypto.RSAEncrypter
+import com.nimbusds.jose.jwk.RSAKey
+import com.nimbusds.jose.util.Base64URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -70,6 +78,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
+import java.net.Inet4Address
+import java.net.NetworkInterface
 import java.security.SecureRandom
 import java.text.NumberFormat
 import java.util.Calendar
@@ -90,18 +100,67 @@ internal actual fun getDeviceDetails(): DeviceDetails {
 }
 
 internal actual fun getBrowserData(): BrowserData {
+    val metrics = Resources.getSystem().displayMetrics
     return BrowserData(
-        screenHeight = Resources.getSystem().displayMetrics.heightPixels.toString(),
-        screenWidth = Resources.getSystem().displayMetrics.widthPixels.toString(),
+        screenHeight = metrics.heightPixels.toString(),
+        screenWidth = metrics.widthPixels.toString(),
         acceptHeader = "application/json",
-        userAgentHeader = "KMP SDK",
-        browserLanguage = "en_US",
-        ipAddress = "null",
-        colorDepth = 24,
+        userAgentHeader = getUserAgent(),
+        browserLanguage = getDeviceLanguage(),
+        ipAddress = getLocalIpAddress() ?: "null",
+        colorDepth = getColorDepth(metrics),
         javaEnabled = true,
         timeZoneOffSet = TimeZone.getDefault().rawOffset / 60000,
         packageId = "com.boxpay.checkout.sdk"
     )
+}
+
+/** Returns the WebView user-agent string (real device UA). */
+private fun getUserAgent(): String {
+    return try {
+        WebSettings.getDefaultUserAgent(appContext.applicationContext)
+    } catch (e: Exception) {
+        // Fallback: build it manually
+        "Mozilla/5.0 (Linux; Android ${Build.VERSION.RELEASE}; ${Build.MODEL}) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+    }
+}
+
+/** Returns locale in BCP-47 format, e.g. "en-US". */
+private fun getDeviceLanguage(): String {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        val locale = Resources.getSystem().configuration.locales[0]
+        locale.toLanguageTag()          // e.g. "en-US"
+    } else {
+        @Suppress("DEPRECATION")
+        val locale = Resources.getSystem().configuration.locale
+        "${locale.language}-${locale.country}"  // e.g. "en-US"
+    }
+}
+
+/** Returns the device's local IPv4 address (Wi-Fi or mobile data). */
+private fun getLocalIpAddress(): String? {
+    return try {
+        NetworkInterface.getNetworkInterfaces()
+            ?.toList()
+            ?.flatMap { it.inetAddresses.toList() }
+            ?.firstOrNull { addr ->
+                !addr.isLoopbackAddress && addr is Inet4Address
+            }
+            ?.hostAddress
+    } catch (e: Exception) {
+        null
+    }
+}
+
+/**
+ * Color depth from screen pixel format.
+ * Most modern Android screens are RGBA_8888 → 24-bit color (alpha excluded).
+ */
+private fun getColorDepth(metrics: DisplayMetrics): Int {
+    return when (metrics.densityDpi) {
+        else -> 24
+    }
 }
 
 actual fun getInstalledUpiApps(context: Any?): List<Pair<String, String>> {
@@ -576,4 +635,42 @@ internal actual fun generateSecureRandomBytes(length: Int): ByteArray {
     val bytes = ByteArray(length)
     SecureRandom().nextBytes(bytes)
     return bytes
+}
+
+internal actual suspend fun encryptCardData(
+    encryptionKey: String,
+    algo: String,
+    keyId: String,
+    fingerprint: String,
+    cardDetails: CardEncryption
+): String {
+    // Exactly mirrors web's JSON.stringify(cardDetails)
+    val cardJson = """{"number":"${cardDetails.number.replace(" ", "")}","expiry_month":"${cardDetails.expiryMonth}","expiry_year":"${cardDetails.expiryYear}","holder_name":"${cardDetails.holderName}","cvv":"${cardDetails.cvv}"}"""
+
+
+    val keyBytes = android.util.Base64.decode(
+        encryptionKey.replace("\\s".toRegex(), ""),
+        android.util.Base64.DEFAULT
+    )
+    val rsaPublicKey = java.security.KeyFactory
+        .getInstance("RSA")
+        .generatePublic(java.security.spec.X509EncodedKeySpec(keyBytes))
+            as java.security.interfaces.RSAPublicKey
+
+    val rsaKey = RSAKey.Builder(rsaPublicKey).build()
+
+    val header = JWEHeader.Builder(
+        JWEAlgorithm.RSA_OAEP_256,   // hardcoded — matches web's SHA-256
+        EncryptionMethod.A128GCM      // hardcoded — matches web's enc
+    )
+        .keyID(keyId)
+        .x509CertSHA256Thumbprint(Base64URL(fingerprint))
+        .build()
+
+    val payload = Payload(cardJson)
+    val jweObject = JWEObject(header, payload)
+    jweObject.encrypt(RSAEncrypter(rsaKey))
+    val jwe = jweObject.serialize()
+
+    return jwe
 }
