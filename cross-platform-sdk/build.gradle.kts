@@ -133,12 +133,14 @@ kotlin {
                 implementation("com.google.mlkit:text-recognition:16.0.1")
 
                 implementation("androidx.activity:activity-compose:1.13.0")
+                implementation("com.nimbusds:nimbus-jose-jwt:9.37.3")
             }
         }
         val iosMain by creating {
             dependsOn(commonMain)
             dependencies {
                 implementation(libs.ktor.client.darwin)
+                implementation("dev.whyoleg.cryptography:cryptography-provider-apple:0.3.1")
             }
         }
         val iosArm64Main by getting {

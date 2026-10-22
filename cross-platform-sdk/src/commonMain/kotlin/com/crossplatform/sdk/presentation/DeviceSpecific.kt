@@ -9,6 +9,7 @@ import com.crossplatform.sdk.data.model.DeviceDetails
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
 import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.model.AppLifecycleState
+import com.crossplatform.sdk.domain.model.CardEncryption
 
 internal expect fun getBrowserData(): BrowserData
 internal expect fun getDeviceDetails(): DeviceDetails
@@ -65,3 +66,11 @@ internal expect object LocalAppLocale {
 }
 
 internal expect fun generateSecureRandomBytes(length: Int): ByteArray
+
+internal expect suspend fun encryptCardData(
+    encryptionKey: String,
+    algo: String,
+    keyId: String,
+    fingerprint: String,
+    cardDetails: CardEncryption
+): String

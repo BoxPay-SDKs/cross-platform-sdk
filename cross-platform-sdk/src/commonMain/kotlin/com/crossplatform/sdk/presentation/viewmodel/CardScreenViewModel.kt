@@ -8,6 +8,7 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.data.model.FetchCardDetails
+import com.crossplatform.sdk.domain.model.CardEncryption
 import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
 import com.crossplatform.sdk.domain.repo.CardScreenRepo
@@ -316,7 +317,14 @@ internal class CardScreenViewModel(
                     isBoxPayAnimationVisible.value = false
                 },
                 setIsBoxPayAnimationVisible = {isBoxPayAnimationVisible.value = it},
-                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                cardEncryption = CardEncryption(
+                    number = cardNumberText.value,
+                    expiryMonth = cardExpiryText.value.take(2),
+                    expiryYear = "20${cardExpiryText.value.drop(2)}",
+                    holderName = cardHolderNameText.value,
+                    cvv = cardCvvText.value
+                )
             )
         }
     }
@@ -375,7 +383,14 @@ internal class CardScreenViewModel(
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
                 setIsBoxPayAnimationVisible = {
                     isBoxPayAnimationVisible.value = it
-                }
+                },
+                cardEncryption = CardEncryption(
+                    number = cardNumberText.value,
+                    expiryMonth = cardExpiryText.value.take(2),
+                    expiryYear = "20${cardExpiryText.value.drop(2)}",
+                    holderName = cardHolderNameText.value,
+                    cvv = cardCvvText.value
+                )
             )
         }
     }

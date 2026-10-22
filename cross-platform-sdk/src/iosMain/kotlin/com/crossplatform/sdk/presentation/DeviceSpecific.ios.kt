@@ -42,21 +42,24 @@ import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
 import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
 import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.RevolutPayExpressCheckoutConfig
+import com.crossplatform.sdk.domain.model.CardEncryption
 import com.crossplatform.sdk.payments.AffirmBridgeRegistry
 import com.crossplatform.sdk.payments.AffirmExecutorItem
 import com.crossplatform.sdk.payments.RevolutPayBridgeRegistry
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.addressOf
+import dev.whyoleg.cryptography.*
+import dev.whyoleg.cryptography.algorithms.*
+import kotlinx.cinterop.*
+import platform.Foundation.*
+import platform.Security.*
 import kotlinx.cinterop.refTo
 import kotlinx.cinterop.usePinned
 import org.jetbrains.skia.Image
-import platform.Foundation.NSData
-import platform.Foundation.NSDecimalNumber
-import platform.Foundation.NSNumber
-import platform.Foundation.NSNumberFormatter
-import platform.Foundation.NSUserDefaults
-import platform.Foundation.create
-import platform.Foundation.preferredLanguages
+import platform.CoreFoundation.CFDataRef
+import platform.CoreFoundation.CFDictionaryAddValue
+import platform.CoreFoundation.CFDictionaryCreateMutable
+import platform.CoreFoundation.CFErrorRefVar
 import platform.PassKit.PKMerchantCapability3DS
 import platform.PassKit.PKPayment
 import platform.PassKit.PKPaymentAuthorizationController
@@ -68,8 +71,6 @@ import platform.PassKit.PKPaymentNetworkMasterCard
 import platform.PassKit.PKPaymentNetworkVisa
 import platform.PassKit.PKPaymentRequest
 import platform.PassKit.PKPaymentSummaryItem
-import platform.Security.SecRandomCopyBytes
-import platform.Security.kSecRandomDefault
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageWriteToSavedPhotosAlbum
 import platform.darwin.NSObject
@@ -96,7 +97,7 @@ internal actual fun getBrowserData(): BrowserData {
             size.width.toInt().toString()
         },
         acceptHeader = "application/json",
-        userAgentHeader = "KMP SDK",
+        userAgentHeader = getRealUserAgent(),
         browserLanguage = NSLocale.currentLocale.languageCode ,
         ipAddress = "null",
         colorDepth = 24,
@@ -104,6 +105,17 @@ internal actual fun getBrowserData(): BrowserData {
         timeZoneOffSet = NSTimeZone.localTimeZone.secondsFromGMT.toInt() / 60,
         packageId = "com.boxpay.checkout.sdk"
     )
+}
+
+private fun getRealUserAgent(): String {
+    val device = UIDevice.currentDevice
+    val systemName = device.systemName      // "iPhone OS"
+    val systemVersion = device.systemVersion.replace(".", "_")  // "17_0"
+    val model = if (device.userInterfaceIdiom == UIUserInterfaceIdiomPad)
+        "iPad" else "iPhone"
+
+    return "Mozilla/5.0 ($model; CPU $systemName $systemVersion like Mac OS X) " +
+            "AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
 }
 
 actual fun getInstalledUpiApps(context: Any?): List<Pair<String, String>> {
@@ -454,3 +466,123 @@ internal actual fun generateSecureRandomBytes(length: Int): ByteArray {
     SecRandomCopyBytes(kSecRandomDefault, length.toULong(), bytes.refTo(0))
     return bytes
 }
+
+@OptIn(ExperimentalForeignApi::class)
+internal actual suspend fun encryptCardData(
+    encryptionKey: String,
+    algo: String,
+    keyId: String,
+    fingerprint: String,
+    cardDetails: CardEncryption
+): String {
+    // 1. Card JSON
+    val cardJson = """{"number":"${cardDetails.number.replace(" ", "")}","expiry_month":"${cardDetails.expiryMonth}","expiry_year":"${cardDetails.expiryYear}","holder_name":"${cardDetails.holderName}","cvv":"${cardDetails.cvv}"}"""
+
+    // 2. JWE protected header
+    val headerJson = """{"alg":"RSA-OAEP-256","enc":"A128GCM","kid":"$keyId","x5t#S256":"$fingerprint"}"""
+    val headerB64 = base64UrlEncode(headerJson.encodeToByteArray())
+
+    // 3. Decode public key — mirrors web's /\s/g + atob()
+    val cleaned = encryptionKey.replace("\\s".toRegex(), "")
+    val keyNSData = NSData.create(
+        base64EncodedString = cleaned,
+        options = NSDataBase64DecodingIgnoreUnknownCharacters
+    ) ?: error("Failed to decode public key")
+
+    // 4. Import SPKI RSA key — mirrors web's importKey("spki")
+    val rsaKey = memScoped {
+        val error = alloc<CFErrorRefVar>()
+        val attributes = CFDictionaryCreateMutable(null, 2, null, null).also {
+            CFDictionaryAddValue(it, kSecAttrKeyType, kSecAttrKeyTypeRSA)
+            CFDictionaryAddValue(it, kSecAttrKeyClass, kSecAttrKeyClassPublic)
+        }
+        SecKeyCreateWithData(keyNSData as CFDataRef, attributes, error.ptr)
+            ?: error("Failed to import RSA public key")
+    }
+
+    // 5. Generate 128-bit CEK
+    val cek = ByteArray(16)
+    SecRandomCopyBytes(kSecRandomDefault, cek.size.convert(), cek.refTo(0))
+
+    // 6. RSA-OAEP-256 wrap CEK
+    val encryptedCek = memScoped {
+        val error = alloc<CFErrorRefVar>()
+        val encrypted = SecKeyCreateEncryptedData(
+            rsaKey,
+            kSecKeyAlgorithmRSAEncryptionOAEPSHA256,
+            cek.toNSData() as CFDataRef,
+            error.ptr
+        ) ?: error("RSA-OAEP-256 encryption failed")
+        (encrypted as NSData).toByteArray()
+    }
+    val encryptedCekB64 = base64UrlEncode(encryptedCek)
+
+    // 7. Generate 96-bit IV
+    val iv = ByteArray(12)
+    SecRandomCopyBytes(kSecRandomDefault, iv.size.convert(), iv.refTo(0))
+    val ivB64 = base64UrlEncode(iv)
+
+    // 8. AES-128-GCM via krypto — no Swift, no CCCryptorGCM
+    val aad = headerB64.encodeToByteArray()
+    val plaintext = cardJson.encodeToByteArray()
+    val (ciphertext, authTag) = aesGcmEncrypt(
+        key       = cek,
+        iv        = iv,
+        plaintext = plaintext,
+        aad       = aad
+    )
+
+    val ciphertextB64 = base64UrlEncode(ciphertext)
+    val authTagB64    = base64UrlEncode(authTag)
+
+    // 9. JWE compact serialization
+    return "$headerB64.$encryptedCekB64.$ivB64.$ciphertextB64.$authTagB64"
+}
+
+private suspend fun aesGcmEncrypt(
+    key: ByteArray,
+    iv: ByteArray,
+    plaintext: ByteArray,
+    aad: ByteArray
+): Pair<ByteArray, ByteArray> {
+    val provider = CryptographyProvider.Default
+    val aesGcm = provider.get(AES.GCM)
+
+    val secretKey = aesGcm.keyDecoder().decodeFrom(AES.Key.Format.RAW, key)
+    val cipher = secretKey.cipher()
+
+    // output = ciphertext + 16-byte tag
+    val output = cipher.encrypt(
+        nonce = iv,
+        plaintext = plaintext,
+        aad = aad
+    )
+
+    return Pair(
+        output.copyOfRange(0, plaintext.size),
+        output.copyOfRange(plaintext.size, output.size)
+    )
+}
+
+// ── Utilities ─────────────────────────────────────────────────────────────
+
+@OptIn(ExperimentalForeignApi::class)
+private fun ByteArray.toNSData(): NSData = usePinned { pinned ->
+    NSData.create(bytes = pinned.addressOf(0), length = size.convert())
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun NSData.toByteArray(): ByteArray {
+    val result = ByteArray(length.toInt())
+    result.usePinned { pinned ->
+        platform.posix.memcpy(pinned.addressOf(0), bytes, length)
+    }
+    return result
+}
+
+private fun base64UrlEncode(bytes: ByteArray): String =
+    bytes.toNSData()
+        .base64EncodedStringWithOptions(0u)
+        .replace("+", "-")
+        .replace("/", "_")
+        .trimEnd('=')

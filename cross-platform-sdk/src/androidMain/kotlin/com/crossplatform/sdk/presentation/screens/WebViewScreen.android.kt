@@ -113,11 +113,13 @@ internal actual fun WebViewScreen(
                             favicon: Bitmap?,
                         ) {
                             super.onPageStarted(view, pageUrl, favicon)
+                            println("====page started $pageUrl")
                             state = state.copy(isLoading = true)
                         }
 
                         override fun onPageFinished(view: WebView, pageUrl: String) {
                             super.onPageFinished(view, pageUrl)
+                            println("====page finish $pageUrl")
                             state = state.copy(isLoading = false)
                             handleUrl(pageUrl)
                         }
