@@ -223,4 +223,12 @@
     <string name="scan_card_cancel">Batal</string>
     <string name="scan_card_permission_denied">Akses kamera dimatikan. Aktifkan di Pengaturan untuk memindai kartu Anda.</string>
     <string name="scan_card_camera_unavailable">Kamera tidak tersedia di perangkat ini.</string>
+
+    <!-- NFC card scan -->
+    <string name="nfc_scan_cta">Ketuk kartu</string>
+    <string name="nfc_scan_title">Siap memindai</string>
+    <string name="nfc_scan_hint">Tempelkan kartu NFC ke bagian belakang perangkat Anda. Detail hanya dibaca di perangkat Anda.</string>
+    <string name="nfc_scan_cancel">Batal</string>
+    <string name="nfc_scan_disabled">NFC dimatikan. Aktifkan di Pengaturan untuk mengetuk kartu Anda.</string>
+    <string name="nfc_scan_not_supported">NFC tidak tersedia di perangkat ini.</string>
 </resources>

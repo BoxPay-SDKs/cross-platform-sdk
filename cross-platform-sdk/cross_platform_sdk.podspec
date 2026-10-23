@@ -51,4 +51,5 @@ Pod::Spec.new do |spec|
         }
     ]
     spec.resources = ['build/compose/cocoapods/compose-resources']
+    spec.frameworks = 'CoreNFC'
 end

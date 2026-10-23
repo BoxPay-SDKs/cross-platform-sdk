@@ -223,4 +223,12 @@
     <string name="scan_card_cancel">Cancelar</string>
     <string name="scan_card_permission_denied">El acceso a la cámara está desactivado. Actívalo en Configuración para escanear tu tarjeta.</string>
     <string name="scan_card_camera_unavailable">La cámara no está disponible en este dispositivo.</string>
+
+    <!-- NFC card scan -->
+    <string name="nfc_scan_cta">Acercar tarjeta</string>
+    <string name="nfc_scan_title">Listo para escanear</string>
+    <string name="nfc_scan_hint">Acerca tu tarjeta NFC a la parte trasera del dispositivo. Los datos se leen únicamente en tu dispositivo.</string>
+    <string name="nfc_scan_cancel">Cancelar</string>
+    <string name="nfc_scan_disabled">NFC está desactivado. Actívalo en Configuración para acercar tu tarjeta.</string>
+    <string name="nfc_scan_not_supported">NFC no está disponible en este dispositivo.</string>
 </resources>
