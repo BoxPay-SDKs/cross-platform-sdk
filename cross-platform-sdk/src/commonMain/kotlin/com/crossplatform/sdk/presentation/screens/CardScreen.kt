@@ -90,6 +90,9 @@ internal fun CardScreen(
         skipPartiallyExpanded = true,
         confirmValueChange = { targetValue -> targetValue != SheetValue.Hidden }
     )
+    val showCancelModal = remember {
+        mutableStateOf(false)
+    }
 
     val requiredErrorMessage = stringResource(Res.string.required_error_message)
     val cardNotSupportedErrorMessage = stringResource(Res.string.card_not_supported_error_message)
@@ -256,9 +259,7 @@ internal fun CardScreen(
         NativeOTPBottomSheet(
             sheetState = sheetState,
             onClickCancel = {
-                // call the api to cancel the transaction but not yet as it is been on hold
-                viewModel.showNativeOtpBottomSheet.value = false
-                CheckoutDetailsHandler.setSessionFailed()
+                showCancelModal.value = true
             },
             onClickProceed = {
                 viewModel.submitOtp(it, isTestEnv.value)
@@ -275,6 +276,17 @@ internal fun CardScreen(
             maxOtpField = viewModel.maxOtpLength.value,
             isOtpInvalid = viewModel.isNativeOtpInvalid.value,
             isLoading = viewModel.isNativeOtpLoading.value
+        )
+    }
+
+    if(showCancelModal.value) {
+        CancelPaymentModal(
+            onNoClick  = { showCancelModal.value = false },
+            onYesClick = {
+                showCancelModal.value = false
+                viewModel.showNativeOtpBottomSheet.value = false
+                viewModel.cancelNativeOtpTransaction()
+            }
         )
     }
 }
