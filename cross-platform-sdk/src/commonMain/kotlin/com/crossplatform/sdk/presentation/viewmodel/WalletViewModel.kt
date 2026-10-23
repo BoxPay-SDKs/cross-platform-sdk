@@ -38,6 +38,17 @@ internal class WalletViewModel (
         loadWalletList()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        _uiState.value = UiState.Loading
+        allWallets.value = emptyList()
+        searchQuery.value = ""
+        isBoxPayAnimationVisible.value = false
+        showWebview.value = false
+        url.value = ""
+        htmlString.value = ""
+    }
+
     fun loadWalletList() {
         viewModelScope.launch {
             val checkoutDetails = CheckoutDetailsHandler.checkoutDetails

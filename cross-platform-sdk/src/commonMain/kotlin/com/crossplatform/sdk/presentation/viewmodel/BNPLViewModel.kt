@@ -37,6 +37,17 @@ internal class BNPLViewModel (
         loadBanksList()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        _uiState.value = UiState.Loading
+        allBanks.value = emptyList()
+        searchQuery.value = ""
+        isBoxPayAnimationVisible.value = false
+        showWebview.value = false
+        url.value = ""
+        htmlString.value = ""
+    }
+
     fun loadBanksList() {
         viewModelScope.launch {
             val checkoutDetails = CheckoutDetailsHandler.checkoutDetails

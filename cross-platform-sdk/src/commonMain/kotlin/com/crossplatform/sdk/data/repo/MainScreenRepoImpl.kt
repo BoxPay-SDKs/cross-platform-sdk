@@ -74,8 +74,8 @@ internal class MainScreenRepoImpl(
         )
     }
 
-    override suspend fun deleteSavedCard(id: String): ApiResponse<RecommendedInstrumentsResponse> = withContext(ioDispatcher) {
-        apiService.deleteSavedCard(id)
+    override suspend fun deleteSavedCard(id: String,type : String): ApiResponse<List<RecommendedInstrumentsResponse>> = withContext(ioDispatcher) {
+        apiService.deleteSavedCard(id, type)
     }
 
     override suspend fun postUPIQrRequest(type: String,surcharges : List<String>?): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {

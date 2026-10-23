@@ -515,7 +515,7 @@ internal class BoxPayElementsViewModel (
                 screenName = "MainScreenViewModel",
                 message = "Card deleted in function onClickDeleteSavedCard"
             )
-            val response = repo.deleteSavedCard(id)
+            val response = repo.deleteSavedCard(id, "Card")
             when(response) {
                 is ApiResponse.Success -> {
                     isBoxPayAnimationLoading.value = false

@@ -102,7 +102,7 @@ internal interface ApiService {
 
     suspend fun getSavedAddress() : ApiResponse<List<FetchSavedAddress>>
 
-    suspend fun deleteSavedCard(id : String) : ApiResponse<RecommendedInstrumentsResponse>
+    suspend fun deleteSavedCard(id : String, type : String) : ApiResponse<List<RecommendedInstrumentsResponse>>
 
     suspend fun getOffer(minAmount : Double, maxAmount : Double) : ApiResponse<List<InstantOfferResponse>>
 
