@@ -431,4 +431,12 @@ internal class ApiServiceImpl : ApiService {
             }
         }
     }
+
+    override suspend fun cancelTransaction(transactionId: String): ApiResponse<PaymentMethodPostResponse> {
+        return executeWithResponse{
+            client.post(urlString = "transactions/${transactionId}/cancel") {
+                contentType(ContentType.Application.Json)
+            }
+        }
+    }
 }

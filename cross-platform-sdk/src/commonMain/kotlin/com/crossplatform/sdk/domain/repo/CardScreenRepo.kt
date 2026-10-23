@@ -23,4 +23,6 @@ internal interface CardScreenRepo {
     suspend fun submitOtp(otp : String, transactionId : String,isTestEnv : Boolean) : ApiResponse<NativeOtpResponse>
 
     suspend fun resendOtp(transactionId: String,isTestEnv : Boolean) : ApiResponse<NativeOtpResponse>
+
+    suspend fun cancelNativeOtpTransaction(transactionId: String) : ApiResponse<PaymentMethodPostResponse>
 }
