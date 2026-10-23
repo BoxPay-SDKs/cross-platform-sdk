@@ -77,7 +77,6 @@ import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun CardComponent(
@@ -98,6 +97,7 @@ internal fun CardComponent(
     maxCvvLength : Int,
     handleCardNumberChange : (String) -> Unit,
     handleCardHolderNameChange : (String) -> Unit,
+    handleCardNickNameChange : (String) -> Unit,
     handleExpiryChange : (String) -> Unit,
     handleCvvChange : (String) -> Unit,
     cardNumberError : Boolean,
@@ -387,7 +387,9 @@ internal fun CardComponent(
             CardTextField(
                 value         = cardNickNameText,
                 label         = stringResource(Res.string.card_nick_name_title),
-                onValueChange = {  },
+                onValueChange = {
+                    handleCardNickNameChange(it)
+                },
                 modifier      = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
                 focusedTextInputBorderColor = focusedTextInputBorderColor,
                 unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,

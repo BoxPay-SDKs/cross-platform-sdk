@@ -59,7 +59,6 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalTime::class, ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -148,6 +147,9 @@ internal fun CardScreen(
         handleCardHolderNameChange = {
             viewModel.cardHolderNameText.value = it; if (it.isNotBlank()) viewModel.cardHolderNameError.value = false
             viewModel.checkCardValid(isTestEnv.value)
+        },
+        handleCardNickNameChange = {
+            viewModel.cardNickNameText.value = it
         },
         handleExpiryChange = {
             viewModel.handleExpiryChange(it, isTestEnv.value)

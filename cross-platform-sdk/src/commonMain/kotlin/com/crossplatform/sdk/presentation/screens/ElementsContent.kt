@@ -581,6 +581,9 @@ private fun NewCardForm(
             if (it.isNotBlank()) viewModel.cardHolderNameError.value = false
             viewModel.checkCardValid(isTestEnv)
         },
+        handleCardNickNameChange = {
+            viewModel.cardNickNameText.value = it
+        },
         handleExpiryChange = {
             viewModel.handleExpiryChange(it, isTestEnv)
         },

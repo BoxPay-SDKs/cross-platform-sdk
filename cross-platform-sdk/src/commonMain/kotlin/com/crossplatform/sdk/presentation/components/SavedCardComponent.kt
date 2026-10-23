@@ -26,6 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -47,7 +50,6 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun SavedCardComponent(
@@ -85,7 +87,7 @@ internal fun SavedCardComponent(
             SavedCardRow(
                 id                  = card.id,
                 nickName            = card.displayName,
-                cardNumber          = card.displayValue,
+                displayName          = card.displayValue,
                 imageUrl            = card.imageUrl,
                 isSelected          = card.id == selectedId.value,
                 instrumentTypeValue = card.instrumentType,
@@ -144,7 +146,7 @@ internal fun SavedCardComponent(
 private fun SavedCardRow(
     id                  : String,
     nickName            : String,
-    cardNumber          : String,
+    displayName          : String,
     imageUrl            : String,
     isSelected          : Boolean,
     instrumentTypeValue : String,
@@ -168,7 +170,7 @@ private fun SavedCardRow(
             .fillMaxWidth()
             .background(
                 color        = if (isSelected) Color(0xFFEDF8F4) else LocalSDKColors.current.background,
-                shape        = RoundedCornerShape(if (isSelected) 0.dp else 12.dp)
+                shape        = RoundedCornerShape(12.dp)
             )
             .padding(vertical = 16.dp, horizontal = 12.dp)
     ) {
@@ -219,11 +221,27 @@ private fun SavedCardRow(
                     )
                 }
                 Text(
-                    text       = cardNumber,
+                    text       = buildAnnotatedString {
+                        append(
+                            AnnotatedString(
+                                text = "**** ${displayName.takeLast(4)} | ",
+                                spanStyle = SpanStyle(
+                                    color = LocalSDKColors.current.textSecondary,
+                                )
+                            )
+                        )
+                        append(
+                            AnnotatedString(
+                                text = "CVV Less",
+                                spanStyle = SpanStyle(
+                                    color = Color(0xFF1ca672),
+                                )
+                            )
+                        )
+                    },
                     fontFamily = LocalSDKFonts.current.primary,
                     fontWeight = FontWeight.Normal,
                     fontSize   = 12.sp,
-                    color      = LocalSDKColors.current.textSecondary,
                     maxLines   = 1,
                     overflow   = TextOverflow.Ellipsis,
                     modifier   = Modifier.clickable { onPress(id) }
@@ -248,7 +266,7 @@ private fun SavedCardRow(
                 modifier           = Modifier
                     .size(32.dp)
                     .clickable{
-                        onClickDeleteCard(id, nickName)
+                        onClickDeleteCard(id, displayName)
                     }
             )
         }

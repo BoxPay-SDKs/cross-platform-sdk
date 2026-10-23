@@ -24,6 +24,7 @@ import com.crossplatform.sdk.data.model.UserDetails
 import com.crossplatform.sdk.data.model.requestBody.AnalyticsRequest
 import com.crossplatform.sdk.data.model.requestBody.ApplyOfferRequestBody
 import com.crossplatform.sdk.data.model.requestBody.CardPostRequestBody
+import com.crossplatform.sdk.data.model.requestBody.DeleteSavedCardRequestBody
 import com.crossplatform.sdk.data.model.requestBody.EmiPostRequestBody
 import com.crossplatform.sdk.data.model.requestBody.InstantOfferRequestBody
 import com.crossplatform.sdk.data.model.requestBody.NativeOtpRequestBody
@@ -356,9 +357,16 @@ internal class ApiServiceImpl : ApiService {
         }
     }
 
-    override suspend fun deleteSavedCard(id: String): ApiResponse<RecommendedInstrumentsResponse> {
+    override suspend fun deleteSavedCard(id: String, type : String): ApiResponse<List<RecommendedInstrumentsResponse>> {
+        val requestBody = DeleteSavedCardRequestBody(
+            type = type,
+            instrumentRef = id
+        )
         return executeWithResponse {
-            client.delete(urlString = "shoppers/${userData.uniqueId}/instruments/$id")
+            client.delete(urlString = "shoppers/${userData.uniqueId}/instruments/$id") {
+                contentType(ContentType.Application.Json)
+                setBody(requestBody)
+            }
         }
     }
 

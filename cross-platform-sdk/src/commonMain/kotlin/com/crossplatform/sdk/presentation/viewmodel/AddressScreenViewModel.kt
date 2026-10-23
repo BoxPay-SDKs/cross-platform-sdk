@@ -3,7 +3,6 @@ package com.crossplatform.sdk.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.crossplatform.sdk.data.ApiResponse
-import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.domain.repo.AddressScreenRepo
 import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
@@ -26,6 +25,11 @@ internal class AddressScreenViewModel(
         getSavedAddress()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        selectedSavedAddress.value = ""
+    }
+
     fun getSavedAddress() {
         viewModelScope.launch {
             _savedList.value = when(val response = repo.getSavedAddress()) {
@@ -44,7 +48,7 @@ internal class AddressScreenViewModel(
 
     fun deleteSavedAddress(addressRef : String) {
         viewModelScope.launch {
-            val response = repo.deleteSavedAddress(addressRef = addressRef)
+            repo.deleteSavedAddress(addressRef = addressRef)
         }
     }
 

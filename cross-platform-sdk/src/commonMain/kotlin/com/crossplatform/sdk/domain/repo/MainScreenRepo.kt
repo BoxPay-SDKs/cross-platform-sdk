@@ -29,7 +29,7 @@ internal interface MainScreenRepo {
 
     suspend fun getSurcharge(amount : Double, currencyCode : String) : ApiResponse<FetchSurchargeResponse>
 
-    suspend fun deleteSavedCard(id : String) : ApiResponse<RecommendedInstrumentsResponse>
+    suspend fun deleteSavedCard(id : String, type : String) : ApiResponse<List<RecommendedInstrumentsResponse>>
 
     suspend fun postUPIQrRequest(type : String, surcharges : List<String>?) : ApiResponse<PaymentMethodPostResponse>
 }

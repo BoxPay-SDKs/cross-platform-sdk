@@ -269,6 +269,9 @@ internal class MainScreenViewModel(
         super.onCleared()
         lifecycleObserver.stop()
         countdownJob?.cancel()
+        recommendedList.value = emptyList()
+        upiRecommendedList.value = emptyList()
+        cardsRecommendedList.value = emptyList()
     }
 
     fun callCheckoutSessionExpireModal(
@@ -530,7 +533,7 @@ internal class MainScreenViewModel(
                 screenName = "MainScreenViewModel",
                 message = "Card deleted in function onClickDeleteSavedCard"
             )
-            val response = repo.deleteSavedCard(id)
+            val response = repo.deleteSavedCard(id, "Card")
             when(response) {
                 is ApiResponse.Success -> {
                     isBoxPayAnimationLoading.value = false

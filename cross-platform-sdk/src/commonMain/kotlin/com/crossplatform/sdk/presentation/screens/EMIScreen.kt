@@ -36,7 +36,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,12 +84,9 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.required_error_me
 import crossplatformsdk.cross_platform_sdk.generated.resources.select_tenure_title
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
-import kotlinx.coroutines.Job
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun EMIScreen(
@@ -215,6 +211,9 @@ internal fun EMIScreen(
                             maxCvvLength = viewModel.maxCvvLength.value,
                             handleCardNumberChange = {
                                 viewModel.handleCardNumberChange(it, isTestEnv = isTestEnv.value)
+                            },
+                            handleCardNickNameChange = {
+                                viewModel.cardNickNameText.value = it
                             },
                             handleCardHolderNameChange = {
                                 viewModel.cardHolderNameText.value = it; if (it.isNotBlank()) viewModel.cardHolderNameError.value = false
