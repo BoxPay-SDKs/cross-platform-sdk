@@ -450,6 +450,7 @@ internal class CardScreenViewModel(
                     val data = response.data
                     if(data.success) {
                         showNativeOtpBottomSheet.value = false
+                        isBoxPayAnimationVisible.value = true
                         startFetchStatusPolling("")
                     } else {
                         isNativeOtpInvalid.value = true
