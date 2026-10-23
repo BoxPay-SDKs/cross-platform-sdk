@@ -465,6 +465,7 @@ internal class CardScreenViewModel(
 
     fun resendOtp(isTestEnv: Boolean) {
         isNativeOtpLoading.value = true
+        isNativeOtpInvalid.value = false
         viewModelScope.launch {
             val response = repo.resendOtp( CheckoutDetailsHandler.transactionFlow.value.second, isTestEnv)
             isNativeOtpLoading.value = false
