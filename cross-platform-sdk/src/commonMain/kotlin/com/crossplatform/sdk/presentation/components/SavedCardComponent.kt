@@ -87,7 +87,7 @@ internal fun SavedCardComponent(
             SavedCardRow(
                 id                  = card.id,
                 nickName            = card.displayName,
-                cardNumber          = card.displayValue,
+                displayName          = card.displayValue,
                 imageUrl            = card.imageUrl,
                 isSelected          = card.id == selectedId.value,
                 instrumentTypeValue = card.instrumentType,
@@ -146,7 +146,7 @@ internal fun SavedCardComponent(
 private fun SavedCardRow(
     id                  : String,
     nickName            : String,
-    cardNumber          : String,
+    displayName          : String,
     imageUrl            : String,
     isSelected          : Boolean,
     instrumentTypeValue : String,
@@ -224,7 +224,7 @@ private fun SavedCardRow(
                     text       = buildAnnotatedString {
                         append(
                             AnnotatedString(
-                                text = "${cardNumber.takeLast(8)} | ",
+                                text = "**** ${displayName.takeLast(4)} | ",
                                 spanStyle = SpanStyle(
                                     color = LocalSDKColors.current.textSecondary,
                                 )
@@ -266,7 +266,7 @@ private fun SavedCardRow(
                 modifier           = Modifier
                     .size(32.dp)
                     .clickable{
-                        onClickDeleteCard(id, cardNumber)
+                        onClickDeleteCard(id, displayName)
                     }
             )
         }
