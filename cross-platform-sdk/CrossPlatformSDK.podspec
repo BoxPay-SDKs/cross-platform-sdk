@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'CrossPlatformSDK'
-  s.version = '1.0.4-beta1'
+  s.version = '1.0.4-beta2'
 
   s.summary = 'BoxPay Cross Platform SDK'
   s.homepage = 'https://github.com/BoxPay-SDKs/cross-platform-sdk'

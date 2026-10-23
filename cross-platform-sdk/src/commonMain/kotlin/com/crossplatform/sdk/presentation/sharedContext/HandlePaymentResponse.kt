@@ -60,12 +60,6 @@ internal suspend fun handlePaymentResponse(
                             fingerprint = encryptAction.certificateFingerprint ?: "",
                             cardDetails = cardEncryption!!
                         )
-                        println("==== ENCRYPT ACTION ====")
-                        println("  outputField : ${encryptAction.outputField}")
-                        println("  jwe starts  : ${jwe.take(40)}")
-                        println("  jwe length  : ${jwe.length}")
-                        // a valid JWE compact has exactly 5 parts separated by '.'
-                        println("  jwe parts   : ${jwe.split(".").size}  (should be 5)")
 
                         // 3. Merge JWE into ALL other actions' data — mirrors web exactly
                         actions.map { action ->
@@ -215,18 +209,6 @@ private fun handleActions(
         "redirect" -> {
             val url = primaryAction.url ?: ""
             val method = primaryAction.method?.uppercase() ?: ""
-
-            println("==== REDIRECT ACTION ====")
-            println("  url    : $url")
-            println("  method : $method")
-            println("  data fields:")
-            primaryAction.data?.forEach { (k, v) ->
-                // Print key always, but mask value if it looks like a JWE (starts with eyJ)
-                val display = if (v.startsWith("eyJ") || v.length > 100)
-                    "${v.take(40)}...(len=${v.length})"
-                else v
-                println("    $k = $display")
-            }
 
             if (url.isBlank()) {
                 setIsBoxPayAnimationVisible(false)
