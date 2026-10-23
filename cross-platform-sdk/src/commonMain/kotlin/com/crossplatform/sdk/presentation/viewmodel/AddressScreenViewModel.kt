@@ -28,7 +28,6 @@ internal class AddressScreenViewModel(
     override fun onCleared() {
         super.onCleared()
         selectedSavedAddress.value = ""
-        _savedList.value = UiState.Loading
     }
 
     fun getSavedAddress() {

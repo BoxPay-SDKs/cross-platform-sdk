@@ -39,7 +39,6 @@ internal class BNPLViewModel (
 
     override fun onCleared() {
         super.onCleared()
-        _uiState.value = UiState.Loading
         allBanks.value = emptyList()
         searchQuery.value = ""
         isBoxPayAnimationVisible.value = false
