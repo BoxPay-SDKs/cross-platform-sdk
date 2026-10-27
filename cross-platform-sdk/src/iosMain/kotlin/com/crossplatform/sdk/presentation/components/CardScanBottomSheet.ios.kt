@@ -130,6 +130,12 @@ private class IosTextScanner(
     }).apply {
         recognitionLevel = VNRequestTextRecognitionLevelAccurate
         usesLanguageCorrection = false // language correction "fixes" digit strings into words
+        regionOfInterest = CGRectMake(
+            x      = 0.03,   // 0.06 margin − 0.03 padding
+            y      = 0.365,  // 0.395 − 0.03 padding
+            width  = 0.94,   // 0.88 + 0.06 padding
+            height = 0.32    // 0.26 + 0.06 padding
+        )
     }
 
     // Orientations to run each frame through. The capture connection already delivers upright

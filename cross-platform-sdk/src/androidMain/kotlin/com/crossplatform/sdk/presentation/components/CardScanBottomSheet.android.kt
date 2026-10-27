@@ -2,12 +2,13 @@ package com.crossplatform.sdk.presentation.components
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.os.SystemClock
 import android.util.Size
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
@@ -130,11 +131,9 @@ private class TextAnalyzer(
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     private var lastRunMs = 0L
 
-    @androidx.annotation.OptIn(ExperimentalGetImage::class)
     override fun analyze(imageProxy: ImageProxy) {
-        val mediaImage = imageProxy.image
         val now = SystemClock.elapsedRealtime()
-        if (mediaImage == null || now - lastRunMs < 250) { // ~4 fps is plenty and saves battery
+        if (now - lastRunMs < 250) { // ~4 fps is plenty and saves battery
             imageProxy.close()
             return
         }
@@ -151,16 +150,31 @@ private class TextAnalyzer(
         // orientation for normal horizontal cards. Each pass is parsed separately (see
         // CardScanDialog) so a card's own top-to-bottom line order isn't scrambled by mixing
         // results from different orientations.
-        val baseRotation = imageProxy.imageInfo.rotationDegrees
-        val orientations = intArrayOf(
-            baseRotation,
-            (baseRotation + 90) % 360,
-            (baseRotation + 270) % 360
-        )
-        var pending = orientations.size
 
-        for (rotation in orientations) {
-            val image = InputImage.fromMediaImage(mediaImage, rotation)
+        val full = imageProxy.toBitmap()
+        val bmpW = full.width.toFloat()
+        val bmpH = full.height.toFloat()
+        val cutoutW = (bmpW * 0.88f).toInt()
+        val cutoutH = (cutoutW / 1.586f).toInt()
+        val cutoutLeft = ((bmpW - cutoutW) / 2f).toInt().coerceAtLeast(0)
+        val cutoutTop  = ((bmpH - cutoutH) / 2f - bmpH * 0.05f).toInt().coerceAtLeast(0)
+        val cropped = Bitmap.createBitmap(full, cutoutLeft, cutoutTop, cutoutW, cutoutH)
+        full.recycle()
+
+        // Run the same three orientation passes on the cropped region.
+        // Because toBitmap() already applied the sensor rotation, we rotate the cropped
+        // bitmap itself (0°, +90°, +270°) and hand each to ML Kit at rotation = 0.
+        val extraAngles = intArrayOf(0, 90, 270)
+        var pending = extraAngles.size
+
+        for (angle in extraAngles) {
+            val rotated = if (angle == 0) {
+                cropped
+            } else {
+                val m = Matrix().apply { postRotate(angle.toFloat()) }
+                Bitmap.createBitmap(cropped, 0, 0, cropped.width, cropped.height, m, true)
+            }
+            val image = InputImage.fromBitmap(rotated, 0)
             recognizer.process(image)
                 // ML Kit delivers listeners on the main thread by default.
                 .addOnSuccessListener { text ->
@@ -168,8 +182,12 @@ private class TextAnalyzer(
                     if (lines.isNotEmpty()) onText(lines)
                 }
                 .addOnCompleteListener {
+                    if (angle != 0) rotated.recycle()
                     pending--
-                    if (pending == 0) imageProxy.close()
+                    if (pending == 0) {
+                        cropped.recycle()
+                        imageProxy.close()
+                    }
                 }
         }
     }
