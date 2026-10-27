@@ -84,7 +84,8 @@ internal object CheckoutDetailsHandler {
         proceedAutoRetryPayment = {},
         availableRetryMethods = emptyList(),
         isCheckoutLimitReached = false,
-        isPaymentMaxAttemptsReached = false
+        isPaymentMaxAttemptsReached = false,
+        localeCode = "en"
     )
 
     // ─── Source of truth ──────────────────────────────────────────────────────
@@ -164,6 +165,11 @@ internal object CheckoutDetailsHandler {
         .map { it.merchantLogo }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().merchantLogo)
+
+    val localeCodeFlow: StateFlow<String> = _checkoutDetailsFlow
+        .map { it.localeCode }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().localeCode)
 
     val isMerchantLogoVisibleFlow: StateFlow<Boolean> = _checkoutDetailsFlow
         .map { it.isMerchantLogoVisible }
@@ -399,7 +405,8 @@ internal object CheckoutDetailsHandler {
         inputBorderColor : String,
         inputFocusBorderColor : String,
         ctaBorderRadius: Int,
-        acceptedCardList : List<String>
+        acceptedCardList : List<String>,
+        localeCode : String
     ) {
         checkoutDetails = checkoutDetails.copy(
             currencySymbol            = currencySymbol,
@@ -437,7 +444,8 @@ internal object CheckoutDetailsHandler {
             focusedTextInputBorderColor = inputFocusBorderColor,
             unfocusedTextInputBorderColor = inputBorderColor,
             ctaBorderRadius = ctaBorderRadius,
-            acceptedCardsList = acceptedCardList
+            acceptedCardsList = acceptedCardList,
+            localeCode = localeCode
         )
         _checkoutDetailsFlow.value = checkoutDetails
     }

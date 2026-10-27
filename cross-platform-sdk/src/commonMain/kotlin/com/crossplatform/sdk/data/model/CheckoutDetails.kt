@@ -77,4 +77,5 @@ internal data class CheckoutDetails(
     val availableRetryMethods : List<String>,
     val isCheckoutLimitReached : Boolean,
     val isPaymentMaxAttemptsReached : Boolean,
+    val localeCode : String
 )
