@@ -36,8 +36,9 @@ internal fun BoxPayCommonCheckout(
         }
     ) {
         val backendFont by CheckoutDetailsHandler.fontFamilyFlow.collectAsStateWithLifecycle()
+        val sessionLocaleCode = CheckoutDetailsHandler.localeCodeFlow.collectAsStateWithLifecycle()
         val savedLanguage by localeManager.currentLanguage.collectAsState()
-        val activeLanguage = savedLanguage ?: "en"
+        val activeLanguage = savedLanguage ?: sessionLocaleCode.value
 
         ProvideSDKFonts(
             currentLanguage = activeLanguage,
