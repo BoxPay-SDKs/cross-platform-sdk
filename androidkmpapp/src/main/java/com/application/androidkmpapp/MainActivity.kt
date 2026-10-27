@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +17,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,7 +61,7 @@ class MainActivity : ComponentActivity() {
                         val handler = remember { BoxPayElementsHandler() }
                         val isPayable by handler.isPayable.collectAsStateWithLifecycle()
 
-                        Column(modifier = Modifier.fillMaxSize()) {
+                        Box(modifier = Modifier.fillMaxSize()) {
                             AndroidView(
                                 modifier = Modifier.fillMaxWidth(),
                                 factory = { context ->
@@ -85,11 +88,12 @@ class MainActivity : ComponentActivity() {
                                 Button(
                                     onClick = { handler.pay() },
                                     enabled = isPayable,
-                                    modifier = Modifier.fillMaxWidth().padding(16.dp)
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 32.dp).align(Alignment.BottomCenter)
                                 ) {
                                     Text(
                                         text = if (isPayable) "Pay Now" else "Select a payment method",
-                                        fontWeight = FontWeight.SemiBold
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = if(isPayable) Color(0xFF1ca672) else Color(0xFF4F4D55),
                                     )
                                 }
                             }
@@ -115,7 +119,10 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     confirmButton = {
-                        TextButton(onClick = { paymentResult.value = null }) {
+                        TextButton(onClick = {
+                            paymentResult.value = null
+                            elementsConfig.value = null
+                        }) {
                             Text("OK")
                         }
                     }
@@ -147,6 +154,5 @@ class MainActivity : ComponentActivity() {
 
     fun onPaymentResult(result: SDKPaymentResponse) {
         paymentResult.value = result
-        elementsConfig.value = null   // leave the Elements screen on result
     }
 }

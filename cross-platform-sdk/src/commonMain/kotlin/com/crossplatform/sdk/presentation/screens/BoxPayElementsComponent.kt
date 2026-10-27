@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -16,16 +17,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.BoxPayElementsHandler
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.domain.model.PaymentMethodTab
+import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.components.CvvInfoBottomSheet
 import com.crossplatform.sdk.presentation.components.KnowMoreBottomSheet
+import com.crossplatform.sdk.presentation.components.NativeOTPBottomSheet
 import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
 import com.crossplatform.sdk.presentation.viewmodel.BoxPayElementsViewModel
@@ -56,12 +58,16 @@ internal fun BoxPayElementsComponent(
     val (_, currencyCode) = currencyFlow
     val amount           by CheckoutDetailsHandler.amountFlow.collectAsStateWithLifecycle()
     val showQROnLoad = CheckoutDetailsHandler.showQROnLoadFlow.collectAsStateWithLifecycle()
+    val showCancelModal = remember {
+        mutableStateOf(false)
+    }
 
     val selectedMethod = remember {
         mutableStateOf(paymentMethodList.firstOrNull() ?: PaymentMethodTab.UPI)
     }
 
     val canPay by viewModel.isPayable.collectAsState()
+    val isTestEnv = CheckoutDetailsHandler.isTestEnvFlow.collectAsStateWithLifecycle()
 
     LaunchedEffect(canPay) { handler?.setPayable(canPay) }
 
@@ -69,6 +75,10 @@ internal fun BoxPayElementsComponent(
     DisposableEffect(handler) {
         handler?.onSubmit = { viewModel.submitSelectedInstrument() }
         onDispose { handler?.onSubmit = null }
+    }
+
+    BackHandler {
+        viewModel.deliverPaymentResult()
     }
 
 
@@ -149,7 +159,9 @@ internal fun BoxPayElementsComponent(
                 postUpiIntentRequest   = { selectedIntent, type ->
                     viewModel.postUpiIntentRequest(selectedIntent = selectedIntent, type = type)
                 },
-                onProceedCardRequest   = { viewModel.postCardRequest(it) },
+                onProceedCardRequest   = {
+                    val surchargeList = viewModel.resolveSurchargeList( "card", viewModel.cardSelectedNetwork.value, viewModel.cardSelectedSpecification.value)
+                    viewModel.postCardRequest(it, surchargeList) },
             )
         }
     }
@@ -176,6 +188,43 @@ internal fun BoxPayElementsComponent(
                 }
             )
         }
+    }
+    if (viewModel.showNativeOtpBottomSheet.value) {
+        NativeOTPBottomSheet(
+            sheetState = rememberModalBottomSheetState(
+                skipPartiallyExpanded = true,
+                confirmValueChange = { targetValue -> targetValue != SheetValue.Hidden }
+            ),
+            onClickCancel = {
+                showCancelModal.value = true
+            },
+            onClickProceed = {
+                viewModel.submitOtp(it, isTestEnv.value)
+            },
+            onClickResend = {
+                viewModel.resendOtp(isTestEnv.value)
+            },
+            cardBrand = viewModel.cardSelectedNetwork.value,
+            onClickUrl = {
+                viewModel.showNativeOtpBottomSheet.value = false
+                viewModel.setWebViewScreen(true)
+            },
+            minOtpField = viewModel.minOtpLength.value,
+            maxOtpField = viewModel.maxOtpLength.value,
+            isOtpInvalid = viewModel.isNativeOtpInvalid.value,
+            isLoading = viewModel.isNativeOtpLoading.value
+        )
+    }
+
+    if(showCancelModal.value) {
+        CancelPaymentModal(
+            onNoClick  = { showCancelModal.value = false },
+            onYesClick = {
+                showCancelModal.value = false
+                viewModel.showNativeOtpBottomSheet.value = false
+                viewModel.cancelNativeOtpTransaction()
+            }
+        )
     }
 
     if (viewModel.showCvvInfo.value) {

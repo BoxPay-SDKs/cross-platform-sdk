@@ -13,7 +13,8 @@ import org.jetbrains.compose.resources.getString
 internal suspend fun handleFetchStatus(
     response : ApiResponse<FetchStatusResponse>,
     setIsBoxPayAnimationVisible : (Boolean) -> Unit,
-    onAutoRetry : () -> Unit
+    onAutoRetry : () -> Unit,
+    notifyComponentsHandler : (() -> Unit)? = null
 ) {
     when(response) {
         is ApiResponse.Error -> {
@@ -53,33 +54,49 @@ internal suspend fun handleFetchStatus(
                     CheckoutDetailsHandler.setErrorMessage(resolvedErrorMessage)
                     CheckoutDetailsHandler.setSessionFailed()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
                 TransactionStatusEnum.EXPIRED ->{
                     CheckoutDetailsHandler.setSessionExpired()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
                 else -> {
                     CheckoutDetailsHandler.setSessionFailed()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
             }
         }
         else -> {
             CheckoutDetailsHandler.setSessionFailed()
             setIsBoxPayAnimationVisible(false)
+            if(notifyComponentsHandler != null) {
+                notifyComponentsHandler()
+            }
         }
     }
 }
 
 internal suspend fun handleUpiCollectFetchStatus(
     response : ApiResponse<FetchStatusResponse>,
-    setIsBoxPayAnimationVisible : (Boolean) -> Unit
+    setIsBoxPayAnimationVisible : (Boolean) -> Unit,
+    notifyComponentsHandler : (() -> Unit)? = null
 ) {
     when(response) {
         is ApiResponse.Error -> {
             CheckoutDetailsHandler.setErrorMessage()
             CheckoutDetailsHandler.setSessionFailed()
             setIsBoxPayAnimationVisible(false)
+            if(notifyComponentsHandler != null) {
+                notifyComponentsHandler()
+            }
         }
         is ApiResponse.Success -> {
             val apiData = response.data
@@ -99,6 +116,9 @@ internal suspend fun handleUpiCollectFetchStatus(
                     )
                     CheckoutDetailsHandler.setSessionSuccess()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
                 TransactionStatusEnum.FAILED -> {
                     val resolvedErrorMessage = resolveErrorMessage(
@@ -109,10 +129,16 @@ internal suspend fun handleUpiCollectFetchStatus(
                     CheckoutDetailsHandler.setErrorMessage(resolvedErrorMessage)
                     CheckoutDetailsHandler.setSessionFailed()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
                 TransactionStatusEnum.EXPIRED ->{
                     CheckoutDetailsHandler.setSessionExpired()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
                 else -> {
                     // no operation
@@ -122,6 +148,9 @@ internal suspend fun handleUpiCollectFetchStatus(
         else -> {
             CheckoutDetailsHandler.setSessionFailed()
             setIsBoxPayAnimationVisible(false)
+            if(notifyComponentsHandler != null) {
+                notifyComponentsHandler()
+            }
         }
     }
 }

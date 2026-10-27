@@ -11,11 +11,6 @@ class BoxPayElementsHandler {
     // Java-friendly listener (SAM interface → no Unit.INSTANCE in Java)
     private var payableListener: PayableListener? = null
 
-    fun setOnPayableChanged(listener: PayableListener) {
-        payableListener = listener
-        listener.onChanged(_isPayable.value)              // emit current state now
-    }
-
     // merchant → SDK
     fun pay() { onSubmit?.invoke() }
 
