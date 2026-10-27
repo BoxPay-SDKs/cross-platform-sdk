@@ -166,7 +166,7 @@ internal object CardTextParser {
  * frames for the expiry (which is often on the same frame, so this usually ends immediately).
  */
 internal class CardScanAggregator(
-    private val requiredNumberHits: Int = 2,
+    private val requiredNumberHits: Int = 3,
     private val extraFramesForExpiry: Int = 6
 ) {
     private val hits = mutableMapOf<String, Int>()
