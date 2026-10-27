@@ -6,14 +6,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.data.handler.SDKPaymentResponseHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.data.model.FetchCardDetails
+import com.crossplatform.sdk.data.model.SDKPaymentResponse
 import com.crossplatform.sdk.domain.mapper.toUiModel
 import com.crossplatform.sdk.domain.model.AppLifecycleState
+import com.crossplatform.sdk.domain.model.CardEncryption
 import com.crossplatform.sdk.domain.model.CountryDetailsModel
 import com.crossplatform.sdk.domain.model.MainScreenModel
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
+import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
 import com.crossplatform.sdk.domain.repo.CardScreenRepo
@@ -32,6 +36,7 @@ import com.crossplatform.sdk.presentation.sharedContext.handleUpiCollectFetchSta
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_amex
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_diners
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_maestro
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_masterCard
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_rupay
@@ -110,14 +115,25 @@ internal class BoxPayElementsViewModel (
     var cardCvvErrorText        = mutableStateOf("Required")
 
     var cardNumberValid  =  mutableStateOf(true)
+    val showNativeOtpBottomSheet = mutableStateOf(false)
+    val isNativeOtpInvalid = mutableStateOf(false)
+    val appliedSurcharge = mutableStateOf<List<SurchargeModel>>(emptyList())
     var cardExpiryValid  =  mutableStateOf(true)
     var methodEnabled    =  mutableStateOf(true)
     var cardValid        =  mutableStateOf(false)
+    var cardSelectedNetwork = mutableStateOf("")
+    val minOtpLength = mutableStateOf(0)
+    val maxOtpLength = mutableStateOf(0)
+    val isNativeOtpLoading = mutableStateOf(false)
+    val cardSelectedSpecification = mutableStateOf("")
 
     var maxCvvLength        = mutableStateOf(3)
     var maxCardNumberLength =  mutableStateOf(19)
+    var minCardNumberLength = mutableStateOf(19)
+    val amountBeforeSurcharge = mutableStateOf(0.0)
     var cardSelectedIcon    = mutableStateOf(Res.drawable.ic_card)
 
+    private var lastFetchedBin: String? = null
 
     var isSavedCardCheckBoxClicked =  mutableStateOf(false)
     var showCvvInfo                =  mutableStateOf(false)
@@ -327,6 +343,9 @@ internal class BoxPayElementsViewModel (
                 setIsBoxPayAnimationVisible = {
                     stopFetchStatusPolling()
                     isBoxPayAnimationLoading.value = it
+                },
+                notifyComponentsHandler = {
+                    deliverPaymentResult()
                 }
             )
         }
@@ -371,6 +390,9 @@ internal class BoxPayElementsViewModel (
                 setIsBoxPayAnimationVisible = {
                     stopFetchStatusPolling()
                     isBoxPayAnimationLoading.value = it
+                },
+                notifyComponentsHandler = {
+                    deliverPaymentResult()
                 }
             )
         }
@@ -400,6 +422,9 @@ internal class BoxPayElementsViewModel (
                 onAutoRetry = {
                     CheckoutDetailsHandler.showAutoRetryDropDown { autoRetryInitiatePayment() }
                     isBoxPayAnimationLoading.value = false
+                },
+                notifyComponentsHandler = {
+                    deliverPaymentResult()
                 }
             )
         }
@@ -432,6 +457,9 @@ internal class BoxPayElementsViewModel (
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
                 setIsBoxPayAnimationVisible = {
                     isBoxPayAnimationLoading.value = it
+                },
+                notifyComponentsHandler = {
+                    deliverPaymentResult()
                 }
             )
         }
@@ -446,6 +474,9 @@ internal class BoxPayElementsViewModel (
                 setIsBoxPayAnimationVisible = {
                     stopFetchStatusPolling()
                     isBoxPayAnimationLoading.value = it
+                },
+                notifyComponentsHandler = {
+                    deliverPaymentResult()
                 }
             )
         }
@@ -498,6 +529,9 @@ internal class BoxPayElementsViewModel (
                 setIsBoxPayAnimationVisible = {
                     stopFetchStatusPolling()
                     isBoxPayAnimationLoading.value = it
+                },
+                notifyComponentsHandler = {
+                    deliverPaymentResult()
                 }
             )
         }
@@ -512,7 +546,7 @@ internal class BoxPayElementsViewModel (
             isBoxPayAnimationLoading.value = true
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_INSTRUMENT_PROVIDED.value,
-                screenName = "MainScreenViewModel",
+                screenName = "BoxPayElementsViewModel",
                 message = "Card deleted in function onClickDeleteSavedCard"
             )
             val response = repo.deleteSavedCard(id, "Card")
@@ -587,6 +621,9 @@ internal class BoxPayElementsViewModel (
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
                 setIsBoxPayAnimationVisible = {
                     isBoxPayAnimationLoading.value = it
+                },
+                notifyComponentsHandler = {
+                    deliverPaymentResult()
                 }
             )
         }
@@ -603,21 +640,106 @@ internal class BoxPayElementsViewModel (
         CheckoutDetailsHandler.setIsWebViewVisible(false)
     }
 
+    fun submitOtp(otp : String,isTestEnv: Boolean) {
+        isNativeOtpInvalid.value = false
+        isNativeOtpLoading.value = true
+        viewModelScope.launch {
+            val response = cardRepo.submitOtp(otp, CheckoutDetailsHandler.transactionFlow.value.second, isTestEnv)
+            when (response) {
+                is ApiResponse.Success -> {
+                    val data = response.data
+                    if(data.success) {
+                        showNativeOtpBottomSheet.value = false
+                        isBoxPayAnimationLoading.value = true
+                        startFetchStatusPolling("")
+                    } else {
+                        isNativeOtpInvalid.value = true
+                        isNativeOtpLoading.value = false
+                    }
+                }
+                else -> {
+                    isNativeOtpLoading.value = true
+                }
+            }
+        }
+    }
+
+    fun resendOtp(isTestEnv: Boolean) {
+        isNativeOtpLoading.value = true
+        isNativeOtpInvalid.value = false
+        viewModelScope.launch {
+            val response = cardRepo.resendOtp( CheckoutDetailsHandler.transactionFlow.value.second, isTestEnv)
+            isNativeOtpLoading.value = false
+            when (response) {
+                else -> {
+                    // no op
+                }
+            }
+        }
+    }
+
     fun onUPITimerBottomSheetDismissed() {
         proceedToTimer.value = false
         upiId.value = ""
     }
 
+    fun cancelNativeOtpTransaction() {
+        viewModelScope.launch {
+            isBoxPayAnimationLoading.value = true
+            val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+            val response = cardRepo.cancelNativeOtpTransaction(checkoutDetails.transactionId)
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentUrl = {
+                    // no operation
+                },
+                onSetPaymentHtml = {
+                    // no operation
+                },
+                onNavigateToTimer = {
+                    // no operation
+                },
+                onOpenQr = {_, _ ->
+                    // no operation
+                },
+                onOpenUpiIntent = {_ ->
+                    // no operation
+                },
+                onSetNativeOtp = { _, _, _, _ ->
+                    // no op
+                },
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                setIsBoxPayAnimationVisible = {
+                    isBoxPayAnimationLoading.value = it
+                },
+                notifyComponentsHandler = {
+                    deliverPaymentResult()
+                }
+            )
+        }
+    }
+
     fun fetchCardDetails(cardNumber : String, isTestEnv: Boolean) {
         viewModelScope.launch {
             when(val response = cardRepo.getCardDetails(cardNumber)) {
-                is ApiResponse.Success<*> -> {
-                    val data = response.data as FetchCardDetails
-                    updateCardIcon(isTestEnv, data.paymentMethod.brand)
+                is ApiResponse.Success -> {
+                    val data = response.data
+                    updateCardIcon(isTestEnv, data.paymentMethod.brand, data.paymentMethod.classification ?: "")
                     _cardDetails.value = UiState.Success(data)
+                }
+                is ApiResponse.Error -> {
+                    callUiAnalytics(
+                        AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
+                        message = "BIN failure ${response.errorBody}",
+                        screenName = "CardScreenViewModel;l"
+                    )
                 }
                 else -> {
                     // no instructions to be performed
+                    cardSelectedIcon.value = Res.drawable.ic_card
+                    maxCvvLength.value = 3
+                    maxCardNumberLength.value = 19
+                    minCardNumberLength.value = 19
                 }
             }
 
@@ -645,6 +767,7 @@ internal class BoxPayElementsViewModel (
         val baseValid =
             !cardNumberError.value && !cardExpiryError.value && !cardCvvError.value && !cardHolderNameError.value &&
                     (cardNumberText.value.replace(" ", "").length == numberLen || isTestEnv) &&
+                    !cardNumberText.value.startsWith('0') &&
                     cardExpiryText.value.length == 4 &&
                     cardCvvText.value.length == maxCvvLength.value &&
                     cardHolderNameText.value.isNotEmpty()
@@ -661,34 +784,70 @@ internal class BoxPayElementsViewModel (
             cardSelectedIcon.value    = Res.drawable.ic_card
             maxCvvLength.value        = 3
             maxCardNumberLength.value = 19
+            lastFetchedBin            = null
             return
         }
 
         checkCardValid(isTestEnv)
 
-        if (cleaned.length == 16 || (cleaned.length == 15 && maxCardNumberLength.value == 15)) {
+        if (cleaned.length == 16 || (cleaned.length == 15 && maxCardNumberLength.value == 18)) {
             cardNumberValid.value = isValidCardNumberByLuhn(cleaned)
         }
-
-        if (cleaned.length == 9 && !cleaned.startsWith("0")) {
-            fetchCardDetails(cardNumber = cleaned.take(9), isTestEnv)
+        if (cleaned.length >= 9 && !cleaned.startsWith("0")) {
+            val bin = cleaned.take(9)
+            if (bin != lastFetchedBin) {
+                lastFetchedBin = bin
+                fetchCardDetails(cardNumber = bin, isTestEnv)
+            }
+        } else {
+            lastFetchedBin = null
         }
 
         if (cleaned.length < 9) {
             cardSelectedIcon.value    = Res.drawable.ic_card
             maxCvvLength.value        = 3
             maxCardNumberLength.value = 19
+            if(appliedSurcharge.value.isNotEmpty()) {
+                CheckoutDetailsHandler.setAmount(amountBeforeSurcharge.value)
+            }
+            appliedSurcharge.value = emptyList()
         }
+        cardNumberError.value = cleaned.isEmpty() || cardNumberText.value.startsWith("0") ||
+                (!isTestEnv && (!methodEnabled.value || !cardNumberValid.value))
     }
 
     // --- Update icon from API ---
-    fun updateCardIcon(isTestEnv: Boolean, brand : String) {
+    fun updateCardIcon(isTestEnv: Boolean, brand : String, classification : String) {
+        cardSelectedNetwork.value = brand
+        cardSelectedSpecification.value = classification
+        if(appliedSurcharge.value.isEmpty()) {
+            amountBeforeSurcharge.value = CheckoutDetailsHandler.amountFlow.value
+            val surchargeList = CheckoutDetailsHandler.surchargeDetailsFlow.value
+            appliedSurcharge.value = surchargeList.filter { item ->
+                val applicable = item.applicableOn.lowercase().trim()
+
+                val methodMatches = applicable.isNotEmpty() &&
+                        applicable == "card"
+
+                val networkMatches = item.network.isBlank() ||
+                        item.network.replace(" ", "").equals(brand.replace(" ", ""), true)
+
+                val classificationMatches = item.classification.isBlank() ||
+                        item.classification.replace(" ", "").equals(classification.replace(" ", ""), true)
+
+                methodMatches && networkMatches && classificationMatches
+            }
+            val amountAfterSurcharge = appliedSurcharge.value.sumOf { it.amount } + amountBeforeSurcharge.value
+
+            CheckoutDetailsHandler.setAmount(amountAfterSurcharge)
+        }
         when (brand) {
             "VISA"            -> { cardSelectedIcon.value = Res.drawable.ic_visa;       maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             "Mastercard"      -> { cardSelectedIcon.value = Res.drawable.ic_masterCard; maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             "RUPAY"           -> { cardSelectedIcon.value = Res.drawable.ic_rupay;      maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             "AmericanExpress" -> { cardSelectedIcon.value = Res.drawable.ic_amex;       maxCvvLength.value = 4; maxCardNumberLength.value = if (isTestEnv) 19 else 18 }
             "Maestro"         -> { cardSelectedIcon.value = Res.drawable.ic_maestro;    maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
+            "Diners"         -> { cardSelectedIcon.value = Res.drawable.ic_diners;    maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
             else              -> { cardSelectedIcon.value = Res.drawable.ic_card;       maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
         }
     }
@@ -723,7 +882,7 @@ internal class BoxPayElementsViewModel (
         checkCardValid(isTestEnv)
     }
 
-    fun postCardRequest(isSICheckBoxClicked : Boolean) {
+    fun postCardRequest(isSICheckBoxClicked : Boolean, surcharge : List<String>?) {
         viewModelScope.launch {
             callUiAnalytics(
                 event = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
@@ -745,7 +904,7 @@ internal class BoxPayElementsViewModel (
                 nickName = cardNickNameText.value,
                 isSaveInstrumentCheckboxClicked = isSavedCardCheckBoxClicked.value,
                 isSICheckboxClicked = !isSICheckBoxClicked,
-                surcharges = null
+                surcharges = surcharge
             )
             handlePaymentResponse(
                 response = response,
@@ -766,8 +925,29 @@ internal class BoxPayElementsViewModel (
                     url.value = responseUrl
                     setWebViewScreen(true)
                 },
+                onSetNativeOtp = { min, max, responseUrl, html ->
+                    minOtpLength.value = min
+                    maxOtpLength.value = max
+                    if(html.isBlank()) {
+                        url.value = responseUrl
+                    } else {
+                        htmlString.value = html
+                    }
+                    showNativeOtpBottomSheet.value = true
+                    isBoxPayAnimationLoading.value = false
+                },
                 setIsBoxPayAnimationVisible = {isBoxPayAnimationLoading.value = it},
-                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                cardEncryption = CardEncryption(
+                    number = cardNumberText.value,
+                    expiryMonth = cardExpiryText.value.take(2),
+                    expiryYear = "20${cardExpiryText.value.drop(2)}",
+                    holderName = cardHolderNameText.value,
+                    cvv = cardCvvText.value
+                ),
+                notifyComponentsHandler = {
+                    deliverPaymentResult()
+                }
             )
         }
     }
@@ -849,9 +1029,35 @@ internal class BoxPayElementsViewModel (
                     setWebViewScreen(true)
                 },
                 setIsBoxPayAnimationVisible = {isBoxPayAnimationLoading.value = it},
-                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                notifyComponentsHandler = {
+                    deliverPaymentResult()
+                }
             )
         }
+    }
+
+    fun resolveSurchargeList(
+        selectedMethod: String,
+        selectedNetwork: String = "",
+        selectedClassification: String = ""
+    ): List<String>? {
+        val surcharges = CheckoutDetailsHandler.surchargeDetailsFlow.value
+        val filtered = surcharges.filter { item ->
+            val applicable = item.applicableOn.lowercase().trim()
+
+            val methodMatches = applicable.isNotEmpty() &&
+                    applicable == selectedMethod.lowercase().trim()
+
+            val networkMatches = item.network.isBlank() ||
+                    item.network.replace(" ", "").equals(selectedNetwork.replace(" ", ""), true)
+
+            val classificationMatches = item.classification.isBlank() ||
+                    item.classification.replace(" ", "").equals(selectedClassification.replace(" ", ""), true)
+
+            (applicable.isBlank() || methodMatches) && networkMatches && classificationMatches
+        }
+        return filtered.map { it.surchargeCode }.ifEmpty { null }
     }
 
 
@@ -902,8 +1108,10 @@ internal class BoxPayElementsViewModel (
                 postUpiIntentRequest(selectedIntent = selection.selectedIntent, type = "upi/intent")
             is PaySelection.UpiCollect ->
                 postUpiCollectRequest(shopperVpa = selection.vpa, type = "upi/collect")
-            is PaySelection.Card ->
-                postCardRequest(isSICheckBoxClicked = isSavedCardCheckBoxClicked.value)
+            is PaySelection.Card -> {
+                val surchargeList = resolveSurchargeList( "card", cardSelectedNetwork.value, cardSelectedSpecification.value)
+                postCardRequest(isSICheckBoxClicked = isSavedCardCheckBoxClicked.value, surchargeList)
+            }
             is PaySelection.Instrument ->
                 postOtherRequest(instrumentValue = selection.value, type = selection.type)
             is PaySelection.SavedUpi ->
@@ -918,5 +1126,19 @@ internal class BoxPayElementsViewModel (
                     isSICheckboxChecked = isSavedCardCheckBoxClicked.value
                 )
         }
+    }
+
+    fun deliverPaymentResult() {
+        val (status, transactionId) = CheckoutDetailsHandler.transactionFlow.value
+        val inquiryToken = CheckoutDetailsHandler.inquiryTokenFlow.value
+
+        // ✅ Notify after reset
+        SDKPaymentResponseHandler.notifyResult(
+            result = SDKPaymentResponse(
+                status = status,
+                transactionId = transactionId,
+                inquiryToken = inquiryToken
+            )
+        )
     }
 }

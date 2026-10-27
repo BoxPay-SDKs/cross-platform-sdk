@@ -30,8 +30,10 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -62,6 +64,11 @@ import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.UPIComponent
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.viewmodel.BoxPayElementsViewModel
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.confirm_to_delete_card_header
+import crossplatformsdk.cross_platform_sdk.generated.resources.no_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.yes_cta
+import org.jetbrains.compose.resources.stringResource
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Data classes — replace the 25-parameter flat signature
@@ -433,6 +440,16 @@ private fun CardsTab(
         // Whether the inline "Add New Card" form is open
         var isAddNewCardExpanded   by rememberSaveable { mutableStateOf(false) }
 
+        val selectedDeleteCardId = remember {
+            mutableStateOf("")
+        }
+        val isShowSavedCardDeleteConfirmation = remember {
+            mutableStateOf(false)
+        }
+        val selectedDeleteCardName = remember {
+            mutableStateOf("")
+        }
+
         // Keep PaySelection in sync with the expanded state
         LaunchedEffect(isAddNewCardExpanded) {
             if (isAddNewCardExpanded) {
@@ -447,6 +464,7 @@ private fun CardsTab(
                 savedCards     = viewModel.cardsRecommendedList.value,
                 onClickRadio = {
                     isAddNewCardExpanded = false        // collapse new-card form
+                    viewModel.cardValid.value = true
                     viewModel.callUiAnalytics(
                         event      = AnalyticsEvents.PAYMENT_CATEGORY_SELECTED.value,
                         screenName = "MainScreen",
@@ -476,12 +494,15 @@ private fun CardsTab(
                     if (isAddNewCardExpanded) {
                         // Deselect every saved-card radio button
                         selectedSavedCardId = ""
+                        viewModel.cardValid.value = false
                     }
                 },
 
                 // ── Delete card ───────────────────────────────────────────────
-                onClickDeleteCard = { _, _ ->
-
+                onClickDeleteCard = { id, displayName ->
+                    selectedDeleteCardName.value = displayName
+                    selectedDeleteCardId.value = id
+                    isShowSavedCardDeleteConfirmation.value = true
                 },
 
                 // ── Theme / amounts from uiConfig ─────────────────────────────
@@ -516,6 +537,36 @@ private fun CardsTab(
                     onSiCheckBoxChanged          = { isSiCheckBoxChecked = it },
                 )
             }
+        }
+
+        if(isShowSavedCardDeleteConfirmation.value) {
+            AlertDialog(
+                onDismissRequest = {
+                    isShowSavedCardDeleteConfirmation.value = false
+                },
+                title = {
+                    Text(
+                        stringResource(Res.string.confirm_to_delete_card_header, selectedDeleteCardName.value),
+                        fontFamily = LocalSDKFonts.current.primary,
+                        fontSize = 14.sp
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        isShowSavedCardDeleteConfirmation.value = false
+                        viewModel.onClickDeleteSavedCard(selectedDeleteCardId.value)
+                    }) {
+                        Text(stringResource(Res.string.yes_cta), fontFamily = LocalSDKFonts.current.primary, fontSize = 14.sp)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        isShowSavedCardDeleteConfirmation.value = false
+                    }) {
+                        Text(stringResource(Res.string.no_cta), fontFamily = LocalSDKFonts.current.primary, fontSize = 14.sp)
+                    }
+                }
+            )
         }
     }
 }
@@ -624,11 +675,10 @@ private fun NewCardForm(
                 if (viewModel.cardHolderNameError.value) "Required" else ""
         },
         onBlurCardExpiry = {
-            val expiry = viewModel.cardExpiryText.value
-            viewModel.cardExpiryError.value     = expiry.length < 5 || !viewModel.cardExpiryValid.value
+            viewModel.cardExpiryError.value    = viewModel.cardExpiryText.value.length < 4 || !viewModel.cardExpiryValid.value
             viewModel.cardExpiryErrorText.value = when {
-                expiry.isEmpty() -> "Required"
-                else             -> "Invalid Expiry"
+                viewModel.cardExpiryText.value.isEmpty() -> "Required"
+                else                     -> "Invalid Expiry"
             }
         },
         onBlurCardCVV = {

@@ -29,6 +29,7 @@ internal suspend fun handlePaymentResponse(
     errorMessage : String,
     setIsBoxPayAnimationVisible : (Boolean) -> Unit,
     cardEncryption: CardEncryption? = null,
+    notifyComponentsHandler : (() -> Unit)? = null
 ) {
     when(response) {
         is ApiResponse.Success -> {
@@ -95,6 +96,9 @@ internal suspend fun handlePaymentResponse(
                     )
                     CheckoutDetailsHandler.setSessionFailed()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
 
                 TransactionStatusEnum.SUCCESS -> {
@@ -104,17 +108,26 @@ internal suspend fun handlePaymentResponse(
                     )
                     CheckoutDetailsHandler.setSessionSuccess()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
 
                 TransactionStatusEnum.EXPIRED  -> {
                     CheckoutDetailsHandler.setSessionExpired()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
 
                 else -> {
                     CheckoutDetailsHandler.setErrorMessage(errorMessage)
                     CheckoutDetailsHandler.setSessionFailed()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
             }
         }
@@ -131,16 +144,25 @@ internal suspend fun handlePaymentResponse(
                     CheckoutDetailsHandler.setRetryAvailableMethods(availableMethods)
                     CheckoutDetailsHandler.setIsPaymentMaxAttemptsReached()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
 
                 structuredError?.reasonCode == CHECKOUT_MAX_ATTEMPTS_REACHED -> {
                     CheckoutDetailsHandler.setIsCheckoutMaxAttemptsReached()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
 
                 errorMessage.contains("expired", ignoreCase = true) -> {
                     CheckoutDetailsHandler.setSessionExpired()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
 
                 else -> {
@@ -153,6 +175,9 @@ internal suspend fun handlePaymentResponse(
                     )
                     CheckoutDetailsHandler.setSessionFailed()
                     setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
                 }
             }
         }

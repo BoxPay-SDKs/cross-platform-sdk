@@ -10,7 +10,7 @@ internal data class FetchStatusResponse(
     @SerialName("reasonCode") val reasonCode: String,
     @SerialName("statusReason") val reason: String,
     @SerialName("transactionTimestampLocale") val transactionTimestampLocale: String,
-    @SerialName("retryable") val retryable : Boolean,
+    @SerialName("retryable") val retryable : Boolean = false,
     @SerialName("paymentMethod") val paymentMethod : PaymentMethod
 ) {
     @Serializable
