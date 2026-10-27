@@ -318,7 +318,7 @@ internal fun CheckboxItem(
 
 internal class CardNumberVisualTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
-        val trimmed = text.text.take(16)
+        val trimmed = text.text
 
         // Format as groups of 4
         val formatted = trimmed.chunked(4).joinToString(" ")

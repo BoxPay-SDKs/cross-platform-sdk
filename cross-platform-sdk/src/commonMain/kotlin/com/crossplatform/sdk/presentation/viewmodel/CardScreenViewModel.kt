@@ -26,6 +26,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.ic_diners
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_maestro
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_masterCard
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_rupay
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_union_pay
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_visa
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -143,10 +144,9 @@ internal class CardScreenViewModel(
 
     // --- Card Validity Check ---
     fun checkCardValid(isTestEnv : Boolean) {
-        val numberLen = if (maxCardNumberLength.value == 19) 16 else 15
         val baseValid =
             !cardNumberError.value && !cardExpiryError.value && !cardCvvError.value && !cardHolderNameError.value &&
-                    (cardNumberText.value.replace(" ", "").length == numberLen || isTestEnv) &&
+                    (cardNumberText.value.replace(" ", "").length in minCardNumberLength.value..maxCardNumberLength.value || isTestEnv) &&
                     !cardNumberText.value.startsWith('0') &&
                     cardExpiryText.value.length == 4 &&
                     cardCvvText.value.length == maxCvvLength.value &&
@@ -156,8 +156,14 @@ internal class CardScreenViewModel(
 
     // --- Handle Card Number Change ---
     fun handleCardNumberChange(text: String, isTestEnv: Boolean) {
+        val maxDigits = when (maxCardNumberLength.value) {
+            23 -> 19  // UnionPay/Maestro
+            18 -> 15  // Amex
+            16 -> 14  // Diners
+            else -> 16
+        }
         // ← only store raw digits, no formatting
-        val cleaned = text.filter { it.isDigit() }.take(16)
+        val cleaned = text.filter { it.isDigit() }.take(maxDigits)
         cardNumberText.value = cleaned
 
         if (cleaned.isEmpty()) {
@@ -170,7 +176,7 @@ internal class CardScreenViewModel(
 
         checkCardValid(isTestEnv)
 
-        if (cleaned.length == 16 || (cleaned.length == 15 && maxCardNumberLength.value == 18)) {
+        if (cleaned.length == maxDigits) {
             cardNumberValid.value = isValidCardNumberByLuhn(cleaned)
         }
         if (cleaned.length >= 9 && !cleaned.startsWith("0")) {
@@ -222,13 +228,14 @@ internal class CardScreenViewModel(
             CheckoutDetailsHandler.setAmount(amountAfterSurcharge)
         }
         when (brand) {
-            "VISA"            -> { cardSelectedIcon.value = Res.drawable.ic_visa;       maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
-            "Mastercard"      -> { cardSelectedIcon.value = Res.drawable.ic_masterCard; maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
-            "RUPAY"           -> { cardSelectedIcon.value = Res.drawable.ic_rupay;      maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
-            "AmericanExpress" -> { cardSelectedIcon.value = Res.drawable.ic_amex;       maxCvvLength.value = 4; maxCardNumberLength.value = if (isTestEnv) 19 else 18 }
-            "Maestro"         -> { cardSelectedIcon.value = Res.drawable.ic_maestro;    maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
-            "Diners"         -> { cardSelectedIcon.value = Res.drawable.ic_diners;    maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
-            else              -> { cardSelectedIcon.value = Res.drawable.ic_card;       maxCvvLength.value = 3; maxCardNumberLength.value = 19 }
+            "VISA"            -> { cardSelectedIcon.value = Res.drawable.ic_visa;       maxCvvLength.value = 3; maxCardNumberLength.value = 19; minCardNumberLength.value = 19 }
+            "Mastercard"      -> { cardSelectedIcon.value = Res.drawable.ic_masterCard; maxCvvLength.value = 3; maxCardNumberLength.value = 19; minCardNumberLength.value = 19 }
+            "RUPAY"           -> { cardSelectedIcon.value = Res.drawable.ic_rupay;      maxCvvLength.value = 3; maxCardNumberLength.value = 19; minCardNumberLength.value = 19 }
+            "AmericanExpress" -> { cardSelectedIcon.value = Res.drawable.ic_amex;       maxCvvLength.value = 4; maxCardNumberLength.value = if (isTestEnv) 19 else 18; minCardNumberLength.value = if(isTestEnv) 19 else 18}
+            "Maestro"         -> { cardSelectedIcon.value = Res.drawable.ic_maestro;    maxCvvLength.value = 3; maxCardNumberLength.value = 23; minCardNumberLength.value = 15 }
+            "Diners"         -> { cardSelectedIcon.value = Res.drawable.ic_diners;    maxCvvLength.value = 3; maxCardNumberLength.value = 19; minCardNumberLength.value = 19 }
+            "ChinaUnionPay"  -> { cardSelectedIcon.value = Res.drawable.ic_union_pay;  maxCvvLength.value = 4; maxCardNumberLength.value = 23; minCardNumberLength.value = 19 }
+            else              -> { cardSelectedIcon.value = Res.drawable.ic_card;       maxCvvLength.value = 3; maxCardNumberLength.value = 19; minCardNumberLength.value = 19 }
         }
     }
 
