@@ -21,6 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,12 +35,14 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -573,13 +576,25 @@ private fun CardTextField(
     var hasBeenFocused by remember { mutableStateOf(false) }  // ← track first focus
     val keyboardController = LocalSoftwareKeyboardController.current   // ← add this
 
+    var tfv by remember { mutableStateOf(TextFieldValue(value)) }
+
+    LaunchedEffect(value) {
+        if (tfv.text != value) {
+            tfv = TextFieldValue(
+                text      = value,
+                selection = TextRange(value.length)
+            )
+        }
+    }
+
     OutlinedTextField(
-        value               = value,
-        onValueChange       = { new ->
-            if (new.length <= maxLength) {
-                onValueChange(new)
+        value         = tfv,
+        onValueChange = { new ->
+            if (new.text.length <= maxLength) {
+                tfv = new
+                onValueChange(new.text)
                 if (keyboardType == KeyboardType.Number || keyboardType == KeyboardType.NumberPassword) {
-                    if (new.length == maxLength) {
+                    if (new.text.length == maxLength) {
                         keyboardController?.hide()
                         onBlur()
                     }
