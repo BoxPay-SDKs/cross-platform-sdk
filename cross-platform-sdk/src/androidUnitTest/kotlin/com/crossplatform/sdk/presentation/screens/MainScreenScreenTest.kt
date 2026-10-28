@@ -149,7 +149,7 @@ class MainScreenScreenTest {
         mainScreenRepo.sessionDetailsResult = ApiResponse.Loading
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MainScreen(
                     viewModel = newViewModel(), onProceedCardScreen = {}, onProceedEMIScreen = {},
                     onProceedAddressScreen = {}, onProceedSavedAddressScreen = {}, onProceedNetBankingScreen = {},
@@ -169,7 +169,7 @@ class MainScreenScreenTest {
         setCheckoutToken(token = "") // CheckoutDetailsHandler default is also empty, but be explicit
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MainScreen(
                     viewModel = newViewModel(), onProceedCardScreen = {}, onProceedEMIScreen = {},
                     onProceedAddressScreen = {}, onProceedSavedAddressScreen = {}, onProceedNetBankingScreen = {},
@@ -195,7 +195,7 @@ class MainScreenScreenTest {
         var navigatedWithAutoNav: Boolean? = null
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MainScreen(
                     viewModel = newViewModel(),
                     onProceedCardScreen = { navigatedWithAutoNav = it },
@@ -234,7 +234,7 @@ class MainScreenScreenTest {
         var navigatedWithAutoNav: Boolean? = null
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MainScreen(
                     viewModel = newViewModel(),
                     onProceedCardScreen = { navigatedWithAutoNav = it },
@@ -260,7 +260,7 @@ class MainScreenScreenTest {
         mainScreenRepo.sessionDetailsResult = ApiResponse.Error(message = "session expired or invalid")
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MainScreen(
                     viewModel = newViewModel(), onProceedCardScreen = {}, onProceedEMIScreen = {},
                     onProceedAddressScreen = {}, onProceedSavedAddressScreen = {}, onProceedNetBankingScreen = {},

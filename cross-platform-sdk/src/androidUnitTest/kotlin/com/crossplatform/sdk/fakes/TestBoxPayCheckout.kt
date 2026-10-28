@@ -63,8 +63,12 @@ internal fun TestBoxPayCheckout(
         }
     ) {
         val backendFont by CheckoutDetailsHandler.fontFamilyFlow.collectAsStateWithLifecycle()
+        // Mirror real BoxPayCheckout: read the locale that was set from session details
+        // via MainScreenMapper → CheckoutDetailsHandler.setSDKConfig(localeCode=...).
+        val sessionLocaleCode by CheckoutDetailsHandler.localeCodeFlow.collectAsStateWithLifecycle()
 
         ProvideSDKFonts(
+            currentLanguage = sessionLocaleCode,   // dynamic, not hardcoded "en"
             merchantFont = fontFamily,
             backendFont = backendFont,
             onUnknownFontRequested = {},

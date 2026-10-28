@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -23,7 +24,7 @@ class MorePaymentContainerTest {
     @Test
     fun `shows the title and no surcharge line when surchargeFee is null`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MorePaymentContainer(title = "Cards", image = Res.drawable.ic_card, surchargeFee = null, onClick = {}, currencySymbol = "\u20b9")
             }
         }
@@ -35,7 +36,7 @@ class MorePaymentContainerTest {
     @Test
     fun `shows the surcharge line when surchargeFee is non-zero`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MorePaymentContainer(title = "Cards", image = Res.drawable.ic_card, surchargeFee = 15.0, onClick = {}, currencySymbol = "\u20b9")
             }
         }
@@ -46,7 +47,7 @@ class MorePaymentContainerTest {
     @Test
     fun `zero surchargeFee is treated the same as null - no surcharge line`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MorePaymentContainer(title = "Cards", image = Res.drawable.ic_card, surchargeFee = 0.0, onClick = {}, currencySymbol = "\u20b9")
             }
         }
@@ -58,7 +59,7 @@ class MorePaymentContainerTest {
     fun `tapping the row invokes onClick`() {
         var clicked = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MorePaymentContainer(title = "EMI", image = Res.drawable.ic_card, onClick = { clicked = true }, currencySymbol = "\u20b9")
             }
         }

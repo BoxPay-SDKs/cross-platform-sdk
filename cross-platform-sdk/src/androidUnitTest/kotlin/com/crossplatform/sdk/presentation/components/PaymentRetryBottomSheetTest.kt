@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -31,7 +32,7 @@ class PaymentRetryBottomSheetTest {
     @Test
     fun `shows the retry title, description and initial countdown text`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 PaymentRetryBottomSheet(
                     sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
                     totalSeconds = 5,
@@ -52,7 +53,7 @@ class PaymentRetryBottomSheetTest {
     fun `tapping the countdown box invokes onTimeout`() {
         var timedOut = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 PaymentRetryBottomSheet(
                     sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
                     totalSeconds = 5,

@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.crossplatform.sdk.data.ApiResponse
@@ -53,7 +54,7 @@ class WalletScreenTest {
         )
 
         composeTestRule.setContent {
-            ProvideSDKFonts { WalletScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { WalletScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
         }
 
         composeTestRule.onNodeWithText("All Wallet").assertExists()
@@ -65,7 +66,7 @@ class WalletScreenTest {
         otherPaymentMethodRepo.getPaymentMethodsResult = ApiResponse.Error(message = "could not load wallets")
 
         composeTestRule.setContent {
-            ProvideSDKFonts { WalletScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { WalletScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
         }
 
         composeTestRule.onNodeWithText("Welcome to error screen could not load wallets").assertExists()
@@ -77,7 +78,7 @@ class WalletScreenTest {
         var exited = false
 
         composeTestRule.setContent {
-            ProvideSDKFonts { WalletScreen(onBackPress = {}, isAutoNavigationEnabled = true, onExitCheckout = { exited = true }) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { WalletScreen(onBackPress = {}, isAutoNavigationEnabled = true, onExitCheckout = { exited = true }) }
         }
 
         assertTrue(exited)

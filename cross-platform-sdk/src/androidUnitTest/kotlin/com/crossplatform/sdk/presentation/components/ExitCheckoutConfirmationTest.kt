@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -23,7 +24,7 @@ class ExitCheckoutConfirmationTest {
     @Test
     fun `shows the confirmation title and body text`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ExitCheckoutConfirmation(onConfirmExit = {}, onStay = {}, buttonColor = "#000000", buttonTextColor = "#FFFFFF", ctaBorderRadius = 8)
             }
         }
@@ -36,7 +37,7 @@ class ExitCheckoutConfirmationTest {
     fun `tapping Exit checkout eventually invokes onConfirmExit`() {
         var confirmed = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ExitCheckoutConfirmation(onConfirmExit = { confirmed = true }, onStay = {}, buttonColor = "#000000", buttonTextColor = "#FFFFFF", ctaBorderRadius = 8)
             }
         }
@@ -51,7 +52,7 @@ class ExitCheckoutConfirmationTest {
     fun `tapping Back to Checkout invokes onStay`() {
         var stayed = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ExitCheckoutConfirmation(onConfirmExit = {}, onStay = { stayed = true }, buttonColor = "#000000", buttonTextColor = "#FFFFFF", ctaBorderRadius = 8)
             }
         }

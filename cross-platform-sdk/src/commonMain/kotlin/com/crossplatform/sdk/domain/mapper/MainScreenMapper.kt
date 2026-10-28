@@ -78,13 +78,13 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
         methodFlags = when (method.type) {
             "Upi" -> when (method.brand) {
                 "UpiIntent" -> methodFlags.copy(isUPIIntentVisible = true, isUPIVisible = true)
-                "UpiCollect" -> methodFlags.copy(isUPICollectVisible = true, isUPIVisible = true)
+//                "UpiCollect" -> methodFlags.copy(isUPICollectVisible = true, isUPIVisible = true)
                 "UpiQr" -> methodFlags.copy(isUPIQRVisible = true, isUPIVisible = true)
                 else -> methodFlags
             }
             "UpiOneTimeMandate" -> when (method.brand) {
                 "UpiIntentOtm" -> methodFlags.copy(isUPIOtmIntentVisible = true, isUPIOtmVisible = true)
-                "UpiCollectOtm" -> methodFlags.copy(isUPIOtmCollectVisible = true, isUPIOtmVisible = true)
+//                "UpiCollectOtm" -> methodFlags.copy(isUPIOtmCollectVisible = true, isUPIOtmVisible = true)
                 "UpiQrOtm" -> methodFlags.copy(isUPIOtmQRVisible = true, isUPIOtmVisible = true)
                 else -> methodFlags
             }

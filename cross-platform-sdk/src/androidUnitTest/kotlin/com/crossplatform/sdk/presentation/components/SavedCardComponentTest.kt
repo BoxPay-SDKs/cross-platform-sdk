@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -27,7 +28,7 @@ class SavedCardComponentTest {
     @Test
     fun `renders the nickname and masked number for each saved card`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SavedCardComponent(
                     savedCards = listOf(savedCard(id = "ref_1", nickName = "My Shopping Card", displayValue = "\u2022\u2022\u2022\u2022 1111")),
                     onProceedForward = { _, _ -> },
@@ -53,7 +54,7 @@ class SavedCardComponentTest {
     fun `tapping Add new Card invokes onClickAddCard`() {
         var addCardClicked = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SavedCardComponent(
                     savedCards = emptyList(),
                     onProceedForward = { _, _ -> },
@@ -79,7 +80,7 @@ class SavedCardComponentTest {
     @Test
     fun `renders one row per saved card`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SavedCardComponent(
                     savedCards = listOf(
                         savedCard(id = "ref_1", nickName = "Shopping Card", displayValue = "\u2022\u2022\u2022\u2022 1111"),

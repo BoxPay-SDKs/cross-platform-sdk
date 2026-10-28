@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -42,7 +43,7 @@ class ShowUpdatedAmountBottomSheetTest {
     @Test
     fun `with no matching surcharge, total payable equals the base amount`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ShowUpdateAmountBottomSheet(
                     selectedMethod = "card",
                     onClickProceed = {}, onClick = {},
@@ -61,7 +62,7 @@ class ShowUpdatedAmountBottomSheetTest {
     @Test
     fun `a surcharge matching the selected method is shown and added to the total`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ShowUpdateAmountBottomSheet(
                     selectedMethod = "card",
                     onClickProceed = {}, onClick = {},
@@ -82,7 +83,7 @@ class ShowUpdatedAmountBottomSheetTest {
     @Test
     fun `a surcharge for a different method is excluded from both the row and the total`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ShowUpdateAmountBottomSheet(
                     selectedMethod = "upi",
                     onClickProceed = {}, onClick = {},
@@ -103,7 +104,7 @@ class ShowUpdatedAmountBottomSheetTest {
     fun `tapping Proceed to Pay invokes onClickProceed`() {
         var proceedClicked = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ShowUpdateAmountBottomSheet(
                     selectedMethod = "card",
                     onClickProceed = { proceedClicked = true }, onClick = {},

@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.crossplatform.sdk.data.ApiResponse
@@ -53,7 +54,7 @@ class BNPLScreenTest {
         )
 
         composeTestRule.setContent {
-            ProvideSDKFonts { BNPLScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { BNPLScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
         }
 
         composeTestRule.onNodeWithText("Simpl").assertExists()
@@ -64,7 +65,7 @@ class BNPLScreenTest {
         otherPaymentMethodRepo.getPaymentMethodsResult = ApiResponse.Error(message = "could not load BNPL providers")
 
         composeTestRule.setContent {
-            ProvideSDKFonts { BNPLScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { BNPLScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
         }
 
         composeTestRule.onNodeWithText("Welcome to error screen could not load BNPL providers").assertExists()
@@ -76,7 +77,7 @@ class BNPLScreenTest {
         var exited = false
 
         composeTestRule.setContent {
-            ProvideSDKFonts { BNPLScreen(onBackPress = {}, isAutoNavigationEnabled = true, onExitCheckout = { exited = true }) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { BNPLScreen(onBackPress = {}, isAutoNavigationEnabled = true, onExitCheckout = { exited = true }) }
         }
 
         assertTrue(exited)

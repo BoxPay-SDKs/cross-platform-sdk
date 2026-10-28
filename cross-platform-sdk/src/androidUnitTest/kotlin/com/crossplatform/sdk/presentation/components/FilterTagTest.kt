@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -20,7 +21,7 @@ class FilterTagTest {
     @Test
     fun `displays exactly the text it was given`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 FilterTag(modifier = Modifier, text = "Instant Discount")
             }
         }
@@ -31,7 +32,7 @@ class FilterTagTest {
     @Test
     fun `renders an empty tag without crashing when text is blank`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 FilterTag(modifier = Modifier, text = "")
             }
         }

@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -77,7 +78,7 @@ class CardScreenIntegrationTest {
     @Test
     fun `typing a card number starting with zero shows the real validation error on screen`() {
         composeTestRule.setContent {
-            ProvideSDKFonts { TestCardScreenHost(viewModel) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { TestCardScreenHost(viewModel) }
         }
 
         composeTestRule.onNodeWithText("Card Number*").performTextInput("0111111111111111")
@@ -92,7 +93,7 @@ class CardScreenIntegrationTest {
     @Test
     fun `typing a well-formed card number does not show a validation error`() {
         composeTestRule.setContent {
-            ProvideSDKFonts { TestCardScreenHost(viewModel) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { TestCardScreenHost(viewModel) }
         }
 
         // Luhn-valid Visa test number, not starting with 0.

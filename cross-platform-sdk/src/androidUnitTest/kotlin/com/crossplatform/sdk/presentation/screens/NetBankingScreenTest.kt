@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.crossplatform.sdk.data.ApiResponse
@@ -63,7 +64,7 @@ class NetBankingScreenTest {
         )
 
         composeTestRule.setContent {
-            ProvideSDKFonts { NetBankingScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { NetBankingScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
         }
 
         composeTestRule.onNodeWithText("All Banks").assertExists()
@@ -76,7 +77,7 @@ class NetBankingScreenTest {
         otherPaymentMethodRepo.getPaymentMethodsResult = ApiResponse.Error(message = "could not load banks")
 
         composeTestRule.setContent {
-            ProvideSDKFonts { NetBankingScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { NetBankingScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
         }
 
         composeTestRule.onNodeWithText("Welcome to error screen could not load banks").assertExists()
@@ -88,7 +89,7 @@ class NetBankingScreenTest {
         var exited = false
 
         composeTestRule.setContent {
-            ProvideSDKFonts { NetBankingScreen(onBackPress = {}, isAutoNavigationEnabled = true, onExitCheckout = { exited = true }) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { NetBankingScreen(onBackPress = {}, isAutoNavigationEnabled = true, onExitCheckout = { exited = true }) }
         }
 
         assertTrue(exited)
@@ -99,7 +100,7 @@ class NetBankingScreenTest {
         otherPaymentMethodRepo.getPaymentMethodsResult = ApiResponse.Success(emptyList(), responseCode = 200)
 
         composeTestRule.setContent {
-            ProvideSDKFonts { NetBankingScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { NetBankingScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
         }
 
         composeTestRule.onNodeWithText("Oops!! No results found").assertExists()

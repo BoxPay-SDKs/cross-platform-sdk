@@ -41,7 +41,7 @@ class TopBarTest {
     @Test
     fun `renders the given title text`() {
         composeTestRule.setContent {
-            ProvideSDKFonts { TopBar(showDesc = false, text = "Pay via Card", onBackPress = {}) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { TopBar(showDesc = false, text = "Pay via Card", onBackPress = {}) }
         }
 
         composeTestRule.onNodeWithText("Pay via Card").assertExists()
@@ -54,7 +54,7 @@ class TopBarTest {
         CheckoutDetailsHandler.set(CheckoutDetailsHandler.checkoutDetails.copy(isMerchantLogoVisible = true))
         var backPressed = false
         composeTestRule.setContent {
-            ProvideSDKFonts { TopBar(showDesc = false, text = "Payment Details", onBackPress = { backPressed = true }) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { TopBar(showDesc = false, text = "Payment Details", onBackPress = { backPressed = true }) }
         }
 
         composeTestRule.onNodeWithContentDescription("Back").performClick()
@@ -67,7 +67,7 @@ class TopBarTest {
         CheckoutDetailsHandler.set(CheckoutDetailsHandler.checkoutDetails.copy(isMerchantLogoVisible = false))
 
         composeTestRule.setContent {
-            ProvideSDKFonts { TopBar(showDesc = false, text = "Payment Details", onBackPress = {}) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { TopBar(showDesc = false, text = "Payment Details", onBackPress = {}) }
         }
 
         composeTestRule.onNodeWithContentDescription("Back").assertDoesNotExist()
@@ -76,7 +76,7 @@ class TopBarTest {
     @Test
     fun `the session timer is hidden when sessionSeconds is null`() {
         composeTestRule.setContent {
-            ProvideSDKFonts { TopBar(showDesc = false, text = "Payment Details", onBackPress = {}, sessionSeconds = null) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { TopBar(showDesc = false, text = "Payment Details", onBackPress = {}, sessionSeconds = null) }
         }
 
         composeTestRule.onNodeWithText("Payment Details").assertExists() // sanity: screen still renders
@@ -87,7 +87,7 @@ class TopBarTest {
         CheckoutDetailsHandler.set(CheckoutDetailsHandler.checkoutDetails.copy(isSessionExpiryVisible = true))
 
         composeTestRule.setContent {
-            ProvideSDKFonts { TopBar(showDesc = false, text = "Payment Details", onBackPress = {}, sessionSeconds = 125L) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { TopBar(showDesc = false, text = "Payment Details", onBackPress = {}, sessionSeconds = 125L) }
         }
 
         composeTestRule.onNodeWithText("02:05").assertExists()

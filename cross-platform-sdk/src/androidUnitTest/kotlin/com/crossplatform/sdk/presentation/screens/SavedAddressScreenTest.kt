@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.crossplatform.sdk.data.ApiResponse
@@ -58,7 +59,7 @@ class SavedAddressScreenTest {
         )
 
         composeTestRule.setContent {
-            ProvideSDKFonts { SavedAddressScreen(onBackPress = {}, buttonColor = "#000000") }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { SavedAddressScreen(onBackPress = {}, buttonColor = "#000000") }
         }
 
         // address1/address2/city/state/pinCode render as one concatenated
@@ -73,7 +74,7 @@ class SavedAddressScreenTest {
         addressScreenRepo.savedAddressResult = ApiResponse.Error(message = "could not load addresses")
 
         composeTestRule.setContent {
-            ProvideSDKFonts { SavedAddressScreen(onBackPress = {}, buttonColor = "#000000") }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { SavedAddressScreen(onBackPress = {}, buttonColor = "#000000") }
         }
 
         composeTestRule.onNodeWithText("Welcome to error screen could not load addresses").assertExists()

@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.crossplatform.sdk.presentation.theme.ProvideSDKFonts
@@ -47,7 +48,7 @@ class AddressScreenTest {
         isPhoneEnabled: Boolean = false,
     ) {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 AddressScreen(
                     onAddressSaved = {},
                     onBackPress = {},

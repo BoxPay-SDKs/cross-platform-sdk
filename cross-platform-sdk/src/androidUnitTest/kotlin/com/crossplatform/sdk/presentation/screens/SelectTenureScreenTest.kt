@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -34,7 +35,7 @@ class SelectTenureScreenTest {
     @Test
     fun `shows the bank name and card type in the header`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SelectTenureScreen(
                     selectedBank = bank("HDFC Bank", emiList = listOf(emi(3, "\u20b91,700"))),
                     cardType = "Credit Card",
@@ -52,7 +53,7 @@ class SelectTenureScreenTest {
     @Test
     fun `renders one row per emi tenure option`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SelectTenureScreen(
                     selectedBank = bank("HDFC Bank", emiList = listOf(emi(3, "1,700"), emi(6, "900"))),
                     cardType = "Credit Card",
@@ -72,7 +73,7 @@ class SelectTenureScreenTest {
     fun `tapping an emi row invokes onClickRadio with its duration, amount, and code`() {
         var clicked: Triple<Int, String, String?>? = null
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SelectTenureScreen(
                     selectedBank = bank("HDFC Bank", emiList = listOf(emi(3, "1,700", code = "CODE3"))),
                     cardType = "Credit Card",
@@ -94,7 +95,7 @@ class SelectTenureScreenTest {
     fun `when an emi is already selected, its Proceed action fires onProceed with that emi's terms`() {
         var proceeded: List<Any?>? = null
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SelectTenureScreen(
                     selectedBank = bank("HDFC Bank", emiList = listOf(emi(3, "1,700"))),
                     cardType = "Credit Card",

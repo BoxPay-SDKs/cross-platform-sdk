@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -25,7 +26,7 @@ class MorePaymentMethodsTest {
         onNavigateToEmi: () -> Unit = {},
     ) {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MorePaymentMethods(
                     methodFlags = methodFlags,
                     onNavigateToCard = onNavigateToCard,
@@ -65,7 +66,7 @@ class MorePaymentMethodsTest {
     @Test
     fun `cards section is hidden when a saved card already exists`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MorePaymentMethods(
                     methodFlags = MainScreenModel.MethodFlags(isCardsVisible = true),
                     onNavigateToCard = {}, onNavigateToWallet = {}, onNavigateToNetBanking = {},

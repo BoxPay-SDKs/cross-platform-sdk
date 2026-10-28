@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -21,7 +22,7 @@ class CvvInfoBottomSheetTest {
     @Test
     fun `shows both the generic and Amex CVV explanations`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 CvvInfoBottomSheet(onClick = {}, buttonColor = "#000000", borderRadius = 8, buttonTextColor = "#FFFFFF")
             }
         }
@@ -35,7 +36,7 @@ class CvvInfoBottomSheetTest {
     fun `tapping Got it invokes onClick`() {
         var clicked = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 CvvInfoBottomSheet(onClick = { clicked = true }, buttonColor = "#000000", borderRadius = 8, buttonTextColor = "#FFFFFF")
             }
         }

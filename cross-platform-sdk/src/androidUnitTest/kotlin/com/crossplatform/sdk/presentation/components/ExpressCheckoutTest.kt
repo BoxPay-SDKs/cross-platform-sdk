@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -48,7 +49,7 @@ class ExpressCheckoutTest {
     @Test
     fun `none of the buttons render when no express method is available`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ExpressCheckout(
                     config = config,
                     paymentHandler = FakeExpressCheckoutPaymentHandler(),
@@ -64,7 +65,7 @@ class ExpressCheckoutTest {
     fun `only Google Pay shows when only it is available, and clicking it fires the callback`() {
         var googlePayClicked = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ExpressCheckout(
                     config = config,
                     paymentHandler = FakeExpressCheckoutPaymentHandler(googlePayAvailable = true),
@@ -83,7 +84,7 @@ class ExpressCheckoutTest {
     @Test
     fun `all three buttons show when all are available`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ExpressCheckout(
                     config = config,
                     paymentHandler = FakeExpressCheckoutPaymentHandler(
@@ -104,7 +105,7 @@ class ExpressCheckoutTest {
         var applePayClicked = false
         var googlePayClicked = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ExpressCheckout(
                     config = config,
                     paymentHandler = FakeExpressCheckoutPaymentHandler(applePayAvailable = true),

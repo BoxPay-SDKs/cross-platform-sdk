@@ -30,7 +30,7 @@ class PayButtonTest {
         CheckoutDetailsHandler.set(CheckoutDetailsHandler.checkoutDetails.copy(ctaTextFontSize = 16))
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 PayButton(
                     text = "Pay",
                     modifier = Modifier,
@@ -52,7 +52,7 @@ class PayButtonTest {
         CheckoutDetailsHandler.set(CheckoutDetailsHandler.checkoutDetails.copy(ctaTextFontSize = 16))
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 PayButton(
                     text = "Continue",
                     modifier = Modifier,
@@ -72,7 +72,7 @@ class PayButtonTest {
         CheckoutDetailsHandler.set(CheckoutDetailsHandler.checkoutDetails.copy(ctaTextFontSize = 16))
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 PayButton(
                     text = "Pay",
                     modifier = Modifier,

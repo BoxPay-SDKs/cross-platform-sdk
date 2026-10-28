@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -31,7 +32,7 @@ class CountryPickerDialogTest {
     @Test
     fun `shows the header and search field`() {
         composeTestRule.setContent {
-            ProvideSDKFonts { CountryPickerDialog(onDismiss = {}, focusedBorderColor = "#CCCCCC", unfocusedBorderColor = "#DDDDDD", onSelect = { _, _, _, _ -> }) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { CountryPickerDialog(onDismiss = {}, focusedBorderColor = "#CCCCCC", unfocusedBorderColor = "#DDDDDD", onSelect = { _, _, _, _ -> }) }
         }
 
         composeTestRule.onNodeWithText("Select Country").assertExists()
@@ -41,7 +42,7 @@ class CountryPickerDialogTest {
     fun `tapping the close icon invokes onDismiss`() {
         var dismissed = false
         composeTestRule.setContent {
-            ProvideSDKFonts { CountryPickerDialog(onDismiss = { dismissed = true }, focusedBorderColor = "#CCCCCC", unfocusedBorderColor = "#DDDDDD", onSelect = { _, _, _, _ -> }) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { CountryPickerDialog(onDismiss = { dismissed = true }, focusedBorderColor = "#CCCCCC", unfocusedBorderColor = "#DDDDDD", onSelect = { _, _, _, _ -> }) }
         }
 
         composeTestRule.onNodeWithContentDescription("Close").performClick()
@@ -55,7 +56,7 @@ class CountryPickerDialogTest {
         var selectedIsd: String? = null
         var selectedName: String? = null
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 CountryPickerDialog(
                     onDismiss = {},
                     focusedBorderColor = "#CCCCCC",
@@ -78,7 +79,7 @@ class CountryPickerDialogTest {
     @Test
     fun `typing a search query filters the country list`() {
         composeTestRule.setContent {
-            ProvideSDKFonts { CountryPickerDialog(onDismiss = {}, focusedBorderColor = "#CCCCCC", unfocusedBorderColor = "#DDDDDD", onSelect = { _, _, _, _ -> }) }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { CountryPickerDialog(onDismiss = {}, focusedBorderColor = "#CCCCCC", unfocusedBorderColor = "#DDDDDD", onSelect = { _, _, _, _ -> }) }
         }
 
         composeTestRule.onNodeWithText("Search country").performTextInput("India")

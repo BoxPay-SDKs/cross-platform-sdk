@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -21,7 +22,7 @@ class KnowMoreBottomSheetTest {
     @Test
     fun `shows the RBI guidelines heading and both info rows`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 KnowMoreBottomSheet(buttonColor = "#000000", buttonTextColor = "#FFFFFF", ctaBorderRadius = 8, onDismiss = {})
             }
         }
@@ -36,7 +37,7 @@ class KnowMoreBottomSheetTest {
     fun `tapping Got it invokes onDismiss`() {
         var dismissed = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 KnowMoreBottomSheet(buttonColor = "#000000", buttonTextColor = "#FFFFFF", ctaBorderRadius = 8, onDismiss = { dismissed = true })
             }
         }
