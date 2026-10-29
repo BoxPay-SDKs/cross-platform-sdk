@@ -239,7 +239,13 @@ class MainScreenScreenTest {
             sessionDetails(
                 paymentMethods = listOf(
                     PaymentMethod(id = "card_1", type = "Card", brand = "Card"),
-                    PaymentMethod(id = "wallet_1", type = "Wallet", brand = "GooglePay"),
+                    // MainScreenMapper.kt only sets isWalletVisible=true for a Wallet
+                    // method whose brand ISN'T "GooglePay"/"ApplePay"/"RevolutPay" (those
+                    // set isGooglePayVisible/isApplePayVisible/isRevolutPayVisible
+                    // instead, which MainScreen.kt's enabledMethods list doesn't check at
+                    // all) - so "GooglePay" here would make enabledMethods = ["card"]
+                    // only, triggering auto-nav and breaking this test's own premise.
+                    PaymentMethod(id = "wallet_1", type = "Wallet", brand = "PayPal"),
                 )
             ),
             responseCode = 200,

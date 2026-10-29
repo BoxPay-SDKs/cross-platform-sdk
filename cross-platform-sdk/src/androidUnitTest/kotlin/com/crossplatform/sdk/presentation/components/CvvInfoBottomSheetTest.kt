@@ -11,12 +11,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
 
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsNode
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.click
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.performClick
 import com.crossplatform.sdk.presentation.theme.ProvideSDKFonts
 import org.junit.Rule
 import org.junit.Test
@@ -31,6 +34,14 @@ class CvvInfoBottomSheetTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    private fun printNode(node: SemanticsNode, depth: Int = 0) {
+        val indent = "  ".repeat(depth)
+        val text = node.config.getOrNull(SemanticsProperties.Text)?.joinToString { it.text }
+        val hasClick = node.config.contains(SemanticsActions.OnClick)
+        println("$indent[id=${node.id}] bounds=${node.boundsInWindow} text=$text hasClick=$hasClick")
+        node.children.forEach { printNode(it, depth + 1) }
+    }
 
     @Test
     fun `shows both the generic and Amex CVV explanations`() {
@@ -64,9 +75,8 @@ class CvvInfoBottomSheetTest {
 
         composeTestRule.waitForIdle()
         composeTestRule.onNode(hasText("Got it!", substring = true) and hasClickAction())
-            .performTouchInput { click() }
+            .performClick()
 
-        composeTestRule.waitForIdle()
         assertTrue(clicked)
     }
 }

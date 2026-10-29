@@ -55,11 +55,11 @@ class MorePaymentContainerTest {
                 PreviewContextConfigurationEffect()
             }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
-                MorePaymentContainer(title = "Cards", image = Res.drawable.ic_card, surchargeFee = 15.0, onClick = {}, currencySymbol = "\u20b9")
+                MorePaymentContainer(title = "Cards", image = Res.drawable.ic_card, surchargeFee = 15.0, onClick = {}, currencySymbol = "INR")
             }
         }
 
-        composeTestRule.onNodeWithText("\u20b9 15.0 extra applied as surcharge").assertExists()
+        composeTestRule.onNodeWithText("INR 15.0 extra applied as surcharge").assertExists()
     }
 
     @Test

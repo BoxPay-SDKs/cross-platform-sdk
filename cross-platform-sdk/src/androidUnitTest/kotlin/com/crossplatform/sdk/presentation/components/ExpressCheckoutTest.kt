@@ -103,9 +103,9 @@ class ExpressCheckoutTest {
             }
         }
 
-        composeTestRule.onNodeWithContentDescription("google pay ").assertExists()
-        composeTestRule.onNodeWithContentDescription("apple pay ").assertExists()
-        composeTestRule.onNodeWithContentDescription("revolut pay ").assertExists()
+        composeTestRule.onNodeWithContentDescription("Google Pay").assertExists()
+        composeTestRule.onNodeWithContentDescription("Apple Pay").assertExists()
+        composeTestRule.onNodeWithContentDescription("Revolut Pay").assertExists()
     }
 
     @Test

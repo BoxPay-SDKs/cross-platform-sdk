@@ -36,7 +36,6 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.got_it_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.where_to_find_cvv_title
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

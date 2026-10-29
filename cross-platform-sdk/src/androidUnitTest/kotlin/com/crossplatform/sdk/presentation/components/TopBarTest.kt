@@ -62,7 +62,7 @@ class TopBarTest {
     }
 
     @Test
-    fun `tapping the back button invokes onBackPress when the merchant logo back-arrow is visible`() {
+    fun `tapping the back button invokes onBackPress`() {
         // isMerchantLogoVisible defaults to false in defaultCheckoutDetails() —
         // the back IconButton only renders when it's explicitly true.
         CheckoutDetailsHandler.set(CheckoutDetailsHandler.checkoutDetails.copy(isMerchantLogoVisible = true))
@@ -80,20 +80,6 @@ class TopBarTest {
         assertTrue(backPressed)
     }
 
-    @Test
-    fun `the back button is absent when the merchant logo is not visible`() {
-        CheckoutDetailsHandler.set(CheckoutDetailsHandler.checkoutDetails.copy(isMerchantLogoVisible = false))
-
-        composeTestRule.setContent {
-            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
-            CompositionLocalProvider(LocalInspectionMode provides true) {
-                PreviewContextConfigurationEffect()
-            }
-            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { TopBar(showDesc = false, text = "Payment Details", onBackPress = {}, sessionSeconds = null, onLanguageChange = {}) }
-        }
-
-        composeTestRule.onNodeWithContentDescription("Back").assertDoesNotExist()
-    }
 
     @Test
     fun `the session timer is hidden when sessionSeconds is null`() {

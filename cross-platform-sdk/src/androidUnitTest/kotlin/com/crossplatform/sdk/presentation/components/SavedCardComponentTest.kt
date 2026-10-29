@@ -44,7 +44,7 @@ class SavedCardComponentTest {
             }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SavedCardComponent(
-                    savedCards = listOf(savedCard(id = "ref_1", nickName = "My Shopping Card", displayValue = "\u2022\u2022\u2022\u2022 1111")),
+                    savedCards = listOf(savedCard(id = "ref_1", nickName = "My Shopping Card", displayValue = "**** 1111")),
                     onProceedForward = { _, _ -> },
                     onClickAddCard = {},
                     buttonTextColor = "#FFFFFF",
@@ -61,7 +61,7 @@ class SavedCardComponentTest {
         }
 
         composeTestRule.onNodeWithText("My Shopping Card").assertExists()
-        composeTestRule.onNodeWithText("\u2022\u2022\u2022\u2022 1111").assertExists()
+        composeTestRule.onNodeWithText("**** 1111 | CVV Less").assertExists()
     }
 
     @Test

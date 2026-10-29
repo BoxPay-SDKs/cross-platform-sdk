@@ -54,7 +54,7 @@ class SwipeToPayComponentTest {
                     buttonColor = "#000000",
                     buttonTextColor = "#FFFFFF",
                     amount = 499.0,
-                    currencySymbol = "\u20b9",
+                    currencySymbol = "INR",
                     lastUsedUpi = "jane@upi",
                     onClickMoreOptions = onClickMoreOptions,
                     onSwipeComplete = {},
