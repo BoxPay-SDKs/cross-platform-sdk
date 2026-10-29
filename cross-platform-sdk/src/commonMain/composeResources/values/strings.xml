@@ -223,4 +223,22 @@
     <string name="scan_card_cancel">Cancel</string>
     <string name="scan_card_permission_denied">Camera access is turned off. Enable it in Settings to scan your card.</string>
     <string name="scan_card_camera_unavailable">The camera isn\'t available on this device.</string>
+
+    <!-- Camera card scan steps -->
+    <string name="scan_card_step1_title">Open your wallet or take out your card</string>
+    <string name="scan_card_step2_title">Place the card flat inside the frame</string>
+    <string name="scan_card_step3_title">Hold steady — details are read automatically</string>
+    <string name="scan_card_error">Card could not be scanned. Please try scanning again or enter your card details manually.</string>
+
+    <!-- NFC card scan -->
+    <string name="nfc_scan_cta">Add card using NFC</string>
+    <string name="nfc_scan_title">Ready to scan</string>
+    <string name="nfc_scan_hint">Hold your NFC card to the back of your device. Details are read on your device only.</string>
+    <string name="nfc_scan_cancel">Cancel</string>
+    <string name="nfc_scan_disabled">NFC is turned off. Enable it in Settings to tap your card.</string>
+    <string name="nfc_scan_not_supported">NFC is not available on this device.</string>
+    <string name="nfc_scan_step1_title">Unlock your phone and open this screen</string>
+    <string name="nfc_scan_step2_title">Hold your card flat against the back of your phone</string>
+    <string name="nfc_scan_step3_title">Keep it still — card details are read in seconds</string>
+    <string name="nfc_scan_error">Card could not be scanned. Please try again or enter your card details manually.</string>
 </resources>

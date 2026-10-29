@@ -223,4 +223,12 @@
     <string name="scan_card_cancel">ரத்து செய்</string>
     <string name="scan_card_permission_denied">கேமரா அணுகல் முடக்கப்பட்டுள்ளது. உங்கள் கார்டை ஸ்கேன் செய்ய அமைப்புகளில் அதை இயக்கவும்.</string>
     <string name="scan_card_camera_unavailable">இந்த சாதனத்தில் கேமரா கிடைக்கவில்லை.</string>
+
+    <!-- NFC card scan -->
+    <string name="nfc_scan_cta">கார்டை தட்டவும்</string>
+    <string name="nfc_scan_title">ஸ்கேன் செய்ய தயார்</string>
+    <string name="nfc_scan_hint">உங்கள் NFC கார்டை சாதனத்தின் பின்புறத்தில் வையுங்கள். விவரங்கள் உங்கள் சாதனத்தில் மட்டுமே படிக்கப்படும்.</string>
+    <string name="nfc_scan_cancel">ரத்து செய்</string>
+    <string name="nfc_scan_disabled">NFC முடக்கப்பட்டுள்ளது. உங்கள் கார்டை தட்ட அமைப்புகளில் இயக்கவும்.</string>
+    <string name="nfc_scan_not_supported">இந்த சாதனத்தில் NFC கிடைக்கவில்லை.</string>
 </resources>
