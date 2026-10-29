@@ -1,5 +1,15 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import org.junit.Rule
@@ -25,6 +35,10 @@ class WebViewUrlBarTest {
     @Test
     fun `shows the given url`() {
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             WebViewUrlBar(currentUrl = "https://pay.example.com/checkout")
         }
 
@@ -34,6 +48,10 @@ class WebViewUrlBarTest {
     @Test
     fun `shows a loading placeholder when the url is empty`() {
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             WebViewUrlBar(currentUrl = "")
         }
 

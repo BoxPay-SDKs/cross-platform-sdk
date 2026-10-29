@@ -71,8 +71,8 @@ class SelectedPaymentMethodMapperTest {
     fun `every result starts unselected and not marked as last used`() {
         val result = listOf(paymentMethod()).toUiModel(type = "Wallet")
 
-        assertTrue(result.none { it.isSelected })
-        assertTrue(result.none { it.isLastUsed })
+        assertTrue(result.none { it.isSelected == true })
+        assertTrue(result.none { it.isLastUsed == true })
     }
 
     @Test

@@ -5,7 +5,7 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.data.repo.MainScreenRepoImpl
 import com.crossplatform.sdk.data.repo.OtherPaymentMethodRepoImpl
-import com.crossplatform.sdk.domain.model.UiState
+import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.fakes.FakeApiService
 import com.crossplatform.sdk.fakes.FakeCallUIAnalyticsRepo
 import com.crossplatform.sdk.fakes.FakeFetchStatusRepo
@@ -173,7 +173,7 @@ class SessionLoadingRepoIntegrationTest {
         viewModel.loadSession()
 
         // A PAID session should cause the success-screen state to be set
-        assertTrue(CheckoutDetailsHandler.isPaymentSuccessful)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
     }
 
     // ── double-load guard ────────────────────────────────────────────────────

@@ -1,5 +1,15 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -55,6 +65,10 @@ class UpiTimerScreenTest {
     @Test
     fun `shows the shopper VPA and the initial 5 minute countdown`() {
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 UpiTimerScreen(onBackPress = {}, shopperVpa = "jane@upi", buttonColor = "#000000", buttonTextColor = "#FFFFFF")
             }
@@ -67,6 +81,10 @@ class UpiTimerScreenTest {
     @Test
     fun `tapping Cancel Payment opens the confirmation modal`() {
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 UpiTimerScreen(onBackPress = {}, shopperVpa = "jane@upi", buttonColor = "#000000", buttonTextColor = "#FFFFFF")
             }
@@ -82,6 +100,10 @@ class UpiTimerScreenTest {
     fun `confirming Yes in the modal invokes onBackPress`() {
         var backPressed = false
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 UpiTimerScreen(onBackPress = { backPressed = true }, shopperVpa = "jane@upi", buttonColor = "#000000", buttonTextColor = "#FFFFFF")
             }
@@ -97,6 +119,10 @@ class UpiTimerScreenTest {
     fun `tapping No dismisses the modal without calling onBackPress`() {
         var backPressed = false
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 UpiTimerScreen(onBackPress = { backPressed = true }, shopperVpa = "jane@upi", buttonColor = "#000000", buttonTextColor = "#FFFFFF")
             }

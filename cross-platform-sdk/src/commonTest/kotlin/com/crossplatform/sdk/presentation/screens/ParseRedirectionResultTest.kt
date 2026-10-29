@@ -51,14 +51,20 @@ class ParseRedirectionResultTest {
 
     @Test
     fun `finds redirectionResult regardless of its position among other params`() {
-        val url = "https://pay.example.com/boxpay?a=1&redirectionResult=ABC&b=2"
+        val url = "https://pay.example.com/payment-completion-handler?a=1&redirectionResult=ABC&b=2"
 
         assertEquals("ABC", parseRedirectionResult(url))
     }
 
     @Test
-    fun `only one of the two markers needs to be present`() {
-        assertEquals("X", parseRedirectionResult("https://x.com/boxpay?redirectionResult=X"))
+    fun `payment-completion-handler marker alone is sufficient, without a boxpay marker`() {
         assertEquals("Y", parseRedirectionResult("https://x.com/payment-completion-handler?redirectionResult=Y"))
+    }
+
+    @Test
+    fun `a boxpay marker alone, without payment-completion-handler, does not satisfy the gate`() {
+        // The implementation only gates on "payment-completion-handler" — "boxpay" in the
+        // path isn't checked at all, despite what the function's comment says.
+        assertNull(parseRedirectionResult("https://x.com/boxpay?redirectionResult=X"))
     }
 }

@@ -2,7 +2,9 @@ package com.crossplatform.sdk.presentation.viewmodel
 
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.data.model.CardPaymentMethod
 import com.crossplatform.sdk.data.model.FetchCardDetails
+import com.crossplatform.sdk.data.model.Issuer
 import com.crossplatform.sdk.data.repo.CardScreenRepoImpl
 import com.crossplatform.sdk.data.repo.FetchStatusRepoImpl
 import com.crossplatform.sdk.fakes.FakeApiService
@@ -51,13 +53,13 @@ class CardPaymentRepoIntegrationTest {
             token                   = "test_token_123",
             isTestEnv               = true,
             isSuccessScreenVisible  = true,
-            ctaBorderRadius         = 8f,
+            ctaBorderRadius         = 8,
             isSICheckboxChecked     = false,
             isSICheckboxEnabled     = false,
             isFailedScreenVisible   = true,
             showQROnLoad            = false,
-            focusedTextInputBorderColor   = null,
-            unfocusedTextInputBorderColor = null
+            focusedTextInputBorderColor   = "",
+            unfocusedTextInputBorderColor   = ""
         )
 
         api             = FakeApiService()
@@ -82,10 +84,16 @@ class CardPaymentRepoIntegrationTest {
     fun `BIN lookup via real CardScreenRepoImpl routes fetchCardDetails to FakeApiService`() = runTest {
         api.nextFetchCardDetails = ApiResponse.Success(
             FetchCardDetails(
-                cardScheme  = "VISA",
-                cardType    = "CREDIT",
-                bankName    = "HDFC Bank",
-                cardNetwork = "VISA"
+                paymentMethod = CardPaymentMethod(
+                    id = "pm_card",
+                    type = "Card",
+                    brand = "VISA",
+                    issuer = Issuer(code = "HDFC", title = "HDFC Bank"),
+                    classification = "CREDIT"
+                ),
+                methodEnabled = true,
+                issuerName = Issuer(code = "HDFC", title = "HDFC Bank"),
+                issuerTitle = "HDFC Bank"
             ),
             responseCode = 200
         )
@@ -93,8 +101,8 @@ class CardPaymentRepoIntegrationTest {
         val result = cardRepo.getCardDetails("411111111111")
 
         assertIs<ApiResponse.Success<FetchCardDetails>>(result)
-        assertEquals("VISA",      (result as ApiResponse.Success).data.cardScheme)
-        assertEquals("HDFC Bank", result.data.bankName)
+        assertEquals("VISA",      (result as ApiResponse.Success).data.paymentMethod.brand)
+        assertEquals("HDFC Bank", result.data.issuerTitle)
         assertEquals("411111111111", api.lastFetchCardDetailsNumber)
     }
 
@@ -104,7 +112,7 @@ class CardPaymentRepoIntegrationTest {
 
         val result = cardRepo.getCardDetails("999999999999")
 
-        assertIs<ApiResponse.Error<FetchCardDetails>>(result)
+        assertIs<ApiResponse.Error>(result)
         assertEquals("card not found", (result as ApiResponse.Error).message)
     }
 
@@ -214,7 +222,7 @@ class CardPaymentRepoIntegrationTest {
 
         viewModel.callFetchStatus("SUCCESS")
 
-        assertTrue(CheckoutDetailsHandler.isPaymentSuccessful)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
     }
 
     @Test
@@ -226,7 +234,7 @@ class CardPaymentRepoIntegrationTest {
 
         viewModel.callFetchStatus("FAILED")
 
-        assertTrue(CheckoutDetailsHandler.isPaymentFailed)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed)
     }
 
     @Test
@@ -264,7 +272,7 @@ class CardPaymentRepoIntegrationTest {
             responseCode = 200
         )
         viewModel.callFetchStatus("SUCCESS")
-        assertTrue(CheckoutDetailsHandler.isPaymentSuccessful)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
 
         // Verify both calls went through the real repo chain
         assertNotNull(api.callLog.firstOrNull { it.contains("cardPostRequest") })

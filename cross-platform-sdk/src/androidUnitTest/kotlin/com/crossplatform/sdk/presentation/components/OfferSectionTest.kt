@@ -1,5 +1,15 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -30,6 +40,10 @@ class OfferSectionTest {
     @Test
     fun `a single offer renders the SingleOfferCard with an Apply action`() {
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 OfferSection(
                     offers = listOf(offer("SAVE10")), selectedCode = "", themeColor = Color.Blue,
@@ -45,6 +59,10 @@ class OfferSectionTest {
     @Test
     fun `a single applied offer shows the savings banner and a Remove action`() {
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 OfferSection(
                     offers = listOf(offer("SAVE10")), selectedCode = "SAVE10", themeColor = Color.Blue,
@@ -62,6 +80,10 @@ class OfferSectionTest {
     fun `tapping Apply on a single offer invokes onApply with that offer`() {
         var appliedCode: String? = null
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 OfferSection(
                     offers = listOf(offer("SAVE10")), selectedCode = "", themeColor = Color.Blue,
@@ -78,6 +100,10 @@ class OfferSectionTest {
     @Test
     fun `more than one offer renders the MultiOfferCard with an offer count`() {
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 OfferSection(
                     offers = listOf(offer("SAVE10"), offer("WELCOME50")), selectedCode = "", themeColor = Color.Blue,
@@ -93,6 +119,10 @@ class OfferSectionTest {
     @Test
     fun `more than MAX_VISIBLE_CHIPS offers shows a overflow chip`() {
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 OfferSection(
                     offers = listOf(offer("A"), offer("B"), offer("C"), offer("D"), offer("E")),
@@ -108,6 +138,10 @@ class OfferSectionTest {
     fun `tapping View all invokes onViewAll`() {
         var viewAllClicked = false
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 OfferSection(
                     offers = listOf(offer("A"), offer("B")), selectedCode = "", themeColor = Color.Blue,

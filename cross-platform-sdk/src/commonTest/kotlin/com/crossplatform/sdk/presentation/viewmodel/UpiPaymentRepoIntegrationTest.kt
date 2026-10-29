@@ -51,13 +51,13 @@ class UpiPaymentRepoIntegrationTest {
             token                   = "upi_token",
             isTestEnv               = true,
             isSuccessScreenVisible  = true,
-            ctaBorderRadius         = 8f,
+            ctaBorderRadius         = 8,
             isSICheckboxChecked     = false,
             isSICheckboxEnabled     = false,
             isFailedScreenVisible   = true,
             showQROnLoad            = false,
-            focusedTextInputBorderColor   = null,
-            unfocusedTextInputBorderColor = null
+            focusedTextInputBorderColor   = "",
+            unfocusedTextInputBorderColor   = ""
         )
 
         api             = FakeApiService()
@@ -169,7 +169,7 @@ class UpiPaymentRepoIntegrationTest {
 
         mainVm.postUpiIntentRequest(
             type          = "UPI_INTENT",
-            upiApp        = "GPAY",
+            selectedIntent = "GPAY",
             surchargeList = null
         )
 
@@ -188,7 +188,7 @@ class UpiPaymentRepoIntegrationTest {
 
         mainVm.postUpiIntentRequest(
             type          = "UPI_INTENT",
-            upiApp        = "PHONEPE",
+            selectedIntent = "PHONEPE",
             surchargeList = listOf("SC_UPI_INTENT")
         )
 
@@ -202,7 +202,7 @@ class UpiPaymentRepoIntegrationTest {
             responseCode = 200
         )
 
-        mainVm.postUpiIntentRequest(type = "UPI_INTENT", upiApp = "PAYTM", surchargeList = null)
+        mainVm.postUpiIntentRequest(type = "UPI_INTENT", selectedIntent = "PAYTM", surchargeList = null)
 
         assertNull(api.lastUpiIntentSurcharges)
     }
@@ -260,7 +260,7 @@ class UpiPaymentRepoIntegrationTest {
             responseCode = 200
         )
         mainVm.callFetchStatus("SUCCESS")
-        assertTrue(CheckoutDetailsHandler.isPaymentSuccessful)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
 
         // Verify both calls were routed through real repos
         assertNotNull(api.callLog.firstOrNull { it.contains("upiCollectPostRequest") })
@@ -285,6 +285,6 @@ class UpiPaymentRepoIntegrationTest {
         )
         mainVm.callFetchStatus("FAILED")
 
-        assertTrue(CheckoutDetailsHandler.isPaymentFailed)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed)
     }
 }

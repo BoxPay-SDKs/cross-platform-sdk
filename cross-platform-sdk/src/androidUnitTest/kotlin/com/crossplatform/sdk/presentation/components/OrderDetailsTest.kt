@@ -1,5 +1,15 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -28,8 +38,13 @@ class OrderDetailsTest {
         taxAmount: Double = 0.0,
         surchargeDetails: List<SurchargeModel> = emptyList(),
         selectedPaymentMethod: String = "card",
+        selectedNetwork: String = "",
     ) {
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 OrderDetails(
                     totalAmount = totalAmount,
@@ -39,7 +54,9 @@ class OrderDetailsTest {
                     taxAmount = taxAmount,
                     surchargeDetails = surchargeDetails,
                     selectedPaymentMethod = selectedPaymentMethod,
+                    selectedNetwork = selectedNetwork,
                     currencySymbol = "\u20b9",
+                    buttonColor = "#000000",
                 )
             }
         }
@@ -89,8 +106,9 @@ class OrderDetailsTest {
     fun `a surcharge matching the selected payment method is shown`() {
         setContent(
             selectedPaymentMethod = "card",
+            selectedNetwork = "VISA",
             surchargeDetails = listOf(
-                SurchargeModel(applicableOn = "card", title = "Card Surcharge", surchargeCode = "SC1", network = "VISA", classification = "CONSUMER", amount = 10.0)
+                SurchargeModel(applicableOn = "card", title = "Card Surcharge", surchargeCode = "SC1", network = "VISA", classification = "CONSUMER", amount = 10.0, description = "")
             ),
         )
         composeTestRule.onNodeWithText("Price Details").performClick() // expand
@@ -103,7 +121,7 @@ class OrderDetailsTest {
         setContent(
             selectedPaymentMethod = "upi",
             surchargeDetails = listOf(
-                SurchargeModel(applicableOn = "card", title = "Card Surcharge", surchargeCode = "SC1", network = "VISA", classification = "CONSUMER", amount = 10.0)
+                SurchargeModel(applicableOn = "card", title = "Card Surcharge", surchargeCode = "SC1", network = "VISA", classification = "CONSUMER", amount = 10.0, description = "")
             ),
         )
         composeTestRule.onNodeWithText("Price Details").performClick() // expand

@@ -1,5 +1,15 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -59,7 +69,11 @@ class SavedAddressScreenTest {
         )
 
         composeTestRule.setContent {
-            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { SavedAddressScreen(onBackPress = {}, buttonColor = "#000000") }
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { SavedAddressScreen(onBackPress = {}, buttonColor = "#000000", onProceedAddNewAddress = {}, onClickSelectAddress = {}) }
         }
 
         // address1/address2/city/state/pinCode render as one concatenated
@@ -74,7 +88,11 @@ class SavedAddressScreenTest {
         addressScreenRepo.savedAddressResult = ApiResponse.Error(message = "could not load addresses")
 
         composeTestRule.setContent {
-            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { SavedAddressScreen(onBackPress = {}, buttonColor = "#000000") }
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { SavedAddressScreen(onBackPress = {}, buttonColor = "#000000", onProceedAddNewAddress = {}, onClickSelectAddress = {}) }
         }
 
         composeTestRule.onNodeWithText("Welcome to error screen could not load addresses").assertExists()

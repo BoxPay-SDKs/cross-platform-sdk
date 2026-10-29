@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.viewmodel
 
+import com.crossplatform.sdk.data.model.CheckoutTheme
 import com.crossplatform.sdk.data.model.Configs
 import com.crossplatform.sdk.data.model.EnabledFields
 import com.crossplatform.sdk.data.model.FetchStatusResponse
@@ -43,13 +44,26 @@ internal fun buildMinimalSessionDetails(
     ),
     merchantDetails = MerchantDetails(
         merchantName = "TestMerchant",
-        merchantLogo = null
+        merchantLogo = null,
+        checkoutTheme = buildMinimalCheckoutTheme()
     ),
     sessionExpiryTimestamp = null,
     status                 = status,
     lastPaidAtTimestamp    = null,
     lastTransactionId      = null,
     lastTransactionDetails = null
+)
+
+internal fun buildMinimalCheckoutTheme(): CheckoutTheme = CheckoutTheme(
+    primaryButtonColor = "#000000",
+    buttonTextColor = "#FFFFFF",
+    headerColor = "#FFFFFF",
+    headerTextColor = "#000000",
+    focusedTextInputBorderColor = "#CCCCCC",
+    unfocusedTextInputBorderColor = "#DDDDDD",
+    payButtonFontSize = "16",
+    font = "default",
+    payButtonBorderRadius = "8"
 )
 
 internal fun buildPaymentMethod(

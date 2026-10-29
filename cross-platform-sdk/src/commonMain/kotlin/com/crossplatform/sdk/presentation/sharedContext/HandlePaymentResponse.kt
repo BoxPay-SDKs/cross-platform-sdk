@@ -170,7 +170,7 @@ internal suspend fun handlePaymentResponse(
                         resolveErrorMessage(
                             reasonCode = structuredError?.reasonCode,
                             reason = structuredError?.message,
-                            fallback = getString(Res.string.payment_failed_error_messages)
+                            fallback = paymentFailedFallbackMessage()
                         )
                     )
                     CheckoutDetailsHandler.setSessionFailed()

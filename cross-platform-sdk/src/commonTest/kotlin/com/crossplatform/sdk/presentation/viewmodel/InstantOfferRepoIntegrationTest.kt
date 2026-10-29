@@ -76,13 +76,13 @@ class InstantOfferRepoIntegrationTest {
             token                   = "offer_token",
             isTestEnv               = true,
             isSuccessScreenVisible  = true,
-            ctaBorderRadius         = 8f,
+            ctaBorderRadius         = 8,
             isSICheckboxChecked     = false,
             isSICheckboxEnabled     = false,
             isFailedScreenVisible   = true,
             showQROnLoad            = false,
-            focusedTextInputBorderColor   = null,
-            unfocusedTextInputBorderColor = null
+            focusedTextInputBorderColor   = "",
+            unfocusedTextInputBorderColor   = ""
         )
         // Set an amount so InstantOfferViewModel.loadOffer() can pass minAmount/maxAmount
         CheckoutDetailsHandler.setAmount(amount = 500.0)
@@ -185,7 +185,7 @@ class InstantOfferRepoIntegrationTest {
 
         val result = offerRepo.getOffers(minAmount = 100.0, maxAmount = 100.0)
 
-        assertIs<ApiResponse.Error<List<InstantOfferResponse>>>(result)
+        assertIs<ApiResponse.Error>(result)
         assertEquals("offers unavailable", (result as ApiResponse.Error).message)
     }
 
@@ -258,7 +258,7 @@ class InstantOfferRepoIntegrationTest {
 
         val result = offerRepo.applyOffer(offerId = listOf("EXPIRED_OFFER"), minAmount = 200.0)
 
-        assertIs<ApiResponse.Error<AppliedOfferResponse>>(result)
+        assertIs<ApiResponse.Error>(result)
         assertEquals("offer invalid or expired", (result as ApiResponse.Error).message)
     }
 

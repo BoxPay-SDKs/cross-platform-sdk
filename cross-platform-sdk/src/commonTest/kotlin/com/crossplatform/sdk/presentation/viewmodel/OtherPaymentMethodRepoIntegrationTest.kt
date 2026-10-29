@@ -2,9 +2,10 @@ package com.crossplatform.sdk.presentation.viewmodel
 
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
+import com.crossplatform.sdk.data.repo.CardScreenRepoImpl
 import com.crossplatform.sdk.data.repo.FetchStatusRepoImpl
 import com.crossplatform.sdk.data.repo.OtherPaymentMethodRepoImpl
-import com.crossplatform.sdk.domain.model.UiState
+import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.fakes.FakeApiService
 import com.crossplatform.sdk.fakes.FakeCallUIAnalyticsRepo
 import kotlinx.coroutines.Dispatchers
@@ -49,13 +50,13 @@ class OtherPaymentMethodRepoIntegrationTest {
             token                   = "other_token",
             isTestEnv               = true,
             isSuccessScreenVisible  = true,
-            ctaBorderRadius         = 8f,
+            ctaBorderRadius         = 8,
             isSICheckboxChecked     = false,
             isSICheckboxEnabled     = false,
             isFailedScreenVisible   = true,
             showQROnLoad            = false,
-            focusedTextInputBorderColor   = null,
-            unfocusedTextInputBorderColor = null
+            focusedTextInputBorderColor   = "",
+            unfocusedTextInputBorderColor   = ""
         )
 
         api             = FakeApiService()
@@ -71,7 +72,12 @@ class OtherPaymentMethodRepoIntegrationTest {
         walletVm    = WalletViewModel(repo = otherRepo, analyticsRepo = FakeCallUIAnalyticsRepo(), fetchStatusRepo = fetchStatusRepo)
         netBankingVm = NetBankingViewModel(repo = otherRepo, analyticsRepo = FakeCallUIAnalyticsRepo(), fetchStatusRepo = fetchStatusRepo)
         bnplVm      = BNPLViewModel(repo = otherRepo, analyticsRepo = FakeCallUIAnalyticsRepo(), fetchStatusRepo = fetchStatusRepo)
-        emiVm       = EMIScreenViewModel(repo = otherRepo, analyticsRepo = FakeCallUIAnalyticsRepo(), fetchStatusRepo = fetchStatusRepo)
+        emiVm       = EMIScreenViewModel(
+            repo = otherRepo,
+            cardScreenRepo = CardScreenRepoImpl(apiService = api, ioDispatcher = UnconfinedTestDispatcher()),
+            analyticsRepo = FakeCallUIAnalyticsRepo(),
+            fetchStatusRepo = fetchStatusRepo
+        )
     }
 
     @AfterTest
@@ -282,7 +288,7 @@ class OtherPaymentMethodRepoIntegrationTest {
         )
         walletVm.callFetchStatus("SUCCESS")
 
-        assertTrue(CheckoutDetailsHandler.isPaymentSuccessful)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
         assertNotNull(api.callLog.firstOrNull { it.contains("methodsPostRequest") })
         assertNotNull(api.callLog.firstOrNull { it.contains("fetchStatus") })
     }
@@ -303,7 +309,7 @@ class OtherPaymentMethodRepoIntegrationTest {
 
         // Expired status routes to the failed/expired state via handlePaymentResponse
         // CheckoutDetailsHandler should not show success
-        assertFalse(CheckoutDetailsHandler.isPaymentSuccessful)
+        assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
     }
 
     @Test
@@ -320,6 +326,6 @@ class OtherPaymentMethodRepoIntegrationTest {
         )
         bnplVm.callFetchStatus("FAILED")
 
-        assertTrue(CheckoutDetailsHandler.isPaymentFailed)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed)
     }
 }

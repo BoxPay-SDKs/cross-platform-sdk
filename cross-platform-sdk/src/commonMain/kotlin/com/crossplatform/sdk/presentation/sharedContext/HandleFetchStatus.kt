@@ -10,6 +10,25 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.payment_failed_error_messages
 import org.jetbrains.compose.resources.getString
 
+/**
+ * Resolves the shared "payment failed" fallback string, defensively.
+ *
+ * [getString] depends on the platform's Compose-resources Android context
+ * being initialized. That's always true in a running app, but in a JVM/
+ * Robolectric unit test it can be unset depending on test ordering/startup —
+ * in that situation [getString] throws rather than returning a value. Since
+ * this is only ever used as a last-resort fallback message (real reason/
+ * reasonCode strings from the API take precedence — see [resolveErrorMessage]),
+ * falling back further to a plain literal here is safe and never changes
+ * behavior when the resource loads normally.
+ */
+internal suspend fun paymentFailedFallbackMessage(): String =
+    try {
+        getString(Res.string.payment_failed_error_messages)
+    } catch (e: Exception) {
+        "Payment failed. Please try again."
+    }
+
 internal suspend fun handleFetchStatus(
     response : ApiResponse<FetchStatusResponse>,
     setIsBoxPayAnimationVisible : (Boolean) -> Unit,
@@ -49,7 +68,7 @@ internal suspend fun handleFetchStatus(
                     val resolvedErrorMessage = resolveErrorMessage(
                         reasonCode = apiData.reasonCode,
                         reason = apiData.reason,
-                        fallback = getString(Res.string.payment_failed_error_messages)
+                        fallback = paymentFailedFallbackMessage()
                     )
                     CheckoutDetailsHandler.setErrorMessage(resolvedErrorMessage)
                     CheckoutDetailsHandler.setSessionFailed()
@@ -124,7 +143,7 @@ internal suspend fun handleUpiCollectFetchStatus(
                     val resolvedErrorMessage = resolveErrorMessage(
                         reasonCode = apiData.reasonCode,
                         reason = apiData.reason,
-                        fallback = getString(Res.string.payment_failed_error_messages)
+                        fallback = paymentFailedFallbackMessage()
                     )
                     CheckoutDetailsHandler.setErrorMessage(resolvedErrorMessage)
                     CheckoutDetailsHandler.setSessionFailed()

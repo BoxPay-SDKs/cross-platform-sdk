@@ -100,7 +100,7 @@ class BoxPayElementsViewModelTest {
             responseCode = 200,
         )
 
-        viewModel.postCardRequest(isSICheckBoxClicked = false)
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
 
         assertEquals("<html>3DS</html>", viewModel.htmlString.value)
         assertTrue(viewModel.showWebViewScreen.value)
@@ -110,7 +110,7 @@ class BoxPayElementsViewModelTest {
     fun `postCardRequest turns off the loading animation on error`() = runTest {
         cardRepo.postCardDetailsResult = ApiResponse.Error(message = "declined")
 
-        viewModel.postCardRequest(isSICheckBoxClicked = false)
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
 
         assertEquals(false, viewModel.isBoxPayAnimationLoading.value)
     }

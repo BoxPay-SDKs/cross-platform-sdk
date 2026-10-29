@@ -93,7 +93,7 @@ class WalletViewModelTest {
         )
         val viewModel = WalletViewModel(repo, analyticsRepo, fetchStatusRepo)
 
-        viewModel.postWalletRequest(instrumentValue = "PhonePe")
+        viewModel.postWalletRequest(instrumentValue = "PhonePe", surcharge = null)
 
         assertEquals("https://wallet.example.com/pay", viewModel.url.value)
         assertTrue(viewModel.showWebview.value)
@@ -106,7 +106,7 @@ class WalletViewModelTest {
         repo.initiatePaymentResult = ApiResponse.Error(message = "wallet unavailable")
         val viewModel = WalletViewModel(repo, analyticsRepo, fetchStatusRepo)
 
-        viewModel.postWalletRequest(instrumentValue = "PhonePe")
+        viewModel.postWalletRequest(instrumentValue = "PhonePe", surcharge = null)
 
         assertEquals(false, viewModel.isBoxPayAnimationVisible.value)
     }

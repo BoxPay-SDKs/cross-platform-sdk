@@ -1,5 +1,15 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -32,6 +42,10 @@ class PaymentRetryBottomSheetTest {
     @Test
     fun `shows the retry title, description and initial countdown text`() {
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 PaymentRetryBottomSheet(
                     sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -53,6 +67,10 @@ class PaymentRetryBottomSheetTest {
     fun `tapping the countdown box invokes onTimeout`() {
         var timedOut = false
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 PaymentRetryBottomSheet(
                     sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),

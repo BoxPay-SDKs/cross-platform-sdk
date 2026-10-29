@@ -1,10 +1,25 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
+import com.crossplatform.sdk.domain.model.SurchargeModel
 import com.crossplatform.sdk.presentation.theme.ProvideSDKFonts
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_netbanking
@@ -14,6 +29,14 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
+/*
+ * `ExpandablePaymentSection` now hoists its expand/collapse state to the
+ * caller (`isExpanded` / `setIsExpanded` / `rotate`) rather than managing it
+ * internally, and takes `surchargeList: List<SurchargeModel>` (applied
+ * per-provider inside the nested `PaymentSelector`) instead of a single
+ * `surchargeFee: Double?` rendered in the header. These tests drive the
+ * hoisted state exactly as a real caller (e.g. `MorePaymentMethods`) would.
+ */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class ExpandablePaymentSectionTest {
@@ -28,25 +51,33 @@ class ExpandablePaymentSectionTest {
 
     private fun setContent(
         providerList: List<SelectedPaymentMethod>,
-        surchargeFee: Double? = null,
+        surchargeList: List<SurchargeModel> = emptyList(),
         onViewMore: () -> Unit = {},
     ) {
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
+                var isExpanded by remember { mutableStateOf(false) }
                 ExpandablePaymentSection(
                     title = "All Banks",
                     image = Res.drawable.ic_netbanking,
                     providerList = providerList,
-                    surchargeFee = surchargeFee,
-                    currencySymbol = "\u20b9",
+                    surchargeList = surchargeList,
+                    currencySymbol = "₹",
                     amount = 499.0,
                     selectedId = "",
                     buttonTextColor = "#FFFFFF",
                     buttonColor = "#000000",
                     ctaBorderRadius = 8,
-                    onClickRadio = {},
+                    onClickRadio = { _, _ -> },
                     onProceedForward = { _, _, _ -> },
                     onViewMore = onViewMore,
+                    rotate = if (isExpanded) 180f else 0f,
+                    isExpanded = isExpanded,
+                    setIsExpanded = { isExpanded = !isExpanded },
                 )
             }
         }
@@ -77,20 +108,6 @@ class ExpandablePaymentSectionTest {
         composeTestRule.onNodeWithText("All Banks").performClick() // collapse
 
         composeTestRule.onNodeWithText("HDFC Bank").assertDoesNotExist()
-    }
-
-    @Test
-    fun `a non-zero surcharge fee is shown in the header`() {
-        setContent(providerList = emptyList(), surchargeFee = 15.0)
-
-        composeTestRule.onNodeWithText("\u20b9 15.0 extra applied as surcharge").assertExists()
-    }
-
-    @Test
-    fun `a zero surcharge fee is not shown`() {
-        setContent(providerList = emptyList(), surchargeFee = 0.0)
-
-        composeTestRule.onNodeWithText("extra applied as surcharge", substring = true).assertDoesNotExist()
     }
 
     @Test

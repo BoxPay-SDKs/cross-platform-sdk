@@ -6,7 +6,7 @@ import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
 import com.crossplatform.sdk.data.repo.FetchStatusRepoImpl
 import com.crossplatform.sdk.data.repo.MainScreenRepoImpl
 import com.crossplatform.sdk.data.repo.OtherPaymentMethodRepoImpl
-import com.crossplatform.sdk.domain.model.UiState
+import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.fakes.FakeApiService
 import com.crossplatform.sdk.fakes.FakeCallUIAnalyticsRepo
 import com.crossplatform.sdk.fakes.FakeInstantOfferRepo
@@ -54,13 +54,13 @@ class SavedCardRepoIntegrationTest {
             token                   = "saved_card_token",
             isTestEnv               = true,
             isSuccessScreenVisible  = true,
-            ctaBorderRadius         = 8f,
+            ctaBorderRadius         = 8,
             isSICheckboxChecked     = false,
             isSICheckboxEnabled     = false,
             isFailedScreenVisible   = true,
             showQROnLoad            = false,
-            focusedTextInputBorderColor   = null,
-            unfocusedTextInputBorderColor = null
+            focusedTextInputBorderColor   = "",
+            unfocusedTextInputBorderColor   = ""
         )
 
         api             = FakeApiService()
@@ -146,7 +146,7 @@ class SavedCardRepoIntegrationTest {
 
         val result = mainRepo.fetchRecommendedInstruments()
 
-        assertIs<ApiResponse.Error<List<RecommendedInstrumentsResponse>>>(result)
+        assertIs<ApiResponse.Error>(result)
         assertEquals("no instruments", (result as ApiResponse.Error).message)
     }
 
@@ -270,7 +270,7 @@ class SavedCardRepoIntegrationTest {
         )
         viewModel.callFetchStatus("SUCCESS")
 
-        assertTrue(CheckoutDetailsHandler.isPaymentSuccessful)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
         assertNotNull(api.callLog.firstOrNull { it.contains("savedCardPostRequest") })
         assertNotNull(api.callLog.firstOrNull { it.contains("fetchStatus") })
     }
@@ -289,6 +289,6 @@ class SavedCardRepoIntegrationTest {
         )
         viewModel.callFetchStatus("FAILED")
 
-        assertTrue(CheckoutDetailsHandler.isPaymentFailed)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed)
     }
 }

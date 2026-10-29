@@ -126,7 +126,8 @@ internal class FakeOtherPaymentMethodRepo : OtherPaymentMethodRepo {
     override suspend fun initiatePayment(
         instrumentDetails: String,
         paymentType: String,
-        token: String
+        token: String,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> = initiatePaymentResult
 
     override suspend fun initiateEMIPayment(
@@ -137,7 +138,8 @@ internal class FakeOtherPaymentMethodRepo : OtherPaymentMethodRepo {
         cardType: String?,
         offerCode: String?,
         duration: Int?,
-        provider: String?
+        provider: String?,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
         lastInitiateEMIPaymentDuration = duration
         return initiateEMIPaymentResult

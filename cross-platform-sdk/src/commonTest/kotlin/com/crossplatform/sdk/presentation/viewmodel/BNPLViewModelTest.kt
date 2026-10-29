@@ -92,7 +92,7 @@ class BNPLViewModelTest {
         )
         val viewModel = BNPLViewModel(repo, fetchStatusRepo, analyticsRepo)
 
-        viewModel.postBNPLRequest(instrumentValue = "Simpl")
+        viewModel.postBNPLRequest(instrumentValue = "Simpl", surcharge = null)
 
         assertEquals("<html>bnpl</html>", viewModel.htmlString.value)
         assertTrue(viewModel.showWebview.value)
@@ -104,7 +104,7 @@ class BNPLViewModelTest {
         repo.initiatePaymentResult = ApiResponse.Error(message = "provider unavailable")
         val viewModel = BNPLViewModel(repo, fetchStatusRepo, analyticsRepo)
 
-        viewModel.postBNPLRequest(instrumentValue = "Simpl")
+        viewModel.postBNPLRequest(instrumentValue = "Simpl", surcharge = null)
 
         assertEquals(false, viewModel.isBoxPayAnimationVisible.value)
     }

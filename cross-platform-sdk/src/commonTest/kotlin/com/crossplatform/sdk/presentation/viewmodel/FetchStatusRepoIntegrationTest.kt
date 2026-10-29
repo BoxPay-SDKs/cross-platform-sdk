@@ -26,8 +26,8 @@ import kotlin.test.assertTrue
  * Uses REAL [FetchStatusRepoImpl] backed by [FakeApiService], wired into
  * REAL [CardScreenViewModel]. Covers:
  *  - fetchStatus routes through real repo to FakeApiService
- *  - SUCCESS status marks CheckoutDetailsHandler.isPaymentSuccessful
- *  - FAILED status marks CheckoutDetailsHandler.isPaymentFailed
+ *  - SUCCESS status marks CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful
+ *  - FAILED status marks CheckoutDetailsHandler.checkoutDetails.isPaymentFailed
  *  - EXPIRED and RETRYABLE statuses
  *  - autoRetryInitiatePayment routes through real repo
  *  - Full auto-retry e2e (retry → new RequiresAction → then SUCCESS)
@@ -49,13 +49,13 @@ class FetchStatusRepoIntegrationTest {
             token                   = "fetch_status_token",
             isTestEnv               = true,
             isSuccessScreenVisible  = true,
-            ctaBorderRadius         = 8f,
+            ctaBorderRadius         = 8,
             isSICheckboxChecked     = false,
             isSICheckboxEnabled     = false,
             isFailedScreenVisible   = true,
             showQROnLoad            = false,
-            focusedTextInputBorderColor   = null,
-            unfocusedTextInputBorderColor = null
+            focusedTextInputBorderColor   = "",
+            unfocusedTextInputBorderColor   = ""
         )
 
         api             = FakeApiService()
@@ -97,8 +97,8 @@ class FetchStatusRepoIntegrationTest {
 
         viewModel.callFetchStatus("SUCCESS")
 
-        assertTrue(CheckoutDetailsHandler.isPaymentSuccessful)
-        assertFalse(CheckoutDetailsHandler.isPaymentFailed)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
+        assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed)
     }
 
     @Test
@@ -110,8 +110,8 @@ class FetchStatusRepoIntegrationTest {
 
         viewModel.callFetchStatus("FAILED")
 
-        assertTrue(CheckoutDetailsHandler.isPaymentFailed)
-        assertFalse(CheckoutDetailsHandler.isPaymentSuccessful)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed)
+        assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
     }
 
     @Test
@@ -123,7 +123,7 @@ class FetchStatusRepoIntegrationTest {
 
         viewModel.callFetchStatus("EXPIRED")
 
-        assertFalse(CheckoutDetailsHandler.isPaymentSuccessful)
+        assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
     }
 
     @Test
@@ -132,7 +132,7 @@ class FetchStatusRepoIntegrationTest {
 
         viewModel.callFetchStatus("SUCCESS")
 
-        assertFalse(CheckoutDetailsHandler.isPaymentSuccessful)
+        assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
     }
 
     // ── autoRetryInitiatePayment via real FetchStatusRepoImpl ────────────────
@@ -179,13 +179,13 @@ class FetchStatusRepoIntegrationTest {
         // First call → FAILED
         api.nextFetchStatus = ApiResponse.Success(buildFailedFetchStatus(), responseCode = 200)
         viewModel.callFetchStatus("FAILED")
-        assertTrue(CheckoutDetailsHandler.isPaymentFailed)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed)
 
         // Reset and call again → SUCCESS
         CheckoutDetailsHandler.resetToDefault()
         api.nextFetchStatus = ApiResponse.Success(buildSuccessFetchStatus(), responseCode = 200)
         viewModel.callFetchStatus("SUCCESS")
-        assertTrue(CheckoutDetailsHandler.isPaymentSuccessful)
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
     }
 
     // ── retryable fetch status ───────────────────────────────────────────────
@@ -201,6 +201,6 @@ class FetchStatusRepoIntegrationTest {
 
         // Retryable means the session should still be active — not a terminal failure
         // The VM routes this to a retry; do NOT set isPaymentFailed immediately
-        assertFalse(CheckoutDetailsHandler.isPaymentSuccessful)
+        assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
     }
 }

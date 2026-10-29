@@ -1,5 +1,15 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -62,6 +72,10 @@ class InstantOfferScreenTest {
         instantOfferRepo.offersResult = ApiResponse.Success(listOf(offer("SAVE10"), offer("WELCOME50")), responseCode = 200)
 
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { InstantOfferScreen(selectedCode = "", onBackPress = {}, onClickApply = {}, onClickRemove = {}) }
         }
 
@@ -74,6 +88,10 @@ class InstantOfferScreenTest {
         instantOfferRepo.offersResult = ApiResponse.Error(message = "could not load offers")
 
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { InstantOfferScreen(selectedCode = "", onBackPress = {}, onClickApply = {}, onClickRemove = {}) }
         }
 
@@ -86,6 +104,10 @@ class InstantOfferScreenTest {
         var appliedCode: String? = null
 
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 InstantOfferScreen(selectedCode = "", onBackPress = {}, onClickApply = { appliedCode = it }, onClickRemove = {})
             }
@@ -101,6 +123,10 @@ class InstantOfferScreenTest {
         var removeClicked = false
 
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 InstantOfferScreen(selectedCode = "SAVE10", onBackPress = {}, onClickApply = {}, onClickRemove = { removeClicked = true })
             }

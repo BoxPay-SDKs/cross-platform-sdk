@@ -178,7 +178,7 @@ class AddressRepoIntegrationTest {
 
         val result = addressRepo.deleteSavedAddress(addressRef = "addr_nonexistent")
 
-        assertIs<ApiResponse.Error<FetchSavedAddress>>(result)
+        assertIs<ApiResponse.Error>(result)
         assertEquals("delete failed", (result as ApiResponse.Error).message)
     }
 

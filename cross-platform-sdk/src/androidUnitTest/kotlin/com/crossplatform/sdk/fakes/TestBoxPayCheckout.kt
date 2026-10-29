@@ -88,7 +88,9 @@ internal fun TestBoxPayCheckout(
             )
 
             MaterialTheme {
-                AppNavHost()
+                AppNavHost(
+                    onLanguageChange = {}
+                )
             }
         }
     }
