@@ -11,7 +11,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,12 +36,15 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.got_it_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.where_to_find_cvv_title
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CvvInfoBottomSheet(onClick: () -> Unit, buttonColor : String, borderRadius : Int, buttonTextColor : String) {
     ModalBottomSheet(
+        sheetState = rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { targetValue -> targetValue != SheetValue.Hidden }
+        ),
         onDismissRequest = onClick,
         dragHandle       = null,
         containerColor   = LocalSDKColors.current.background,

@@ -1,5 +1,16 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -21,7 +32,11 @@ class KnowMoreBottomSheetTest {
     @Test
     fun `shows the RBI guidelines heading and both info rows`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 KnowMoreBottomSheet(buttonColor = "#000000", buttonTextColor = "#FFFFFF", ctaBorderRadius = 8, onDismiss = {})
             }
         }
@@ -36,7 +51,11 @@ class KnowMoreBottomSheetTest {
     fun `tapping Got it invokes onDismiss`() {
         var dismissed = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 KnowMoreBottomSheet(buttonColor = "#000000", buttonTextColor = "#FFFFFF", ctaBorderRadius = 8, onDismiss = { dismissed = true })
             }
         }

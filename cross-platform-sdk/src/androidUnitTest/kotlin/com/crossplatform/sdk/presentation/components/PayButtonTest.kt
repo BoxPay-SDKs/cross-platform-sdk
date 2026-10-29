@@ -1,5 +1,15 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -30,7 +40,11 @@ class PayButtonTest {
         CheckoutDetailsHandler.set(CheckoutDetailsHandler.checkoutDetails.copy(ctaTextFontSize = 16))
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 PayButton(
                     text = "Pay",
                     modifier = Modifier,
@@ -52,7 +66,11 @@ class PayButtonTest {
         CheckoutDetailsHandler.set(CheckoutDetailsHandler.checkoutDetails.copy(ctaTextFontSize = 16))
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 PayButton(
                     text = "Continue",
                     modifier = Modifier,
@@ -72,7 +90,11 @@ class PayButtonTest {
         CheckoutDetailsHandler.set(CheckoutDetailsHandler.checkoutDetails.copy(ctaTextFontSize = 16))
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 PayButton(
                     text = "Pay",
                     modifier = Modifier,

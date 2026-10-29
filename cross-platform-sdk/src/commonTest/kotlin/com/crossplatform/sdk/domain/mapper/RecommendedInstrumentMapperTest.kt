@@ -72,7 +72,7 @@ class RecommendedInstrumentMapperTest {
     fun `every mapped instrument starts unselected and not marked last used`() {
         val result = listOf(instrument()).toUiModel()
 
-        assertFalse(result.single().isSelected)
-        assertFalse(result.single().isLastUsed)
+        assertFalse(result.single().isSelected ?: false)
+        assertFalse(result.single().isLastUsed ?: false)
     }
 }

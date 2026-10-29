@@ -1,16 +1,22 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
-import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentHandler
-import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentRequest
-import com.crossplatform.sdk.domain.handler.ExpressCheckoutPaymentResult
-import com.crossplatform.sdk.domain.handler.ApplePayExpressCheckoutConfig
 import com.crossplatform.sdk.domain.handler.GooglePayExpressCheckoutConfig
-import com.crossplatform.sdk.domain.handler.RevolutPayExpressCheckoutConfig
 import com.crossplatform.sdk.presentation.theme.ProvideSDKFonts
 import org.junit.Rule
 import org.junit.Test
@@ -19,19 +25,12 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.assertTrue
 
-/** Fully controllable fake so tests can decide which express-checkout buttons "exist" on device. */
-private class FakeExpressCheckoutPaymentHandler(
-    private val googlePayAvailable: Boolean = false,
-    private val applePayAvailable: Boolean = false,
-    private val revolutPayAvailable: Boolean = false,
-) : ExpressCheckoutPaymentHandler {
-    override suspend fun isGooglePayAvailable(config: GooglePayExpressCheckoutConfig) = googlePayAvailable
-    override fun isApplePayAvailable() = applePayAvailable
-    override fun isRevolutPayAvailable() = revolutPayAvailable
-    override fun launchGooglePay(request: ExpressCheckoutPaymentRequest, config: GooglePayExpressCheckoutConfig, onResult: (ExpressCheckoutPaymentResult) -> Unit) {}
-    override fun launchApplePay(request: ExpressCheckoutPaymentRequest, config: ApplePayExpressCheckoutConfig, onResult: (ExpressCheckoutPaymentResult) -> Unit) {}
-    override fun launchRevolutPay(request: ExpressCheckoutPaymentRequest, config: RevolutPayExpressCheckoutConfig, isSandbox: Boolean, onResult: (ExpressCheckoutPaymentResult) -> Unit) {}
-}
+/*
+ * NOTE: `ExpressCheckout` does not take a payment handler — the caller
+ * decides which buttons to show via plain `show___` booleans and supplies
+ * individual onClick callbacks. These tests exercise that contract directly
+ * rather than through a handler fake.
+ */
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
@@ -48,11 +47,15 @@ class ExpressCheckoutTest {
     @Test
     fun `none of the buttons render when no express method is available`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ExpressCheckout(
                     config = config,
-                    paymentHandler = FakeExpressCheckoutPaymentHandler(),
-                    onClickRevolut = {}, onClickGooglePay = {}, onClickApplePay = {},
+                    showApplePay = false, showGooglePay = false, showRevolutPay = false, showAffirm = false,
+                    onClickRevolut = {}, onClickGooglePay = {}, onClickApplePay = {}, onClickAffirm = {},
                 )
             }
         }
@@ -64,11 +67,15 @@ class ExpressCheckoutTest {
     fun `only Google Pay shows when only it is available, and clicking it fires the callback`() {
         var googlePayClicked = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ExpressCheckout(
                     config = config,
-                    paymentHandler = FakeExpressCheckoutPaymentHandler(googlePayAvailable = true),
-                    onClickRevolut = {}, onClickGooglePay = { googlePayClicked = true }, onClickApplePay = {},
+                    showApplePay = false, showGooglePay = true, showRevolutPay = false, showAffirm = false,
+                    onClickRevolut = {}, onClickGooglePay = { googlePayClicked = true }, onClickApplePay = {}, onClickAffirm = {},
                 )
             }
         }
@@ -83,20 +90,22 @@ class ExpressCheckoutTest {
     @Test
     fun `all three buttons show when all are available`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ExpressCheckout(
                     config = config,
-                    paymentHandler = FakeExpressCheckoutPaymentHandler(
-                        googlePayAvailable = true, applePayAvailable = true, revolutPayAvailable = true,
-                    ),
-                    onClickRevolut = {}, onClickGooglePay = {}, onClickApplePay = {},
+                    showApplePay = true, showGooglePay = true, showRevolutPay = true, showAffirm = false,
+                    onClickRevolut = {}, onClickGooglePay = {}, onClickApplePay = {}, onClickAffirm = {},
                 )
             }
         }
 
-        composeTestRule.onNodeWithContentDescription("google pay ").assertExists()
-        composeTestRule.onNodeWithContentDescription("apple pay ").assertExists()
-        composeTestRule.onNodeWithContentDescription("revolut pay ").assertExists()
+        composeTestRule.onNodeWithContentDescription("Google Pay").assertExists()
+        composeTestRule.onNodeWithContentDescription("Apple Pay").assertExists()
+        composeTestRule.onNodeWithContentDescription("Revolut Pay").assertExists()
     }
 
     @Test
@@ -104,11 +113,15 @@ class ExpressCheckoutTest {
         var applePayClicked = false
         var googlePayClicked = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ExpressCheckout(
                     config = config,
-                    paymentHandler = FakeExpressCheckoutPaymentHandler(applePayAvailable = true),
-                    onClickRevolut = {}, onClickGooglePay = { googlePayClicked = true }, onClickApplePay = { applePayClicked = true },
+                    showApplePay = true, showGooglePay = false, showRevolutPay = false, showAffirm = false,
+                    onClickRevolut = {}, onClickGooglePay = { googlePayClicked = true }, onClickApplePay = { applePayClicked = true }, onClickAffirm = {},
                 )
             }
         }

@@ -1,5 +1,16 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -77,7 +88,11 @@ class CardScreenIntegrationTest {
     @Test
     fun `typing a card number starting with zero shows the real validation error on screen`() {
         composeTestRule.setContent {
-            ProvideSDKFonts { TestCardScreenHost(viewModel) }
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { TestCardScreenHost(viewModel) }
         }
 
         composeTestRule.onNodeWithText("Card Number*").performTextInput("0111111111111111")
@@ -92,7 +107,11 @@ class CardScreenIntegrationTest {
     @Test
     fun `typing a well-formed card number does not show a validation error`() {
         composeTestRule.setContent {
-            ProvideSDKFonts { TestCardScreenHost(viewModel) }
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { TestCardScreenHost(viewModel) }
         }
 
         // Luhn-valid Visa test number, not starting with 0.
@@ -143,6 +162,7 @@ private fun TestCardScreenHost(viewModel: CardScreenViewModel) {
             if (it.isNotBlank()) viewModel.cardHolderNameError.value = false
             viewModel.checkCardValid(isTestEnv = false)
         },
+        handleCardNickNameChange = { viewModel.cardNickNameText.value = it },
         handleExpiryChange = { viewModel.handleExpiryChange(it, isTestEnv = false) },
         handleCvvChange = {
             viewModel.cardCvvText.value = it
@@ -167,10 +187,11 @@ private fun TestCardScreenHost(viewModel: CardScreenViewModel) {
         amount = 499.0,
         cardValid = viewModel.cardValid.value,
         isBoxPayPayButtonVisible = true,
-        postCardRequest = { viewModel.postCardRequest(isSICheckBoxClicked = it) },
+        postCardRequest = { viewModel.postCardRequest(isSICheckBoxClicked = it, surcharge = null) },
         buttonTextColor = "#FFFFFF",
         ctaBorderRadius = 8,
         isSavedCardCheckBoxClicked = viewModel.isSavedCardCheckBoxClicked.value,
         modifier = Modifier,
+        appliedSurcharge = emptyList(),
     )
 }

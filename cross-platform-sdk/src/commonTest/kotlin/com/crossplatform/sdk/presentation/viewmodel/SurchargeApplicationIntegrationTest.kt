@@ -240,6 +240,6 @@ class SurchargeApplicationIntegrationTest {
     )
 
     private fun surchargeModel(title: String, amount: Double) = SurchargeModel(
-        applicableOn = "", title = title, surchargeCode = "SC1", network = "", classification = "", amount = amount,
+        applicableOn = "", title = title, surchargeCode = "SC1", network = "", classification = "", amount = amount, description = "",
     )
 }

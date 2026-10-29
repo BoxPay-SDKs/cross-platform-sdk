@@ -8,6 +8,7 @@ import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.data.model.FetchStatusResponse
 import com.crossplatform.sdk.data.model.FetchSurchargeResponse
 import com.crossplatform.sdk.data.model.InstantOfferResponse
+import com.crossplatform.sdk.data.model.NativeOtpResponse
 import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
@@ -45,10 +46,26 @@ internal class FakeApiService : ApiService {
     var nextRecommendedInstruments: ApiResponse<List<RecommendedInstrumentsResponse>>? = null
     var nextSurcharge: ApiResponse<FetchSurchargeResponse>? = null
     var nextSavedAddress: ApiResponse<List<FetchSavedAddress>>? = null
-    var nextDeleteSavedCard: ApiResponse<RecommendedInstrumentsResponse>? = null
+    var nextDeleteSavedCard: ApiResponse<List<RecommendedInstrumentsResponse>>? = null
     var nextOffer: ApiResponse<List<InstantOfferResponse>>? = null
     var nextApplyOffer: ApiResponse<AppliedOfferResponse>? = null
     var nextAutoRetryInitiatePayment: ApiResponse<PaymentMethodPostResponse>? = null
+    var nextSubmitNativeOtp: ApiResponse<NativeOtpResponse>? = null
+    var nextResendOtp: ApiResponse<NativeOtpResponse>? = null
+    var nextCancelTransaction: ApiResponse<PaymentMethodPostResponse>? = null
+
+    // Captured arguments for assertion in integration tests
+    var lastCardPostSurcharges: List<String>? = null
+    var lastEmiPostSurcharges: List<String>? = null
+    var lastMethodsPostSurcharges: List<String>? = null
+    var lastUpiIntentSurcharges: List<String>? = null
+    var lastUpiCollectSurcharges: List<String>? = null
+    var lastUpiQrSurcharges: List<String>? = null
+    var lastDeleteSavedCardId: String? = null
+    var lastDeleteSavedCardType: String? = null
+    var lastFetchCardDetailsNumber: String? = null
+    var lastUpiCollectVpa: String? = null
+    var lastAutoRetryTransactionId: String? = null
 
     private fun <T> require(value: T?, name: String): T =
         value ?: error("FakeApiService.$name was called but no stub was configured")
@@ -64,7 +81,7 @@ internal class FakeApiService : ApiService {
         message: String
     ): ApiResponse<AnalyticsResponse> {
         callLog += "callUiAnalytics($uiEvent, $screenName, $message)"
-        return require(nextAnalyticsResponse, "nextAnalyticsResponse")
+        return nextAnalyticsResponse ?: ApiResponse.Loading
     }
 
     override suspend fun cardPostRequest(
@@ -75,9 +92,11 @@ internal class FakeApiService : ApiService {
         expiry: String,
         nickName: String?,
         isSaveInstrumentCheckboxClicked: Boolean,
-        isSICheckboxClicked: Boolean?
+        isSICheckboxClicked: Boolean?,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
-        callLog += "cardPostRequest(type=$type, cardNumber=$cardNumber, expiry=$expiry)"
+        lastCardPostSurcharges = surcharges
+        callLog += "cardPostRequest(type=$type, cardNumber=$cardNumber, expiry=$expiry, surcharges=$surcharges)"
         return require(nextCardPostResponse, "nextCardPostResponse")
     }
 
@@ -89,13 +108,16 @@ internal class FakeApiService : ApiService {
         cardType: String?,
         offerCode: String?,
         duration: Int?,
-        provider: String?
+        provider: String?,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
-        callLog += "emiPostRequest(cardNumber=$cardNumber, duration=$duration)"
+        lastEmiPostSurcharges = surcharges
+        callLog += "emiPostRequest(cardNumber=$cardNumber, duration=$duration, surcharges=$surcharges)"
         return require(nextEmiPostResponse, "nextEmiPostResponse")
     }
 
     override suspend fun fetchCardDetails(cardNumber: String): ApiResponse<FetchCardDetails> {
+        lastFetchCardDetailsNumber = cardNumber
         callLog += "fetchCardDetails($cardNumber)"
         return require(nextFetchCardDetails, "nextFetchCardDetails")
     }
@@ -108,9 +130,11 @@ internal class FakeApiService : ApiService {
     override suspend fun methodsPostRequest(
         instrumentDetails: String,
         token: String,
-        paymentType: String
+        paymentType: String,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
-        callLog += "methodsPostRequest($instrumentDetails, $paymentType)"
+        lastMethodsPostSurcharges = surcharges
+        callLog += "methodsPostRequest($instrumentDetails, $paymentType, surcharges=$surcharges)"
         return require(nextMethodsPostResponse, "nextMethodsPostResponse")
     }
 
@@ -129,9 +153,11 @@ internal class FakeApiService : ApiService {
 
     override suspend fun upiIntentPostRequest(
         type: String,
-        upiApp: String
+        upiApp: String,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
-        callLog += "upiIntentPostRequest($type, $upiApp)"
+        lastUpiIntentSurcharges = surcharges
+        callLog += "upiIntentPostRequest($type, $upiApp, surcharges=$surcharges)"
         return require(nextUpiIntentPostResponse, "nextUpiIntentPostResponse")
     }
 
@@ -139,14 +165,21 @@ internal class FakeApiService : ApiService {
         type: String,
         instrumentRef: String?,
         shopperVpa: String?,
-        saveInstrument: Boolean?
+        saveInstrument: Boolean,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
-        callLog += "upiCollectPostRequest($type, $shopperVpa)"
+        lastUpiCollectVpa = shopperVpa
+        lastUpiCollectSurcharges = surcharges
+        callLog += "upiCollectPostRequest($type, vpa=$shopperVpa, surcharges=$surcharges)"
         return require(nextUpiCollectPostResponse, "nextUpiCollectPostResponse")
     }
 
-    override suspend fun upiQrPostRequest(type: String): ApiResponse<PaymentMethodPostResponse> {
-        callLog += "upiQrPostRequest($type)"
+    override suspend fun upiQrPostRequest(
+        type: String,
+        surcharges: List<String>?
+    ): ApiResponse<PaymentMethodPostResponse> {
+        lastUpiQrSurcharges = surcharges
+        callLog += "upiQrPostRequest($type, surcharges=$surcharges)"
         return require(nextUpiQrPostResponse, "nextUpiQrPostResponse")
     }
 
@@ -176,8 +209,13 @@ internal class FakeApiService : ApiService {
         return require(nextSavedAddress, "nextSavedAddress")
     }
 
-    override suspend fun deleteSavedCard(id: String): ApiResponse<RecommendedInstrumentsResponse> {
-        callLog += "deleteSavedCard($id)"
+    override suspend fun deleteSavedCard(
+        id: String,
+        type: String
+    ): ApiResponse<List<RecommendedInstrumentsResponse>> {
+        lastDeleteSavedCardId = id
+        lastDeleteSavedCardType = type
+        callLog += "deleteSavedCard(id=$id, type=$type)"
         return require(nextDeleteSavedCard, "nextDeleteSavedCard")
     }
 
@@ -197,8 +235,35 @@ internal class FakeApiService : ApiService {
         return require(nextApplyOffer, "nextApplyOffer")
     }
 
-    override suspend fun autoRetryInitiatePayment(transactionId: String): ApiResponse<PaymentMethodPostResponse> {
+    override suspend fun autoRetryInitiatePayment(
+        transactionId: String
+    ): ApiResponse<PaymentMethodPostResponse> {
+        lastAutoRetryTransactionId = transactionId
         callLog += "autoRetryInitiatePayment($transactionId)"
         return require(nextAutoRetryInitiatePayment, "nextAutoRetryInitiatePayment")
+    }
+
+    override suspend fun submitNativeOtp(
+        otp: String,
+        transactionId: String,
+        isTestEnv: Boolean
+    ): ApiResponse<NativeOtpResponse> {
+        callLog += "submitNativeOtp(otp=$otp, txn=$transactionId)"
+        return require(nextSubmitNativeOtp, "nextSubmitNativeOtp")
+    }
+
+    override suspend fun resendOtp(
+        transactionId: String,
+        isTestEnv: Boolean
+    ): ApiResponse<NativeOtpResponse> {
+        callLog += "resendOtp(txn=$transactionId)"
+        return require(nextResendOtp, "nextResendOtp")
+    }
+
+    override suspend fun cancelTransaction(
+        transactionId: String
+    ): ApiResponse<PaymentMethodPostResponse> {
+        callLog += "cancelTransaction(txn=$transactionId)"
+        return require(nextCancelTransaction, "nextCancelTransaction")
     }
 }

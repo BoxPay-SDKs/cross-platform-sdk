@@ -12,6 +12,7 @@ import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 import com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse
 import com.crossplatform.sdk.data.model.SessionDetails
+import com.crossplatform.sdk.data.model.NativeOtpResponse
 import com.crossplatform.sdk.domain.repo.AddressScreenRepo
 import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
 import com.crossplatform.sdk.domain.repo.CardScreenRepo
@@ -30,8 +31,12 @@ import com.crossplatform.sdk.domain.repo.OtherPaymentMethodRepo
 internal class FakeCardScreenRepo : CardScreenRepo {
     var getCardDetailsResult: ApiResponse<FetchCardDetails> = ApiResponse.Loading
     var postCardDetailsResult: ApiResponse<PaymentMethodPostResponse> = ApiResponse.Loading
+    var submitOtpResult: ApiResponse<NativeOtpResponse> = ApiResponse.Loading
+    var resendOtpResult: ApiResponse<NativeOtpResponse> = ApiResponse.Loading
+    var cancelTransactionResult: ApiResponse<PaymentMethodPostResponse> = ApiResponse.Loading
 
     var lastGetCardDetailsCardNumber: String? = null
+    var lastPostCardDetailsSurcharges: List<String>? = null
     var postCardDetailsCallCount: Int = 0
 
     override suspend fun getCardDetails(cardNumber: String): ApiResponse<FetchCardDetails> {
@@ -47,11 +52,28 @@ internal class FakeCardScreenRepo : CardScreenRepo {
         expiry: String,
         nickName: String?,
         isSaveInstrumentCheckboxClicked: Boolean,
-        isSICheckboxClicked: Boolean?
+        isSICheckboxClicked: Boolean?,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
         postCardDetailsCallCount++
+        lastPostCardDetailsSurcharges = surcharges
         return postCardDetailsResult
     }
+
+    override suspend fun submitOtp(
+        otp: String,
+        transactionId: String,
+        isTestEnv: Boolean
+    ): ApiResponse<NativeOtpResponse> = submitOtpResult
+
+    override suspend fun resendOtp(
+        transactionId: String,
+        isTestEnv: Boolean
+    ): ApiResponse<NativeOtpResponse> = resendOtpResult
+
+    override suspend fun cancelNativeOtpTransaction(
+        transactionId: String
+    ): ApiResponse<PaymentMethodPostResponse> = cancelTransactionResult
 }
 
 internal class FakeFetchStatusRepo : FetchStatusRepo {
@@ -104,7 +126,8 @@ internal class FakeOtherPaymentMethodRepo : OtherPaymentMethodRepo {
     override suspend fun initiatePayment(
         instrumentDetails: String,
         paymentType: String,
-        token: String
+        token: String,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> = initiatePaymentResult
 
     override suspend fun initiateEMIPayment(
@@ -115,7 +138,8 @@ internal class FakeOtherPaymentMethodRepo : OtherPaymentMethodRepo {
         cardType: String?,
         offerCode: String?,
         duration: Int?,
-        provider: String?
+        provider: String?,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
         lastInitiateEMIPaymentDuration = duration
         return initiateEMIPaymentResult
@@ -129,21 +153,25 @@ internal class FakeMainScreenRepo : MainScreenRepo {
     var recommendedInstrumentsResult: ApiResponse<List<RecommendedInstrumentsResponse>> = ApiResponse.Loading
     var savedCardPostResult: ApiResponse<PaymentMethodPostResponse> = ApiResponse.Loading
     var surchargeResult: ApiResponse<FetchSurchargeResponse> = ApiResponse.Loading
-    var deleteSavedCardResult: ApiResponse<RecommendedInstrumentsResponse> = ApiResponse.Loading
+    var deleteSavedCardResult: ApiResponse<List<RecommendedInstrumentsResponse>> = ApiResponse.Loading
     var upiQrResult: ApiResponse<PaymentMethodPostResponse> = ApiResponse.Loading
 
     var lastUpiCollectVpa: String? = null
 
     override suspend fun getSessionDetails(): ApiResponse<SessionDetails> = sessionDetailsResult
 
-    override suspend fun postUpiIntentRequest(type: String, upiApp: String): ApiResponse<PaymentMethodPostResponse> =
-        upiIntentResult
+    override suspend fun postUpiIntentRequest(
+        type: String,
+        upiApp: String,
+        surcharges: List<String>?
+    ): ApiResponse<PaymentMethodPostResponse> = upiIntentResult
 
     override suspend fun postUpiCollectRequest(
         type: String,
         instrumentRef: String?,
         shopperVpa: String?,
-        saveInstrument: Boolean?
+        saveInstrument: Boolean,
+        surcharges: List<String>?
     ): ApiResponse<PaymentMethodPostResponse> {
         lastUpiCollectVpa = shopperVpa
         return upiCollectResult
@@ -158,9 +186,9 @@ internal class FakeMainScreenRepo : MainScreenRepo {
     override suspend fun getSurcharge(amount: Double, currencyCode: String): ApiResponse<FetchSurchargeResponse> =
         surchargeResult
 
-    override suspend fun deleteSavedCard(id: String): ApiResponse<RecommendedInstrumentsResponse> = deleteSavedCardResult
+    override suspend fun deleteSavedCard(id: String, type: String): ApiResponse<List<RecommendedInstrumentsResponse>> = deleteSavedCardResult
 
-    override suspend fun postUPIQrRequest(type: String): ApiResponse<PaymentMethodPostResponse> = upiQrResult
+    override suspend fun postUPIQrRequest(type: String, surcharges: List<String>?): ApiResponse<PaymentMethodPostResponse> = upiQrResult
 }
 
 internal class FakeAddressScreenRepo : AddressScreenRepo {

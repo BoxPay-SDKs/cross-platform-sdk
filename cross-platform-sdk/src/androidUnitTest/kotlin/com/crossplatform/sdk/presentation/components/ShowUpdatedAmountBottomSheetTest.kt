@@ -1,5 +1,16 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -42,7 +53,11 @@ class ShowUpdatedAmountBottomSheetTest {
     @Test
     fun `with no matching surcharge, total payable equals the base amount`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ShowUpdateAmountBottomSheet(
                     selectedMethod = "card",
                     onClickProceed = {}, onClick = {},
@@ -61,13 +76,17 @@ class ShowUpdatedAmountBottomSheetTest {
     @Test
     fun `a surcharge matching the selected method is shown and added to the total`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ShowUpdateAmountBottomSheet(
                     selectedMethod = "card",
                     onClickProceed = {}, onClick = {},
                     currencySymbol = "\u20b9", amount = 500.0,
                     surchargeDetails = listOf(
-                        SurchargeModel(applicableOn = "card", title = "Card Surcharge", surchargeCode = "SC1", network = "VISA", classification = "CONSUMER", amount = 15.0)
+                        SurchargeModel(applicableOn = "card", title = "Card Surcharge", surchargeCode = "SC1", network = "VISA", classification = "CONSUMER", amount = 15.0, description = "")
                     ),
                     ctaBorderRadius = 8, buttonColor = "#000000", buttonTextColor = "#FFFFFF",
                 )
@@ -82,13 +101,17 @@ class ShowUpdatedAmountBottomSheetTest {
     @Test
     fun `a surcharge for a different method is excluded from both the row and the total`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ShowUpdateAmountBottomSheet(
                     selectedMethod = "upi",
                     onClickProceed = {}, onClick = {},
                     currencySymbol = "\u20b9", amount = 500.0,
                     surchargeDetails = listOf(
-                        SurchargeModel(applicableOn = "card", title = "Card Surcharge", surchargeCode = "SC1", network = "VISA", classification = "CONSUMER", amount = 15.0)
+                        SurchargeModel(applicableOn = "card", title = "Card Surcharge", surchargeCode = "SC1", network = "VISA", classification = "CONSUMER", amount = 15.0, description = "")
                     ),
                     ctaBorderRadius = 8, buttonColor = "#000000", buttonTextColor = "#FFFFFF",
                 )
@@ -103,7 +126,11 @@ class ShowUpdatedAmountBottomSheetTest {
     fun `tapping Proceed to Pay invokes onClickProceed`() {
         var proceedClicked = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 ShowUpdateAmountBottomSheet(
                     selectedMethod = "card",
                     onClickProceed = { proceedClicked = true }, onClick = {},

@@ -1,5 +1,16 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -34,12 +45,16 @@ class SwipeToPayComponentTest {
         composeTestRule: androidx.compose.ui.test.junit4.ComposeContentTestRule,
     ) {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SwipeToPayComponent(
                     buttonColor = "#000000",
                     buttonTextColor = "#FFFFFF",
                     amount = 499.0,
-                    currencySymbol = "\u20b9",
+                    currencySymbol = "INR",
                     lastUsedUpi = "jane@upi",
                     onClickMoreOptions = onClickMoreOptions,
                     onSwipeComplete = {},

@@ -1,5 +1,16 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -27,9 +38,13 @@ class SavedCardComponentTest {
     @Test
     fun `renders the nickname and masked number for each saved card`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SavedCardComponent(
-                    savedCards = listOf(savedCard(id = "ref_1", nickName = "My Shopping Card", displayValue = "\u2022\u2022\u2022\u2022 1111")),
+                    savedCards = listOf(savedCard(id = "ref_1", nickName = "My Shopping Card", displayValue = "**** 1111")),
                     onProceedForward = { _, _ -> },
                     onClickAddCard = {},
                     buttonTextColor = "#FFFFFF",
@@ -46,14 +61,18 @@ class SavedCardComponentTest {
         }
 
         composeTestRule.onNodeWithText("My Shopping Card").assertExists()
-        composeTestRule.onNodeWithText("\u2022\u2022\u2022\u2022 1111").assertExists()
+        composeTestRule.onNodeWithText("**** 1111 | CVV Less").assertExists()
     }
 
     @Test
     fun `tapping Add new Card invokes onClickAddCard`() {
         var addCardClicked = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SavedCardComponent(
                     savedCards = emptyList(),
                     onProceedForward = { _, _ -> },
@@ -79,7 +98,11 @@ class SavedCardComponentTest {
     @Test
     fun `renders one row per saved card`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SavedCardComponent(
                     savedCards = listOf(
                         savedCard(id = "ref_1", nickName = "Shopping Card", displayValue = "\u2022\u2022\u2022\u2022 1111"),

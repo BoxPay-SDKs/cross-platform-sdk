@@ -1,5 +1,16 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -64,7 +75,11 @@ class EMIScreenTest {
         otherPaymentMethodRepo.getPaymentMethodsResult = ApiResponse.Success(listOf(emiPaymentMethod()), responseCode = 200)
 
         composeTestRule.setContent {
-            ProvideSDKFonts { EMIScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { EMIScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
         }
 
         composeTestRule.onNodeWithText("All Banks").assertExists()
@@ -76,7 +91,11 @@ class EMIScreenTest {
         otherPaymentMethodRepo.getPaymentMethodsResult = ApiResponse.Error(message = "could not load EMI options")
 
         composeTestRule.setContent {
-            ProvideSDKFonts { EMIScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { EMIScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
         }
 
         composeTestRule.onNodeWithText("Welcome to error screen could not load EMI options").assertExists()
@@ -87,7 +106,11 @@ class EMIScreenTest {
         otherPaymentMethodRepo.getPaymentMethodsResult = ApiResponse.Success(listOf(emiPaymentMethod()), responseCode = 200)
 
         composeTestRule.setContent {
-            ProvideSDKFonts { EMIScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { EMIScreen(onBackPress = {}, isAutoNavigationEnabled = false, onExitCheckout = {}) }
         }
         composeTestRule.onNodeWithText("HDFC Bank").performClick()
 
@@ -101,7 +124,11 @@ class EMIScreenTest {
         var exited = false
 
         composeTestRule.setContent {
-            ProvideSDKFonts { EMIScreen(onBackPress = {}, isAutoNavigationEnabled = true, onExitCheckout = { exited = true }) }
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) { EMIScreen(onBackPress = {}, isAutoNavigationEnabled = true, onExitCheckout = { exited = true }) }
         }
 
         assertTrue(exited)

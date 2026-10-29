@@ -1,5 +1,15 @@
 package com.crossplatform.sdk.presentation.navigation
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.crossplatform.sdk.data.ApiResponse
@@ -95,6 +105,10 @@ class AppNavHostNavigationTest {
         mainScreenRepo.sessionDetailsResult = ApiResponse.Success(sessionWithOnlyCardEnabled(), responseCode = 200)
 
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             TestBoxPayCheckout(token = "test_token", mainScreenRepo = mainScreenRepo)
         }
 
@@ -113,6 +127,10 @@ class AppNavHostNavigationTest {
         mainScreenRepo.sessionDetailsResult = ApiResponse.Success(sessionWithOnlyCardEnabled(), responseCode = 200)
 
         composeTestRule.setContent {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
             TestBoxPayCheckout(token = "")
         }
 
