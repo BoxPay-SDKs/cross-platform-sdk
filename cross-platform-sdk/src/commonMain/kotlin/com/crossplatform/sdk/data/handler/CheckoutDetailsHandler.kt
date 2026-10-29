@@ -477,8 +477,8 @@ internal object CheckoutDetailsHandler {
             isSICheckboxChecked           = isSICheckboxChecked,
             isSICheckboxEnabled           = isSICheckboxEnabled,
             isFailedScreenVisible         = isFailedScreenVisible,
-            focusedTextInputBorderColor   = focusedTextInputBorderColor,
-            unfocusedTextInputBorderColor = unfocusedTextInputBorderColor,
+            focusedTextInputBorderColor   = focusedTextInputBorderColor.ifEmpty { checkoutDetails.focusedTextInputBorderColor },
+            unfocusedTextInputBorderColor = unfocusedTextInputBorderColor.ifEmpty { checkoutDetails.unfocusedTextInputBorderColor },
             showQROnLoad                  = showQROnLoad
         )
         _checkoutDetailsFlow.value = checkoutDetails
