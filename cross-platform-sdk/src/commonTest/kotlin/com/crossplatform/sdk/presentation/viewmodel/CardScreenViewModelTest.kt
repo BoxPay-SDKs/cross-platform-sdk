@@ -124,14 +124,14 @@ class CardScreenViewModelTest {
         viewModel.updateCardIcon(isTestEnv = false, brand = "AmericanExpress", classification = "CONSUMER")
 
         assertEquals(4, viewModel.maxCvvLength.value)
-        assertEquals(18, viewModel.maxCardNumberLength.value)
+        assertEquals(15, viewModel.maxCardNumberLength.value)
     }
 
     @Test
     fun `updateCardIcon in test env keeps the 19-digit cap for AmericanExpress`() {
         viewModel.updateCardIcon(isTestEnv = true, brand = "AmericanExpress", classification = "CONSUMER")
 
-        assertEquals(19, viewModel.maxCardNumberLength.value)
+        assertEquals(16, viewModel.maxCardNumberLength.value)
     }
 
     @Test

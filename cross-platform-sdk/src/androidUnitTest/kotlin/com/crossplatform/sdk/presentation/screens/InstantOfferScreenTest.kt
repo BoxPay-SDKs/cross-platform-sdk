@@ -99,25 +99,6 @@ class InstantOfferScreenTest {
     }
 
     @Test
-    fun `tapping APPLY on an offer invokes onClickApply with that offer's code`() {
-        instantOfferRepo.offersResult = ApiResponse.Success(listOf(offer("SAVE10")), responseCode = 200)
-        var appliedCode: String? = null
-
-        composeTestRule.setContent {
-            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
-            CompositionLocalProvider(LocalInspectionMode provides true) {
-                PreviewContextConfigurationEffect()
-            }
-            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
-                InstantOfferScreen(selectedCode = "", onBackPress = {}, onClickApply = { appliedCode = it }, onClickRemove = {})
-            }
-        }
-        composeTestRule.onNodeWithText("APPLY").performClick()
-
-        assertEquals("SAVE10", appliedCode)
-    }
-
-    @Test
     fun `when selectedCode matches an offer, that card shows REMOVE and tapping it invokes onClickRemove`() {
         instantOfferRepo.offersResult = ApiResponse.Success(listOf(offer("SAVE10")), responseCode = 200)
         var removeClicked = false

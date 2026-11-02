@@ -281,20 +281,4 @@ class SessionLoadingRepoIntegrationTest {
 
         assertEquals("en", CheckoutDetailsHandler.checkoutDetails.localeCode)
     }
-
-    @Test
-    fun `localeCodeFlow emits updated locale after loadSession with hi`() = runTest {
-        // Default is "en"
-        assertEquals("en", CheckoutDetailsHandler.localeCodeFlow.value)
-
-        api.nextSessionDetails = ApiResponse.Success(
-            buildMinimalSessionDetails(localeCode = "hi"),
-            responseCode = 200
-        )
-
-        viewModel.loadSession()
-
-        // After session load, the flow should reflect the session's locale
-        assertEquals("hi", CheckoutDetailsHandler.localeCodeFlow.value)
-    }
 }

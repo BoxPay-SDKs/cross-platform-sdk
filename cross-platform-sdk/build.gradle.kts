@@ -11,6 +11,17 @@ plugins {
     id("org.jetbrains.compose") version "1.8.2"             // ✅ CMP
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.codingfeline.buildkonfig") version "0.15.2"
+    id("org.jetbrains.kotlinx.kover")
+}
+
+kover {
+    reports {
+        filters {
+            excludes {
+                classes("com.crossplatform.sdk.fakes.*")
+            }
+        }
+    }
 }
 
 

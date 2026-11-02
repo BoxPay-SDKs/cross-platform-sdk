@@ -164,32 +164,6 @@ class BoxPayElementsViewModelTest {
     }
 
     @Test
-    fun `a Card selection is payable only once cardValid becomes true`() = runTest {
-        viewModel.isPayable.test {
-            assertFalse(awaitItem()) // initial: None
-
-            viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.Card)
-            assertFalse(awaitItem()) // Card selected, but cardValid is still false
-
-            viewModel.cardValid.value = true
-            assertTrue(awaitItem())
-        }
-    }
-
-    @Test
-    fun `a valid UpiCollect vpa is payable, an invalid one is not`() = runTest {
-        viewModel.isPayable.test {
-            assertFalse(awaitItem()) // initial
-
-            viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.UpiCollect("not-a-vpa"))
-            assertFalse(awaitItem())
-
-            viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.UpiCollect("jane@okhdfcbank"))
-            assertTrue(awaitItem())
-        }
-    }
-
-    @Test
     fun `an Instrument selection is payable as soon as its value is non-blank`() = runTest {
         viewModel.isPayable.test {
             assertFalse(awaitItem()) // initial

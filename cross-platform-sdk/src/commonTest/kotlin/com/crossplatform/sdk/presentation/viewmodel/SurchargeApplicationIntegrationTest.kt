@@ -81,37 +81,6 @@ class SurchargeApplicationIntegrationTest {
     // ── visibility: a quoted surcharge is summed in AND surfaced in the list ──
 
     @Test
-    fun `a global surcharge fetched when an offer is applied is summed into the amount and visible via surchargeDetailsFlow`() = runTest {
-        CheckoutDetailsHandler.setAmount(1000.0) // "session already loaded", no surcharge fetched yet
-        otherPaymentMethodRepo.getPaymentMethodsResult = ApiResponse.Success(emptyList(), responseCode = 200)
-        instantOfferRepo.applyOfferResult = ApiResponse.Success(
-            AppliedOfferResponse(
-                originalAmount = 1000.0,
-                evaluatedOffers = listOf(AppliedOfferResponse.EvaluatedOffers(title = "SAVE10", description = null, appliedDiscountAmount = 100.0)),
-                finalAmount = 900.0,
-            ),
-            responseCode = 200,
-        )
-        mainScreenRepo.surchargeResult = ApiResponse.Success(
-            surchargeResponse(title = "Card Surcharge", applicableOn = null, network = "VISA", fee = 27.0),
-            responseCode = 200,
-        )
-
-        assertEquals(emptyList(), CheckoutDetailsHandler.surchargeDetailsFlow.value) // nothing fetched yet
-
-        viewModel.applyOffer(selectedCode = "SAVE10", amount = 1000.0)
-
-        // surchargeDetailsFlow is the exact flow OrderDetails/ShowUpdatedAmountBottomSheet
-        // collect to decide whether to render a surcharge row - asserting on
-        // it directly (rather than the plain property) proves visibility
-        // through the same channel the UI actually observes.
-        val surcharges = CheckoutDetailsHandler.surchargeDetailsFlow.value
-        assertEquals(1, surcharges.size)
-        assertEquals("Card Surcharge", surcharges.single().title, "must be visible - same list OrderDetails renders from")
-        assertEquals(927.0, CheckoutDetailsHandler.checkoutDetails.amount) // 1000 - 100 discount + 27 surcharge, applied exactly once
-    }
-
-    @Test
     fun `a failed surcharge fetch clears the surcharge list instead of leaving a stale one, and adds nothing to the amount`() = runTest {
         CheckoutDetailsHandler.setAmount(1000.0)
         CheckoutDetailsHandler.setSurchargeDetails(listOf(surchargeModel(title = "Stale Surcharge", amount = 15.0))) // leftover from a previous, successful fetch

@@ -670,18 +670,6 @@ class PaymentMethodCompleteFlowIntegrationTest {
         responseCode = 200,
     )
 
-    private fun pendingRetryableFetchStatus() = ApiResponse.Success(
-        FetchStatusResponse(
-            status = "PENDING",
-            transactionId = "txn_1",
-            reasonCode = "",
-            reason = "",
-            transactionTimestampLocale = "",
-            retryable = true,
-            paymentMethod = FetchStatusResponse.PaymentMethod(id = "pm_1"),
-        ),
-        responseCode = 200,
-    )
 
     private fun retryableFailedFetchStatus() = ApiResponse.Success(
         FetchStatusResponse(
