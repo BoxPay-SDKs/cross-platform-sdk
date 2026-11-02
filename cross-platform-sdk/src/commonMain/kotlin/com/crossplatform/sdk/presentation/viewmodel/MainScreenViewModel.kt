@@ -568,7 +568,7 @@ internal class MainScreenViewModel(
             isBoxPayAnimationLoading.value = true
             when (val response = instantOfferRepo.applyOffer(listOf(selectedCode), amount)) {
                 is ApiResponse.Success -> {
-                    val appliedDiscount = response.data.evaluatedOffers?.get(0)?.appliedDiscountAmount ?: 0.0
+                    val appliedDiscount = response.data.evaluatedOffers?.getOrNull(0)?.appliedDiscountAmount ?: 0.0
                     val offerAmount = amount - appliedDiscount
 
                     CheckoutDetailsHandler.setAppliedOffer(

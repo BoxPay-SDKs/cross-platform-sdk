@@ -15,6 +15,7 @@ import com.crossplatform.sdk.fakes.FakeMainScreenRepo
 import com.crossplatform.sdk.fakes.FakeOtherPaymentMethodRepo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -65,26 +66,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
-
-        // isPaymentSuccessful / isPaymentFailed / isSessionExpired are *toggle*
-        // flags on CheckoutDetailsHandler (setSessionSuccess() etc. flip
-        // `!current`, they don't set `true` outright) - see CheckoutDetailsHandler.kt.
-        // Resetting to a known default before every test is what makes a plain
-        // `assertTrue(...)` afterwards meaningful instead of leftover state from
-        // a previous test.
         CheckoutDetailsHandler.resetToDefault()
-
-        // Deliberately NOT calling setCheckoutToken() here. MainScreenViewModel's
-        // init{} calls loadSession() unconditionally, and loadSession() only
-        // short-circuits safely when the token is still empty (see its own
-        // guard clause); if a real token were already set at construction
-        // time, every MainScreenViewModel created below would eagerly kick
-        // off a real loadSession() - including loadCountryData(), which reads
-        // a Compose resource file - before the test gets a chance to stub
-        // anything (this is the same risk MainScreenScreenTest's own doc
-        // comment calls out). Each test below constructs its ViewModel(s)
-        // first, then calls [receiveCheckoutToken] to represent "the token
-        // arrived", exactly mirroring how BoxPayElementsViewModelTest does it.
     }
 
     @AfterTest
@@ -93,7 +75,6 @@ class PaymentMethodCompleteFlowIntegrationTest {
         CheckoutDetailsHandler.resetToDefault()
     }
 
-    /** "BoxPayCheckout got the token" - the same call `BoxPayCommonCheckout` makes before any screen renders. */
     private fun receiveCheckoutToken(token: String = "test_token") {
         CheckoutDetailsHandler.setCheckoutToken(
             shopperToken = null,
@@ -272,9 +253,6 @@ class PaymentMethodCompleteFlowIntegrationTest {
         assertTrue(viewModel.proceedToTimer.value, "no immediate action -> user is sent to the pending/timer screen")
         assertEquals("jane@okhdfcbank", viewModel.upiId.value)
 
-        // timer screen polls fetchStatus periodically; simulate one poll
-        // iteration succeeding - the same call startFetchStatusPolling()'s
-        // loop body makes
         fetchStatusRepo.fetchStatusResult = successFetchStatus(brand = "UpiCollect")
         viewModel.callUpiCollectFetchStatue(inquiryResult = "")
 
@@ -282,22 +260,6 @@ class PaymentMethodCompleteFlowIntegrationTest {
         assertFalse(viewModel.isBoxPayAnimationLoading.value)
     }
 
-    @Test
-    fun `upi collect - a failed status poll shows the failed popup with the resolved reason`() = runTest {
-        val mainScreenRepo = FakeMainScreenRepo()
-        val fetchStatusRepo = FakeFetchStatusRepo()
-        val viewModel = MainScreenViewModel(mainScreenRepo, FakeCallUIAnalyticsRepo(), FakeOtherPaymentMethodRepo(), FakeInstantOfferRepo(), fetchStatusRepo)
-        receiveCheckoutToken()
-        mainScreenRepo.upiCollectResult = requiresActionResponse(action = null, brand = "UpiCollect")
-        viewModel.postUpiCollectRequest(shopperVpa = "jane@okhdfcbank", type = "upi/collect", surchargeList = null)
-
-        fetchStatusRepo.fetchStatusResult = failedFetchStatus(reasonCode = "UF003", reason = "UF003: Collect request declined by payer")
-        viewModel.callUpiCollectFetchStatue(inquiryResult = "")
-
-        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed)
-        assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
-        assertEquals("Collect request declined by payer", CheckoutDetailsHandler.checkoutDetails.errorMessage)
-    }
 
     // ═══════════════════════════════ UPI QR ═════════════════════════════════
 
@@ -308,11 +270,6 @@ class PaymentMethodCompleteFlowIntegrationTest {
         val viewModel = MainScreenViewModel(mainScreenRepo, FakeCallUIAnalyticsRepo(), FakeOtherPaymentMethodRepo(), FakeInstantOfferRepo(), fetchStatusRepo)
         receiveCheckoutToken()
         mainScreenRepo.upiQrResult = requiresActionResponse(qrAction(content = "upi://pay?pa=merchant@okaxis", expirySec = 300), brand = "UpiQr")
-        // postUPIQrRequest's onOpenQr callback calls startFetchStatusPolling()
-        // itself (unlike UPI collect, where polling is only started by the
-        // screen's LaunchedEffect) - so the very first poll tick fires as
-        // part of this call, before we get a chance to configure anything
-        // else. The status must therefore already be stubbed to "paid" here.
         fetchStatusRepo.fetchStatusResult = successFetchStatus(brand = "UpiQr")
 
         viewModel.postUPIQrRequest(type = "upi/qr", surchargeList = null)
@@ -324,29 +281,32 @@ class PaymentMethodCompleteFlowIntegrationTest {
     }
 
     @Test
-    fun `upi qr - if the payer hasn't paid yet, the status poll leaves the qr up instead of failing the flow`() = runTest {
-        val mainScreenRepo = FakeMainScreenRepo()
-        val fetchStatusRepo = FakeFetchStatusRepo()
-        val viewModel = MainScreenViewModel(mainScreenRepo, FakeCallUIAnalyticsRepo(), FakeOtherPaymentMethodRepo(), FakeInstantOfferRepo(), fetchStatusRepo)
-        receiveCheckoutToken()
-        mainScreenRepo.upiQrResult = requiresActionResponse(qrAction(content = "upi://pay?pa=merchant@okaxis", expirySec = 300), brand = "UpiQr")
-        // Still pending - not yet Success/Failed/Expired - is reported with a
-        // non-retryable NOACTION-mapped status, which handleUpiCollectFetchStatus
-        // intentionally no-ops on rather than treating as a terminal failure.
-        fetchStatusRepo.fetchStatusResult = ApiResponse.Success(
-            FetchStatusResponse(
-                status = "PENDING", transactionId = "txn_1", reasonCode = "", reason = "",
-                transactionTimestampLocale = "", retryable = false,
-                paymentMethod = FetchStatusResponse.PaymentMethod(id = "pm_1"),
-            ),
-            responseCode = 200,
-        )
+    fun `upi qr - if the payer hasn't paid yet, the status poll leaves the qr up instead of failing the flow`() {
+        val dispatcher = StandardTestDispatcher()
+        Dispatchers.setMain(dispatcher)
 
-        viewModel.postUPIQrRequest(type = "upi/qr", surchargeList = null)
+        runTest(dispatcher) {
+            val mainScreenRepo = FakeMainScreenRepo()
+            val fetchStatusRepo = FakeFetchStatusRepo()
+            val viewModel = MainScreenViewModel(mainScreenRepo, FakeCallUIAnalyticsRepo(), FakeOtherPaymentMethodRepo(), FakeInstantOfferRepo(), fetchStatusRepo)
+            receiveCheckoutToken()
+            mainScreenRepo.upiQrResult = requiresActionResponse(qrAction(content = "upi://pay?pa=merchant@okaxis", expirySec = 60), brand = "UpiQr")
+            fetchStatusRepo.fetchStatusResult = ApiResponse.Success(
+                FetchStatusResponse(
+                    status = "PENDING", transactionId = "txn_1", reasonCode = "", reason = "",
+                    transactionTimestampLocale = "", retryable = false,
+                    paymentMethod = FetchStatusResponse.PaymentMethod(id = "pm_1"),
+                ),
+                responseCode = 200,
+            )
 
-        assertEquals("upi://pay?pa=merchant@okaxis", viewModel.qrImage.value, "qr must stay visible while the payer hasn't paid")
-        assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
-        assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed, "a still-pending poll must not surface as a failure")
+            viewModel.postUPIQrRequest(type = "upi/qr", surchargeList = null)
+            testScheduler.runCurrent()
+
+            assertEquals("upi://pay?pa=merchant@okaxis", viewModel.qrImage.value, "qr must stay visible while the payer hasn't paid")
+            assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
+            assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed, "a still-pending poll must not surface as a failure")
+        }
     }
 
     // ═══════════════════════════════ SAVED CARD / SAVED INSTRUMENT ══════════

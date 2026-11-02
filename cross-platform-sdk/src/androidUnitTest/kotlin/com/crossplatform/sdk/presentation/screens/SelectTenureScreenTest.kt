@@ -83,12 +83,6 @@ class SelectTenureScreenTest {
             }
         }
 
-        // SelectTenureScreen.kt builds this row's text by appending "$month months x ",
-        // then currencySymbol, then amount (no space before the digits), and - since
-        // selectedEmi is (null, null) here, so every row is unselected - it ALSO appends
-        // " | @<percent>% p.a." afterwards (percent=12.0 -> "12"). onNodeWithText without
-        // substring=true requires an exact match against the WHOLE text, so match by
-        // substring instead of trying to spell out the entire trailing percent text.
         composeTestRule.onNodeWithText("3 months x INR1,700", substring = true).assertExists()
         composeTestRule.onNodeWithText("6 months x INR900", substring = true).assertExists()
     }
@@ -114,8 +108,7 @@ class SelectTenureScreenTest {
             }
         }
 
-        // Same no-space concatenation, same trailing " | @12% p.a." text, same reason for
-        // substring=true as above.
+
         composeTestRule.onNodeWithText("3 months x INR1,700", substring = true).performClick()
 
         assertEquals(Triple(3, "1,700", "CODE3"), clicked)
