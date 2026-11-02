@@ -210,7 +210,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
 
         // webview reports back a non-terminal, retryable status
-        fetchStatusRepo.fetchStatusResult = pendingRetryableFetchStatus()
+        fetchStatusRepo.fetchStatusResult = retryableFailedFetchStatus()
         viewModel.callFetchStatus(inquiryResult = "")
 
         assertTrue(CheckoutDetailsHandler.checkoutDetails.showRetryBottomDown, "retryable failures must surface the retry drop-down")
@@ -370,6 +370,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
             assertEquals("upi://pay?pa=merchant@okaxis", viewModel.qrImage.value, "qr must stay visible while the payer hasn't paid")
             assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
             assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed, "a still-pending poll must not surface as a failure")
+            viewModel.stopFetchStatusPolling()
         }
     }
 
@@ -672,6 +673,19 @@ class PaymentMethodCompleteFlowIntegrationTest {
     private fun pendingRetryableFetchStatus() = ApiResponse.Success(
         FetchStatusResponse(
             status = "PENDING",
+            transactionId = "txn_1",
+            reasonCode = "",
+            reason = "",
+            transactionTimestampLocale = "",
+            retryable = true,
+            paymentMethod = FetchStatusResponse.PaymentMethod(id = "pm_1"),
+        ),
+        responseCode = 200,
+    )
+
+    private fun retryableFailedFetchStatus() = ApiResponse.Success(
+        FetchStatusResponse(
+            status = "FAILED",
             transactionId = "txn_1",
             reasonCode = "",
             reason = "",

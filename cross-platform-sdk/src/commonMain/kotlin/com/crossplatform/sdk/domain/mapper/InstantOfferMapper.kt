@@ -15,7 +15,7 @@ internal fun List<InstantOfferResponse>.toUiModel(): List<OfferItem> {
             discountAmount = item.discount.amount ?: 0.0,
             currencySymbol = currencyCode,
             discountPercent = item.discount.percentage ?: 0.0,
-            applicableOn = item.criteria.applicableTo.paymentMethods?.get(0)?.brand ?: "",
+            applicableOn = item.criteria.applicableTo.paymentMethods?.getOrNull(0)?.brand ?: "",
             expiryDate = null
         )
     }
