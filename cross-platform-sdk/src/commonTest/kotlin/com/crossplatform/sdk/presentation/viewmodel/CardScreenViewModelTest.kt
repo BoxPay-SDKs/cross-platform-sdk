@@ -121,17 +121,17 @@ class CardScreenViewModelTest {
 
     @Test
     fun `updateCardIcon widens cvv and card number length for AmericanExpress`() {
-        viewModel.updateCardIcon(isTestEnv = false, brand = "AmericanExpress")
+        viewModel.updateCardIcon(isTestEnv = false, brand = "AmericanExpress", classification = "CONSUMER")
 
         assertEquals(4, viewModel.maxCvvLength.value)
-        assertEquals(18, viewModel.maxCardNumberLength.value)
+        assertEquals(15, viewModel.maxCardNumberLength.value)
     }
 
     @Test
     fun `updateCardIcon in test env keeps the 19-digit cap for AmericanExpress`() {
-        viewModel.updateCardIcon(isTestEnv = true, brand = "AmericanExpress")
+        viewModel.updateCardIcon(isTestEnv = true, brand = "AmericanExpress", classification = "CONSUMER")
 
-        assertEquals(19, viewModel.maxCardNumberLength.value)
+        assertEquals(16, viewModel.maxCardNumberLength.value)
     }
 
     @Test
@@ -186,7 +186,7 @@ class CardScreenViewModelTest {
             responseCode = 200,
         )
 
-        viewModel.postCardRequest(isSICheckBoxClicked = false)
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
 
         assertEquals("<html>3DS</html>", viewModel.htmlString.value)
         assertTrue(viewModel.showWebview.value)
@@ -207,7 +207,7 @@ class CardScreenViewModelTest {
             responseCode = 200,
         )
 
-        viewModel.postCardRequest(isSICheckBoxClicked = false)
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
 
         assertEquals("https://pay.example.com/redirect", viewModel.url.value)
         assertTrue(viewModel.showWebview.value)
@@ -217,7 +217,7 @@ class CardScreenViewModelTest {
     fun `postCardRequest turns off the loading animation when the api call errors`() = runTest {
         cardRepo.postCardDetailsResult = ApiResponse.Error(message = "boom")
 
-        viewModel.postCardRequest(isSICheckBoxClicked = false)
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
 
         assertFalse(viewModel.isBoxPayAnimationVisible.value)
     }

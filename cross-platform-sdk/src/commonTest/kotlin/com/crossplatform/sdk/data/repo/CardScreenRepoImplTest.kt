@@ -70,11 +70,12 @@ class CardScreenRepoImplTest {
             nickName = "My Visa",
             isSaveInstrumentCheckboxClicked = true,
             isSICheckboxClicked = false,
+            surcharges = null,
         )
 
         assertIs<ApiResponse.Success<PaymentMethodPostResponse>>(result)
         assertEquals(
-            "cardPostRequest(type=card/plain, cardNumber=4111111111111111, expiry=2030-05)",
+            "cardPostRequest(type=card/plain, cardNumber=4111111111111111, expiry=2030-05, surcharges=null)",
             fakeApi.callLog.single()
         )
     }

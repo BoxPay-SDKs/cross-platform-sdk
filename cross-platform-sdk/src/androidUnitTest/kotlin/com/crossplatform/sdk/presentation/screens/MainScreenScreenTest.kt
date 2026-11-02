@@ -1,5 +1,15 @@
 package com.crossplatform.sdk.presentation.screens
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -149,13 +159,17 @@ class MainScreenScreenTest {
         mainScreenRepo.sessionDetailsResult = ApiResponse.Loading
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MainScreen(
                     viewModel = newViewModel(), onProceedCardScreen = {}, onProceedEMIScreen = {},
                     onProceedAddressScreen = {}, onProceedSavedAddressScreen = {}, onProceedNetBankingScreen = {},
                     onProceedWalletScreen = {}, onProceedBNPLScreen = {}, onProceedUPITimerScreen = {},
                     onShowSwipeToPay = {}, onProceedInstantOfferScreen = {}, selectedOfferCode = "",
-                    onSetSelectedOfferCode = {},
+                    onSetSelectedOfferCode = {}, onProceedPayNowScreen = {},
                 )
             }
         }
@@ -169,13 +183,17 @@ class MainScreenScreenTest {
         setCheckoutToken(token = "") // CheckoutDetailsHandler default is also empty, but be explicit
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MainScreen(
                     viewModel = newViewModel(), onProceedCardScreen = {}, onProceedEMIScreen = {},
                     onProceedAddressScreen = {}, onProceedSavedAddressScreen = {}, onProceedNetBankingScreen = {},
                     onProceedWalletScreen = {}, onProceedBNPLScreen = {}, onProceedUPITimerScreen = {},
                     onShowSwipeToPay = {}, onProceedInstantOfferScreen = {}, selectedOfferCode = "",
-                    onSetSelectedOfferCode = {},
+                    onSetSelectedOfferCode = {}, onProceedPayNowScreen = {},
                 )
             }
         }
@@ -195,14 +213,18 @@ class MainScreenScreenTest {
         var navigatedWithAutoNav: Boolean? = null
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MainScreen(
                     viewModel = newViewModel(),
                     onProceedCardScreen = { navigatedWithAutoNav = it },
                     onProceedEMIScreen = {}, onProceedAddressScreen = {}, onProceedSavedAddressScreen = {},
                     onProceedNetBankingScreen = {}, onProceedWalletScreen = {}, onProceedBNPLScreen = {},
                     onProceedUPITimerScreen = {}, onShowSwipeToPay = {}, onProceedInstantOfferScreen = {},
-                    selectedOfferCode = "", onSetSelectedOfferCode = {},
+                    selectedOfferCode = "", onSetSelectedOfferCode = {}, onProceedPayNowScreen = {},
                 )
             }
         }
@@ -217,7 +239,13 @@ class MainScreenScreenTest {
             sessionDetails(
                 paymentMethods = listOf(
                     PaymentMethod(id = "card_1", type = "Card", brand = "Card"),
-                    PaymentMethod(id = "wallet_1", type = "Wallet", brand = "GooglePay"),
+                    // MainScreenMapper.kt only sets isWalletVisible=true for a Wallet
+                    // method whose brand ISN'T "GooglePay"/"ApplePay"/"RevolutPay" (those
+                    // set isGooglePayVisible/isApplePayVisible/isRevolutPayVisible
+                    // instead, which MainScreen.kt's enabledMethods list doesn't check at
+                    // all) - so "GooglePay" here would make enabledMethods = ["card"]
+                    // only, triggering auto-nav and breaking this test's own premise.
+                    PaymentMethod(id = "wallet_1", type = "Wallet", brand = "PayPal"),
                 )
             ),
             responseCode = 200,
@@ -234,14 +262,18 @@ class MainScreenScreenTest {
         var navigatedWithAutoNav: Boolean? = null
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MainScreen(
                     viewModel = newViewModel(),
                     onProceedCardScreen = { navigatedWithAutoNav = it },
                     onProceedEMIScreen = {}, onProceedAddressScreen = {}, onProceedSavedAddressScreen = {},
                     onProceedNetBankingScreen = {}, onProceedWalletScreen = {}, onProceedBNPLScreen = {},
                     onProceedUPITimerScreen = {}, onShowSwipeToPay = {}, onProceedInstantOfferScreen = {},
-                    selectedOfferCode = "", onSetSelectedOfferCode = {},
+                    selectedOfferCode = "", onSetSelectedOfferCode = {}, onProceedPayNowScreen = {},
                 )
             }
         }
@@ -260,13 +292,17 @@ class MainScreenScreenTest {
         mainScreenRepo.sessionDetailsResult = ApiResponse.Error(message = "session expired or invalid")
 
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MainScreen(
                     viewModel = newViewModel(), onProceedCardScreen = {}, onProceedEMIScreen = {},
                     onProceedAddressScreen = {}, onProceedSavedAddressScreen = {}, onProceedNetBankingScreen = {},
                     onProceedWalletScreen = {}, onProceedBNPLScreen = {}, onProceedUPITimerScreen = {},
                     onShowSwipeToPay = {}, onProceedInstantOfferScreen = {}, selectedOfferCode = "",
-                    onSetSelectedOfferCode = {},
+                    onSetSelectedOfferCode = {}, onProceedPayNowScreen = {},
                 )
             }
         }

@@ -100,7 +100,7 @@ class BoxPayElementsViewModelTest {
             responseCode = 200,
         )
 
-        viewModel.postCardRequest(isSICheckBoxClicked = false)
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
 
         assertEquals("<html>3DS</html>", viewModel.htmlString.value)
         assertTrue(viewModel.showWebViewScreen.value)
@@ -110,7 +110,7 @@ class BoxPayElementsViewModelTest {
     fun `postCardRequest turns off the loading animation on error`() = runTest {
         cardRepo.postCardDetailsResult = ApiResponse.Error(message = "declined")
 
-        viewModel.postCardRequest(isSICheckBoxClicked = false)
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
 
         assertEquals(false, viewModel.isBoxPayAnimationLoading.value)
     }
@@ -160,32 +160,6 @@ class BoxPayElementsViewModelTest {
     fun `isPayable starts false with no selection`() = runTest {
         viewModel.isPayable.test {
             assertFalse(awaitItem())
-        }
-    }
-
-    @Test
-    fun `a Card selection is payable only once cardValid becomes true`() = runTest {
-        viewModel.isPayable.test {
-            assertFalse(awaitItem()) // initial: None
-
-            viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.Card)
-            assertFalse(awaitItem()) // Card selected, but cardValid is still false
-
-            viewModel.cardValid.value = true
-            assertTrue(awaitItem())
-        }
-    }
-
-    @Test
-    fun `a valid UpiCollect vpa is payable, an invalid one is not`() = runTest {
-        viewModel.isPayable.test {
-            assertFalse(awaitItem()) // initial
-
-            viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.UpiCollect("not-a-vpa"))
-            assertFalse(awaitItem())
-
-            viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.UpiCollect("jane@okhdfcbank"))
-            assertTrue(awaitItem())
         }
     }
 

@@ -202,7 +202,7 @@ internal class PayNowScreenViewModel(
         selectedMethod: String,
         selectedNetwork: String = ""
     ): List<String>? {
-        val surcharges = CheckoutDetailsHandler.surchargeDetailsFlow.value
+        val surcharges = CheckoutDetailsHandler.checkoutDetails.surchargeDetails
         val filtered = surcharges.filter { item ->
             val applicable = item.applicableOn.lowercase().trim()
 

@@ -109,7 +109,7 @@ class NetBankingViewModelTest {
         )
         val viewModel = NetBankingViewModel(repo, analyticsRepo, fetchStatusRepo)
 
-        viewModel.postNetBankingRequest(instrumentValue = "HDFC")
+        viewModel.postNetBankingRequest(instrumentValue = "HDFC", surchargeList = null)
 
         assertEquals("https://bank.example.com/pay", viewModel.url.value)
         assertTrue(viewModel.showWebview.value)
@@ -122,7 +122,7 @@ class NetBankingViewModelTest {
         repo.initiatePaymentResult = ApiResponse.Error(message = "bank unavailable")
         val viewModel = NetBankingViewModel(repo, analyticsRepo, fetchStatusRepo)
 
-        viewModel.postNetBankingRequest(instrumentValue = "HDFC")
+        viewModel.postNetBankingRequest(instrumentValue = "HDFC", surchargeList = null)
 
         assertEquals(false, viewModel.isBoxPayAnimationVisible.value)
     }

@@ -71,8 +71,8 @@ internal class CardScreenViewModel(
     var cardValid        =  mutableStateOf(false)
 
     var maxCvvLength        = mutableStateOf(3)
-    var maxCardNumberLength =  mutableStateOf(19)
-    var minCardNumberLength = mutableStateOf(19)
+    var maxCardNumberLength =  mutableStateOf(16)
+    var minCardNumberLength = mutableStateOf(16)
     var cardSelectedIcon    = mutableStateOf(Res.drawable.ic_card)
     var cardSelectedNetwork = mutableStateOf("")
     val cardSelectedSpecification = mutableStateOf("")
@@ -120,8 +120,8 @@ internal class CardScreenViewModel(
                     // no instructions to be performed
                     cardSelectedIcon.value = Res.drawable.ic_card
                     maxCvvLength.value = 3
-                    maxCardNumberLength.value = 19
-                    minCardNumberLength.value = 19
+                    maxCardNumberLength.value = 16
+                    minCardNumberLength.value = 16
                 }
             }
 
@@ -157,14 +157,8 @@ internal class CardScreenViewModel(
 
     // --- Handle Card Number Change ---
     fun handleCardNumberChange(text: String, isTestEnv: Boolean) {
-        val maxDigits = when (maxCardNumberLength.value) {
-            23 -> 19  // UnionPay/Maestro
-            18 -> 15  // Amex
-            16 -> 14  // Diners
-            else -> 16
-        }
         // ← only store raw digits, no formatting
-        val cleaned = text.filter { it.isDigit() }.take(maxDigits)
+        val cleaned = text.filter { it.isDigit() }.take(maxCardNumberLength.value)
         cardNumberText.value = cleaned
 
         if (cleaned.isEmpty()) {
@@ -177,7 +171,7 @@ internal class CardScreenViewModel(
 
         checkCardValid(isTestEnv)
 
-        if (cleaned.length == maxDigits) {
+        if (cleaned.length == maxCardNumberLength.value) {
             cardNumberValid.value = isValidCardNumberByLuhn(cleaned)
         }
         if (cleaned.length >= 9 && !cleaned.startsWith("0")) {

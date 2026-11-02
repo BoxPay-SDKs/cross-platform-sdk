@@ -15,6 +15,7 @@ import com.crossplatform.sdk.fakes.FakeMainScreenRepo
 import com.crossplatform.sdk.fakes.FakeOtherPaymentMethodRepo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -89,8 +90,8 @@ class PaymentMethodCompleteFlowIntegrationTest {
 
     @AfterTest
     fun tearDown() {
-        Dispatchers.resetMain()
         CheckoutDetailsHandler.resetToDefault()
+        Dispatchers.resetMain()
     }
 
     /** "BoxPayCheckout got the token" - the same call `BoxPayCommonCheckout` makes before any screen renders. */
@@ -122,7 +123,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
 
         // user clicked Card, entered valid details (covered by
         // CardScreenViewModelTest's own validation tests) and submitted
-        viewModel.postCardRequest(isSICheckBoxClicked = false)
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
         assertTrue(viewModel.showWebview.value, "a RequiresAction/html response must open the webview")
         assertTrue(CheckoutDetailsHandler.checkoutDetails.isWebViewVisible)
         assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful, "must not be visible before the challenge is completed")
@@ -150,7 +151,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         val viewModel = CardScreenViewModel(cardRepo, fetchStatusRepo, FakeCallUIAnalyticsRepo())
         receiveCheckoutToken()
         cardRepo.postCardDetailsResult = requiresActionResponse(htmlAction(), brand = "VISA")
-        viewModel.postCardRequest(isSICheckBoxClicked = false)
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
 
         fetchStatusRepo.fetchStatusResult = failedFetchStatus(reasonCode = "UF001", reason = "UF001: Card declined by issuing bank")
         viewModel.callFetchStatus(inquiryResult = "redirect_result_token")
@@ -169,7 +170,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         val viewModel = CardScreenViewModel(cardRepo, fetchStatusRepo, FakeCallUIAnalyticsRepo())
         receiveCheckoutToken()
         cardRepo.postCardDetailsResult = requiresActionResponse(redirectAction("https://pay.example.com/card-3ds"), brand = "VISA")
-        viewModel.postCardRequest(isSICheckBoxClicked = false)
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
         assertEquals("https://pay.example.com/card-3ds", viewModel.url.value)
 
         fetchStatusRepo.fetchStatusResult = expiredFetchStatus()
@@ -191,7 +192,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
             status = "Failed", reasonCode = "UF009", reason = "UF009: Insufficient funds", brand = "VISA",
         )
 
-        viewModel.postCardRequest(isSICheckBoxClicked = false)
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
 
         assertFalse(viewModel.showWebview.value, "a direct Failed status has no action to open a webview for")
         assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed)
@@ -206,10 +207,10 @@ class PaymentMethodCompleteFlowIntegrationTest {
         val viewModel = CardScreenViewModel(cardRepo, fetchStatusRepo, FakeCallUIAnalyticsRepo())
         receiveCheckoutToken()
         cardRepo.postCardDetailsResult = requiresActionResponse(htmlAction(), brand = "VISA")
-        viewModel.postCardRequest(isSICheckBoxClicked = false)
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
 
         // webview reports back a non-terminal, retryable status
-        fetchStatusRepo.fetchStatusResult = pendingRetryableFetchStatus()
+        fetchStatusRepo.fetchStatusResult = retryableFailedFetchStatus()
         viewModel.callFetchStatus(inquiryResult = "")
 
         assertTrue(CheckoutDetailsHandler.checkoutDetails.showRetryBottomDown, "retryable failures must surface the retry drop-down")
@@ -243,7 +244,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         mainScreenRepo.upiIntentResult = requiresActionResponse(appRedirectAction(encodedDeepLink), brand = "GPay")
 
         // user taps "Google Pay" among the UPI intent apps
-        viewModel.postUpiIntentRequest(selectedIntent = "gpay", type = "upi/intent")
+        viewModel.postUpiIntentRequest(selectedIntent = "gpay", type = "upi/intent", surchargeList = null)
 
         assertEquals(deepLink, viewModel.upiIntentUrl.value, "the base64 app-redirect url must be decoded for the OS to launch")
 
@@ -267,7 +268,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         mainScreenRepo.upiCollectResult = requiresActionResponse(action = null, brand = "UpiCollect")
 
         // user entered a vpa and submitted the collect request
-        viewModel.postUpiCollectRequest(shopperVpa = "jane@okhdfcbank", type = "upi/collect")
+        viewModel.postUpiCollectRequest(shopperVpa = "jane@okhdfcbank", type = "upi/collect", surchargeList = null)
 
         assertTrue(viewModel.proceedToTimer.value, "no immediate action -> user is sent to the pending/timer screen")
         assertEquals("jane@okhdfcbank", viewModel.upiId.value)
@@ -289,7 +290,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         val viewModel = MainScreenViewModel(mainScreenRepo, FakeCallUIAnalyticsRepo(), FakeOtherPaymentMethodRepo(), FakeInstantOfferRepo(), fetchStatusRepo)
         receiveCheckoutToken()
         mainScreenRepo.upiCollectResult = requiresActionResponse(action = null, brand = "UpiCollect")
-        viewModel.postUpiCollectRequest(shopperVpa = "jane@okhdfcbank", type = "upi/collect")
+        viewModel.postUpiCollectRequest(shopperVpa = "jane@okhdfcbank", type = "upi/collect", surchargeList = null)
 
         fetchStatusRepo.fetchStatusResult = failedFetchStatus(reasonCode = "UF003", reason = "UF003: Collect request declined by payer")
         viewModel.callUpiCollectFetchStatue(inquiryResult = "")
@@ -315,7 +316,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         // else. The status must therefore already be stubbed to "paid" here.
         fetchStatusRepo.fetchStatusResult = successFetchStatus(brand = "UpiQr")
 
-        viewModel.postUPIQrRequest(type = "upi/qr")
+        viewModel.postUPIQrRequest(type = "upi/qr", surchargeList = null)
 
         assertEquals("upi://pay?pa=merchant@okaxis", viewModel.qrImage.value)
         assertEquals(300, viewModel.qrTimer.value)
@@ -324,29 +325,53 @@ class PaymentMethodCompleteFlowIntegrationTest {
     }
 
     @Test
-    fun `upi qr - if the payer hasn't paid yet, the status poll leaves the qr up instead of failing the flow`() = runTest {
-        val mainScreenRepo = FakeMainScreenRepo()
-        val fetchStatusRepo = FakeFetchStatusRepo()
-        val viewModel = MainScreenViewModel(mainScreenRepo, FakeCallUIAnalyticsRepo(), FakeOtherPaymentMethodRepo(), FakeInstantOfferRepo(), fetchStatusRepo)
-        receiveCheckoutToken()
-        mainScreenRepo.upiQrResult = requiresActionResponse(qrAction(content = "upi://pay?pa=merchant@okaxis", expirySec = 300), brand = "UpiQr")
-        // Still pending - not yet Success/Failed/Expired - is reported with a
-        // non-retryable NOACTION-mapped status, which handleUpiCollectFetchStatus
-        // intentionally no-ops on rather than treating as a terminal failure.
-        fetchStatusRepo.fetchStatusResult = ApiResponse.Success(
-            FetchStatusResponse(
-                status = "PENDING", transactionId = "txn_1", reasonCode = "", reason = "",
-                transactionTimestampLocale = "", retryable = false,
-                paymentMethod = FetchStatusResponse.PaymentMethod(id = "pm_1"),
-            ),
-            responseCode = 200,
-        )
+    fun `upi qr - if the payer hasn't paid yet, the status poll leaves the qr up instead of failing the flow`() {
+        // Every OTHER test in this file relies on setUp()'s class-wide
+        // UnconfinedTestDispatcher running work eagerly/immediately with no
+        // manual stepping - fine when a terminal status stops the poll loop
+        // on its first tick. This is the one scenario where it intentionally
+        // DOESN'T: "PENDING" hits handleUpiCollectFetchStatus's no-op branch,
+        // so stopFetchStatusPolling() never runs, and startFetchStatusPolling()'s
+        // `while (isActive) { ...; delay(4000L) }` falls straight into a SECOND
+        // delay(4000L) with nothing to ever advance it - a real, permanent hang
+        // (confirmed: the whole suite got stuck here and stayed stuck). Give
+        // this one test its own StandardTestDispatcher, which queues work
+        // instead of running it eagerly, so we can process exactly the first
+        // poll tick via testScheduler.runCurrent() without ever advancing
+        // virtual time into that second, never-ending iteration.
+        val dispatcher = StandardTestDispatcher()
+        Dispatchers.setMain(dispatcher)
 
-        viewModel.postUPIQrRequest(type = "upi/qr")
+        runTest(dispatcher) {
+            val mainScreenRepo = FakeMainScreenRepo()
+            val fetchStatusRepo = FakeFetchStatusRepo()
+            val viewModel = MainScreenViewModel(mainScreenRepo, FakeCallUIAnalyticsRepo(), FakeOtherPaymentMethodRepo(), FakeInstantOfferRepo(), fetchStatusRepo)
+            receiveCheckoutToken()
+            mainScreenRepo.upiQrResult = requiresActionResponse(qrAction(content = "upi://pay?pa=merchant@okaxis", expirySec = 300), brand = "UpiQr")
+            // Still pending - not yet Success/Failed/Expired - is reported with a
+            // non-retryable NOACTION-mapped status, which handleUpiCollectFetchStatus
+            // intentionally no-ops on rather than treating as a terminal failure.
+            fetchStatusRepo.fetchStatusResult = ApiResponse.Success(
+                FetchStatusResponse(
+                    status = "PENDING", transactionId = "txn_1", reasonCode = "", reason = "",
+                    transactionTimestampLocale = "", retryable = false,
+                    paymentMethod = FetchStatusResponse.PaymentMethod(id = "pm_1"),
+                ),
+                responseCode = 200,
+            )
 
-        assertEquals("upi://pay?pa=merchant@okaxis", viewModel.qrImage.value, "qr must stay visible while the payer hasn't paid")
-        assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
-        assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed, "a still-pending poll must not surface as a failure")
+            viewModel.postUPIQrRequest(type = "upi/qr", surchargeList = null)
+            // Run exactly the work already queued by that call (the first
+            // poll tick) - do NOT advanceUntilIdle()/advanceTimeBy() past
+            // delay(4000L), since that would start the loop's next iteration
+            // and it never naturally stops.
+            testScheduler.runCurrent()
+
+            assertEquals("upi://pay?pa=merchant@okaxis", viewModel.qrImage.value, "qr must stay visible while the payer hasn't paid")
+            assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
+            assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed, "a still-pending poll must not surface as a failure")
+            viewModel.stopFetchStatusPolling()
+        }
     }
 
     // ═══════════════════════════════ SAVED CARD / SAVED INSTRUMENT ══════════
@@ -409,7 +434,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
             responseCode = 200,
         )
 
-        viewModel.onClickRevolutPay()
+        viewModel.onClickRevolutPay(null)
 
         assertEquals("revolut_order_tok", viewModel.revolutOrderToken.value)
         assertEquals("https://revolut.example.com/return", viewModel.revolutReturnUrl.value)
@@ -431,7 +456,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         receiveCheckoutToken()
         otherPaymentMethodRepo.initiatePaymentResult = requiresActionResponse(redirectAction("https://pay.example.com/googlepay-3ds"), brand = "GooglePay")
 
-        viewModel.onProceedGooglePay(googlePayToken = "gpay_tok_1")
+        viewModel.onProceedGooglePay(googlePayToken = "gpay_tok_1", null)
 
         assertEquals("https://pay.example.com/googlepay-3ds", viewModel.setWebViewUrl.value)
         assertTrue(viewModel.showWebViewScreen.value)
@@ -454,7 +479,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         receiveCheckoutToken()
         repo.initiatePaymentResult = requiresActionResponse(redirectAction("https://pay.example.com/netbanking"), brand = "HDFC")
 
-        viewModel.postNetBankingRequest(instrumentValue = "HDFC")
+        viewModel.postNetBankingRequest(instrumentValue = "HDFC", surchargeList = null)
         assertTrue(viewModel.showWebview.value)
         assertEquals("https://pay.example.com/netbanking", viewModel.url.value)
 
@@ -477,7 +502,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         receiveCheckoutToken()
         repo.initiatePaymentResult = requiresActionResponse(htmlAction(), brand = "PhonePe")
 
-        viewModel.postWalletRequest(instrumentValue = "PhonePe")
+        viewModel.postWalletRequest(instrumentValue = "PhonePe", surcharge = null)
         assertTrue(viewModel.showWebview.value)
 
         fetchStatusRepo.fetchStatusResult = successFetchStatus(brand = "PhonePe")
@@ -495,7 +520,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         val viewModel = WalletViewModel(repo, FakeCallUIAnalyticsRepo(), fetchStatusRepo)
         receiveCheckoutToken()
         repo.initiatePaymentResult = requiresActionResponse(htmlAction(), brand = "PhonePe")
-        viewModel.postWalletRequest(instrumentValue = "PhonePe")
+        viewModel.postWalletRequest(instrumentValue = "PhonePe", surcharge = null)
 
         fetchStatusRepo.fetchStatusResult = failedFetchStatus(reasonCode = "UF002", reason = "UF002: Wallet balance insufficient")
         viewModel.callFetchStatus(inquiryResult = "")
@@ -517,7 +542,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         receiveCheckoutToken()
         repo.initiatePaymentResult = requiresActionResponse(redirectAction("https://pay.example.com/bnpl"), brand = "Simpl")
 
-        viewModel.postBNPLRequest(instrumentValue = "Simpl")
+        viewModel.postBNPLRequest(instrumentValue = "Simpl", surcharge = null)
         assertTrue(viewModel.showWebview.value)
 
         fetchStatusRepo.fetchStatusResult = successFetchStatus(brand = "Simpl")
@@ -535,7 +560,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         val viewModel = BNPLViewModel(repo, fetchStatusRepo, FakeCallUIAnalyticsRepo())
         receiveCheckoutToken()
         repo.initiatePaymentResult = requiresActionResponse(redirectAction("https://pay.example.com/bnpl"), brand = "Simpl")
-        viewModel.postBNPLRequest(instrumentValue = "Simpl")
+        viewModel.postBNPLRequest(instrumentValue = "Simpl", surcharge = null)
 
         fetchStatusRepo.fetchStatusResult = expiredFetchStatus()
         viewModel.callFetchStatus(inquiryResult = "")
@@ -559,7 +584,7 @@ class PaymentMethodCompleteFlowIntegrationTest {
         receiveCheckoutToken()
         otherPaymentMethodRepo.initiateEMIPaymentResult = requiresActionResponse(htmlAction(), brand = "HDFC EMI")
 
-        viewModel.postEMIRequest()
+        viewModel.postEMIRequest(surcharge = null)
         assertTrue(viewModel.showWebview.value)
 
         fetchStatusRepo.fetchStatusResult = successFetchStatus(brand = "HDFC EMI")
@@ -645,9 +670,10 @@ class PaymentMethodCompleteFlowIntegrationTest {
         responseCode = 200,
     )
 
-    private fun pendingRetryableFetchStatus() = ApiResponse.Success(
+
+    private fun retryableFailedFetchStatus() = ApiResponse.Success(
         FetchStatusResponse(
-            status = "PENDING",
+            status = "FAILED",
             transactionId = "txn_1",
             reasonCode = "",
             reason = "",

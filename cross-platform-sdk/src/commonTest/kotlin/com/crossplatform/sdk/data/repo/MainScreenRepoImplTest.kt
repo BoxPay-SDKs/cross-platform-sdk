@@ -99,10 +99,10 @@ class MainScreenRepoImplTest {
             nextUpiIntentPostResponse = ApiResponse.Success(postResponse(), responseCode = 200)
         }
 
-        val result = repo(fakeApi).postUpiIntentRequest(type = "upi/intent", upiApp = "gpay")
+        val result = repo(fakeApi).postUpiIntentRequest(type = "upi/intent", upiApp = "gpay", surcharges = null)
 
         assertIs<ApiResponse.Success<PaymentMethodPostResponse>>(result)
-        assertEquals("upiIntentPostRequest(upi/intent, gpay)", fakeApi.callLog.single())
+        assertEquals("upiIntentPostRequest(upi/intent, gpay, surcharges=null)", fakeApi.callLog.single())
     }
 
     @Test
@@ -112,11 +112,11 @@ class MainScreenRepoImplTest {
         }
 
         val result = repo(fakeApi).postUpiCollectRequest(
-            type = "upi/collect", instrumentRef = null, shopperVpa = "user@upi", saveInstrument = true,
+            type = "upi/collect", instrumentRef = null, shopperVpa = "user@upi", saveInstrument = true, surcharges = null,
         )
 
         assertIs<ApiResponse.Success<PaymentMethodPostResponse>>(result)
-        assertEquals("upiCollectPostRequest(upi/collect, user@upi)", fakeApi.callLog.single())
+        assertEquals("upiCollectPostRequest(upi/collect, vpa=user@upi, surcharges=null)", fakeApi.callLog.single())
     }
 
     @Test
@@ -165,15 +165,15 @@ class MainScreenRepoImplTest {
     fun `deleteSavedCard forwards the card id`() = runTest {
         val fakeApi = FakeApiService().apply {
             nextDeleteSavedCard = ApiResponse.Success(
-                RecommendedInstrumentsResponse(type = "Card", brand = "VISA", instrumentRef = "ref_1", displayValue = null, logoUrl = null, cardNickName = null),
+                listOf(RecommendedInstrumentsResponse(type = "Card", brand = "VISA", instrumentRef = "ref_1", displayValue = null, logoUrl = null, cardNickName = null)),
                 responseCode = 200,
             )
         }
 
-        val result = repo(fakeApi).deleteSavedCard(id = "ref_1")
+        val result = repo(fakeApi).deleteSavedCard(id = "ref_1", type = "Card")
 
-        assertIs<ApiResponse.Success<RecommendedInstrumentsResponse>>(result)
-        assertEquals("deleteSavedCard(ref_1)", fakeApi.callLog.single())
+        assertIs<ApiResponse.Success<List<RecommendedInstrumentsResponse>>>(result)
+        assertEquals("deleteSavedCard(id=ref_1, type=Card)", fakeApi.callLog.single())
     }
 
     @Test
@@ -182,9 +182,9 @@ class MainScreenRepoImplTest {
             nextUpiQrPostResponse = ApiResponse.Success(postResponse(), responseCode = 200)
         }
 
-        val result = repo(fakeApi).postUPIQrRequest(type = "upi/qr")
+        val result = repo(fakeApi).postUPIQrRequest(type = "upi/qr", surcharges = null)
 
         assertIs<ApiResponse.Success<PaymentMethodPostResponse>>(result)
-        assertEquals("upiQrPostRequest(upi/qr)", fakeApi.callLog.single())
+        assertEquals("upiQrPostRequest(upi/qr, surcharges=null)", fakeApi.callLog.single())
     }
 }

@@ -57,13 +57,13 @@ class OtherPaymentMethodRepoImplTest {
         }
         val repo = OtherPaymentMethodRepoImpl(apiService = fakeApi, ioDispatcher = Dispatchers.Unconfined)
 
-        val result = repo.initiatePayment(instrumentDetails = "{\"vpa\":\"a@b\"}", paymentType = "UPI", token = "tok_1")
+        val result = repo.initiatePayment(instrumentDetails = "{\"vpa\":\"a@b\"}", paymentType = "UPI", token = "tok_1", surcharges = null)
 
         assertIs<ApiResponse.Success<PaymentMethodPostResponse>>(result)
         // methodsPostRequest(instrumentDetails, token, paymentType) - note the
         // argument order the repo passes matches the service signature, not
         // the repo's own parameter order.
-        assertEquals("methodsPostRequest({\"vpa\":\"a@b\"}, UPI)", fakeApi.callLog.single())
+        assertEquals("methodsPostRequest({\"vpa\":\"a@b\"}, UPI, surcharges=null)", fakeApi.callLog.single())
     }
 
     @Test
@@ -82,9 +82,10 @@ class OtherPaymentMethodRepoImplTest {
             offerCode = "NOCOST",
             duration = 6,
             provider = null,
+            surcharges = null,
         )
 
         assertIs<ApiResponse.Success<PaymentMethodPostResponse>>(result)
-        assertEquals("emiPostRequest(cardNumber=4111111111111111, duration=6)", fakeApi.callLog.single())
+        assertEquals("emiPostRequest(cardNumber=4111111111111111, duration=6, surcharges=null)", fakeApi.callLog.single())
     }
 }

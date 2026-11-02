@@ -1,6 +1,18 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
@@ -27,7 +39,11 @@ class SavedCardComponentTest {
     @Test
     fun `renders the nickname and masked number for each saved card`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SavedCardComponent(
                     savedCards = listOf(savedCard(id = "ref_1", nickName = "My Shopping Card", displayValue = "\u2022\u2022\u2022\u2022 1111")),
                     onProceedForward = { _, _ -> },
@@ -46,14 +62,24 @@ class SavedCardComponentTest {
         }
 
         composeTestRule.onNodeWithText("My Shopping Card").assertExists()
-        composeTestRule.onNodeWithText("\u2022\u2022\u2022\u2022 1111").assertExists()
+
+        // SavedCardComponent.kt (lines 223-248) builds this text itself: it hardcodes a
+        // literal "****" prefix and only ever takes the last 4 characters of the passed
+        // displayValue - it doesn't preserve whatever masking characters (bullets, etc)
+        // the input actually used - and appends " | CVV Less" in the same text node. So
+        // the real rendered text is "**** 1111 | CVV Less", never the input string as-is.
+        composeTestRule.onNode(hasText("**** 1111", substring = true)).assertExists()
     }
 
     @Test
     fun `tapping Add new Card invokes onClickAddCard`() {
         var addCardClicked = false
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SavedCardComponent(
                     savedCards = emptyList(),
                     onProceedForward = { _, _ -> },
@@ -79,7 +105,11 @@ class SavedCardComponentTest {
     @Test
     fun `renders one row per saved card`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SavedCardComponent(
                     savedCards = listOf(
                         savedCard(id = "ref_1", nickName = "Shopping Card", displayValue = "\u2022\u2022\u2022\u2022 1111"),

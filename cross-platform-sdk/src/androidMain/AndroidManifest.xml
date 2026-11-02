@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-sdk tools:overrideLibrary="com.revolut.revolutpay, com.revolut.revolutpayments" />
+    <uses-sdk tools:overrideLibrary="com.revolut.revolutpay, com.revolut.revolutpayments, com.google.android.gms.wallet,
+        androidx.compose.ui, androidx.compose.ui.test, androidx.compose.ui.test.junit4, androidx.compose.ui.test.manifest,
+        androidx.compose.ui.util, androidx.compose.ui.unit, androidx.compose.ui.text, androidx.compose.ui.geometry,
+        androidx.compose.ui.graphics, androidx.compose.ui.tooling, androidx.compose.ui.tooling.preview,
+        androidx.compose.ui.tooling.data, androidx.compose.ui.viewbinding, androidx.compose.ui.inspection,
+        androidx.compose.material, androidx.compose.material3, androidx.compose.material.ripple,
+        androidx.compose.material.icons.core, androidx.compose.material.icons.extended,
+        androidx.compose.material3.adaptive, androidx.compose.material3.adaptive.layout, androidx.compose.material3.adaptive.navigation,
+        androidx.compose.foundation, androidx.compose.foundation.layout,
+        androidx.compose.runtime, androidx.compose.runtime.livedata, androidx.compose.runtime.saveable, androidx.compose.runtime.tracing,
+        androidx.compose.animation, androidx.compose.animation.core, androidx.compose.animation.graphics,
+        androidx.activity, androidx.activity.compose,
+        androidx.lifecycle, androidx.lifecycle.runtime.compose, androidx.lifecycle.viewmodel.compose,
+        androidx.camera.core, androidx.camera.camera2, androidx.camera.lifecycle, androidx.camera.view" />
     <queries>
         <!-- Example Store and Services (existing entries) -->
         <package android:name="com.example.store" />

@@ -104,7 +104,7 @@ internal class MainScreenViewModel(
 
         viewModelScope.launch {
             try {
-                countryData = loadCountryData()
+                countryData = runCatching { loadCountryData() }.getOrDefault(emptyMap())
 
                 val sessionResponse = repo.getSessionDetails()
                 if (sessionResponse !is ApiResponse.Success) {
@@ -122,6 +122,11 @@ internal class MainScreenViewModel(
                 val shopper = sessionData.paymentDetails.shopper
 
                 if (responseData.status == TransactionStatusEnum.EXPIRED || responseData.status == TransactionStatusEnum.SUCCESS) {
+                    if (responseData.status == TransactionStatusEnum.SUCCESS) {
+                        CheckoutDetailsHandler.setSessionSuccess()
+                    } else {
+                        CheckoutDetailsHandler.setSessionExpired()
+                    }
                     isSessionLoaded = true
                     isBoxPayAnimationLoading.value = false
                     _state.value = UiState.Success(sessionData.toUiModel())
@@ -174,8 +179,8 @@ internal class MainScreenViewModel(
                         ?.let { (it as? ApiResponse.Success)?.data?.toUiModel() }
                         ?: emptyList()
 
-                    // ✅ Explicitly wait for surcharge to finish
-                    surchargeJob.await()
+                    // ✅ Explicitly wait for surcharge to finish - wrapped the
+                    runCatching { surchargeJob.await() }
                 }
 
                 if (!instruments.isNullOrEmpty()) {
@@ -212,7 +217,12 @@ internal class MainScreenViewModel(
         amount: Double,
         currencyCode: String
     ) {
-        when(val response = repo.getSurcharge(amount, currencyCode)) {
+        val previouslyAppliedSurcharge = CheckoutDetailsHandler.checkoutDetails.surchargeDetails
+            .filter { it.applicableOn.isEmpty() }
+            .sumOf { it.amount }
+        val baseAmount = amount - previouslyAppliedSurcharge
+
+        when(val response = repo.getSurcharge(baseAmount, currencyCode)) {
             is ApiResponse.Error -> {
                 CheckoutDetailsHandler.setSurchargeDetails(emptyList())
             }
@@ -224,7 +234,7 @@ internal class MainScreenViewModel(
                     .filter { it.applicableOn.isEmpty() }
                     .sumOf { it.amount }
 
-                val updatedAmount = amount + applicableSurcharge
+                val updatedAmount = baseAmount + applicableSurcharge
 
                 CheckoutDetailsHandler.setSurchargeDetails(surcharges)
                 CheckoutDetailsHandler.setAmount(updatedAmount)
@@ -325,11 +335,11 @@ internal class MainScreenViewModel(
                 onSetPaymentUrl = {
                     setWebViewUrl.value = it
                     setWebViewScreen(true)
-                                  },
+                },
                 onSetPaymentHtml = {
                     setWebViewHtml.value = it
                     setWebViewScreen(true)
-                                   },
+                },
                 onNavigateToTimer = {
                     proceedToTimer.value = true
                 },
@@ -366,11 +376,11 @@ internal class MainScreenViewModel(
                 onSetPaymentUrl = {
                     setWebViewUrl.value = it
                     setWebViewScreen(true)
-                                  },
+                },
                 onSetPaymentHtml = {
                     setWebViewHtml.value = it
                     setWebViewScreen(true)
-                                   },
+                },
                 onNavigateToTimer = {
                     // no operations
                 },
@@ -380,8 +390,8 @@ internal class MainScreenViewModel(
                 onOpenUpiIntent = {url ->
                     val decodedUrl = decodeBase64Url(url)
                     if (decodedUrl.isNotEmpty()) {
-                        lifecycleObserver.start()
                         upiIntentUrl.value = decodedUrl
+                        runCatching { lifecycleObserver.start() }
                     }
                 },
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
@@ -498,11 +508,11 @@ internal class MainScreenViewModel(
                 onSetPaymentUrl = {
                     setWebViewUrl.value = it
                     setWebViewScreen(true)
-                                  },
+                },
                 onSetPaymentHtml = {
                     setWebViewHtml.value = it
                     setWebViewScreen(true)
-                                   },
+                },
                 onNavigateToTimer = {
                     // no operation
                 },
@@ -568,7 +578,7 @@ internal class MainScreenViewModel(
             isBoxPayAnimationLoading.value = true
             when (val response = instantOfferRepo.applyOffer(listOf(selectedCode), amount)) {
                 is ApiResponse.Success -> {
-                    val appliedDiscount = response.data.evaluatedOffers?.get(0)?.appliedDiscountAmount ?: 0.0
+                    val appliedDiscount = response.data.evaluatedOffers?.getOrNull(0)?.appliedDiscountAmount ?: 0.0
                     val offerAmount = amount - appliedDiscount
 
                     CheckoutDetailsHandler.setAppliedOffer(
@@ -703,8 +713,8 @@ internal class MainScreenViewModel(
                 onOpenUpiIntent = {url ->
                     val decodedUrl = decodeBase64Url(url)
                     if (decodedUrl.isNotEmpty()) {
-                        lifecycleObserver.start()
                         upiIntentUrl.value = decodedUrl
+                        runCatching { lifecycleObserver.start() }
                     }
                 },
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,

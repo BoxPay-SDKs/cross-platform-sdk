@@ -180,7 +180,7 @@ class EMIScreenViewModelTest {
         val viewModel = newViewModel()
         viewModel.selectedEmi.value = Pair(6, "\u20b91,700")
 
-        viewModel.postEMIRequest()
+        viewModel.postEMIRequest(surcharge = null)
 
         assertEquals("<html>3DS</html>", viewModel.htmlString.value)
         assertTrue(viewModel.showWebview.value)
@@ -194,7 +194,7 @@ class EMIScreenViewModelTest {
         otherPaymentMethodRepo.initiateEMIPaymentResult = ApiResponse.Error(message = "declined")
         val viewModel = newViewModel()
 
-        viewModel.postEMIRequest()
+        viewModel.postEMIRequest(surcharge = null)
 
         assertEquals(false, viewModel.isBoxPayAnimationVisible.value)
     }

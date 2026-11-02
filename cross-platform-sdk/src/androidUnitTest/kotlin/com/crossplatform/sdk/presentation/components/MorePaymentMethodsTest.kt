@@ -1,5 +1,16 @@
 package com.crossplatform.sdk.presentation.components
 
+import com.crossplatform.sdk.fakes.initializeKamelApplicationContext
+
+import androidx.test.core.app.ApplicationProvider
+
+import androidx.compose.ui.platform.LocalInspectionMode
+
+import androidx.compose.runtime.CompositionLocalProvider
+
+import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
+
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -25,7 +36,11 @@ class MorePaymentMethodsTest {
         onNavigateToEmi: () -> Unit = {},
     ) {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MorePaymentMethods(
                     methodFlags = methodFlags,
                     onNavigateToCard = onNavigateToCard,
@@ -38,11 +53,14 @@ class MorePaymentMethodsTest {
                     currencySymbol = "\u20b9",
                     walletList = emptyList(),
                     netBankingList = emptyList(),
+                    bnplList = emptyList(),
                     amount = 499.0,
                     buttonColor = "#000000",
                     buttonTextColor = "#FFFFFF",
                     ctaBorderRadius = 8,
                     onProceedForward = { _, _, _ -> },
+                    setSelectedPaymentMethod = {},
+                    setSelectedPaymentNetwork = {},
                     onNavigateToPayNow = {
 
                     }
@@ -65,7 +83,11 @@ class MorePaymentMethodsTest {
     @Test
     fun `cards section is hidden when a saved card already exists`() {
         composeTestRule.setContent {
-            ProvideSDKFonts {
+            initializeKamelApplicationContext(ApplicationProvider.getApplicationContext())
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+                PreviewContextConfigurationEffect()
+            }
+            ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 MorePaymentMethods(
                     methodFlags = MainScreenModel.MethodFlags(isCardsVisible = true),
                     onNavigateToCard = {}, onNavigateToWallet = {}, onNavigateToNetBanking = {},
@@ -77,8 +99,11 @@ class MorePaymentMethodsTest {
                         )
                     ),
                     surchargeList = emptyList(), currencySymbol = "\u20b9", walletList = emptyList(), netBankingList = emptyList(),
+                    bnplList = emptyList(),
                     amount = 499.0, buttonColor = "#000000", buttonTextColor = "#FFFFFF", ctaBorderRadius = 8,
                     onProceedForward = { _, _, _ -> },
+                    setSelectedPaymentMethod = {},
+                    setSelectedPaymentNetwork = {},
                     onNavigateToPayNow = {
 
                     }

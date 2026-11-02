@@ -6,6 +6,7 @@ import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
@@ -62,10 +63,12 @@ class UpiTimerViewModelTest {
     fun `startTimer after stopTimer resumes counting down from the current value`() = runTest(dispatcher) {
         val viewModel = UpiTimerViewModel()
         advanceTimeBy(3_000) // -> 297
+        runCurrent()
         viewModel.stopTimer()
 
         viewModel.startTimer()
         advanceTimeBy(2_000)
+        runCurrent()
 
         assertEquals(295, viewModel.timeRemaining.value)
     }
