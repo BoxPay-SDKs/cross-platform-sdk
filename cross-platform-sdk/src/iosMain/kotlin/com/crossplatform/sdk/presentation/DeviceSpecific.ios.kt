@@ -467,6 +467,7 @@ internal actual fun generateSecureRandomBytes(length: Int): ByteArray {
     return bytes
 }
 
+// changes fixed for encryption
 @OptIn(ExperimentalForeignApi::class)
 internal actual suspend fun encryptCardData(
     encryptionKey: String,
