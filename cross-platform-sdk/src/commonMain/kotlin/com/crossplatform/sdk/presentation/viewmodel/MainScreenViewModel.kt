@@ -212,7 +212,12 @@ internal class MainScreenViewModel(
         amount: Double,
         currencyCode: String
     ) {
-        when(val response = repo.getSurcharge(amount, currencyCode)) {
+        val previouslyAppliedSurcharge = CheckoutDetailsHandler.checkoutDetails.surchargeDetails
+            .filter { it.applicableOn.isEmpty() }
+            .sumOf { it.amount }
+        val baseAmount = amount - previouslyAppliedSurcharge
+
+        when(val response = repo.getSurcharge(baseAmount, currencyCode)) {
             is ApiResponse.Error -> {
                 CheckoutDetailsHandler.setSurchargeDetails(emptyList())
             }
@@ -224,7 +229,7 @@ internal class MainScreenViewModel(
                     .filter { it.applicableOn.isEmpty() }
                     .sumOf { it.amount }
 
-                val updatedAmount = amount + applicableSurcharge
+                val updatedAmount = baseAmount + applicableSurcharge
 
                 CheckoutDetailsHandler.setSurchargeDetails(surcharges)
                 CheckoutDetailsHandler.setAmount(updatedAmount)
@@ -325,11 +330,11 @@ internal class MainScreenViewModel(
                 onSetPaymentUrl = {
                     setWebViewUrl.value = it
                     setWebViewScreen(true)
-                                  },
+                },
                 onSetPaymentHtml = {
                     setWebViewHtml.value = it
                     setWebViewScreen(true)
-                                   },
+                },
                 onNavigateToTimer = {
                     proceedToTimer.value = true
                 },
@@ -366,11 +371,11 @@ internal class MainScreenViewModel(
                 onSetPaymentUrl = {
                     setWebViewUrl.value = it
                     setWebViewScreen(true)
-                                  },
+                },
                 onSetPaymentHtml = {
                     setWebViewHtml.value = it
                     setWebViewScreen(true)
-                                   },
+                },
                 onNavigateToTimer = {
                     // no operations
                 },
@@ -380,8 +385,8 @@ internal class MainScreenViewModel(
                 onOpenUpiIntent = {url ->
                     val decodedUrl = decodeBase64Url(url)
                     if (decodedUrl.isNotEmpty()) {
-                        lifecycleObserver.start()
                         upiIntentUrl.value = decodedUrl
+                        runCatching { lifecycleObserver.start() }
                     }
                 },
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
@@ -498,11 +503,11 @@ internal class MainScreenViewModel(
                 onSetPaymentUrl = {
                     setWebViewUrl.value = it
                     setWebViewScreen(true)
-                                  },
+                },
                 onSetPaymentHtml = {
                     setWebViewHtml.value = it
                     setWebViewScreen(true)
-                                   },
+                },
                 onNavigateToTimer = {
                     // no operation
                 },
@@ -703,8 +708,8 @@ internal class MainScreenViewModel(
                 onOpenUpiIntent = {url ->
                     val decodedUrl = decodeBase64Url(url)
                     if (decodedUrl.isNotEmpty()) {
-                        lifecycleObserver.start()
                         upiIntentUrl.value = decodedUrl
+                        runCatching { lifecycleObserver.start() }
                     }
                 },
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
