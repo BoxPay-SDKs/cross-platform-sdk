@@ -49,7 +49,7 @@ import com.crossplatform.sdk.payments.RevolutPayBridgeRegistry
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.addressOf
 import dev.whyoleg.cryptography.*
-import dev.whyoleg.cryptography.algorithms.*
+import dev.whyoleg.cryptography.algorithms.symmetric.AES
 import kotlinx.cinterop.*
 import platform.Foundation.*
 import platform.Security.*
@@ -467,6 +467,7 @@ internal actual fun generateSecureRandomBytes(length: Int): ByteArray {
     return bytes
 }
 
+// changes fixed for encryption
 @OptIn(ExperimentalForeignApi::class)
 internal actual suspend fun encryptCardData(
     encryptionKey: String,
@@ -527,7 +528,6 @@ internal actual suspend fun encryptCardData(
     val plaintext = cardJson.encodeToByteArray()
     val (ciphertext, authTag) = aesGcmEncrypt(
         key       = cek,
-        iv        = iv,
         plaintext = plaintext,
         aad       = aad
     )
@@ -541,27 +541,26 @@ internal actual suspend fun encryptCardData(
 
 private suspend fun aesGcmEncrypt(
     key: ByteArray,
-    iv: ByteArray,
     plaintext: ByteArray,
     aad: ByteArray
-): Pair<ByteArray, ByteArray> {
+): Triple<ByteArray, ByteArray, ByteArray> {
     val provider = CryptographyProvider.Default
-    val aesGcm = provider.get(AES.GCM)
+    val aesGcm   = provider.get(AES.GCM)
 
     val secretKey = aesGcm.keyDecoder().decodeFrom(AES.Key.Format.RAW, key)
-    val cipher = secretKey.cipher()
+    val cipher    = secretKey.cipher()
 
-    // output = ciphertext + 16-byte tag
+    // output = nonce (12 bytes) + ciphertext + tag (16 bytes)
     val output = cipher.encrypt(
-        nonce = iv,
-        plaintext = plaintext,
-        aad = aad
+        plaintextInput  = plaintext,
+        associatedData  = aad
     )
 
-    return Pair(
-        output.copyOfRange(0, plaintext.size),
-        output.copyOfRange(plaintext.size, output.size)
-    )
+    val iv         = output.copyOfRange(0, 12)
+    val ciphertext = output.copyOfRange(12, output.size - 16)
+    val authTag    = output.copyOfRange(output.size - 16, output.size)
+
+    return Triple(iv, ciphertext, authTag)
 }
 
 // ── Utilities ─────────────────────────────────────────────────────────────
