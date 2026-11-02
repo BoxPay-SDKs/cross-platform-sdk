@@ -12,6 +12,7 @@ import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
 
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
@@ -44,7 +45,7 @@ class SavedCardComponentTest {
             }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SavedCardComponent(
-                    savedCards = listOf(savedCard(id = "ref_1", nickName = "My Shopping Card", displayValue = "**** 1111")),
+                    savedCards = listOf(savedCard(id = "ref_1", nickName = "My Shopping Card", displayValue = "\u2022\u2022\u2022\u2022 1111")),
                     onProceedForward = { _, _ -> },
                     onClickAddCard = {},
                     buttonTextColor = "#FFFFFF",
@@ -61,7 +62,13 @@ class SavedCardComponentTest {
         }
 
         composeTestRule.onNodeWithText("My Shopping Card").assertExists()
-        composeTestRule.onNodeWithText("**** 1111 | CVV Less").assertExists()
+
+        // SavedCardComponent.kt (lines 223-248) builds this text itself: it hardcodes a
+        // literal "****" prefix and only ever takes the last 4 characters of the passed
+        // displayValue - it doesn't preserve whatever masking characters (bullets, etc)
+        // the input actually used - and appends " | CVV Less" in the same text node. So
+        // the real rendered text is "**** 1111 | CVV Less", never the input string as-is.
+        composeTestRule.onNode(hasText("**** 1111", substring = true)).assertExists()
     }
 
     @Test

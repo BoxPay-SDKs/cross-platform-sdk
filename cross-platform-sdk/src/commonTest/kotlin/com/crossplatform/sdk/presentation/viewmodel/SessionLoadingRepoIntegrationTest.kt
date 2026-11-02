@@ -58,12 +58,26 @@ class SessionLoadingRepoIntegrationTest {
             instantOfferRepo      = FakeInstantOfferRepo(),
             fetchStatusRepo       = FakeFetchStatusRepo()
         )
+
+        CheckoutDetailsHandler.setCheckoutToken(
+            shopperToken           = null,
+            token                  = "session_token",
+            isTestEnv              = true,
+            isSuccessScreenVisible = true,
+            ctaBorderRadius        = 8,
+            isSICheckboxChecked    = false,
+            isSICheckboxEnabled    = false,
+            isFailedScreenVisible  = true,
+            showQROnLoad           = false,
+            focusedTextInputBorderColor   = "",
+            unfocusedTextInputBorderColor = ""
+        )
     }
 
     @AfterTest
     fun tearDown() {
-        Dispatchers.resetMain()
         CheckoutDetailsHandler.resetToDefault()
+        Dispatchers.resetMain()
     }
 
     // ── happy-path session load ──────────────────────────────────────────────
@@ -164,17 +178,18 @@ class SessionLoadingRepoIntegrationTest {
     // ── session loading propagates to CheckoutDetailsHandler ─────────────────
 
     @Test
-    fun `loadSession with PAID status marks payment as successful in CheckoutDetailsHandler`() = runTest {
-        api.nextSessionDetails = ApiResponse.Success(
-            buildMinimalSessionDetails(status = "PAID"),
-            responseCode = 200
-        )
+    fun `loadSession with PAID status marks payment as successful in CheckoutDetailsHandler`() =
+        runTest {
+            api.nextSessionDetails = ApiResponse.Success(
+                buildMinimalSessionDetails(status = "PAID"),
+                responseCode = 200
+            )
 
-        viewModel.loadSession()
+            viewModel.loadSession()
 
-        // A PAID session should cause the success-screen state to be set
-        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
-    }
+            // A PAID session should cause the success-screen state to be set
+            assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
+        }
 
     // ── double-load guard ────────────────────────────────────────────────────
 

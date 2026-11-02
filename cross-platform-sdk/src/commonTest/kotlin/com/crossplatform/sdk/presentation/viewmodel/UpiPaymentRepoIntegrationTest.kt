@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlin.io.encoding.Base64
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -81,8 +82,8 @@ class UpiPaymentRepoIntegrationTest {
 
     @AfterTest
     fun tearDown() {
-        Dispatchers.resetMain()
         CheckoutDetailsHandler.resetToDefault()
+        Dispatchers.resetMain()
     }
 
     // ── UPI Collect ──────────────────────────────────────────────────────────
@@ -159,10 +160,12 @@ class UpiPaymentRepoIntegrationTest {
 
     @Test
     fun `UPI intent via real MainScreenRepoImpl routes to upiIntentPostRequest`() = runTest {
+        val deepLink = "upi://pay?pa=merchant@upi&mc=1234"
+        val encodedDeepLink = Base64.encode(deepLink.encodeToByteArray())
         api.nextUpiIntentPostResponse = ApiResponse.Success(
             buildRequiresActionResponse(
-                actionType = "upiIntent",
-                url        = "upi://pay?pa=merchant@upi&mc=1234"
+                actionType = "appRedirect",
+                url        = encodedDeepLink
             ),
             responseCode = 200
         )
@@ -174,9 +177,7 @@ class UpiPaymentRepoIntegrationTest {
         )
 
         // The intent URL should be stored so the OS can launch the UPI app
-        val intentUrl = mainVm.upiIntentUrl.value
-        assertTrue(intentUrl.isNotEmpty() || mainVm.showWebViewScreen.value,
-            "Either the intent URL or a webview should be set after UPI intent response")
+        assertEquals(deepLink, mainVm.upiIntentUrl.value)
     }
 
     @Test
@@ -219,6 +220,19 @@ class UpiPaymentRepoIntegrationTest {
             ),
             responseCode = 200
         )
+        // PayNowScreenViewModel.getPayNowQR's onOpenQr callback immediately calls
+        // startFetchStatusPolling(), a real `while (isActive) { ...; delay(4000L) }`
+        // loop (see PayNowScreenViewModel.kt). Leaving nextFetchStatus unstubbed
+        // makes FakeApiService.fetchStatus() throw ("no stub was configured") on
+        // the first poll tick - inside its OWN sibling viewModelScope.launch{}, so
+        // it does NOT stop the outer polling loop, which falls straight into a
+        // second delay(4000L) this test's dispatcher setup can never advance - a
+        // permanent hang, not a failure (confirmed: this is what was happening).
+        // Stub a terminal status so the first tick stops the polling loop itself.
+        api.nextFetchStatus = ApiResponse.Success(
+            buildSuccessFetchStatus(transactionId = "txn_qr_1"),
+            responseCode = 200
+        )
 
         payNowVm.getPayNowQR(instrumentType = "UPI_QR", surcharge = null)
 
@@ -230,6 +244,12 @@ class UpiPaymentRepoIntegrationTest {
     fun `UPI QR surcharge codes forwarded through real OtherPaymentMethodRepoImpl`() = runTest {
         api.nextMethodsPostResponse = ApiResponse.Success(
             buildRequiresActionResponse(actionType = "qrCode", qrContent = "QR", expirySec = 120),
+            responseCode = 200
+        )
+        // Same reason as the test above - stub a terminal fetchStatus so the
+        // auto-started poll stops itself on the first tick instead of hanging.
+        api.nextFetchStatus = ApiResponse.Success(
+            buildSuccessFetchStatus(transactionId = "txn_qr_2"),
             responseCode = 200
         )
 

@@ -82,8 +82,8 @@ class OtherPaymentMethodRepoIntegrationTest {
 
     @AfterTest
     fun tearDown() {
-        Dispatchers.resetMain()
         CheckoutDetailsHandler.resetToDefault()
+        Dispatchers.resetMain()
     }
 
     // ── getPaymentMethods via real OtherPaymentMethodRepoImpl ────────────────

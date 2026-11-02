@@ -74,8 +74,8 @@ class SurchargeApplicationIntegrationTest {
 
     @AfterTest
     fun tearDown() {
-        Dispatchers.resetMain()
         CheckoutDetailsHandler.resetToDefault()
+        Dispatchers.resetMain()
     }
 
     // ── visibility: a quoted surcharge is summed in AND surfaced in the list ──

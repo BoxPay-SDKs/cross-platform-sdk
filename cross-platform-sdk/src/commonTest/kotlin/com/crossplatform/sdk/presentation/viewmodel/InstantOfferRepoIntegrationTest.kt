@@ -101,8 +101,8 @@ class InstantOfferRepoIntegrationTest {
 
     @AfterTest
     fun tearDown() {
-        Dispatchers.resetMain()
         CheckoutDetailsHandler.resetToDefault()
+        Dispatchers.resetMain()
     }
 
     // ── getOffers ────────────────────────────────────────────────────────────

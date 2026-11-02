@@ -32,9 +32,9 @@ class SelectTenureScreenTest {
     val composeTestRule = createComposeRule()
 
     private fun emi(duration: Int, amount: String, code: String = "3M") = Emi(
-        duration = duration, percent = 12.0, amount = amount, totalAmount = "₹5,100",
-        discount = "₹0", interestCharged = "₹50", noCostApplied = false, lowCostApplied = false,
-        processingFee = "₹0", code = code, netAmount = "₹5,000",
+        duration = duration, percent = 12.0, amount = amount, totalAmount = "\u20b95,100",
+        discount = "\u20b90", interestCharged = "\u20b950", noCostApplied = false, lowCostApplied = false,
+        processingFee = "\u20b90", code = code, netAmount = "\u20b95,000",
     )
 
     private fun bank(name: String, emiList: List<Emi>) = Bank(
@@ -51,12 +51,12 @@ class SelectTenureScreenTest {
             }
             ProvideSDKFonts(currentLanguage = CheckoutDetailsHandler.checkoutDetails.localeCode) {
                 SelectTenureScreen(
-                    selectedBank = bank("HDFC Bank", emiList = listOf(emi(3, "₹1,700"))),
+                    selectedBank = bank("HDFC Bank", emiList = listOf(emi(3, "\u20b91,700"))),
                     cardType = "Credit Card",
                     selectedEmi = Pair(null, null),
                     buttonColor = "#000000", buttonTextColor = "#FFFFFF",
                     onClickRadio = { _, _, _ -> }, onProceed = { _, _, _, _, _ -> },
-                    currencySymbol = "₹", ctaBorderRadius = 8,
+                    currencySymbol = "\u20b9", ctaBorderRadius = 8,
                 )
             }
         }
@@ -78,13 +78,17 @@ class SelectTenureScreenTest {
                     selectedEmi = Pair(null, null),
                     buttonColor = "#000000", buttonTextColor = "#FFFFFF",
                     onClickRadio = { _, _, _ -> }, onProceed = { _, _, _, _, _ -> },
-                    currencySymbol = "INR", ctaBorderRadius = 8,
+                    currencySymbol = "\u20b9", ctaBorderRadius = 8,
                 )
             }
         }
 
-        composeTestRule.onNodeWithText("3 months x INR1,700", substring = true).assertExists()
-        composeTestRule.onNodeWithText("6 months x INR900", substring = true).assertExists()
+        // Every row here is unselected (selectedEmi = Pair(null, null)), so
+        // SelectTenureScreen.kt also appends " | @<percent>% p.a." after the amount in
+        // the same Text node - onNodeWithText needs substring=true, an exact match
+        // against the whole node text would never succeed.
+        composeTestRule.onNodeWithText("3 months x \u20b91,700", substring = true).assertExists()
+        composeTestRule.onNodeWithText("6 months x \u20b9900", substring = true).assertExists()
     }
 
     @Test
@@ -103,13 +107,12 @@ class SelectTenureScreenTest {
                     buttonColor = "#000000", buttonTextColor = "#FFFFFF",
                     onClickRadio = { duration, amount, code -> clicked = Triple(duration, amount, code) },
                     onProceed = { _, _, _, _, _ -> },
-                    currencySymbol = "INR", ctaBorderRadius = 8,
+                    currencySymbol = "\u20b9", ctaBorderRadius = 8,
                 )
             }
         }
 
-
-        composeTestRule.onNodeWithText("3 months x INR1,700", substring = true).performClick()
+        composeTestRule.onNodeWithText("3 months x \u20b91,700", substring = true).performClick()
 
         assertEquals(Triple(3, "1,700", "CODE3"), clicked)
     }
@@ -132,13 +135,13 @@ class SelectTenureScreenTest {
                     onProceed = { percent, lowCost, noCost, discount, netAmount ->
                         proceeded = listOf(percent, lowCost, noCost, discount, netAmount)
                     },
-                    currencySymbol = "₹", ctaBorderRadius = 8,
+                    currencySymbol = "\u20b9", ctaBorderRadius = 8,
                 )
             }
         }
 
         composeTestRule.onNodeWithText("Proceed to Enter Card Details", substring = true).performClick()
 
-        assertEquals(listOf(12.0, false, false, "₹0", "₹5,000"), proceeded)
+        assertEquals(listOf(12.0, false, false, "\u20b90", "\u20b95,000"), proceeded)
     }
 }

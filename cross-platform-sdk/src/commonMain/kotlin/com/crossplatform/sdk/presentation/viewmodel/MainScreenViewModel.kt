@@ -104,7 +104,7 @@ internal class MainScreenViewModel(
 
         viewModelScope.launch {
             try {
-                countryData = loadCountryData()
+                countryData = runCatching { loadCountryData() }.getOrDefault(emptyMap())
 
                 val sessionResponse = repo.getSessionDetails()
                 if (sessionResponse !is ApiResponse.Success) {
@@ -122,6 +122,11 @@ internal class MainScreenViewModel(
                 val shopper = sessionData.paymentDetails.shopper
 
                 if (responseData.status == TransactionStatusEnum.EXPIRED || responseData.status == TransactionStatusEnum.SUCCESS) {
+                    if (responseData.status == TransactionStatusEnum.SUCCESS) {
+                        CheckoutDetailsHandler.setSessionSuccess()
+                    } else {
+                        CheckoutDetailsHandler.setSessionExpired()
+                    }
                     isSessionLoaded = true
                     isBoxPayAnimationLoading.value = false
                     _state.value = UiState.Success(sessionData.toUiModel())
@@ -174,8 +179,8 @@ internal class MainScreenViewModel(
                         ?.let { (it as? ApiResponse.Success)?.data?.toUiModel() }
                         ?: emptyList()
 
-                    // ✅ Explicitly wait for surcharge to finish
-                    surchargeJob.await()
+                    // ✅ Explicitly wait for surcharge to finish - wrapped the
+                    runCatching { surchargeJob.await() }
                 }
 
                 if (!instruments.isNullOrEmpty()) {

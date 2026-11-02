@@ -55,8 +55,8 @@ class PayNowScreenViewModelTest {
 
     @AfterTest
     fun tearDown() {
-        Dispatchers.resetMain()
         CheckoutDetailsHandler.resetToDefault()
+        Dispatchers.resetMain()
     }
 
     // ── helpers ─────────────────────────────────────────────────────────────

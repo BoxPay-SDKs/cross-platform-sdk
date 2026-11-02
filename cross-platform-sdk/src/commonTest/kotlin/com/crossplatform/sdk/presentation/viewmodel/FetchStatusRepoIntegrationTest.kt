@@ -70,8 +70,8 @@ class FetchStatusRepoIntegrationTest {
 
     @AfterTest
     fun tearDown() {
-        Dispatchers.resetMain()
         CheckoutDetailsHandler.resetToDefault()
+        Dispatchers.resetMain()
     }
 
     // ── fetchStatus happy paths ──────────────────────────────────────────────
