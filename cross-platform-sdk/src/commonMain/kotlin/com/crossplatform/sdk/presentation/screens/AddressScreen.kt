@@ -34,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
@@ -105,7 +104,6 @@ internal fun AddressScreen(
     val pincode = addressFlow.value.pincode
     val countryCode = addressFlow.value.countryCode
     val countryName = addressFlow.value.countryName
-    val phoneCode = UserDataHandler.phoneCodeFlow.collectAsStateWithLifecycle()
     val completePhoneNumber = UserDataHandler.completePhoneNumberFlow.collectAsStateWithLifecycle()
     val customFields = UserDataHandler.customFieldsFlow.collectAsStateWithLifecycle()
     val labelFlow = UserDataHandler.labelFlow.collectAsStateWithLifecycle()
@@ -368,10 +366,12 @@ internal fun AddressScreen(
         }
 
         customFields.value.forEach { field ->
-            val name = field.fieldName ?: return@forEach
-            val err = validateCustomField(field, customFieldValues[name] ?: "")
-            customFieldErrors[name] = err
-            if (err.isNotEmpty()) valid = false
+            if (field.enabled) {
+                val name = field.fieldName ?: return@forEach
+                val err = validateCustomField(field, customFieldValues[name] ?: "")
+                customFieldErrors[name] = err
+                if (err.isNotEmpty()) valid = false
+            }
         }
         return valid
     }
@@ -642,7 +642,7 @@ internal fun AddressScreen(
             onDismiss = { showCountryPicker = false },
             focusedBorderColor = focusedBorderColor.value,
             unfocusedBorderColor = unfocusedBorderColor.value,
-            onSelect  = { code, isdCode, fullName, phoneLengths ->
+            onSelect  = { code, _ , fullName, phoneLengths ->
                 selectedCountryCode            = code
                 countryTextField               = fullName
                 phoneNumberLengthList.value    = phoneLengths
