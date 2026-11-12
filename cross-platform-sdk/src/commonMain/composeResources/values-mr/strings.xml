@@ -223,4 +223,12 @@
     <string name="scan_card_cancel">रद्द करा</string>
     <string name="scan_card_permission_denied">कॅमेरा अ‍ॅक्सेस बंद आहे. तुमचे कार्ड स्कॅन करण्यासाठी सेटिंग्जमध्ये तो सुरू करा.</string>
     <string name="scan_card_camera_unavailable">या डिव्हाइसवर कॅमेरा उपलब्ध नाही.</string>
+
+    <!-- NFC card scan -->
+    <string name="nfc_scan_cta">कार्ड टॅप करा</string>
+    <string name="nfc_scan_title">स्कॅनसाठी तयार</string>
+    <string name="nfc_scan_hint">तुमचे NFC कार्ड डिव्हाइसच्या मागील बाजूस धरा. तपशील फक्त तुमच्या डिव्हाइसवर वाचले जातात.</string>
+    <string name="nfc_scan_cancel">रद्द करा</string>
+    <string name="nfc_scan_disabled">NFC बंद आहे. तुमचे कार्ड टॅप करण्यासाठी सेटिंग्जमध्ये ते सुरू करा.</string>
+    <string name="nfc_scan_not_supported">या डिव्हाइसवर NFC उपलब्ध नाही.</string>
 </resources>

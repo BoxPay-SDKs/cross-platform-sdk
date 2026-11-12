@@ -223,4 +223,12 @@
     <string name="scan_card_cancel">Hủy</string>
     <string name="scan_card_permission_denied">Quyền truy cập camera đang tắt. Bật quyền này trong Cài đặt để quét thẻ của bạn.</string>
     <string name="scan_card_camera_unavailable">Camera không khả dụng trên thiết bị này.</string>
+
+    <!-- NFC card scan -->
+    <string name="nfc_scan_cta">Chạm thẻ</string>
+    <string name="nfc_scan_title">Sẵn sàng quét</string>
+    <string name="nfc_scan_hint">Đặt thẻ NFC vào mặt sau thiết bị của bạn. Thông tin chỉ được đọc trên thiết bị của bạn.</string>
+    <string name="nfc_scan_cancel">Hủy</string>
+    <string name="nfc_scan_disabled">NFC đang tắt. Bật NFC trong Cài đặt để chạm thẻ của bạn.</string>
+    <string name="nfc_scan_not_supported">NFC không khả dụng trên thiết bị này.</string>
 </resources>

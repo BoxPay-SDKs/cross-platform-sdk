@@ -223,4 +223,12 @@
     <string name="scan_card_cancel">Annuler</string>
     <string name="scan_card_permission_denied">L'accès à la caméra est désactivé. Activez-le dans les Réglages pour scanner votre carte.</string>
     <string name="scan_card_camera_unavailable">La caméra n'est pas disponible sur cet appareil.</string>
+
+    <!-- NFC card scan -->
+    <string name="nfc_scan_cta">Appuyer la carte</string>
+    <string name="nfc_scan_title">Prêt à scanner</string>
+    <string name="nfc_scan_hint">Approchez votre carte NFC du dos de votre appareil. Les informations sont lues uniquement sur votre appareil.</string>
+    <string name="nfc_scan_cancel">Annuler</string>
+    <string name="nfc_scan_disabled">Le NFC est désactivé. Activez-le dans les Réglages pour appuyer votre carte.</string>
+    <string name="nfc_scan_not_supported">Le NFC n\'est pas disponible sur cet appareil.</string>
 </resources>

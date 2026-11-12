@@ -223,4 +223,12 @@
     <string name="scan_card_cancel">取消</string>
     <string name="scan_card_permission_denied">相机权限已关闭。请在设置中启用以扫描您的卡片。</string>
     <string name="scan_card_camera_unavailable">此设备上无法使用相机。</string>
+
+    <!-- NFC card scan -->
+    <string name="nfc_scan_cta">轻触卡片</string>
+    <string name="nfc_scan_title">准备扫描</string>
+    <string name="nfc_scan_hint">将 NFC 卡片靠近设备背面。卡片信息仅在您的设备上读取。</string>
+    <string name="nfc_scan_cancel">取消</string>
+    <string name="nfc_scan_disabled">NFC 已关闭。请在设置中开启以轻触您的卡片。</string>
+    <string name="nfc_scan_not_supported">此设备不支持 NFC。</string>
 </resources>
