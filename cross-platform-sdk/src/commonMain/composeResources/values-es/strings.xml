@@ -92,6 +92,7 @@
     <string name="download_qr_cta">Descargar QR</string>
     <string name="get_new_qr_cta">Obtener nuevo QR</string>
     <string name="add_new_address_cta">Agregar nueva dirección</string>
+    <string name="save_cta">Guardar</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">Configura las Instrucciones Permanentes (SI) para este pago.</string>

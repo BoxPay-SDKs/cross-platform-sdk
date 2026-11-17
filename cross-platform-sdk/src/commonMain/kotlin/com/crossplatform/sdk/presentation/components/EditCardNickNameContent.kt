@@ -49,7 +49,7 @@ private const val NICKNAME_MAX_LENGTH = 30
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun EditCardNickName(
+internal fun EditCardNickNameContent(
     imageUrl : String,
     cardDisplayValue: String,
     initialNickName: String,

@@ -39,7 +39,7 @@ import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.buildAddressString
 import com.crossplatform.sdk.presentation.components.AddressComponent
-import com.crossplatform.sdk.presentation.components.EditCardNickName
+import com.crossplatform.sdk.presentation.components.EditCardNickNameContent
 import com.crossplatform.sdk.presentation.components.ExpressCheckout
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.MorePaymentMethods
@@ -971,7 +971,7 @@ internal fun MainScreen(
             containerColor = LocalSDKColors.current.background,
             shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
         ) {
-            EditCardNickName(
+            EditCardNickNameContent(
                 imageUrl = viewModel.cardsRecommendedList.value.find { it.id == editCardId.value }?.imageUrl ?: "",
                 cardDisplayValue = editCardDisplayValue.value,
                 initialNickName  = editCardNickName.value,

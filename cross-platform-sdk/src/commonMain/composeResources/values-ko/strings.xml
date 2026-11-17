@@ -92,6 +92,7 @@
     <string name="download_qr_cta">QR 코드 다운로드</string>
     <string name="add_new_address_cta">새 주소 추가</string>
     <string name="get_new_qr_cta">새 QR 코드 받기</string>
+    <string name="save_cta">저장</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">이 결제를 위한 정기 결제 지시(SI)를 설정하세요.</string>

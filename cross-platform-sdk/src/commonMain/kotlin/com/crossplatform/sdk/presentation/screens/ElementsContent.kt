@@ -61,7 +61,7 @@ import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.components.BankComponent
 import com.crossplatform.sdk.presentation.components.CardComponent
-import com.crossplatform.sdk.presentation.components.EditCardNickName
+import com.crossplatform.sdk.presentation.components.EditCardNickNameContent
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.SavedCardComponent
 import com.crossplatform.sdk.presentation.components.ShimmerView
@@ -603,7 +603,7 @@ private fun CardsTab(
                     color = LocalSDKColors.current.background,
                 ) {
                     Box(Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
-                        EditCardNickName(
+                        EditCardNickNameContent(
                             imageUrl         = viewModel.cardsRecommendedList.value
                                 .find { it.id == editCardId.value }?.imageUrl ?: "",
                             cardDisplayValue = editCardDisplayValue.value,
