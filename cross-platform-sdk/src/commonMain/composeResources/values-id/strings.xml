@@ -140,6 +140,7 @@
     <string name="expires_in_info">Kedaluwarsa dalam</string>
     <string name="avoid_back_button_in_upi_timer_info">Mohon hindari menggunakan tombol kembali hingga proses transaksi selesai</string>
     <string name="upi_timer_info">Buka aplikasi UPI Anda dan konfirmasi pembayaran sebelum waktu habis</string>
+    <string name="card_ending_with">Kartu berakhiran **** %1$s</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s bulan x</string>

@@ -39,7 +39,7 @@ import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.buildAddressString
 import com.crossplatform.sdk.presentation.components.AddressComponent
-import com.crossplatform.sdk.presentation.components.EditCardNicknameBottomSheet
+import com.crossplatform.sdk.presentation.components.EditCardNickName
 import com.crossplatform.sdk.presentation.components.ExpressCheckout
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.MorePaymentMethods
@@ -511,14 +511,19 @@ internal fun MainScreen(
                     SectionTitle(stringResource(Res.string.recommended_title))
                     PaymentSelectorView(
                         providerList      = viewModel.recommendedList.value,
-                        onProceedForward  = { display, instrument, _ ->
+                        onProceedForward  = { display, instrument, type->
                             viewModel.callUiAnalytics(
                                 event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
                                 screenName = "MainScreen",
                                 message = "Payment Category selected through recommended method"
                             )
                             val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
-                            viewModel.postUpiCollectRequest(instrumentRef = instrument, type = "upi/collect", shopperVpa = display, surchargeList =  surchargeList)
+                            if(type.equals("upi", true)) {
+                                viewModel.postUpiCollectRequest(instrumentRef = instrument, type = "upi/collect", shopperVpa = display, surchargeList =  surchargeList)
+                            } else {
+                                viewModel.postSavedCardRequest(instrument, false)
+                            }
+
                         },
                         drawableResource = Res.drawable.ic_upi,
                         onClickRadio = {
@@ -966,7 +971,7 @@ internal fun MainScreen(
             containerColor = LocalSDKColors.current.background,
             shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
         ) {
-            EditCardNicknameBottomSheet(
+            EditCardNickName(
                 imageUrl = viewModel.cardsRecommendedList.value.find { it.id == editCardId.value }?.imageUrl ?: "",
                 cardDisplayValue = editCardDisplayValue.value,
                 initialNickName  = editCardNickName.value,

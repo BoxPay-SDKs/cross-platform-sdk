@@ -140,6 +140,7 @@
     <string name="expires_in_info">Expira en</string>
     <string name="avoid_back_button_in_upi_timer_info">Evita usar el botón de atrás hasta que se complete el proceso de la transacción</string>
     <string name="upi_timer_info">Abre tu aplicación UPI y confirma el pago antes de que expire el tiempo</string>
+    <string name="card_ending_with">Tarjeta terminada en **** %1$s</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s meses x</string>

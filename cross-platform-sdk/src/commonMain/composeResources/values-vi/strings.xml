@@ -140,6 +140,7 @@
     <string name="expires_in_info">Hết hạn sau</string>
     <string name="avoid_back_button_in_upi_timer_info">Vui lòng không sử dụng nút quay lại cho đến khi giao dịch hoàn tất</string>
     <string name="upi_timer_info">Hãy mở ứng dụng UPI và xác nhận thanh toán trước khi hết thời gian</string>
+    <string name="card_ending_with">Thẻ có đuôi **** %1$s</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s tháng x</string>

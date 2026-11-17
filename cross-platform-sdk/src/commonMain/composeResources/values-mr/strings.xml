@@ -140,6 +140,7 @@
     <string name="expires_in_info">इतक्या वेळात कालबाह्य होईल</string>
     <string name="avoid_back_button_in_upi_timer_info">कृपया व्यवहार प्रक्रिया पूर्ण होईपर्यंत बॅक बटण वापरणे टाळा</string>
     <string name="upi_timer_info">वेळ संपण्यापूर्वी तुमचे UPI अ‍ॅप उघडा आणि पेमेंटची पुष्टी करा</string>
+    <string name="card_ending_with">**** %1$s वर संपणारे कार्ड</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s महिने x</string>

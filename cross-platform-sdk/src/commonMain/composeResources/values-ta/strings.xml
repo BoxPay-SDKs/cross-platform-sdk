@@ -140,6 +140,7 @@
     <string name="expires_in_info">இதில் காலாவதியாகும்</string>
     <string name="avoid_back_button_in_upi_timer_info">பரிவர்த்தனை செயல்முறை முடியும் வரை பின் பட்டனைப் பயன்படுத்துவதைத் தவிர்க்கவும்</string>
     <string name="upi_timer_info">நேரம் முடிவதற்குள் உங்கள் UPI ஆப்பைத் திறந்து கட்டணத்தை உறுதிப்படுத்தவும்</string>
+    <string name="card_ending_with">**** %1$s இல் முடியும் கார்டு</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s மாதங்கள் x</string>

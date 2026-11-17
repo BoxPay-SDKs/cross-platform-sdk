@@ -140,6 +140,7 @@
     <string name="expires_in_info">将在以下时间后过期</string>
     <string name="avoid_back_button_in_upi_timer_info">在交易完成之前，请勿使用返回按钮</string>
     <string name="upi_timer_info">请在时间到期前打开您的 UPI 应用并确认付款</string>
+    <string name="card_ending_with">尾号 **** %1$s 的卡片</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s 个月 x</string>

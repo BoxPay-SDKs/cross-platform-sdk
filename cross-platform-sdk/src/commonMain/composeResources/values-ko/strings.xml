@@ -140,6 +140,7 @@
     <string name="expires_in_info">만료까지</string>
     <string name="avoid_back_button_in_upi_timer_info">거래 처리가 완료될 때까지 뒤로 가기 버튼을 사용하지 마세요</string>
     <string name="upi_timer_info">시간이 만료되기 전에 UPI 앱을 열고 결제를 확인하세요</string>
+    <string name="card_ending_with">끝자리 **** %1$s 카드</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s개월 x</string>

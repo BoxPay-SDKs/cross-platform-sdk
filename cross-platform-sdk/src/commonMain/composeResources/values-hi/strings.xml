@@ -140,6 +140,7 @@
     <string name="expires_in_info">समाप्त होता है</string>
     <string name="avoid_back_button_in_upi_timer_info">कृपया लेन-देन प्रक्रिया पूरी होने तक बैक बटन का उपयोग करने से बचें</string>
     <string name="upi_timer_info">समय समाप्त होने से पहले अपना UPI ऐप खोलें और भुगतान की पुष्टि करें</string>
+    <string name="card_ending_with">**** %1$s पर समाप्त होने वाला कार्ड</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s महीने x</string>

@@ -35,6 +35,7 @@ import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.cancel_cta
+import crossplatformsdk.cross_platform_sdk.generated.resources.card_ending_with
 import crossplatformsdk.cross_platform_sdk.generated.resources.card_nick_name_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.edit_card_nickname_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card
@@ -48,7 +49,7 @@ private const val NICKNAME_MAX_LENGTH = 30
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun EditCardNicknameBottomSheet(
+internal fun EditCardNickName(
     imageUrl : String,
     cardDisplayValue: String,
     initialNickName: String,
@@ -103,7 +104,7 @@ internal fun EditCardNicknameBottomSheet(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "Card ending **** ${cardDisplayValue.takeLast(4)}",
+                    text = stringResource(Res.string.card_ending_with, cardDisplayValue.takeLast(4)),
                     fontFamily = LocalSDKFonts.current.primary,
                     fontSize = 12.sp,
                     color = LocalSDKColors.current.textSecondary

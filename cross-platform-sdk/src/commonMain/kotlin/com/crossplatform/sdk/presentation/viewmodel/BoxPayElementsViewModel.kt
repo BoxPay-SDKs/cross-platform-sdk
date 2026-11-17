@@ -1149,15 +1149,13 @@ internal class BoxPayElementsViewModel (
     ) {
         viewModelScope.launch {
             isBoxPayAnimationLoading.value = true
-            callUiAnalytics(
-                event = AnalyticsEvents.PAYMENT_INSTRUMENT_PROVIDED.value,
-                screenName = "MainScreenViewModel",
-                message = "Card nickname updated in function onClickUpdateCardNickname"
-            )
             when (repo.editSavedCard(newNickName, instrumentRef)) {
                 is ApiResponse.Success -> {
                     isBoxPayAnimationLoading.value = false
                     cardsRecommendedList.value = cardsRecommendedList.value.map {
+                        if (it.id == instrumentRef) it.copy(displayName = newNickName) else it
+                    }
+                    recommendedList.value = recommendedList.value.map {
                         if (it.id == instrumentRef) it.copy(displayName = newNickName) else it
                     }
                 }
