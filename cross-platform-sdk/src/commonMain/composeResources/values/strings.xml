@@ -39,6 +39,7 @@
     <string name="qr_expired_title">QR Expired</string>
     <string name="saved_addresses_title">Saved Addresses</string>
     <string name="complete_your_payment_title">Complete your payment</string>
+    <string name="edit_card_nickname_title">Edit card nickname</string>
 
 <!--    Text input fields string resources-->
     <string name="search_title">Search</string>
@@ -91,6 +92,7 @@
     <string name="download_qr_cta">Download QR</string>
     <string name="get_new_qr_cta">Get New QR</string>
     <string name="add_new_address_cta">Add New Address</string>
+    <string name="save_cta">Save</string>
 
 <!--    Information String Resources-->
     <string name="set_up_si_instructions">Set up Standing Instructions (SI) for this payment.</string>

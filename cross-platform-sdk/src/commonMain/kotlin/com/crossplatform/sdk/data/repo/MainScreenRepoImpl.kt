@@ -85,4 +85,10 @@ internal class MainScreenRepoImpl(
         )
     }
 
+    override suspend fun editSavedCard(
+        newNickName: String,
+        instrumentRef: String
+    ): ApiResponse<RecommendedInstrumentsResponse> = withContext(ioDispatcher) {
+        apiService.editSavedCard(newNickName, instrumentRef)
+    }
 }

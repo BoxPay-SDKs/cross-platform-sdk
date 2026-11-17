@@ -39,6 +39,7 @@
     <string name="qr_expired_title">二维码已过期</string>
     <string name="complete_your_payment_title">完成付款</string>
     <string name="saved_addresses_title">已保存的地址</string>
+    <string name="edit_card_nickname_title">编辑卡片昵称</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">搜索</string>

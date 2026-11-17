@@ -179,7 +179,7 @@ internal class MainScreenViewModel(
                 }
 
                 if (!instruments.isNullOrEmpty()) {
-                    recommendedList.value      = instruments.filter { it.type.lowercase() == "upi" }.take(2)
+                    recommendedList.value      = instruments.take(2)
                     upiRecommendedList.value   = instruments.filter { it.type.lowercase() == "upi" }
                     cardsRecommendedList.value = instruments.filter { it.type.lowercase() == "card" }
                 }
@@ -543,6 +543,7 @@ internal class MainScreenViewModel(
                 is ApiResponse.Success -> {
                     isBoxPayAnimationLoading.value = false
                     cardsRecommendedList.value = cardsRecommendedList.value.filter { it.id != id }
+                    recommendedList.value = recommendedList.value.filter { it.id != id }
                 }
                 is ApiResponse.Error -> {
                     isBoxPayAnimationLoading.value = false
@@ -909,6 +910,32 @@ internal class MainScreenViewModel(
             (applicable.isBlank() || methodMatches) && networkMatches
         }
         return filtered.map { it.surchargeCode }.ifEmpty { null }
+    }
+
+    fun postEditSavedCard(
+        instrumentRef: String,
+        newNickName : String
+    ) {
+        viewModelScope.launch {
+            isBoxPayAnimationLoading.value = true
+            callUiAnalytics(
+                event = AnalyticsEvents.PAYMENT_INSTRUMENT_PROVIDED.value,
+                screenName = "MainScreenViewModel",
+                message = "Card nickname updated in function onClickUpdateCardNickname"
+            )
+            when (repo.editSavedCard(newNickName, instrumentRef)) {
+                is ApiResponse.Success -> {
+                    isBoxPayAnimationLoading.value = false
+                    cardsRecommendedList.value = cardsRecommendedList.value.map {
+                        if (it.id == instrumentRef) it.copy(displayName = newNickName) else it
+                    }
+                }
+                is ApiResponse.Error -> {
+                    isBoxPayAnimationLoading.value = false
+                }
+                else -> {}
+            }
+        }
     }
 
 }

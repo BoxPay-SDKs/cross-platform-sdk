@@ -1143,6 +1143,32 @@ internal class BoxPayElementsViewModel (
         )
     }
 
+    fun postEditSavedCard(
+        instrumentRef: String,
+        newNickName : String
+    ) {
+        viewModelScope.launch {
+            isBoxPayAnimationLoading.value = true
+            callUiAnalytics(
+                event = AnalyticsEvents.PAYMENT_INSTRUMENT_PROVIDED.value,
+                screenName = "MainScreenViewModel",
+                message = "Card nickname updated in function onClickUpdateCardNickname"
+            )
+            when (repo.editSavedCard(newNickName, instrumentRef)) {
+                is ApiResponse.Success -> {
+                    isBoxPayAnimationLoading.value = false
+                    cardsRecommendedList.value = cardsRecommendedList.value.map {
+                        if (it.id == instrumentRef) it.copy(displayName = newNickName) else it
+                    }
+                }
+                is ApiResponse.Error -> {
+                    isBoxPayAnimationLoading.value = false
+                }
+                else -> {}
+            }
+        }
+    }
+
     fun nativeOtpPageExpired() {
         viewModelScope.launch {
             val checkoutDetails = CheckoutDetailsHandler.checkoutDetails

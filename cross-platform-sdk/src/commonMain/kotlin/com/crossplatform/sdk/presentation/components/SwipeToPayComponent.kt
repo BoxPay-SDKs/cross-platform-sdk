@@ -66,7 +66,6 @@ import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun SwipeToPayComponent(
@@ -176,17 +175,7 @@ internal fun SwipeToPayComponent(
                         )
                         append(
                             AnnotatedString(
-                                text = currencySymbol,
-                                spanStyle = SpanStyle(
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontFamily = LocalSDKFonts.current.secondary
-                                )
-                            )
-                        )
-                        append(
-                            AnnotatedString(
-                                text = " ${formatAmount(amount)}",
+                                text = " $currencySymbol ${formatAmount(amount)}",
                                 spanStyle = SpanStyle(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.SemiBold,

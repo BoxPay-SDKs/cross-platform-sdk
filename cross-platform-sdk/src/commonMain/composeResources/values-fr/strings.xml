@@ -39,6 +39,7 @@
     <string name="qr_expired_title">Code QR expiré</string>
     <string name="complete_your_payment_title">Finalisez votre paiement</string>
     <string name="saved_addresses_title">Adresses enregistrées</string>
+    <string name="edit_card_nickname_title">Modifier le surnom de la carte</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">Rechercher</string>

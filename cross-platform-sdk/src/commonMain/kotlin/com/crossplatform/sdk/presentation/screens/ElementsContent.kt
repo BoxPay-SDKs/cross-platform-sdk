@@ -32,6 +32,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -48,6 +49,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.BoxPayElementsHandler
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
@@ -58,10 +61,12 @@ import com.crossplatform.sdk.domain.model.SelectedPaymentMethod
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.components.BankComponent
 import com.crossplatform.sdk.presentation.components.CardComponent
+import com.crossplatform.sdk.presentation.components.EditCardNicknameBottomSheet
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.SavedCardComponent
 import com.crossplatform.sdk.presentation.components.ShimmerView
 import com.crossplatform.sdk.presentation.components.UPIComponent
+import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.viewmodel.BoxPayElementsViewModel
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -405,6 +410,10 @@ private fun CardsTab(
     val isSubscriptionCheckout by CheckoutDetailsHandler.isSubscriptionCheckoutFlow.collectAsStateWithLifecycle()
     val subscription           by CheckoutDetailsHandler.subscriptionFlow.collectAsStateWithLifecycle()
     val isTestEnv              by CheckoutDetailsHandler.isTestEnvFlow.collectAsStateWithLifecycle()
+    val isShowEditNicknameSheet = remember { mutableStateOf(false) }
+    val editCardId = remember { mutableStateOf("") }
+    val editCardNickName = remember { mutableStateOf("") }
+    val editCardDisplayValue = remember { mutableStateOf("") }
 
     // Local copy synced with the external source of truth
     var isSiCheckBoxChecked by remember { mutableStateOf(isSICheckboxChecked) }
@@ -513,7 +522,14 @@ private fun CardsTab(
                 ctaBorderRadius     = uiConfig.ctaBorderRadius,
                 isSICheckboxChecked = isSiCheckBoxChecked,
                 isSICheckboxEnabled = isSICheckboxEnabled,
-                isBoxPayPayButtonVisible = isBoxPayPayButtonVisible
+                isBoxPayPayButtonVisible = isBoxPayPayButtonVisible,
+                onClickEditCard = { id, nickName, cardNumber->
+                    viewModel.removeQRFromView()
+                    editCardId.value = id
+                    editCardNickName.value = nickName
+                    editCardDisplayValue.value = cardNumber
+                    isShowEditNicknameSheet.value = true
+                }
             )
 
             // ── Expandable new-card form ──────────────────────────────────────
@@ -567,6 +583,43 @@ private fun CardsTab(
                     }
                 }
             )
+        }
+        if(isShowEditNicknameSheet.value) {
+            Dialog(
+                onDismissRequest = {
+                    isShowEditNicknameSheet.value = false
+                },
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false,   // so we control the width ourselves
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = true,
+                )
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = LocalSDKColors.current.background,
+                ) {
+                    Box(Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
+                        EditCardNicknameBottomSheet(
+                            imageUrl         = viewModel.cardsRecommendedList.value
+                                .find { it.id == editCardId.value }?.imageUrl ?: "",
+                            cardDisplayValue = editCardDisplayValue.value,
+                            initialNickName  = editCardNickName.value,
+                            buttonColor      = uiConfig.buttonColor,
+                            buttonTextColor  = uiConfig.buttonTextColor,
+                            ctaBorderRadius  = uiConfig.ctaBorderRadius,
+                            onDismiss        = { isShowEditNicknameSheet.value = false },
+                            onSave           = { newName ->
+                                isShowEditNicknameSheet.value = false
+                                viewModel.postEditSavedCard(editCardId.value, newName)
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }
