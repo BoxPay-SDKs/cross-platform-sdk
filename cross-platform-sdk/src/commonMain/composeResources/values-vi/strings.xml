@@ -231,4 +231,8 @@
     <string name="nfc_scan_cancel">Hủy</string>
     <string name="nfc_scan_disabled">NFC đang tắt. Bật NFC trong Cài đặt để chạm thẻ của bạn.</string>
     <string name="nfc_scan_not_supported">NFC không khả dụng trên thiết bị này.</string>
+    <string name="nfc_scan_error">Không thể quét thẻ. Vui lòng thử lại hoặc nhập thông tin thẻ theo cách thủ công.</string>
+    <string name="nfc_scan_error_tag_lost">Thẻ bị di chuyển ra quá sớm. Hãy giữ yên thẻ sát mặt sau thiết bị rồi thử lại.</string>
+    <string name="nfc_scan_try_again">Thử lại</string>
+    <string name="nfc_scan_enter_manually">Nhập thủ công</string>
 </resources>

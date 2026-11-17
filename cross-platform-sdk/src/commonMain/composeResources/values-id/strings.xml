@@ -231,4 +231,8 @@
     <string name="nfc_scan_cancel">Batal</string>
     <string name="nfc_scan_disabled">NFC dimatikan. Aktifkan di Pengaturan untuk mengetuk kartu Anda.</string>
     <string name="nfc_scan_not_supported">NFC tidak tersedia di perangkat ini.</string>
+    <string name="nfc_scan_error">Kartu tidak dapat dipindai. Silakan coba lagi atau masukkan detail kartu Anda secara manual.</string>
+    <string name="nfc_scan_error_tag_lost">Kartu terlalu cepat dijauhkan. Tahan kartu dengan stabil di bagian belakang perangkat Anda lalu coba lagi.</string>
+    <string name="nfc_scan_try_again">Coba Lagi</string>
+    <string name="nfc_scan_enter_manually">Masukkan Manual</string>
 </resources>

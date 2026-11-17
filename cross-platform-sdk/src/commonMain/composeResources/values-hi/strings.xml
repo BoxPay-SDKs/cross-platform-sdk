@@ -231,4 +231,8 @@
     <string name="nfc_scan_cancel">रद्द करें</string>
     <string name="nfc_scan_disabled">NFC बंद है। अपना कार्ड टैप करने के लिए सेटिंग्स में इसे चालू करें।</string>
     <string name="nfc_scan_not_supported">इस डिवाइस पर NFC उपलब्ध नहीं है।</string>
+    <string name="nfc_scan_error">कार्ड स्कैन नहीं हो सका। कृपया फिर से प्रयास करें या अपने कार्ड का विवरण मैन्युअल रूप से दर्ज करें।</string>
+    <string name="nfc_scan_error_tag_lost">कार्ड बहुत जल्दी हट गया। उसे अपने डिवाइस के पीछे स्थिर रखें और फिर से प्रयास करें।</string>
+    <string name="nfc_scan_try_again">फिर से प्रयास करें</string>
+    <string name="nfc_scan_enter_manually">मैन्युअल रूप से दर्ज करें</string>
 </resources>

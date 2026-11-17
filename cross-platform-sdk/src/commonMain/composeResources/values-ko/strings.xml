@@ -231,4 +231,8 @@
     <string name="nfc_scan_cancel">취소</string>
     <string name="nfc_scan_disabled">NFC가 꺼져 있습니다. 카드를 탭하려면 설정에서 활성화하세요.</string>
     <string name="nfc_scan_not_supported">이 기기에서는 NFC를 사용할 수 없습니다.</string>
+    <string name="nfc_scan_error">카드를 스캔하지 못했습니다. 다시 시도하거나 카드 정보를 직접 입력하세요.</string>
+    <string name="nfc_scan_error_tag_lost">카드가 너무 일찍 떨어졌습니다. 기기 뒷면에 카드를 가만히 대고 다시 시도하세요.</string>
+    <string name="nfc_scan_try_again">다시 시도</string>
+    <string name="nfc_scan_enter_manually">직접 입력</string>
 </resources>

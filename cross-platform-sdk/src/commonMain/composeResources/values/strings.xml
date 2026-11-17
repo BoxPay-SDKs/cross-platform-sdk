@@ -241,4 +241,7 @@
     <string name="nfc_scan_step2_title">Hold your card flat against the back of your phone</string>
     <string name="nfc_scan_step3_title">Keep it still — card details are read in seconds</string>
     <string name="nfc_scan_error">Card could not be scanned. Please try again or enter your card details manually.</string>
+    <string name="nfc_scan_error_tag_lost">The card moved away too soon. Hold it still against the back of your device and try again.</string>
+    <string name="nfc_scan_try_again">Try Again</string>
+    <string name="nfc_scan_enter_manually">Enter Manually</string>
 </resources>

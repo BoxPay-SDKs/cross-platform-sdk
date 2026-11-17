@@ -9,18 +9,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -59,6 +55,7 @@ import com.crossplatform.sdk.presentation.screens.CheckboxItem
 import com.crossplatform.sdk.presentation.screens.ExpiryVisualTransformation
 import com.crossplatform.sdk.presentation.screens.SubscriptionRow
 import com.crossplatform.sdk.presentation.components.scanner.NfcAvailability
+import com.crossplatform.sdk.presentation.components.scanner.NfcScanError
 import com.crossplatform.sdk.presentation.components.scanner.rememberNfcAvailability
 import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
@@ -153,9 +150,8 @@ internal fun CardComponent(
 //    val acceptedCardList = CheckoutDetailsHandler.acceptedCardsListFlow.collectAsStateWithLifecycle()
     var showCardScanner by remember { mutableStateOf(false) }
     var showNfcScanner  by remember { mutableStateOf(false) }
-    val isNFCCardScannedSuccessfully = remember {
-        mutableStateOf(false)
-    }
+    // Non-null while the "could not be scanned" dialog is showing; holds why the read failed.
+    var nfcScanError by remember { mutableStateOf<NfcScanError?>(null) }
     // Must be called unconditionally (Compose rules) — not inside if(normalCheckout)
     val nfcAvailability = rememberNfcAvailability()
     val nfcAvailable    = nfcAvailability == NfcAvailability.Available
@@ -177,9 +173,7 @@ internal fun CardComponent(
                 showNfcScanner = false
                 fillFromScan(card)
             },
-            onShowError = {
-                isNFCCardScannedSuccessfully.value = true
-            }
+            onShowError = { error -> nfcScanError = error }
         )
     }
 
@@ -194,27 +188,18 @@ internal fun CardComponent(
         )
     }
 
-    if(isNFCCardScannedSuccessfully.value) {
-        Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.4f)).clickable(enabled = false) {})
-
-        // White rounded sheet anchored to bottom
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-                .padding(horizontal = 24.dp, vertical = 28.dp)
-                .navigationBarsPadding()
-        ) {
-            Text("Card could not be scanned...")   // error message
-
-            Button(onClick = { showCardScanner = true }) {  // ← resets state, NFC restarts
-                Text("Scan Card")
-            }
-
-            OutlinedButton(onClick = { isNFCCardScannedSuccessfully.value = false }) {   // ← closes dialog
-                Text("Enter Manually")
-            }
-        }
+    nfcScanError?.let { error ->
+        NfcScanErrorDialog(
+            error           = error,
+            buttonColor     = buttonColor,
+            buttonTextColor = buttonTextColor,
+            ctaBorderRadius = ctaBorderRadius,
+            onTryAgain      = {
+                nfcScanError   = null
+                showNfcScanner = true      // restart the NFC scan
+            },
+            onEnterManually = { nfcScanError = null }
+        )
     }
 
     Column(modifier = modifier.fillMaxWidth().background(LocalSDKColors.current.background)) {

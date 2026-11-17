@@ -231,4 +231,8 @@
     <string name="nfc_scan_cancel">ரத்து செய்</string>
     <string name="nfc_scan_disabled">NFC முடக்கப்பட்டுள்ளது. உங்கள் கார்டை தட்ட அமைப்புகளில் இயக்கவும்.</string>
     <string name="nfc_scan_not_supported">இந்த சாதனத்தில் NFC கிடைக்கவில்லை.</string>
+    <string name="nfc_scan_error">கார்டை ஸ்கேன் செய்ய முடியவில்லை. மீண்டும் முயலவும் அல்லது கார்டு விவரங்களை கைமுறையாக உள்ளிடவும்.</string>
+    <string name="nfc_scan_error_tag_lost">கார்டு மிக விரைவாக விலகிவிட்டது. அதை உங்கள் சாதனத்தின் பின்புறத்தில் அசையாமல் வைத்து மீண்டும் முயலவும்.</string>
+    <string name="nfc_scan_try_again">மீண்டும் முயலவும்</string>
+    <string name="nfc_scan_enter_manually">கைமுறையாக உள்ளிடவும்</string>
 </resources>

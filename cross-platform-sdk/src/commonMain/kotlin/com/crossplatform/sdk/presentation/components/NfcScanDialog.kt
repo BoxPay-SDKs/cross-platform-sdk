@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.crossplatform.sdk.presentation.components.scanner.NfcAvailability
+import com.crossplatform.sdk.presentation.components.scanner.NfcScanError
 import com.crossplatform.sdk.presentation.components.scanner.ScannedCard
 import com.crossplatform.sdk.presentation.components.scanner.rememberNfcAvailability
 import com.crossplatform.sdk.presentation.components.scanner.NfcReaderEffect
@@ -64,7 +65,8 @@ internal fun NfcScanDialog(
     accentColor: Color,
     onDismiss: () -> Unit,
     onScanned: (ScannedCard) -> Unit,
-    onShowError :() -> Unit
+    /** Called after the dialog closed because a card could not be read (never for Cancel). */
+    onShowError: (NfcScanError) -> Unit
 ) {
     val nfcAvailability = rememberNfcAvailability()
     val fontFamily = LocalSDKFonts.current.primary
@@ -91,9 +93,18 @@ internal fun NfcScanDialog(
                             onDismiss()
                             onScanned(card)
                         },
-                        onError = {
+                        onError = { error ->
                             onDismiss()
-                            onShowError()
+                            when (error) {
+                                // The card moved away or its data could not be parsed: tell the user.
+                                NfcScanError.TagLost,
+                                NfcScanError.ParseFailed -> onShowError(error)
+                                // The user cancelled (or the system sheet timed out): just close.
+                                // NotSupported / Disabled are already explained inside this dialog.
+                                NfcScanError.Cancelled,
+                                NfcScanError.NotSupported,
+                                NfcScanError.Disabled -> Unit
+                            }
                         }
                     )
 

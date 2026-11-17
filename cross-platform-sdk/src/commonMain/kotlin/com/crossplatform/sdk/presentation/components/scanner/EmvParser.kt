@@ -1,21 +1,7 @@
 package com.crossplatform.sdk.presentation.components.scanner
 
-/**
- * Builds ISO 7816-4 APDU command bytes and parses BER-TLV EMV responses.
- *
- * No external dependencies — runs identically on Android and iOS via the shared source set.
- * All byte values are treated as unsigned (0..255) throughout to match the EMV spec.
- */
 internal object EmvParser {
 
-    // ──────────────────────────────────────────────────────────────
-    // APDU command builders
-    // ──────────────────────────────────────────────────────────────
-
-    /**
-     * SELECT PPSE — discovers payment applications on a contactless card.
-     * AID = "2PAY.SYS.DDF01"  (Proximity Payment Systems Environment)
-     */
     val SELECT_PPSE: ByteArray = byteArrayOf(
         0x00.toByte(), 0xA4.toByte(), 0x04.toByte(), 0x00.toByte(),
         0x0E.toByte(),
@@ -25,53 +11,85 @@ internal object EmvParser {
         0x00.toByte()
     )
 
-    /** SELECT by name — selects the application identified by [aid]. */
     fun buildSelectAid(aid: ByteArray): ByteArray =
         byteArrayOf(0x00, 0xA4.toByte(), 0x04, 0x00, aid.size.toByte()) + aid + byteArrayOf(0x00)
 
-    /**
-     * GET PROCESSING OPTIONS — starts a transaction.
-     * Sends an empty PDOL response (83 00) which works for the vast majority of
-     * payment cards when we only need to read static data.
-     */
-    val GET_PROCESSING_OPTIONS: ByteArray = byteArrayOf(
-        0x80.toByte(), 0xA8.toByte(), 0x00, 0x00,
-        0x02,
-        0x83.toByte(), 0x00,  // empty PDOL response
-        0x00
-    )
 
-    /**
-     * READ RECORD — reads record [record] from SFI [sfi].
-     * Iterate sfi 1-10, record 1-10 until you find tag 57 or 5A.
-     */
+    fun buildGetProcessingOptions(pdol: ByteArray?): ByteArray {
+        val data = if (pdol == null || pdol.isEmpty()) ByteArray(0) else buildPdolData(pdol)
+        // 83 <len> <data> — short-form length only (data is capped well below 128 bytes)
+        val body = if (data.size > MAX_PDOL_DATA) {
+            byteArrayOf(0x83.toByte(), 0x00)
+        } else {
+            byteArrayOf(0x83.toByte(), data.size.toByte()) + data
+        }
+        return byteArrayOf(0x80.toByte(), 0xA8.toByte(), 0x00, 0x00, body.size.toByte()) +
+                body + byteArrayOf(0x00)
+    }
+
+    private const val MAX_PDOL_DATA = 120
+
+
+    fun parseDol(dol: ByteArray): List<Pair<Int, Int>> {
+        val result = mutableListOf<Pair<Int, Int>>()
+        var i = 0
+        while (i < dol.size) {
+            // --- tag (1..3 bytes) ---
+            var tag = dol[i].toInt() and 0xFF
+            val multiByte = (tag and 0x1F) == 0x1F
+            i++
+            if (multiByte) {
+                while (i < dol.size) {
+                    val b = dol[i].toInt() and 0xFF
+                    tag = (tag shl 8) or b
+                    i++
+                    if ((b and 0x80) == 0) break   // last tag byte has bit 8 clear
+                }
+            }
+            // --- length (single byte in a DOL) ---
+            if (i >= dol.size) break
+            val len = dol[i].toInt() and 0xFF
+            i++
+            result.add(tag to len)
+        }
+        return result
+    }
+
+
+    fun buildPdolData(pdol: ByteArray): ByteArray {
+        val out = ArrayList<Byte>()
+        for ((tag, len) in parseDol(pdol)) {
+            val value = when (tag) {
+                0x9F66 -> byteArrayOf(0x27, 0x00, 0x00, 0x00)              // Terminal Transaction Qualifiers
+                0x9F1A, 0x5F2A -> byteArrayOf(0x03, 0x56)                  // Terminal country / transaction currency (INR)
+                0x9C   -> byteArrayOf(0x00)                                 // Transaction type: purchase
+                0x9F35 -> byteArrayOf(0x22)                                 // Terminal type: attended, offline with online capability
+                0x9F37 -> kotlin.random.Random.nextBytes(4)                 // Unpredictable number
+                else   -> ByteArray(0)                                      // amounts, TVR, date… → zeros
+            }
+            out.addAll(fitToLength(value, len).toList())
+        }
+        return out.toByteArray()
+    }
+
+    private fun fitToLength(value: ByteArray, len: Int): ByteArray = when {
+        value.size == len -> value
+        value.size > len  -> value.copyOfRange(value.size - len, value.size)
+        else              -> ByteArray(len - value.size) + value
+    }
+
+
     fun buildReadRecord(sfi: Int, record: Int): ByteArray =
         byteArrayOf(0x00, 0xB2.toByte(), record.toByte(), ((sfi shl 3) or 4).toByte(), 0x00)
 
-    // ──────────────────────────────────────────────────────────────
-    // Response / TLV helpers
-    // ──────────────────────────────────────────────────────────────
-
-    /** Returns true when the last two bytes of an APDU response are 90 00 (success). */
     fun isSuccess(response: ByteArray): Boolean =
         response.size >= 2 &&
                 response[response.size - 2] == 0x90.toByte() &&
                 response[response.size - 1] == 0x00.toByte()
 
-    /** Strips the trailing 2-byte status word (SW1 SW2) from a response. */
     fun stripSW(response: ByteArray): ByteArray =
         if (response.size >= 2) response.copyOf(response.size - 2) else response
 
-    /**
-     * BER-TLV search: finds the value bytes for the first occurrence of [tag] in [data].
-     *
-     * Handles:
-     * - 1-byte tags (tag < 0x1F)
-     * - 2-byte tags (first byte ends in 1F)
-     * - Constructed (0x20 bit set) tags — recursively searched
-     * - Definite short-form lengths (single byte)
-     * - Definite long-form lengths (multi-byte, first byte 0x80 | n, then n length bytes)
-     */
     fun findTag(data: ByteArray, tag: Int): ByteArray? {
         var i = 0
         while (i < data.size) {
@@ -129,10 +147,7 @@ internal object EmvParser {
         return null
     }
 
-    /**
-     * Collects all AIDs from a PPSE FCI response (tag 6F → A5 → BF0C → 61 → 4F).
-     * Returns a list of AID byte arrays, sorted longest-first so a full AID beats a partial.
-     */
+
     fun parseAidsFromPpse(fci: ByteArray): List<ByteArray> {
         val result = mutableListOf<ByteArray>()
         collectTag(fci, 0x4F, result)
@@ -178,19 +193,6 @@ internal object EmvParser {
         }
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // Card data extraction
-    // ──────────────────────────────────────────────────────────────
-
-    /**
-     * Parses Track 2 Equivalent Data (EMV tag 57) into a [ScannedCard].
-     *
-     * Track 2 BCD format:
-     *   [PAN] D [YYMM] [ServiceCode3digits] [DiscretionaryData] F?
-     *
-     * The bytes are BCD-encoded and the whole field is represented as a hex string
-     * where the separator is the character 'D'.
-     */
     fun parseTrack2(track2Bytes: ByteArray): ScannedCard? {
         // Convert raw bytes → hex nibble string (each byte = 2 hex chars)
         val hex = track2Bytes.joinToString("") { (it.toInt() and 0xFF).toString(16).padStart(2, '0').uppercase() }
@@ -216,9 +218,7 @@ internal object EmvParser {
         return ScannedCard(cardNumber = pan, expiryMonth = mm, expiryYear = yy)
     }
 
-    /**
-     * Parses a raw PAN from tag 5A (BCD, right-padded with 0xF nibbles).
-     */
+
     fun parsePanTag5A(panBytes: ByteArray): String? {
         val hex = panBytes.joinToString("") { (it.toInt() and 0xFF).toString(16).padStart(2, '0').uppercase() }
         // Strip trailing F padding nibble

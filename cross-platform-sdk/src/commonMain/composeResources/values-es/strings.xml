@@ -231,4 +231,8 @@
     <string name="nfc_scan_cancel">Cancelar</string>
     <string name="nfc_scan_disabled">NFC está desactivado. Actívalo en Configuración para acercar tu tarjeta.</string>
     <string name="nfc_scan_not_supported">NFC no está disponible en este dispositivo.</string>
+    <string name="nfc_scan_error">No se pudo escanear la tarjeta. Inténtalo de nuevo o ingresa los datos de tu tarjeta manualmente.</string>
+    <string name="nfc_scan_error_tag_lost">La tarjeta se movió demasiado pronto. Mantenla quieta contra la parte trasera de tu dispositivo e inténtalo de nuevo.</string>
+    <string name="nfc_scan_try_again">Intentar de nuevo</string>
+    <string name="nfc_scan_enter_manually">Ingresar manualmente</string>
 </resources>

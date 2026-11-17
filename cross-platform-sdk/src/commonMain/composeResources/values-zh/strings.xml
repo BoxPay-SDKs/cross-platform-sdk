@@ -231,4 +231,8 @@
     <string name="nfc_scan_cancel">取消</string>
     <string name="nfc_scan_disabled">NFC 已关闭。请在设置中开启以轻触您的卡片。</string>
     <string name="nfc_scan_not_supported">此设备不支持 NFC。</string>
+    <string name="nfc_scan_error">无法扫描该卡片。请重试，或手动输入卡片信息。</string>
+    <string name="nfc_scan_error_tag_lost">卡片移开得太早。请将卡片紧贴设备背面并保持不动，然后重试。</string>
+    <string name="nfc_scan_try_again">重试</string>
+    <string name="nfc_scan_enter_manually">手动输入</string>
 </resources>
