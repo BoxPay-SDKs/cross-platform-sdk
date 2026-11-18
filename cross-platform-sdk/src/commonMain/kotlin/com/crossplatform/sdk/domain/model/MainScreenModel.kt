@@ -21,7 +21,8 @@ internal data class MainScreenModel(
     val applePayAdditionData : ApplePayAdditionData?,
     val walletPaymentMethod : List<SelectedPaymentMethod>,
     val netBankingPaymentMethod : List<SelectedPaymentMethod>,
-    val bnplPaymentMethod : List<SelectedPaymentMethod>
+    val bnplPaymentMethod : List<SelectedPaymentMethod>,
+    val paymentsAttemptExhausted : Boolean
 ) {
 
     internal data class MethodFlags(
