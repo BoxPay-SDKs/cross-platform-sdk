@@ -189,23 +189,29 @@ internal fun MainScreen(
             val response = (screenState as UiState.Success).data
             viewModel.isLoadingSession.value = false
             if(response.status == TransactionStatusEnum.EXPIRED) {
-                viewModel.callCheckoutSessionExpireModal(
-                    transactionId = response.transactionId
-                )
+                LaunchedEffect(Unit) {
+                    viewModel.callCheckoutSessionExpireModal(
+                        transactionId = response.transactionId
+                    )
+                }
                 return
             }
 
             if(response.status == TransactionStatusEnum.SUCCESS) {
-                viewModel.callCheckoutSessionSuccessModal(
-                    transactionId = response.transactionId,
-                    dateNTime = response.successfulTimeStamp,
-                    paymentMethod = response.successfulPaymentMethod
-                )
+                LaunchedEffect(Unit) {
+                    viewModel.callCheckoutSessionSuccessModal(
+                        transactionId = response.transactionId,
+                        dateNTime = response.successfulTimeStamp,
+                        paymentMethod = response.successfulPaymentMethod
+                    )
+                }
                 return
             }
 
             if(response.paymentsAttemptExhausted) {
-                CheckoutDetailsHandler.setIsCheckoutMaxAttemptsReached()
+                LaunchedEffect(Unit) {
+                    CheckoutDetailsHandler.setIsCheckoutMaxAttemptsReached()
+                }
                 return
             }
 
