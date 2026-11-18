@@ -5,6 +5,8 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.PaymentMethod
 import com.crossplatform.sdk.data.repo.MainScreenRepoImpl
 import com.crossplatform.sdk.data.repo.OtherPaymentMethodRepoImpl
+import com.crossplatform.sdk.domain.model.MainScreenModel
+import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.fakes.FakeApiService
 import com.crossplatform.sdk.fakes.FakeCallUIAnalyticsRepo
@@ -178,8 +180,10 @@ class SessionLoadingRepoIntegrationTest {
     // ── session loading propagates to CheckoutDetailsHandler ─────────────────
 
     @Test
-    fun `loadSession with PAID status marks payment as successful in CheckoutDetailsHandler`() =
+    fun `loadSession with PAID status emits Success with SUCCESS status and leaves the success flag to MainScreen`() =
         runTest {
+            val before = CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful
+
             api.nextSessionDetails = ApiResponse.Success(
                 buildMinimalSessionDetails(status = "PAID"),
                 responseCode = 200
@@ -187,8 +191,11 @@ class SessionLoadingRepoIntegrationTest {
 
             viewModel.loadSession()
 
-            // A PAID session should cause the success-screen state to be set
-            assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
+            val state = viewModel.state.value
+            assertIs<UiState.Success<*>>(state)
+            assertEquals(TransactionStatusEnum.SUCCESS, (state.data as MainScreenModel).status)
+            // MainScreen sets the flag via callCheckoutSessionSuccessModal; the ViewModel must not
+            assertEquals(before, CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
         }
 
     // ── double-load guard ────────────────────────────────────────────────────
@@ -280,5 +287,90 @@ class SessionLoadingRepoIntegrationTest {
         viewModel.loadSession()
 
         assertEquals("en", CheckoutDetailsHandler.checkoutDetails.localeCode)
+    }
+
+    // ── terminal sessions (expired / success / attempts exhausted) ───────────
+
+    @Test
+    fun `loadSession with paymentAttemptsExhausted emits Success carrying the flag`() = runTest {
+        api.nextSessionDetails = ApiResponse.Success(
+            buildMinimalSessionDetails(paymentAttemptsExhausted = true),
+            responseCode = 200
+        )
+
+        viewModel.loadSession()
+
+        val state = viewModel.state.value
+        assertIs<UiState.Success<*>>(state)
+        assertEquals(true, (state.data as MainScreenModel).paymentsAttemptExhausted)
+    }
+
+    @Test
+    fun `loadSession with attempts exhausted stops the loading animation`() = runTest {
+        api.nextSessionDetails = ApiResponse.Success(
+            buildMinimalSessionDetails(paymentAttemptsExhausted = true),
+            responseCode = 200
+        )
+
+        viewModel.loadSession()
+
+        assertEquals(false, viewModel.isBoxPayAnimationLoading.value)
+    }
+
+    @Test
+    fun `loadSession with attempts exhausted does not toggle any CheckoutDetailsHandler modal flag`() = runTest {
+        // MainScreen owns showing the sheet; the ViewModel must not flip flags itself,
+        // otherwise the toggle is applied twice and the sheet is hidden again.
+        val before = CheckoutDetailsHandler.checkoutDetails
+
+        api.nextSessionDetails = ApiResponse.Success(
+            buildMinimalSessionDetails(paymentAttemptsExhausted = true),
+            responseCode = 200
+        )
+        viewModel.loadSession()
+
+        val after = CheckoutDetailsHandler.checkoutDetails
+        assertEquals(before.isCheckoutLimitReached, after.isCheckoutLimitReached)
+        assertEquals(before.isSessionExpired, after.isSessionExpired)
+        assertEquals(before.isPaymentSuccessful, after.isPaymentSuccessful)
+    }
+
+    @Test
+    fun `loadSession with a normal session reports attempts not exhausted`() = runTest {
+        api.nextSessionDetails = ApiResponse.Success(buildMinimalSessionDetails(), responseCode = 200)
+
+        viewModel.loadSession()
+
+        val state = viewModel.state.value
+        assertIs<UiState.Success<*>>(state)
+        assertEquals(false, (state.data as MainScreenModel).paymentsAttemptExhausted)
+    }
+
+    @Test
+    fun `loadSession with an expired session emits Success without toggling the expired flag`() = runTest {
+        val before = CheckoutDetailsHandler.checkoutDetails.isSessionExpired
+
+        api.nextSessionDetails = ApiResponse.Success(
+            buildMinimalSessionDetails(status = "EXPIRED"),
+            responseCode = 200
+        )
+        viewModel.loadSession()
+
+        assertIs<UiState.Success<*>>(viewModel.state.value)
+        assertEquals(before, CheckoutDetailsHandler.checkoutDetails.isSessionExpired)
+    }
+
+    @Test
+    fun `loadSession with a successful session emits Success without toggling the success flag`() = runTest {
+        val before = CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful
+
+        api.nextSessionDetails = ApiResponse.Success(
+            buildMinimalSessionDetails(status = "SUCCESS"),
+            responseCode = 200
+        )
+        viewModel.loadSession()
+
+        assertIs<UiState.Success<*>>(viewModel.state.value)
+        assertEquals(before, CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
     }
 }

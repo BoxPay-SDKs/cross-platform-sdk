@@ -121,15 +121,10 @@ internal class MainScreenViewModel(
                 val responseData = sessionData.toUiModel()
                 val shopper = sessionData.paymentDetails.shopper
 
-                if (responseData.status == TransactionStatusEnum.EXPIRED || responseData.status == TransactionStatusEnum.SUCCESS) {
-                    if (responseData.status == TransactionStatusEnum.SUCCESS) {
-                        CheckoutDetailsHandler.setSessionSuccess()
-                    } else {
-                        CheckoutDetailsHandler.setSessionExpired()
-                    }
+                if (responseData.status == TransactionStatusEnum.EXPIRED || responseData.status == TransactionStatusEnum.SUCCESS || responseData.paymentsAttemptExhausted) {
                     isSessionLoaded = true
                     isBoxPayAnimationLoading.value = false
-                    _state.value = UiState.Success(sessionData.toUiModel())
+                    _state.value = UiState.Success(responseData)
                     return@launch
                 }
 

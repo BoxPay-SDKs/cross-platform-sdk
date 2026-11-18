@@ -223,7 +223,8 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
         walletPaymentMethod = walletList,
         netBankingPaymentMethod = netBankingList,
         bnplPaymentMethod = bnplList,
-        countryCode = paymentDetails.context.countryCode
+        countryCode = paymentDetails.context.countryCode,
+        paymentsAttemptExhausted = this.paymentAttemptsExhausted
     )
 }
 
