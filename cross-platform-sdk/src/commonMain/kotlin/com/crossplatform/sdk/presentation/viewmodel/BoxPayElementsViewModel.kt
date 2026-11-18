@@ -1169,7 +1169,7 @@ internal class BoxPayElementsViewModel (
                 },
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
                 setIsBoxPayAnimationVisible = {
-                    isBoxPayAnimationLoading.value = false
+                    isBoxPayAnimationLoading.value = it
                 }
             )
         }
