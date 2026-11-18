@@ -107,7 +107,8 @@ internal fun NativeOTPBottomSheet(
     maxOtpField: Int,
     cardBrand: String,
     isOtpInvalid: Boolean,
-    isLoading : Boolean
+    isLoading : Boolean,
+    onPageTimerExpired : () -> Unit
 ) {
     val buttonTextColor = CheckoutDetailsHandler.buttonTextColorFlow.collectAsStateWithLifecycle()
     val buttonColor = CheckoutDetailsHandler.buttonColorFlow.collectAsStateWithLifecycle()
@@ -123,6 +124,18 @@ internal fun NativeOTPBottomSheet(
     val cooldownSecondsLeft = remember { mutableStateOf(0) }
     val resendExhausted = resendCount.value >= MAX_RESEND_ATTEMPTS
     val resendEnabled = !resendExhausted && cooldownSecondsLeft.value <= 0
+
+    var secondsLeft by remember { mutableStateOf(PAGE_TIMEOUT_SECONDS) }
+
+    LaunchedEffect(Unit) {
+        while (isActive && secondsLeft > 0) {
+            delay(1_000)
+            secondsLeft -= 1
+        }
+        if (secondsLeft <= 0) {
+            onPageTimerExpired()
+        }
+    }
 
     val cardSelectedIcon = when(cardBrand.lowercase()) {
         "visa" -> Res.drawable.ic_verified_by_visa
@@ -170,9 +183,9 @@ internal fun NativeOTPBottomSheet(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    PageExpiryTimer(
-                        accentColor = accentColor,
-                        onExpire = onClickCancel
+                    TimerChip(
+                        text = stringResource(Res.string.native_otp_page_timer, formatTime(secondsLeft)),
+                        accentColor = accentColor
                     )
                     Image(
                         painter = painterResource(cardSelectedIcon),
@@ -395,25 +408,6 @@ internal fun KeyboardDoneBar(
         }
     }
 }
-@Composable
-private fun PageExpiryTimer(accentColor: Color, onExpire: () -> Unit) {
-    var secondsLeft by remember { mutableStateOf(PAGE_TIMEOUT_SECONDS) }
-
-    LaunchedEffect(Unit) {
-        while (isActive && secondsLeft > 0) {
-            delay(1_000)
-            secondsLeft -= 1
-        }
-        if (secondsLeft <= 0) {
-            onExpire()
-        }
-    }
-
-    TimerChip(
-        text = stringResource(Res.string.native_otp_page_timer, formatTime(secondsLeft)),
-        accentColor = accentColor
-    )
-}
 
 @Composable
 private fun TimerChip(text: String, accentColor: Color) {
@@ -515,5 +509,5 @@ private fun OtpBoxRow(
 }
 
 private const val PAGE_TIMEOUT_SECONDS = 3 * 60
-private const val RESEND_COOLDOWN_SECONDS = 60
+private const val RESEND_COOLDOWN_SECONDS = 30
 private const val MAX_RESEND_ATTEMPTS = 3

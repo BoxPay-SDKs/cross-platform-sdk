@@ -60,4 +60,11 @@ internal class CardScreenRepoImpl(
     override suspend fun cancelNativeOtpTransaction(transactionId: String): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
         apiService.cancelTransaction( transactionId)
     }
+
+    override suspend fun expireNativeOtpTransaction(
+        transactionId: String,
+        isTestEnv: Boolean
+    ): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
+        apiService.nativeOtpExpired( transactionId,isTestEnv)
+    }
 }

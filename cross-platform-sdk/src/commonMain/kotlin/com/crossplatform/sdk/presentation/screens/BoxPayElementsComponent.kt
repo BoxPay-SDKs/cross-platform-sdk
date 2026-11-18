@@ -212,7 +212,11 @@ internal fun BoxPayElementsComponent(
             minOtpField = viewModel.minOtpLength.value,
             maxOtpField = viewModel.maxOtpLength.value,
             isOtpInvalid = viewModel.isNativeOtpInvalid.value,
-            isLoading = viewModel.isNativeOtpLoading.value
+            isLoading = viewModel.isNativeOtpLoading.value,
+            onPageTimerExpired = {
+                viewModel.showNativeOtpBottomSheet.value = false
+                viewModel.nativeOtpPageExpired(isTestEnv.value)
+            }
         )
     }
 

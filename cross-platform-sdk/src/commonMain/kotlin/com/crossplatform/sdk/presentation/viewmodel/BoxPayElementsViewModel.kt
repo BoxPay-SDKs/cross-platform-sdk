@@ -1142,4 +1142,36 @@ internal class BoxPayElementsViewModel (
             )
         )
     }
+
+    fun nativeOtpPageExpired(isTestEnv: Boolean) {
+        viewModelScope.launch {
+            val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+            val response = cardRepo.expireNativeOtpTransaction(checkoutDetails.transactionId, isTestEnv)
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentUrl = {
+                    // no operation
+                },
+                onSetPaymentHtml = {
+                    // no operation
+                },
+                onNavigateToTimer = {
+                    // no operation
+                },
+                onOpenQr = {_, _ ->
+                    // no operation
+                },
+                onOpenUpiIntent = {_ ->
+                    // no operation
+                },
+                onSetNativeOtp = { _, _, _, _ ->
+                    // no op
+                },
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                setIsBoxPayAnimationVisible = {
+                    isBoxPayAnimationLoading.value = false
+                }
+            )
+        }
+    }
 }
