@@ -12,6 +12,7 @@ import com.crossplatform.sdk.data.model.PaymentContext
 import com.crossplatform.sdk.data.model.PaymentDetails
 import com.crossplatform.sdk.data.model.SessionDetails
 import com.crossplatform.sdk.data.model.Shopper
+import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -165,6 +166,41 @@ class MainScreenMapperTest {
         assertNull(uiModel.orderDetails)
     }
 
+    @Test
+    fun `toUiModel maps paymentAttemptsExhausted true onto the UI model`() {
+        val session = sessionDetails(paymentAttemptsExhausted = true)
+
+        val uiModel = session.toUiModel()
+
+        assertEquals(true, uiModel.paymentsAttemptExhausted)
+    }
+
+    @Test
+    fun `toUiModel maps paymentAttemptsExhausted false onto the UI model`() {
+        val session = sessionDetails(paymentAttemptsExhausted = false)
+
+        val uiModel = session.toUiModel()
+
+        assertEquals(false, uiModel.paymentsAttemptExhausted)
+    }
+
+    @Test
+    fun `paymentAttemptsExhausted defaults to false when the API omits the field`() {
+        // Not passed to the fixture: relies on the default declared in SessionDetails.
+        val session = sessionDetails()
+
+        assertEquals(false, session.paymentAttemptsExhausted)
+        assertEquals(false, session.toUiModel().paymentsAttemptExhausted)
+    }
+
+    @Test
+    fun `toUiModel keeps status independent of paymentAttemptsExhausted`() {
+        val uiModel = sessionDetails(status = "NOACTION", paymentAttemptsExhausted = true).toUiModel()
+
+        assertEquals(TransactionStatusEnum.NOACTION, uiModel.status)
+        assertEquals(true, uiModel.paymentsAttemptExhausted)
+    }
+
     // ── Fixture builder ─────────────────────────────────────────────────────
 
     private fun sessionDetails(
@@ -180,6 +216,8 @@ class MainScreenMapperTest {
         shopperEmail: String? = null,
         enabledFields: List<EnabledFields> = emptyList(),
         order: com.crossplatform.sdk.data.model.OrderDetails? = null,
+        status: String = "NOACTION",
+        paymentAttemptsExhausted: Boolean? = null,
     ) = SessionDetails(
         configs = Configs(paymentMethods = emptyList(), enabledFields = enabledFields),
         paymentDetails = PaymentDetails(
@@ -214,9 +252,12 @@ class MainScreenMapperTest {
             customFields = emptyList(),
         ),
         sessionExpiryTimestamp = "",
-        status = "NOACTION",
+        status = status,
         lastPaidAtTimestamp = null,
         lastTransactionId = null,
         lastTransactionDetails = null,
-    )
+    ).let { base ->
+        if (paymentAttemptsExhausted == null) base
+        else base.copy(paymentAttemptsExhausted = paymentAttemptsExhausted)
+    }
 }
