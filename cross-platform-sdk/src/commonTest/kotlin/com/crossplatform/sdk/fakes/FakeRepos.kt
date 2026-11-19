@@ -34,6 +34,9 @@ internal class FakeCardScreenRepo : CardScreenRepo {
     var submitOtpResult: ApiResponse<NativeOtpResponse> = ApiResponse.Loading
     var resendOtpResult: ApiResponse<NativeOtpResponse> = ApiResponse.Loading
     var cancelTransactionResult: ApiResponse<PaymentMethodPostResponse> = ApiResponse.Loading
+    var expireTransactionResult: ApiResponse<PaymentMethodPostResponse> = ApiResponse.Loading
+    var expireCallCount: Int = 0
+    var lastExpireTransactionId: String? = null
 
     var lastGetCardDetailsCardNumber: String? = null
     var lastPostCardDetailsSurcharges: List<String>? = null
@@ -74,6 +77,14 @@ internal class FakeCardScreenRepo : CardScreenRepo {
     override suspend fun cancelNativeOtpTransaction(
         transactionId: String
     ): ApiResponse<PaymentMethodPostResponse> = cancelTransactionResult
+
+    override suspend fun expireNativeOtpTransaction(
+        transactionId: String
+    ): ApiResponse<PaymentMethodPostResponse> {
+        expireCallCount++
+        lastExpireTransactionId = transactionId
+        return expireTransactionResult
+    }
 }
 
 internal class FakeFetchStatusRepo : FetchStatusRepo {

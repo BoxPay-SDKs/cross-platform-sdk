@@ -53,6 +53,7 @@ internal class FakeApiService : ApiService {
     var nextSubmitNativeOtp: ApiResponse<NativeOtpResponse>? = null
     var nextResendOtp: ApiResponse<NativeOtpResponse>? = null
     var nextCancelTransaction: ApiResponse<PaymentMethodPostResponse>? = null
+    var nextExpireTransaction: ApiResponse<PaymentMethodPostResponse>? = null
 
     // Captured arguments for assertion in integration tests
     var lastCardPostSurcharges: List<String>? = null
@@ -265,5 +266,12 @@ internal class FakeApiService : ApiService {
     ): ApiResponse<PaymentMethodPostResponse> {
         callLog += "cancelTransaction(txn=$transactionId)"
         return require(nextCancelTransaction, "nextCancelTransaction")
+    }
+
+    override suspend fun nativeOtpExpired(
+        transactionId: String
+    ): ApiResponse<PaymentMethodPostResponse> {
+        callLog += "nativeOtpExpired(txn=$transactionId)"
+        return require(nextExpireTransaction, "nextExpireTransaction")
     }
 }

@@ -13,6 +13,7 @@ import com.crossplatform.sdk.fakes.FakeFetchStatusRepo
 import com.crossplatform.sdk.fakes.FakeMainScreenRepo
 import com.crossplatform.sdk.fakes.FakeOtherPaymentMethodRepo
 import com.crossplatform.sdk.presentation.UiState
+import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -186,5 +187,53 @@ class BoxPayElementsViewModelTest {
             viewModel.setPaySelection(BoxPayElementsViewModel.PaySelection.SavedCard(instrumentRef = "ref_1"))
             assertTrue(awaitItem())
         }
+    }
+
+    // ── nativeOtpPageExpired -> /expire ────────────────────────────────────
+
+    @Test
+    fun `nativeOtpPageExpired records expiry and marks the session expired`() = runTest {
+        CheckoutDetailsHandler.resetToDefault()
+        CheckoutDetailsHandler.setStatusAndTransID(status = "REQUIRESACTION", transactionId = "txn_expire")
+        cardRepo.expireTransactionResult = ApiResponse.Success(
+            PaymentMethodPostResponse(
+                transactionId = "txn_expire",
+                transactionTimestampLocale = "12 Aug 2026",
+                status = TransactionStatus(status = "Expired", reason = "", reasonCode = ""),
+                paymentMethod = Method(type = "Card", brand = "VISA"),
+            ),
+            responseCode = 200,
+        )
+
+        viewModel.nativeOtpPageExpired()
+
+        assertEquals(1, cardRepo.expireCallCount)
+        assertEquals("txn_expire", cardRepo.lastExpireTransactionId)
+        assertEquals("EXPIRED", CheckoutDetailsHandler.transactionFlow.value.first)
+        assertTrue(CheckoutDetailsHandler.isSessionExpiredFlow.value)
+        assertFalse(CheckoutDetailsHandler.isPaymentFailedFlow.value)
+        assertFalse(viewModel.isBoxPayAnimationLoading.value)
+    }
+
+    @Test
+    fun `nativeOtpPageExpired still calls expire once and turns the loader off when the call errors`() = runTest {
+        CheckoutDetailsHandler.resetToDefault()
+        CheckoutDetailsHandler.setStatusAndTransID(status = "REQUIRESACTION", transactionId = "txn_expire")
+        cardRepo.expireTransactionResult = ApiResponse.Error(message = "network down")
+
+        viewModel.nativeOtpPageExpired()
+
+        assertEquals(1, cardRepo.expireCallCount)
+        assertEquals("txn_expire", cardRepo.lastExpireTransactionId)
+        assertFalse(viewModel.isBoxPayAnimationLoading.value)
+    }
+
+    @Test
+    fun `submitOtp stops the loader when the submit call itself fails`() = runTest {
+        cardRepo.submitOtpResult = ApiResponse.Error(message = "network down")
+
+        viewModel.submitOtp("123456", false)
+
+        assertFalse(viewModel.isNativeOtpLoading.value)
     }
 }

@@ -9,7 +9,7 @@ import com.crossplatform.sdk.presentation.getStatus
 
 internal fun SessionDetails.toUiModel(): MainScreenModel {
     val moneyObject = this.paymentDetails.money
-    val status = getStatus(this.status)
+    val status = getStatus(this.status ?: "")
 
     val enabledFields = configs.enabledFields
 

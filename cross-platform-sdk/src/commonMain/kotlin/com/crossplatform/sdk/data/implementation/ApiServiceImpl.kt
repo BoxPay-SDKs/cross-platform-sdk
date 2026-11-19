@@ -440,6 +440,18 @@ internal class ApiServiceImpl : ApiService {
         }
     }
 
+    override suspend fun nativeOtpExpired(
+        transactionId: String
+    ): ApiResponse<PaymentMethodPostResponse> {
+        return executeWithResponse {
+            client.post(
+                urlString = "transactions/${transactionId}/expire"
+            ) {
+                contentType(ContentType.Application.Json)
+            }
+        }
+    }
+
     override suspend fun cancelTransaction(transactionId: String): ApiResponse<PaymentMethodPostResponse> {
         return executeWithResponse{
             client.post(urlString = "transactions/${transactionId}/cancel") {
