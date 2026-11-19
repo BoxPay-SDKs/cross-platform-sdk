@@ -235,4 +235,7 @@
     <string name="nfc_scan_error_tag_lost">La tarjeta se movió demasiado pronto. Mantenla quieta contra la parte trasera de tu dispositivo e inténtalo de nuevo.</string>
     <string name="nfc_scan_try_again">Intentar de nuevo</string>
     <string name="nfc_scan_enter_manually">Ingresar manualmente</string>
+    <string name="card_retry_limit_reached_title">Límite de reintentos de la tarjeta alcanzado</string>
+    <string name="card_retry_limit_reached_desc">Has alcanzado el número máximo de intentos de pago con esta tarjeta. Prueba con otra tarjeta</string>
+    <string name="try_another_card_cta">Probar otra tarjeta</string>
 </resources>

@@ -290,6 +290,7 @@ internal class CardScreenViewModel(
             )
             handlePaymentResponse(
                 response = response,
+                isCardPayment = true,
                 onSetPaymentHtml = {html ->
                     htmlString.value = html
                     setWebViewScreen(true)

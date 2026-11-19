@@ -244,4 +244,7 @@
     <string name="nfc_scan_error_tag_lost">The card moved away too soon. Hold it still against the back of your device and try again.</string>
     <string name="nfc_scan_try_again">Try Again</string>
     <string name="nfc_scan_enter_manually">Enter Manually</string>
+    <string name="card_retry_limit_reached_title">Card retry limit reached</string>
+    <string name="card_retry_limit_reached_desc">You\'ve reached the maximum number of payment attempts for this card. Please try another card</string>
+    <string name="try_another_card_cta">Try another card</string>
 </resources>

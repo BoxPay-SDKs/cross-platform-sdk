@@ -235,4 +235,7 @@
     <string name="nfc_scan_error_tag_lost">카드가 너무 일찍 떨어졌습니다. 기기 뒷면에 카드를 가만히 대고 다시 시도하세요.</string>
     <string name="nfc_scan_try_again">다시 시도</string>
     <string name="nfc_scan_enter_manually">직접 입력</string>
+    <string name="card_retry_limit_reached_title">카드 재시도 한도 도달</string>
+    <string name="card_retry_limit_reached_desc">이 카드의 최대 결제 시도 횟수에 도달했습니다. 다른 카드를 사용해 주세요</string>
+    <string name="try_another_card_cta">다른 카드 사용하기</string>
 </resources>

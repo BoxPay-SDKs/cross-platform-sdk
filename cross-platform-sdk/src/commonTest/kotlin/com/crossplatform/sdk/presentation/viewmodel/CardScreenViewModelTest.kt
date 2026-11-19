@@ -223,6 +223,34 @@ class CardScreenViewModelTest {
         assertFalse(viewModel.isBoxPayAnimationVisible.value)
     }
 
+    // ── BE_1815: card retry limit ──────────────────────────────────────────
+
+    private val paymentMaxAttemptsBody =
+        """{"errorCode":"BE_1815","message":"max attempts","fieldErrorItems":[{"fieldName":"card","message":"0"},{"fieldName":"upi","message":"2"}],"reasonCode":"BE_1815"}"""
+
+    @Test
+    fun `postCardRequest with BE_1815 shows the card retry limit dialog and not the method limit sheet`() = runTest {
+        CheckoutDetailsHandler.setIsCardRetryLimitReached(false)
+        val methodFlagBefore = CheckoutDetailsHandler.isPaymentMaxAttemptsReachedFlow.value
+        cardRepo.postCardDetailsResult = ApiResponse.Error(message = "limit", errorBody = paymentMaxAttemptsBody)
+
+        viewModel.postCardRequest(isSICheckBoxClicked = false, surcharge = null)
+
+        assertTrue(CheckoutDetailsHandler.isCardRetryLimitReachedFlow.value)
+        assertEquals(methodFlagBefore, CheckoutDetailsHandler.isPaymentMaxAttemptsReachedFlow.value)
+        assertFalse(viewModel.isBoxPayAnimationVisible.value)
+        CheckoutDetailsHandler.setIsCardRetryLimitReached(false)
+    }
+
+    @Test
+    fun `card retry limit flag can be cleared again after being shown`() {
+        CheckoutDetailsHandler.setIsCardRetryLimitReached(true)
+        assertTrue(CheckoutDetailsHandler.isCardRetryLimitReachedFlow.value)
+
+        CheckoutDetailsHandler.setIsCardRetryLimitReached(false)
+        assertFalse(CheckoutDetailsHandler.isCardRetryLimitReachedFlow.value)
+    }
+
     // ── nativeOtpPageExpired -> /expire ────────────────────────────────────
 
     @Test
