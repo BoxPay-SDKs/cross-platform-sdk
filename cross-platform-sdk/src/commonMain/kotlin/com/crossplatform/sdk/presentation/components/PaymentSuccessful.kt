@@ -78,7 +78,9 @@ internal fun PaymentSuccessful(
     val (_, currencyCode) = currencyDetails.value
     val transactionDetail = CheckoutDetailsHandler.transactionFlow.collectAsStateWithLifecycle()
     val merchantName = CheckoutDetailsHandler.merchantNameFlow.collectAsStateWithLifecycle()
-    val (_, transactionId) = transactionDetail.value
+    val (transactionStatus, transactionId) = transactionDetail.value
+    val orderId = CheckoutDetailsHandler.orderIdFlow.collectAsStateWithLifecycle().value
+    val productName = CheckoutDetailsHandler.productNameFlow.collectAsStateWithLifecycle().value
 
     // Toast-like feedback for the download action
     var downloadStatusMessage by remember { mutableStateOf<String?>(null) }
@@ -98,12 +100,17 @@ internal fun PaymentSuccessful(
     val dateNTimeExtracted = formatTransactionTimestamp(dateNTime)
     val formattedAmount    = formatAmount(amount.value)
 
-    val uiRows = listOf(
+    val statusLabel = transactionStatus.lowercase().replaceFirstChar { it.uppercase() }
+
+    val uiRows = listOfNotNull(
         "Merchant Name" to merchantName.value,
         "Transaction ID" to transactionId,
+        ("Order ID" to orderId).takeIf { orderId.isNotBlank() },
+        ("Status" to statusLabel).takeIf { statusLabel.isNotBlank() },
         "Date"           to (dateNTimeExtracted?.first  ?: ""),
         "Time"           to (dateNTimeExtracted?.second ?: ""),
         "Payment Method" to paymentMethod,
+        ("Product Name" to productName).takeIf { productName.isNotBlank() }
     )
 
     ModalBottomSheet(
@@ -211,12 +218,16 @@ internal fun PaymentSuccessful(
                             isDownloading.value = true
                             downloadStatusMessage = null
                             val receiptData = ReceiptData(
+                                merchantName = merchantName.value,
+                                orderId = orderId,
                                 transactionId = transactionId,
                                 date = dateNTimeExtracted?.first ?: "",
                                 time = dateNTimeExtracted?.second ?: "",
                                 paymentMethod = paymentMethod,
                                 formattedAmount = formattedAmount,
                                 currencyCode = currencyCode,
+                                status = statusLabel,
+                                productName = productName
                             )
                             PdfReceiptGenerator.generateAndDownload(receiptData, context) { success, message ->
                                 isDownloading.value = false

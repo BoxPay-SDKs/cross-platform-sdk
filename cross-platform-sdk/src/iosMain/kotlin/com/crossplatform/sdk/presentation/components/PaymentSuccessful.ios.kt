@@ -98,11 +98,15 @@ internal actual object PdfReceiptGenerator {
         y += 36.0
 
         // Info rows
-        val rows = listOf(
+        val rows = listOfNotNull(
+            ("Merchant Name" to data.merchantName).takeIf { data.merchantName.isNotBlank() },
             "Transaction ID" to data.transactionId,
+            ("Order ID"      to data.orderId).takeIf { data.orderId.isNotBlank() },
+            "Status" to data.status,
             "Date"           to data.date,
             "Time"           to data.time,
             "Payment Method" to data.paymentMethod,
+            ("Product Name" to data.productName).takeIf { data.productName.isNotBlank() }
         )
         for ((label, value) in rows) {
             drawText(label, x = margin, y = y, attrs = labelAttrs)

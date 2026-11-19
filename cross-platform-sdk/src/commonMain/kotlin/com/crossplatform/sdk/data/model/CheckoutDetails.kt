@@ -66,6 +66,8 @@ internal data class CheckoutDetails(
     // ---------Payment Current Status --------
     val status : String,
     val transactionId : String,
+    val orderId : String,
+    val productName : String,
     val inquiryToken : String,
     val surchargeDetails : List<SurchargeModel>,
     val isWebViewVisible : Boolean,

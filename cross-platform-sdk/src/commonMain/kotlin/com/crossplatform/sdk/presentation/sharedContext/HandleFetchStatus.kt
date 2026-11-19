@@ -52,7 +52,7 @@ internal suspend fun handleFetchStatus(
             )
 
             when (status){
-                TransactionStatusEnum.SUCCESS -> {
+                TransactionStatusEnum.SUCCESS, TransactionStatusEnum.PROCESSING -> {
                     CheckoutDetailsHandler.setTimeAndPaymentMethod(
                         timeStamp = response.data.transactionTimestampLocale,
                         paymentMethod = response.data.paymentMethod.brand ?: ""
@@ -128,7 +128,7 @@ internal suspend fun handleUpiCollectFetchStatus(
             )
 
             when (status){
-                TransactionStatusEnum.SUCCESS -> {
+                TransactionStatusEnum.SUCCESS, TransactionStatusEnum.PROCESSING -> {
                     CheckoutDetailsHandler.setTimeAndPaymentMethod(
                         timeStamp = response.data.transactionTimestampLocale,
                         paymentMethod = response.data.paymentMethod.brand ?: ""

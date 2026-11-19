@@ -121,7 +121,7 @@ internal class MainScreenViewModel(
                 val responseData = sessionData.toUiModel()
                 val shopper = sessionData.paymentDetails.shopper
 
-                if (responseData.status == TransactionStatusEnum.EXPIRED || responseData.status == TransactionStatusEnum.SUCCESS || responseData.paymentsAttemptExhausted) {
+                if (responseData.status == TransactionStatusEnum.EXPIRED || responseData.status == TransactionStatusEnum.SUCCESS || responseData.status == TransactionStatusEnum.PROCESSING || responseData.paymentsAttemptExhausted) {
                     isSessionLoaded = true
                     isBoxPayAnimationLoading.value = false
                     _state.value = UiState.Success(responseData)
@@ -297,7 +297,8 @@ internal class MainScreenViewModel(
     fun callCheckoutSessionSuccessModal(
         transactionId : String,
         dateNTime : String,
-        paymentMethod : String
+        paymentMethod : String,
+        status : TransactionStatusEnum = TransactionStatusEnum.SUCCESS
     ) {
         callUiAnalytics(
             event = AnalyticsEvents.PAYMENT_RESULT_SCREEN_DISPLAYED.value,
@@ -309,7 +310,7 @@ internal class MainScreenViewModel(
             paymentMethod = paymentMethod
         )
         CheckoutDetailsHandler.setStatusAndTransID(
-            status = TransactionStatusEnum.SUCCESS.name,
+            status = status.name,
             transactionId = transactionId
         )
         CheckoutDetailsHandler.setSessionSuccess()

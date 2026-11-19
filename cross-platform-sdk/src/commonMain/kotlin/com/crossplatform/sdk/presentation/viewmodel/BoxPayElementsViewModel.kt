@@ -189,7 +189,7 @@ internal class BoxPayElementsViewModel (
                 val responseData = sessionData.toUiModel()
                 val shopper = sessionData.paymentDetails.shopper
 
-                if (responseData.status == TransactionStatusEnum.EXPIRED || responseData.status == TransactionStatusEnum.SUCCESS) {
+                if (responseData.status == TransactionStatusEnum.EXPIRED || responseData.status == TransactionStatusEnum.SUCCESS || responseData.status == TransactionStatusEnum.PROCESSING) {
                     isSessionLoaded = true
                     isBoxPayAnimationLoading.value = false
                     _state.value = UiState.Success(sessionData.toUiModel())

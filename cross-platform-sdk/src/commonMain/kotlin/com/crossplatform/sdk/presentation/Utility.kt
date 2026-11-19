@@ -259,6 +259,7 @@ internal fun resolveErrorMessage(
 internal fun getStatus(status : String) : TransactionStatusEnum {
     return when (status.uppercase()) {
         in listOf("APPROVED", "SUCCESS", "PAID") -> TransactionStatusEnum.SUCCESS
+        in listOf("POSTED", "PROCESSING")         -> TransactionStatusEnum.PROCESSING
         "EXPIRED"                                 -> TransactionStatusEnum.EXPIRED
         in listOf("FAILED", "REJECTED")           -> TransactionStatusEnum.FAILED
         "REQUIRESACTION"                          -> TransactionStatusEnum.REQUIRESACTION
@@ -269,6 +270,7 @@ internal fun getStatus(status : String) : TransactionStatusEnum {
 internal fun getFetchStatus(status : String) : TransactionStatusEnum {
     return when (status.uppercase()) {
         in listOf("APPROVED", "SUCCESS", "PAID") -> TransactionStatusEnum.SUCCESS
+        in listOf("POSTED", "PROCESSING")         -> TransactionStatusEnum.PROCESSING
         "EXPIRED"                                 -> TransactionStatusEnum.EXPIRED
         in listOf("FAILED", "REJECTED")           -> TransactionStatusEnum.FAILED
         "REQUIRESACTION"                          -> TransactionStatusEnum.REQUIRESACTION

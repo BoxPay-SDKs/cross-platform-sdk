@@ -99,11 +99,15 @@ internal actual object PdfReceiptGenerator {
         divider(canvas, y, dividerPaint)
         y += 28f
 
-        val rows = listOf(
+        val rows = listOfNotNull(
+            ("Merchant Name" to data.merchantName).takeIf { data.merchantName.isNotBlank() },
             "Transaction ID" to data.transactionId,
+            ("Order ID"      to data.orderId).takeIf { data.orderId.isNotBlank() },
+            "Status" to data.status,
             "Date"           to data.date,
             "Time"           to data.time,
             "Payment Method" to data.paymentMethod,
+            ("Product Name" to data.productName).takeIf { data.productName.isNotBlank() }
         )
         for ((label, value) in rows) {
             canvas.drawText(label, MARGIN, y, labelPaint)
