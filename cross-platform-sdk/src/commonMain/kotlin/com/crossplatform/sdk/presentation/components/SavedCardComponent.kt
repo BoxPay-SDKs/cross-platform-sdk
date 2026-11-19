@@ -43,6 +43,7 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.add_icon
 import crossplatformsdk.cross_platform_sdk.generated.resources.add_new_card_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card
+import crossplatformsdk.cross_platform_sdk.generated.resources.ic_edit
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_trash
 import crossplatformsdk.cross_platform_sdk.generated.resources.pay_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.set_up_si_instructions
@@ -66,6 +67,7 @@ internal fun SavedCardComponent(
     onClickDeleteCard: (String, String) -> Unit,
     onClickRadio : () -> Unit,
     isBoxPayPayButtonVisible : Boolean = true,
+    onClickEditCard: (instrumentRef : String, nickName : String, cardNumber : String) -> Unit
 ) {
     val selectedId = remember {
         mutableStateOf("")
@@ -105,7 +107,8 @@ internal fun SavedCardComponent(
                 ctaBorderRadius = ctaBorderRadius,
                 isSICheckboxChecked = isSICheckboxChecked,
                 isSICheckboxEnabled  = isSICheckboxEnabled,
-                isBoxPayPayButtonVisible = isBoxPayPayButtonVisible
+                isBoxPayPayButtonVisible = isBoxPayPayButtonVisible,
+                onClickEditCard = onClickEditCard
             )
             HorizontalDivider(color = LocalSDKColors.current.divider, thickness = 1.dp, modifier = Modifier.padding(horizontal = 12.dp))
         }
@@ -161,7 +164,8 @@ private fun SavedCardRow(
     isSICheckboxChecked: Boolean,
     isSICheckboxEnabled : Boolean,
     onClickDeleteCard : (String, String) -> Unit,
-    isBoxPayPayButtonVisible: Boolean
+    isBoxPayPayButtonVisible: Boolean,
+    onClickEditCard:(String, String, String) -> Unit
 ) {
     var isSICheckBoxChecked by remember { mutableStateOf(false) }
 
@@ -258,6 +262,15 @@ private fun SavedCardRow(
                     selectedColor   = brandColor.toComposeColor(),
                     unselectedColor = Color(0x7301010A)
                 )
+            )
+            Image(
+                painter            = painterResource(Res.drawable.ic_edit),
+                contentDescription = null,
+                colorFilter        = ColorFilter.tint(buttonColor.toComposeColor()),
+                modifier           = Modifier
+                    .padding(end = 4.dp)
+                    .size(32.dp)
+                    .clickable { onClickEditCard(id, nickName, displayName) }
             )
             Image(
                 painter            = painterResource(Res.drawable.ic_trash),

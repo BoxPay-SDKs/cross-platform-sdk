@@ -39,6 +39,7 @@
     <string name="qr_expired_title">QR समाप्त हो गया</string>
     <string name="complete_your_payment_title">अपना भुगतान पूरा करें</string>
     <string name="saved_addresses_title">सहेजे गए पते</string>
+    <string name="edit_card_nickname_title">कार्ड का उपनाम संपादित करें</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">खोजें</string>
@@ -91,6 +92,7 @@
     <string name="download_qr_cta">QR डाउनलोड करें</string>
     <string name="get_new_qr_cta">नया QR प्राप्त करें</string>
     <string name="add_new_address_cta">नया पता जोड़ें</string>
+    <string name="save_cta">सहेजें</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">इस भुगतान के लिए स्टैंडिंग इंस्ट्रक्शन (SI) सेट करें।</string>
@@ -139,6 +141,7 @@
     <string name="expires_in_info">समाप्त होता है</string>
     <string name="avoid_back_button_in_upi_timer_info">कृपया लेन-देन प्रक्रिया पूरी होने तक बैक बटन का उपयोग करने से बचें</string>
     <string name="upi_timer_info">समय समाप्त होने से पहले अपना UPI ऐप खोलें और भुगतान की पुष्टि करें</string>
+    <string name="card_ending_with">**** %1$s पर समाप्त होने वाला कार्ड</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s महीने x</string>
@@ -235,4 +238,7 @@
     <string name="nfc_scan_error_tag_lost">कार्ड बहुत जल्दी हट गया। उसे अपने डिवाइस के पीछे स्थिर रखें और फिर से प्रयास करें।</string>
     <string name="nfc_scan_try_again">फिर से प्रयास करें</string>
     <string name="nfc_scan_enter_manually">मैन्युअल रूप से दर्ज करें</string>
+    <string name="edit_card_nickname_error">उपनाम अपडेट नहीं हो सका। कृपया फिर से प्रयास करें।</string>
+    <string name="nickname_invalid_chars">केवल अक्षर, अंक, स्पेस और . _ \' - का उपयोग करें</string>
+    <string name="nickname_looks_like_card">उपनाम कार्ड नंबर जैसा नहीं हो सकता</string>
 </resources>

@@ -57,6 +57,7 @@ class SavedCardComponentTest {
                     isSICheckboxEnabled = false,
                     onClickDeleteCard = { _, _ -> },
                     onClickRadio = {},
+                    onClickEditCard = {_,_,_ -> }
                 )
             }
         }
@@ -93,6 +94,7 @@ class SavedCardComponentTest {
                     isSICheckboxEnabled = false,
                     onClickDeleteCard = { _, _ -> },
                     onClickRadio = {},
+                    onClickEditCard = {_,_,_ -> }
                 )
             }
         }
@@ -126,6 +128,7 @@ class SavedCardComponentTest {
                     isSICheckboxEnabled = false,
                     onClickDeleteCard = { _, _ -> },
                     onClickRadio = {},
+                    onClickEditCard = {_,_,_ -> }
                 )
             }
         }

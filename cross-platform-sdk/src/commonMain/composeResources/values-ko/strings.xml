@@ -39,6 +39,7 @@
     <string name="qr_expired_title">QR 코드 만료됨</string>
     <string name="complete_your_payment_title">결제를 완료하세요</string>
     <string name="saved_addresses_title">저장된 주소</string>
+    <string name="edit_card_nickname_title">카드 별칭 수정</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">검색</string>
@@ -91,6 +92,7 @@
     <string name="download_qr_cta">QR 코드 다운로드</string>
     <string name="add_new_address_cta">새 주소 추가</string>
     <string name="get_new_qr_cta">새 QR 코드 받기</string>
+    <string name="save_cta">저장</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">이 결제를 위한 정기 결제 지시(SI)를 설정하세요.</string>
@@ -139,6 +141,7 @@
     <string name="expires_in_info">만료까지</string>
     <string name="avoid_back_button_in_upi_timer_info">거래 처리가 완료될 때까지 뒤로 가기 버튼을 사용하지 마세요</string>
     <string name="upi_timer_info">시간이 만료되기 전에 UPI 앱을 열고 결제를 확인하세요</string>
+    <string name="card_ending_with">끝자리 **** %1$s 카드</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s개월 x</string>
@@ -235,4 +238,7 @@
     <string name="nfc_scan_error_tag_lost">카드가 너무 일찍 떨어졌습니다. 기기 뒷면에 카드를 가만히 대고 다시 시도하세요.</string>
     <string name="nfc_scan_try_again">다시 시도</string>
     <string name="nfc_scan_enter_manually">직접 입력</string>
+    <string name="edit_card_nickname_error">별칭을 업데이트하지 못했습니다. 다시 시도해 주세요.</string>
+    <string name="nickname_invalid_chars">문자, 숫자, 공백 및 . _ \' - 만 사용하세요</string>
+    <string name="nickname_looks_like_card">별칭은 카드 번호처럼 보일 수 없습니다</string>
 </resources>

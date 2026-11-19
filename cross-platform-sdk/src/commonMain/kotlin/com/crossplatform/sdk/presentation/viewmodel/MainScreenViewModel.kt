@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.viewmodel
 
+import com.crossplatform.sdk.presentation.components.withDisplayName
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -179,7 +180,7 @@ internal class MainScreenViewModel(
                 }
 
                 if (!instruments.isNullOrEmpty()) {
-                    recommendedList.value      = instruments.filter { it.type.lowercase() == "upi" }.take(2)
+                    recommendedList.value      = instruments.take(2)
                     upiRecommendedList.value   = instruments.filter { it.type.lowercase() == "upi" }
                     cardsRecommendedList.value = instruments.filter { it.type.lowercase() == "card" }
                 }
@@ -543,6 +544,7 @@ internal class MainScreenViewModel(
                 is ApiResponse.Success -> {
                     isBoxPayAnimationLoading.value = false
                     cardsRecommendedList.value = cardsRecommendedList.value.filter { it.id != id }
+                    recommendedList.value = recommendedList.value.filter { it.id != id }
                 }
                 is ApiResponse.Error -> {
                     isBoxPayAnimationLoading.value = false
@@ -909,6 +911,25 @@ internal class MainScreenViewModel(
             (applicable.isBlank() || methodMatches) && networkMatches
         }
         return filtered.map { it.surchargeCode }.ifEmpty { null }
+    }
+
+    fun postEditSavedCard(
+        instrumentRef: String,
+        newNickName: String,
+        onResult: (success: Boolean) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            val response = repo.editSavedCard(newNickName, instrumentRef)
+            if (response is ApiResponse.Success) {
+                // Prefer the name the server stored, in case it normalised the value
+                val savedName = response.data.cardNickName?.takeIf { it.isNotBlank() } ?: newNickName
+                cardsRecommendedList.value = cardsRecommendedList.value.withDisplayName(instrumentRef, savedName)
+                recommendedList.value = recommendedList.value.withDisplayName(instrumentRef, savedName)
+                onResult(true)
+            } else {
+                onResult(false)
+            }
+        }
     }
 
 }

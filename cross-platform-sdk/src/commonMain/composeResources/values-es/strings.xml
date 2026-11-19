@@ -39,6 +39,7 @@
     <string name="qr_expired_title">Código QR vencido</string>
     <string name="complete_your_payment_title">Completa tu pago</string>
     <string name="saved_addresses_title">Direcciones guardadas</string>
+    <string name="edit_card_nickname_title">Editar apodo de la tarjeta</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">Buscar</string>
@@ -91,6 +92,7 @@
     <string name="download_qr_cta">Descargar QR</string>
     <string name="get_new_qr_cta">Obtener nuevo QR</string>
     <string name="add_new_address_cta">Agregar nueva dirección</string>
+    <string name="save_cta">Guardar</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">Configura las Instrucciones Permanentes (SI) para este pago.</string>
@@ -139,6 +141,7 @@
     <string name="expires_in_info">Expira en</string>
     <string name="avoid_back_button_in_upi_timer_info">Evita usar el botón de atrás hasta que se complete el proceso de la transacción</string>
     <string name="upi_timer_info">Abre tu aplicación UPI y confirma el pago antes de que expire el tiempo</string>
+    <string name="card_ending_with">Tarjeta terminada en **** %1$s</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s meses x</string>
@@ -235,4 +238,7 @@
     <string name="nfc_scan_error_tag_lost">La tarjeta se movió demasiado pronto. Mantenla quieta contra la parte trasera de tu dispositivo e inténtalo de nuevo.</string>
     <string name="nfc_scan_try_again">Intentar de nuevo</string>
     <string name="nfc_scan_enter_manually">Ingresar manualmente</string>
+    <string name="edit_card_nickname_error">No se pudo actualizar el apodo. Inténtalo de nuevo.</string>
+    <string name="nickname_invalid_chars">Usa solo letras, números, espacios y . _ \' -</string>
+    <string name="nickname_looks_like_card">El apodo no puede parecer un número de tarjeta</string>
 </resources>

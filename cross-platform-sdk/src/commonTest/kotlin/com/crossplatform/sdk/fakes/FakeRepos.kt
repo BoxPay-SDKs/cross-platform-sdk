@@ -166,7 +166,10 @@ internal class FakeMainScreenRepo : MainScreenRepo {
     var surchargeResult: ApiResponse<FetchSurchargeResponse> = ApiResponse.Loading
     var deleteSavedCardResult: ApiResponse<List<RecommendedInstrumentsResponse>> = ApiResponse.Loading
     var upiQrResult: ApiResponse<PaymentMethodPostResponse> = ApiResponse.Loading
+    var editSavedCardResult: ApiResponse<RecommendedInstrumentsResponse> = ApiResponse.Loading
 
+    var lastEditedNickName: String? = null
+    var lastEditedInstrumentRef: String? = null
     var lastUpiCollectVpa: String? = null
 
     override suspend fun getSessionDetails(): ApiResponse<SessionDetails> = sessionDetailsResult
@@ -200,6 +203,12 @@ internal class FakeMainScreenRepo : MainScreenRepo {
     override suspend fun deleteSavedCard(id: String, type: String): ApiResponse<List<RecommendedInstrumentsResponse>> = deleteSavedCardResult
 
     override suspend fun postUPIQrRequest(type: String, surcharges: List<String>?): ApiResponse<PaymentMethodPostResponse> = upiQrResult
+
+    override suspend fun editSavedCard(newNickName: String, instrumentRef: String): ApiResponse<RecommendedInstrumentsResponse> {
+        lastEditedNickName = newNickName
+        lastEditedInstrumentRef = instrumentRef
+        return editSavedCardResult
+    }
 }
 
 internal class FakeAddressScreenRepo : AddressScreenRepo {

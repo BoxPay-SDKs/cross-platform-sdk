@@ -32,4 +32,6 @@ internal interface MainScreenRepo {
     suspend fun deleteSavedCard(id : String, type : String) : ApiResponse<List<RecommendedInstrumentsResponse>>
 
     suspend fun postUPIQrRequest(type : String, surcharges : List<String>?) : ApiResponse<PaymentMethodPostResponse>
+
+    suspend fun editSavedCard(newNickName : String, instrumentRef : String) : ApiResponse<RecommendedInstrumentsResponse>
 }

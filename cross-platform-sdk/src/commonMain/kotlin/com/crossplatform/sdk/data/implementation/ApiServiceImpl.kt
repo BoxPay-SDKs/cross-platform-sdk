@@ -25,6 +25,7 @@ import com.crossplatform.sdk.data.model.requestBody.AnalyticsRequest
 import com.crossplatform.sdk.data.model.requestBody.ApplyOfferRequestBody
 import com.crossplatform.sdk.data.model.requestBody.CardPostRequestBody
 import com.crossplatform.sdk.data.model.requestBody.DeleteSavedCardRequestBody
+import com.crossplatform.sdk.data.model.requestBody.EditSavedCardRequestBody
 import com.crossplatform.sdk.data.model.requestBody.EmiPostRequestBody
 import com.crossplatform.sdk.data.model.requestBody.InstantOfferRequestBody
 import com.crossplatform.sdk.data.model.requestBody.NativeOtpRequestBody
@@ -41,6 +42,7 @@ import com.crossplatform.sdk.presentation.getShopperDetails
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -456,6 +458,22 @@ internal class ApiServiceImpl : ApiService {
         return executeWithResponse{
             client.post(urlString = "transactions/${transactionId}/cancel") {
                 contentType(ContentType.Application.Json)
+            }
+        }
+    }
+
+    override suspend fun editSavedCard(
+        newNickName: String,
+        instrumentRef: String
+    ): ApiResponse<RecommendedInstrumentsResponse> {
+        val requestBody = EditSavedCardRequestBody(
+            type = "Card",
+            cardNickName = newNickName
+        )
+        return executeWithResponse{
+            client.put(urlString = "shoppers/${userData.uniqueId}/instruments/${instrumentRef}") {
+                contentType(ContentType.Application.Json)
+                setBody(requestBody)
             }
         }
     }
