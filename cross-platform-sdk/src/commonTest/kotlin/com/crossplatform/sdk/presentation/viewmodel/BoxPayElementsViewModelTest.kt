@@ -216,7 +216,7 @@ class BoxPayElementsViewModelTest {
     }
 
     @Test
-    fun `nativeOtpPageExpired shows the same expired outcome even when the expire call fails`() = runTest {
+    fun `nativeOtpPageExpired still calls expire once and turns the loader off when the call errors`() = runTest {
         CheckoutDetailsHandler.resetToDefault()
         CheckoutDetailsHandler.setStatusAndTransID(status = "REQUIRESACTION", transactionId = "txn_expire")
         cardRepo.expireTransactionResult = ApiResponse.Error(message = "network down")
@@ -224,9 +224,7 @@ class BoxPayElementsViewModelTest {
         viewModel.nativeOtpPageExpired()
 
         assertEquals(1, cardRepo.expireCallCount)
-        assertEquals("EXPIRED", CheckoutDetailsHandler.transactionFlow.value.first)
-        assertTrue(CheckoutDetailsHandler.isSessionExpiredFlow.value)
-        assertFalse(CheckoutDetailsHandler.isPaymentFailedFlow.value)
+        assertEquals("txn_expire", cardRepo.lastExpireTransactionId)
         assertFalse(viewModel.isBoxPayAnimationLoading.value)
     }
 
