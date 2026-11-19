@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -27,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,15 +39,16 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.cancel_cta
 import crossplatformsdk.cross_platform_sdk.generated.resources.card_ending_with
 import crossplatformsdk.cross_platform_sdk.generated.resources.card_nick_name_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.edit_card_nickname_error
 import crossplatformsdk.cross_platform_sdk.generated.resources.edit_card_nickname_title
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_card
+import crossplatformsdk.cross_platform_sdk.generated.resources.nickname_invalid_chars
+import crossplatformsdk.cross_platform_sdk.generated.resources.nickname_looks_like_card
 import crossplatformsdk.cross_platform_sdk.generated.resources.save_cta
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
-private const val NICKNAME_MAX_LENGTH = 30
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,12 +60,22 @@ internal fun EditCardNickNameContent(
     buttonTextColor: String,
     ctaBorderRadius: Int,
     onDismiss: () -> Unit,
-    onSave: (String) -> Unit
+    onSave: (String) -> Unit,
+    isSaving: Boolean = false,
+    showSaveError: Boolean = false,
+    onNickNameChange: () -> Unit = {}
 ) {
     var nickName by remember { mutableStateOf(initialNickName) }
 
     val trimmed = nickName.trim()
-    val canSave = trimmed.isNotEmpty() && trimmed != initialNickName.trim()
+    val validationError = if (nickName.isBlank() || nickName == initialNickName) null else validateNickname(nickName)
+    val canSave = !isSaving && validateNickname(nickName) == null && trimmed != initialNickName.trim()
+    val errorText = when {
+        validationError == NicknameError.INVALID_CHARACTERS -> stringResource(Res.string.nickname_invalid_chars)
+        validationError == NicknameError.LOOKS_LIKE_CARD_NUMBER -> stringResource(Res.string.nickname_looks_like_card)
+        showSaveError -> stringResource(Res.string.edit_card_nickname_error)
+        else -> null
+    }
 
     Column(
         modifier = Modifier
@@ -115,7 +128,23 @@ internal fun EditCardNickNameContent(
 
         OutlinedTextField(
             value = nickName,
-            onValueChange = { if (it.length <= NICKNAME_MAX_LENGTH) nickName = it },
+            onValueChange = {
+                if (it.length <= NICKNAME_MAX_LENGTH) {
+                    nickName = it
+                    onNickNameChange()
+                }
+            },
+            isError = errorText != null,
+            supportingText = errorText?.let { message ->
+                {
+                    Text(
+                        text = message,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        fontFamily = LocalSDKFonts.current.primary
+                    )
+                }
+            },
             label = {
                 Text(
                     stringResource(Res.string.card_nick_name_title),
@@ -123,6 +152,7 @@ internal fun EditCardNickNameContent(
                 )
             },
             singleLine = true,
+            enabled = !isSaving,
             shape = RoundedCornerShape(8.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = buttonColor.toComposeColor(),
@@ -134,26 +164,44 @@ internal fun EditCardNickNameContent(
 
         Spacer(Modifier.height(20.dp))
 
-        PayButton(
-            text = stringResource(Res.string.save_cta),
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(ctaBorderRadius.dp))
-                .background(
-                    if (canSave) buttonColor.toComposeColor()
-                    else LocalSDKColors.current.divider
+        if (isSaving) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(ctaBorderRadius.dp))
+                    .background(LocalSDKColors.current.divider)
+                    .padding(vertical = 14.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = LocalSDKColors.current.textSecondary,
+                    strokeWidth = 2.dp
                 )
-                .clickable(enabled = canSave) {
-                    onSave(trimmed)
-                },
-            amount = 0.0,
-            currencySymbol = "",
-            buttonTextColor = buttonTextColor,
-            isValid = canSave
-        )
+            }
+        } else {
+            PayButton(
+                text = stringResource(Res.string.save_cta),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(ctaBorderRadius.dp))
+                    .background(
+                        if (canSave) buttonColor.toComposeColor()
+                        else LocalSDKColors.current.divider
+                    )
+                    .clickable(enabled = canSave) {
+                        onSave(trimmed)
+                    },
+                amount = 0.0,
+                currencySymbol = "",
+                buttonTextColor = buttonTextColor,
+                isValid = canSave
+            )
+        }
         Spacer(Modifier.height(12.dp))
         OutlinedButton(
             onClick = { onDismiss() },
+            enabled = !isSaving,
             modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(ctaBorderRadius.dp)),
             shape = RoundedCornerShape(ctaBorderRadius.dp),
             border = BorderStroke(

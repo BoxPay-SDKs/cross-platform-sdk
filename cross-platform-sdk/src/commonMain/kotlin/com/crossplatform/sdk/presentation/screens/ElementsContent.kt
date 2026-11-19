@@ -414,6 +414,8 @@ private fun CardsTab(
     val editCardId = remember { mutableStateOf("") }
     val editCardNickName = remember { mutableStateOf("") }
     val editCardDisplayValue = remember { mutableStateOf("") }
+    val isSavingNickName = remember { mutableStateOf(false) }
+    val showNickNameSaveError = remember { mutableStateOf(false) }
 
     // Local copy synced with the external source of truth
     var isSiCheckBoxChecked by remember { mutableStateOf(isSICheckboxChecked) }
@@ -528,6 +530,7 @@ private fun CardsTab(
                     editCardId.value = id
                     editCardNickName.value = nickName
                     editCardDisplayValue.value = cardNumber
+                    showNickNameSaveError.value = false
                     isShowEditNicknameSheet.value = true
                 }
             )
@@ -612,9 +615,17 @@ private fun CardsTab(
                             buttonTextColor  = uiConfig.buttonTextColor,
                             ctaBorderRadius  = uiConfig.ctaBorderRadius,
                             onDismiss        = { isShowEditNicknameSheet.value = false },
+                            isSaving         = isSavingNickName.value,
+                            showSaveError    = showNickNameSaveError.value,
+                            onNickNameChange = { showNickNameSaveError.value = false },
                             onSave           = { newName ->
-                                isShowEditNicknameSheet.value = false
-                                viewModel.postEditSavedCard(editCardId.value, newName)
+                                isSavingNickName.value = true
+                                showNickNameSaveError.value = false
+                                viewModel.postEditSavedCard(editCardId.value, newName) { success ->
+                                    isSavingNickName.value = false
+                                    if (success) isShowEditNicknameSheet.value = false
+                                    else showNickNameSaveError.value = true
+                                }
                             }
                         )
                     }

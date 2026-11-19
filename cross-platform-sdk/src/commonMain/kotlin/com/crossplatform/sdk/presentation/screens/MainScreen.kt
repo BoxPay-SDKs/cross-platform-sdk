@@ -181,6 +181,8 @@ internal fun MainScreen(
     val editCardId = remember { mutableStateOf("") }
     val editCardNickName = remember { mutableStateOf("") }
     val editCardDisplayValue = remember { mutableStateOf("") }
+    val isSavingNickName = remember { mutableStateOf(false) }
+    val showNickNameSaveError = remember { mutableStateOf(false) }
     val editSavedCardSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     when (screenState) {
@@ -789,7 +791,8 @@ internal fun MainScreen(
                                 editCardId.value = id
                                 editCardNickName.value = nickName
                                 editCardDisplayValue.value = cardNumber
-                                isShowEditNicknameSheet.value = true
+                                showNickNameSaveError.value = false
+                    isShowEditNicknameSheet.value = true
                             },
                         )
                     }
@@ -979,9 +982,17 @@ internal fun MainScreen(
                 buttonTextColor  = buttonTextColor.value,
                 ctaBorderRadius  = ctaBorderRadius.value,
                 onDismiss        = { isShowEditNicknameSheet.value = false },
+                isSaving         = isSavingNickName.value,
+                showSaveError    = showNickNameSaveError.value,
+                onNickNameChange = { showNickNameSaveError.value = false },
                 onSave           = { newName ->
-                    isShowEditNicknameSheet.value = false
-                    viewModel.postEditSavedCard(editCardId.value, newName)
+                    isSavingNickName.value = true
+                    showNickNameSaveError.value = false
+                    viewModel.postEditSavedCard(editCardId.value, newName) { success ->
+                        isSavingNickName.value = false
+                        if (success) isShowEditNicknameSheet.value = false
+                        else showNickNameSaveError.value = true
+                    }
                 }
             )
         }

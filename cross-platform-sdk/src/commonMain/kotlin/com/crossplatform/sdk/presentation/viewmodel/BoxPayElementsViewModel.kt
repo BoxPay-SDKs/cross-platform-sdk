@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.viewmodel
 
+import com.crossplatform.sdk.presentation.components.withDisplayName
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
@@ -1145,24 +1146,21 @@ internal class BoxPayElementsViewModel (
 
     fun postEditSavedCard(
         instrumentRef: String,
-        newNickName : String
+        newNickName: String,
+        onResult: (success: Boolean) -> Unit = {}
     ) {
         viewModelScope.launch {
             isBoxPayAnimationLoading.value = true
-            when (repo.editSavedCard(newNickName, instrumentRef)) {
-                is ApiResponse.Success -> {
-                    isBoxPayAnimationLoading.value = false
-                    cardsRecommendedList.value = cardsRecommendedList.value.map {
-                        if (it.id == instrumentRef) it.copy(displayName = newNickName) else it
-                    }
-                    recommendedList.value = recommendedList.value.map {
-                        if (it.id == instrumentRef) it.copy(displayName = newNickName) else it
-                    }
-                }
-                is ApiResponse.Error -> {
-                    isBoxPayAnimationLoading.value = false
-                }
-                else -> {}
+            val response = repo.editSavedCard(newNickName, instrumentRef)
+            isBoxPayAnimationLoading.value = false
+            if (response is ApiResponse.Success) {
+                // Prefer the name the server stored, in case it normalised the value
+                val savedName = response.data.cardNickName?.takeIf { it.isNotBlank() } ?: newNickName
+                cardsRecommendedList.value = cardsRecommendedList.value.withDisplayName(instrumentRef, savedName)
+                recommendedList.value = recommendedList.value.withDisplayName(instrumentRef, savedName)
+                onResult(true)
+            } else {
+                onResult(false)
             }
         }
     }

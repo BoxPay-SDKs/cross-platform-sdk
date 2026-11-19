@@ -265,7 +265,7 @@ private fun SavedCardRow(
             )
             Image(
                 painter            = painterResource(Res.drawable.ic_edit),
-                contentDescription = "Edit nickname",
+                contentDescription = null,
                 colorFilter        = ColorFilter.tint(buttonColor.toComposeColor()),
                 modifier           = Modifier
                     .padding(end = 4.dp)

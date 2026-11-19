@@ -238,4 +238,7 @@
     <string name="nfc_scan_error_tag_lost">卡片移开得太早。请将卡片紧贴设备背面并保持不动，然后重试。</string>
     <string name="nfc_scan_try_again">重试</string>
     <string name="nfc_scan_enter_manually">手动输入</string>
+    <string name="edit_card_nickname_error">无法更新昵称，请重试。</string>
+    <string name="nickname_invalid_chars">仅可使用字母、数字、空格以及 . _ \' -</string>
+    <string name="nickname_looks_like_card">昵称不能与卡号相似</string>
 </resources>

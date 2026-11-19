@@ -238,4 +238,7 @@
     <string name="nfc_scan_error_tag_lost">कार्ड बहुत जल्दी हट गया। उसे अपने डिवाइस के पीछे स्थिर रखें और फिर से प्रयास करें।</string>
     <string name="nfc_scan_try_again">फिर से प्रयास करें</string>
     <string name="nfc_scan_enter_manually">मैन्युअल रूप से दर्ज करें</string>
+    <string name="edit_card_nickname_error">उपनाम अपडेट नहीं हो सका। कृपया फिर से प्रयास करें।</string>
+    <string name="nickname_invalid_chars">केवल अक्षर, अंक, स्पेस और . _ \' - का उपयोग करें</string>
+    <string name="nickname_looks_like_card">उपनाम कार्ड नंबर जैसा नहीं हो सकता</string>
 </resources>

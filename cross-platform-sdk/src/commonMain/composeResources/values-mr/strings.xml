@@ -238,4 +238,7 @@
     <string name="nfc_scan_error_tag_lost">कार्ड खूप लवकर बाजूला गेले. ते तुमच्या डिव्हाइसच्या मागील बाजूस स्थिर धरा आणि पुन्हा प्रयत्न करा.</string>
     <string name="nfc_scan_try_again">पुन्हा प्रयत्न करा</string>
     <string name="nfc_scan_enter_manually">मॅन्युअली टाका</string>
+    <string name="edit_card_nickname_error">टोपणनाव अपडेट करता आले नाही. कृपया पुन्हा प्रयत्न करा.</string>
+    <string name="nickname_invalid_chars">फक्त अक्षरे, अंक, स्पेस आणि . _ \' - वापरा</string>
+    <string name="nickname_looks_like_card">टोपणनाव कार्ड क्रमांकासारखे दिसू नये</string>
 </resources>

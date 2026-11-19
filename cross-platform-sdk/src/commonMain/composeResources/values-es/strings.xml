@@ -238,4 +238,7 @@
     <string name="nfc_scan_error_tag_lost">La tarjeta se movió demasiado pronto. Mantenla quieta contra la parte trasera de tu dispositivo e inténtalo de nuevo.</string>
     <string name="nfc_scan_try_again">Intentar de nuevo</string>
     <string name="nfc_scan_enter_manually">Ingresar manualmente</string>
+    <string name="edit_card_nickname_error">No se pudo actualizar el apodo. Inténtalo de nuevo.</string>
+    <string name="nickname_invalid_chars">Usa solo letras, números, espacios y . _ \' -</string>
+    <string name="nickname_looks_like_card">El apodo no puede parecer un número de tarjeta</string>
 </resources>

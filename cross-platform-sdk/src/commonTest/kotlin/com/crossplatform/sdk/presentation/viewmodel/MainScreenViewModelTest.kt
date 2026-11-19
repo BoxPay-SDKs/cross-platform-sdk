@@ -164,4 +164,111 @@ class MainScreenViewModelTest {
         assertEquals("txn_ok", details.transactionId)
         assertEquals(!before, details.isPaymentSuccessful)
     }
+
+    // ── postEditSavedCard ────────────────────────────────────────────────────
+
+    private fun savedCard(id: String, name: String) = com.crossplatform.sdk.domain.model.SelectedPaymentMethod(
+        type = "Card", id = id, displayName = name, displayValue = "•••• 1111",
+        imageUrl = "", instrumentType = id, isLastUsed = null, isSelected = null,
+    )
+
+    private fun editedInstrument(nickName: String?) = com.crossplatform.sdk.data.model.RecommendedInstrumentsResponse(
+        type = "Card", brand = "VISA", instrumentRef = "card_1",
+        displayValue = "•••• 1111", logoUrl = null, cardNickName = nickName,
+    )
+
+    private fun seedCards() {
+        val cards = listOf(savedCard("card_1", "Old name"), savedCard("card_2", "Other card"))
+        viewModel.cardsRecommendedList.value = cards
+        viewModel.recommendedList.value = cards
+    }
+
+    @Test
+    fun `postEditSavedCard success renames the card in both lists`() = runTest {
+        seedCards()
+        mainScreenRepo.editSavedCardResult = ApiResponse.Success(editedInstrument("New name"), responseCode = 200)
+
+        viewModel.postEditSavedCard("card_1", "New name")
+
+        assertEquals(listOf("New name", "Other card"), viewModel.cardsRecommendedList.value.map { it.displayName })
+        assertEquals(listOf("New name", "Other card"), viewModel.recommendedList.value.map { it.displayName })
+    }
+
+    @Test
+    fun `postEditSavedCard sends the new nickname and instrument ref to the repo`() = runTest {
+        seedCards()
+        mainScreenRepo.editSavedCardResult = ApiResponse.Success(editedInstrument("New name"), responseCode = 200)
+
+        viewModel.postEditSavedCard("card_1", "New name")
+
+        assertEquals("New name", mainScreenRepo.lastEditedNickName)
+        assertEquals("card_1", mainScreenRepo.lastEditedInstrumentRef)
+    }
+
+    @Test
+    fun `postEditSavedCard uses the nickname returned by the server`() = runTest {
+        seedCards()
+        mainScreenRepo.editSavedCardResult = ApiResponse.Success(editedInstrument("Normalised"), responseCode = 200)
+
+        viewModel.postEditSavedCard("card_1", "  Normalised  ")
+
+        assertEquals("Normalised", viewModel.cardsRecommendedList.value.first().displayName)
+    }
+
+    @Test
+    fun `postEditSavedCard falls back to the typed nickname when the server returns none`() = runTest {
+        seedCards()
+        mainScreenRepo.editSavedCardResult = ApiResponse.Success(editedInstrument(null), responseCode = 200)
+
+        viewModel.postEditSavedCard("card_1", "Typed name")
+
+        assertEquals("Typed name", viewModel.cardsRecommendedList.value.first().displayName)
+    }
+
+    @Test
+    fun `postEditSavedCard reports success to the caller and stops the loader`() = runTest {
+        seedCards()
+        mainScreenRepo.editSavedCardResult = ApiResponse.Success(editedInstrument("New name"), responseCode = 200)
+        var result: Boolean? = null
+
+        viewModel.postEditSavedCard("card_1", "New name") { result = it }
+
+        assertEquals(true, result)
+        assertEquals(false, viewModel.isBoxPayAnimationLoading.value)
+    }
+
+    @Test
+    fun `postEditSavedCard error leaves both lists unchanged and stops the loader`() = runTest {
+        seedCards()
+        mainScreenRepo.editSavedCardResult = ApiResponse.Error(message = "rejected")
+        var result: Boolean? = null
+
+        viewModel.postEditSavedCard("card_1", "New name") { result = it }
+
+        assertEquals(false, result)
+        assertEquals(listOf("Old name", "Other card"), viewModel.cardsRecommendedList.value.map { it.displayName })
+        assertEquals(listOf("Old name", "Other card"), viewModel.recommendedList.value.map { it.displayName })
+        assertEquals(false, viewModel.isBoxPayAnimationLoading.value)
+    }
+
+    @Test
+    fun `deleting a saved card removes it from the recommended list too`() = runTest {
+        seedCards()
+        mainScreenRepo.deleteSavedCardResult = ApiResponse.Success(emptyList(), responseCode = 200)
+
+        viewModel.onClickDeleteSavedCard("card_1")
+
+        assertEquals(listOf("card_2"), viewModel.cardsRecommendedList.value.map { it.id })
+        assertEquals(listOf("card_2"), viewModel.recommendedList.value.map { it.id })
+    }
+
+    @Test
+    fun `a failed delete keeps the card in the recommended list`() = runTest {
+        seedCards()
+        mainScreenRepo.deleteSavedCardResult = ApiResponse.Error(message = "failed")
+
+        viewModel.onClickDeleteSavedCard("card_1")
+
+        assertEquals(listOf("card_1", "card_2"), viewModel.recommendedList.value.map { it.id })
+    }
 }

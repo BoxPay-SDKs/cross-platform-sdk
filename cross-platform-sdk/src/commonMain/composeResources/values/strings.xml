@@ -247,4 +247,7 @@
     <string name="nfc_scan_error_tag_lost">The card moved away too soon. Hold it still against the back of your device and try again.</string>
     <string name="nfc_scan_try_again">Try Again</string>
     <string name="nfc_scan_enter_manually">Enter Manually</string>
+    <string name="edit_card_nickname_error">Couldn\'t update the nickname. Please try again.</string>
+    <string name="nickname_invalid_chars">Use only letters, numbers, spaces and . _ \' -</string>
+    <string name="nickname_looks_like_card">Nickname can\'t look like a card number</string>
 </resources>
