@@ -441,12 +441,11 @@ internal class ApiServiceImpl : ApiService {
     }
 
     override suspend fun nativeOtpExpired(
-        transactionId: String,
-        isTestEnv: Boolean
+        transactionId: String
     ): ApiResponse<PaymentMethodPostResponse> {
         return executeWithResponse {
-            plainClient.post(
-                urlString = "${getEndpoint(isTestEnv)}/transactions/${transactionId}/expire"
+            client.post(
+                urlString = "transactions/${transactionId}/expire"
             ) {
                 contentType(ContentType.Application.Json)
             }

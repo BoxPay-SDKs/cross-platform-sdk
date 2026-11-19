@@ -460,7 +460,7 @@ internal class CardScreenViewModel(
                     }
                 }
                 else -> {
-                    isNativeOtpLoading.value = true
+                    isNativeOtpLoading.value = false
                 }
             }
         }
@@ -542,11 +542,11 @@ internal class CardScreenViewModel(
         }
     }
 
-    fun nativeOtpPageExpired(isTestEnv: Boolean) {
+    fun nativeOtpPageExpired() {
         viewModelScope.launch {
             isBoxPayAnimationVisible.value = true
             val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
-            val response = repo.expireNativeOtpTransaction(checkoutDetails.transactionId, isTestEnv)
+            val response = repo.expireNativeOtpTransaction(checkoutDetails.transactionId)
             handlePaymentResponse(
                 response = response,
                 onSetPaymentUrl = {

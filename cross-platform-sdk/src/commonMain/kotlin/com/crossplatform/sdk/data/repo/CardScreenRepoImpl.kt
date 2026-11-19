@@ -62,9 +62,8 @@ internal class CardScreenRepoImpl(
     }
 
     override suspend fun expireNativeOtpTransaction(
-        transactionId: String,
-        isTestEnv: Boolean
+        transactionId: String
     ): ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
-        apiService.nativeOtpExpired( transactionId,isTestEnv)
+        apiService.nativeOtpExpired( transactionId)
     }
 }

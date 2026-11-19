@@ -659,7 +659,7 @@ internal class BoxPayElementsViewModel (
                     }
                 }
                 else -> {
-                    isNativeOtpLoading.value = true
+                    isNativeOtpLoading.value = false
                 }
             }
         }
@@ -1143,10 +1143,10 @@ internal class BoxPayElementsViewModel (
         )
     }
 
-    fun nativeOtpPageExpired(isTestEnv: Boolean) {
+    fun nativeOtpPageExpired() {
         viewModelScope.launch {
             val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
-            val response = cardRepo.expireNativeOtpTransaction(checkoutDetails.transactionId, isTestEnv)
+            val response = cardRepo.expireNativeOtpTransaction(checkoutDetails.transactionId)
             handlePaymentResponse(
                 response = response,
                 onSetPaymentUrl = {

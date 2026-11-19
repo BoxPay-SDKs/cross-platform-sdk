@@ -42,7 +42,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -90,6 +92,7 @@ import kotlinx.coroutines.isActive
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import com.crossplatform.sdk.presentation.theme.LocalSDKColors
+import kotlinx.coroutines.flow.first
 
 // Reserves room at the bottom of the scrollable content so the resend row
 // isn't hidden underneath the pinned footer overlay.
@@ -124,6 +127,8 @@ internal fun NativeOTPBottomSheet(
     val cooldownSecondsLeft = remember { mutableStateOf(0) }
     val resendExhausted = resendCount.value >= MAX_RESEND_ATTEMPTS
     val resendEnabled = !resendExhausted && cooldownSecondsLeft.value <= 0
+    val latestIsLoading by rememberUpdatedState(isLoading)
+    val latestOnPageTimerExpired by rememberUpdatedState(onPageTimerExpired)
 
     var secondsLeft by remember { mutableStateOf(PAGE_TIMEOUT_SECONDS) }
 
@@ -133,7 +138,8 @@ internal fun NativeOTPBottomSheet(
             secondsLeft -= 1
         }
         if (secondsLeft <= 0) {
-            onPageTimerExpired()
+            snapshotFlow { latestIsLoading }.first { !it }
+            latestOnPageTimerExpired()
         }
     }
 

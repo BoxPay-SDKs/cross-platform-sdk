@@ -215,7 +215,7 @@ internal fun BoxPayElementsComponent(
             isLoading = viewModel.isNativeOtpLoading.value,
             onPageTimerExpired = {
                 viewModel.showNativeOtpBottomSheet.value = false
-                viewModel.nativeOtpPageExpired(isTestEnv.value)
+                viewModel.nativeOtpPageExpired()
             }
         )
     }
