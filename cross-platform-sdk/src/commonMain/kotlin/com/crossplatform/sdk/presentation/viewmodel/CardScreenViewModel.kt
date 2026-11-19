@@ -79,7 +79,7 @@ internal class CardScreenViewModel(
 
     val amountBeforeSurcharge = mutableStateOf(0.0)
 
-    var isSavedCardCheckBoxClicked =  mutableStateOf(false)
+    var isSavedCardCheckBoxClicked =  mutableStateOf(true)
     var showCvvInfo                =  mutableStateOf(false)
     var showKnowMoreDialog         =  mutableStateOf(false)
 

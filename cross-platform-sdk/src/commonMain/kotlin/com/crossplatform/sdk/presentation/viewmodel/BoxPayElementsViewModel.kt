@@ -136,7 +136,7 @@ internal class BoxPayElementsViewModel (
 
     private var lastFetchedBin: String? = null
 
-    var isSavedCardCheckBoxClicked =  mutableStateOf(false)
+    var isSavedCardCheckBoxClicked =  mutableStateOf(true)
     var showCvvInfo                =  mutableStateOf(false)
     var showKnowMoreDialog         =  mutableStateOf(false)
 

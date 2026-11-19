@@ -17,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -190,18 +189,29 @@ internal fun MainScreen(
             val response = (screenState as UiState.Success).data
             viewModel.isLoadingSession.value = false
             if(response.status == TransactionStatusEnum.EXPIRED) {
-                viewModel.callCheckoutSessionExpireModal(
-                    transactionId = response.transactionId
-                )
+                LaunchedEffect(Unit) {
+                    viewModel.callCheckoutSessionExpireModal(
+                        transactionId = response.transactionId
+                    )
+                }
                 return
             }
 
             if(response.status == TransactionStatusEnum.SUCCESS) {
-                viewModel.callCheckoutSessionSuccessModal(
-                    transactionId = response.transactionId,
-                    dateNTime = response.successfulTimeStamp,
-                    paymentMethod = response.successfulPaymentMethod
-                )
+                LaunchedEffect(Unit) {
+                    viewModel.callCheckoutSessionSuccessModal(
+                        transactionId = response.transactionId,
+                        dateNTime = response.successfulTimeStamp,
+                        paymentMethod = response.successfulPaymentMethod
+                    )
+                }
+                return
+            }
+
+            if(response.paymentsAttemptExhausted) {
+                LaunchedEffect(Unit) {
+                    CheckoutDetailsHandler.setIsCheckoutMaxAttemptsReached()
+                }
                 return
             }
 

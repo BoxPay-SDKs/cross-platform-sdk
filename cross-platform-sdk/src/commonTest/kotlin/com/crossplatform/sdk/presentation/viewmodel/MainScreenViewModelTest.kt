@@ -134,4 +134,34 @@ class MainScreenViewModelTest {
         assertEquals("", CheckoutDetailsHandler.checkoutDetails.appliedOfferId)
         assertEquals(false, viewModel.isBoxPayAnimationLoading.value)
     }
+
+    // ── callCheckoutSessionExpireModal / callCheckoutSessionSuccessModal ─────
+
+    @Test
+    fun `callCheckoutSessionExpireModal records EXPIRED status and flips the expired flag once`() {
+        val before = CheckoutDetailsHandler.checkoutDetails.isSessionExpired
+
+        viewModel.callCheckoutSessionExpireModal(transactionId = "txn_exp")
+
+        val details = CheckoutDetailsHandler.checkoutDetails
+        assertEquals("EXPIRED", details.status)
+        assertEquals("txn_exp", details.transactionId)
+        assertEquals(!before, details.isSessionExpired)
+    }
+
+    @Test
+    fun `callCheckoutSessionSuccessModal records SUCCESS status, method and time and flips the success flag once`() {
+        val before = CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful
+
+        viewModel.callCheckoutSessionSuccessModal(
+            transactionId = "txn_ok",
+            dateNTime = "18/11/2026 17:10",
+            paymentMethod = "VISA"
+        )
+
+        val details = CheckoutDetailsHandler.checkoutDetails
+        assertEquals("SUCCESS", details.status)
+        assertEquals("txn_ok", details.transactionId)
+        assertEquals(!before, details.isPaymentSuccessful)
+    }
 }

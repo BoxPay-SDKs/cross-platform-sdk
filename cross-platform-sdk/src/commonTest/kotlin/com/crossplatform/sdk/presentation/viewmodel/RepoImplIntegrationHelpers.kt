@@ -28,6 +28,7 @@ internal fun buildMinimalSessionDetails(
     currencyCode: String = "INR",
     status: String = "created",
     localeCode: String = "en",
+    paymentAttemptsExhausted: Boolean = false,
     paymentMethods: List<PaymentMethod> = listOf(
         buildPaymentMethod(id = "pm_card", type = "Card", brand = "VISA"),
         buildPaymentMethod(id = "pm_upi",  type = "Upi",  brand = "UPI"),
@@ -49,6 +50,7 @@ internal fun buildMinimalSessionDetails(
     ),
     sessionExpiryTimestamp = null,
     status                 = status,
+    paymentAttemptsExhausted = paymentAttemptsExhausted,
     lastPaidAtTimestamp    = null,
     lastTransactionId      = null,
     lastTransactionDetails = null
