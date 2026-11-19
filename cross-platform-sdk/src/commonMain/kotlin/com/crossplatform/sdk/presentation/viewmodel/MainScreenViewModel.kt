@@ -500,6 +500,7 @@ internal class MainScreenViewModel(
             val response = repo.postSavedCardRequest(instrumentRef = instrumentRef, isSICheckboxChecked = isSICheckboxChecked )
             handlePaymentResponse(
                 response = response,
+                isCardPayment = true,
                 onSetPaymentUrl = {
                     setWebViewUrl.value = it
                     setWebViewScreen(true)

@@ -235,4 +235,7 @@
     <string name="nfc_scan_error_tag_lost">Kartu terlalu cepat dijauhkan. Tahan kartu dengan stabil di bagian belakang perangkat Anda lalu coba lagi.</string>
     <string name="nfc_scan_try_again">Coba Lagi</string>
     <string name="nfc_scan_enter_manually">Masukkan Manual</string>
+    <string name="card_retry_limit_reached_title">Batas percobaan ulang kartu tercapai</string>
+    <string name="card_retry_limit_reached_desc">Anda telah mencapai jumlah maksimum percobaan pembayaran untuk kartu ini. Silakan coba kartu lain</string>
+    <string name="try_another_card_cta">Coba kartu lain</string>
 </resources>

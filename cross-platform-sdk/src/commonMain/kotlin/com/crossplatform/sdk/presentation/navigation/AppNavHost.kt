@@ -35,6 +35,7 @@ import com.crossplatform.sdk.presentation.BackHandler
 import com.crossplatform.sdk.presentation.buildAddressAndUserDetailsString
 import com.crossplatform.sdk.presentation.components.CheckoutLimitReached
 import com.crossplatform.sdk.presentation.components.ExitCheckoutConfirmation
+import com.crossplatform.sdk.presentation.components.CardRetryLimitReached
 import com.crossplatform.sdk.presentation.components.PaymentFailed
 import com.crossplatform.sdk.presentation.components.PaymentMaxRetryReached
 import com.crossplatform.sdk.presentation.components.PaymentRetryBottomSheet
@@ -106,6 +107,7 @@ internal fun AppNavHost(
     val successDetails = CheckoutDetailsHandler.successfulTimestampFlow.collectAsStateWithLifecycle()
     val proceedAutoRetryPayment = CheckoutDetailsHandler.proceedAutoRetryFunctionFlow.collectAsStateWithLifecycle()
     val isPaymentMaxAttemptsReached = CheckoutDetailsHandler.isPaymentMaxAttemptsReachedFlow.collectAsStateWithLifecycle()
+    val isCardRetryLimitReached = CheckoutDetailsHandler.isCardRetryLimitReachedFlow.collectAsStateWithLifecycle()
     val isCheckoutLimitReached = CheckoutDetailsHandler.isCheckoutLimitReachedFlow.collectAsStateWithLifecycle()
     val availableRetryMethods = CheckoutDetailsHandler.availableMethodsListFlow.collectAsStateWithLifecycle()
     val (successTimeStamp , selectedPaymentMethod) = successDetails.value
@@ -128,6 +130,7 @@ internal fun AppNavHost(
     val successSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val paymentMaxAttemptSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val checkoutMaxAttemptSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val cardRetryLimitSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope            = rememberCoroutineScope()
 
     fun hideFailedSheet() {
@@ -141,6 +144,13 @@ internal fun AppNavHost(
         CheckoutDetailsHandler.setIsPaymentMaxAttemptsReached()
         scope.launch {
             paymentMaxAttemptSheetState.hide()
+        }
+    }
+
+    fun hideCardRetryLimitSheet() {
+        CheckoutDetailsHandler.setIsCardRetryLimitReached(false)
+        scope.launch {
+            cardRetryLimitSheetState.hide()
         }
     }
 
@@ -641,6 +651,15 @@ internal fun AppNavHost(
             },
             onDismiss = {
                 hidePaymentMaxRetrySheet()
+            }
+        )
+    }
+
+    if(isCardRetryLimitReached.value) {
+        CardRetryLimitReached(
+            sheetState = cardRetryLimitSheetState,
+            onTryAnotherCard = {
+                hideCardRetryLimitSheet()
             }
         )
     }

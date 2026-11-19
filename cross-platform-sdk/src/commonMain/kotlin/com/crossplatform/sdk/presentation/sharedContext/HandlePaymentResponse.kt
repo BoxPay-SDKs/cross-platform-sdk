@@ -29,6 +29,7 @@ internal suspend fun handlePaymentResponse(
     errorMessage : String,
     setIsBoxPayAnimationVisible : (Boolean) -> Unit,
     cardEncryption: CardEncryption? = null,
+    isCardPayment: Boolean = false,
     notifyComponentsHandler : (() -> Unit)? = null
 ) {
     when(response) {
@@ -136,6 +137,16 @@ internal suspend fun handlePaymentResponse(
             val structuredError = response.parseErrorBodyAs<ApiErrorResponseModel>()
 
             when {
+                structuredError?.reasonCode == PAYMENT_MAX_ATTEMPTS_REACHED && isCardPayment -> {
+                    // The card itself hit its retry limit: tell the shopper to try another card
+                    // instead of showing the "payment method limit reached" sheet.
+                    CheckoutDetailsHandler.setIsCardRetryLimitReached(true)
+                    setIsBoxPayAnimationVisible(false)
+                    if(notifyComponentsHandler != null) {
+                        notifyComponentsHandler()
+                    }
+                }
+
                 structuredError?.reasonCode == PAYMENT_MAX_ATTEMPTS_REACHED -> {
                     val availableMethods = structuredError.fieldErrorItems
                         .filter { (it.message?.toIntOrNull() ?: 0) > 0 }

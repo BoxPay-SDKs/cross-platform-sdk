@@ -235,4 +235,7 @@
     <string name="nfc_scan_error_tag_lost">La carte a été retirée trop tôt. Maintenez-la immobile contre l'arrière de votre appareil et réessayez.</string>
     <string name="nfc_scan_try_again">Réessayer</string>
     <string name="nfc_scan_enter_manually">Saisir manuellement</string>
+    <string name="card_retry_limit_reached_title">Limite de nouvelles tentatives de la carte atteinte</string>
+    <string name="card_retry_limit_reached_desc">Vous avez atteint le nombre maximal de tentatives de paiement pour cette carte. Veuillez essayer une autre carte</string>
+    <string name="try_another_card_cta">Essayer une autre carte</string>
 </resources>

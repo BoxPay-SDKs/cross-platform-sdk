@@ -235,4 +235,7 @@
     <string name="nfc_scan_error_tag_lost">कार्ड खूप लवकर बाजूला गेले. ते तुमच्या डिव्हाइसच्या मागील बाजूस स्थिर धरा आणि पुन्हा प्रयत्न करा.</string>
     <string name="nfc_scan_try_again">पुन्हा प्रयत्न करा</string>
     <string name="nfc_scan_enter_manually">मॅन्युअली टाका</string>
+    <string name="card_retry_limit_reached_title">कार्ड पुनःप्रयत्न मर्यादा गाठली</string>
+    <string name="card_retry_limit_reached_desc">तुम्ही या कार्डसाठी पेमेंटच्या कमाल प्रयत्नांपर्यंत पोहोचला आहात. कृपया दुसरे कार्ड वापरून पहा</string>
+    <string name="try_another_card_cta">दुसरे कार्ड वापरून पहा</string>
 </resources>
