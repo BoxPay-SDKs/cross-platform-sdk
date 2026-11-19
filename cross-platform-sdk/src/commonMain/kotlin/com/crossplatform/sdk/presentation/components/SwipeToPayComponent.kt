@@ -175,7 +175,17 @@ internal fun SwipeToPayComponent(
                         )
                         append(
                             AnnotatedString(
-                                text = " $currencySymbol ${formatAmount(amount)}",
+                                text = currencySymbol,
+                                spanStyle = SpanStyle(
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = LocalSDKFonts.current.secondary
+                                )
+                            )
+                        )
+                        append(
+                            AnnotatedString(
+                                text = " ${formatAmount(amount)}",
                                 spanStyle = SpanStyle(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.SemiBold,

@@ -1150,9 +1150,7 @@ internal class BoxPayElementsViewModel (
         onResult: (success: Boolean) -> Unit = {}
     ) {
         viewModelScope.launch {
-            isBoxPayAnimationLoading.value = true
             val response = repo.editSavedCard(newNickName, instrumentRef)
-            isBoxPayAnimationLoading.value = false
             if (response is ApiResponse.Success) {
                 // Prefer the name the server stored, in case it normalised the value
                 val savedName = response.data.cardNickName?.takeIf { it.isNotBlank() } ?: newNickName

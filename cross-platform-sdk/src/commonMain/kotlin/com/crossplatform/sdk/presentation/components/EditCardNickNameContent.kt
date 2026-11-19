@@ -87,7 +87,7 @@ internal fun EditCardNickNameContent(
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             KamelImage(
                 resource              = asyncPainterResource(data = imageUrl),
-                contentDescription = "Saved Card",
+                contentDescription = null,
                 modifier           = Modifier.size(32.dp),
                 onLoading = {
                     Box(
