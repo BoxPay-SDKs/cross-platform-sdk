@@ -203,4 +203,43 @@ class FetchStatusRepoIntegrationTest {
         // The VM routes this to a retry; do NOT set isPaymentFailed immediately
         assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
     }
+
+    // ── PROCESSING / POSTED statuses show the success page ───────────────────
+
+    @Test
+    fun `fetchStatus POSTED sets isPaymentSuccessful and records PROCESSING status`() = runTest {
+        api.nextFetchStatus = ApiResponse.Success(
+            buildSuccessFetchStatus(transactionId = "txn_posted").copy(status = "POSTED"),
+            responseCode = 200
+        )
+
+        viewModel.callFetchStatus("POSTED")
+
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
+        assertFalse(CheckoutDetailsHandler.checkoutDetails.isPaymentFailed)
+        assertEquals("PROCESSING", CheckoutDetailsHandler.checkoutDetails.status)
+        assertEquals("txn_posted", CheckoutDetailsHandler.checkoutDetails.transactionId)
+    }
+
+    @Test
+    fun `fetchStatus PROCESSING sets isPaymentSuccessful and records PROCESSING status`() = runTest {
+        api.nextFetchStatus = ApiResponse.Success(
+            buildSuccessFetchStatus(transactionId = "txn_processing").copy(status = "PROCESSING"),
+            responseCode = 200
+        )
+
+        viewModel.callFetchStatus("PROCESSING")
+
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
+        assertEquals("PROCESSING", CheckoutDetailsHandler.checkoutDetails.status)
+    }
+
+    @Test
+    fun `fetchStatus APPROVED still records SUCCESS status`() = runTest {
+        api.nextFetchStatus = ApiResponse.Success(buildSuccessFetchStatus(), responseCode = 200)
+
+        viewModel.callFetchStatus("SUCCESS")
+
+        assertEquals("SUCCESS", CheckoutDetailsHandler.checkoutDetails.status)
+    }
 }

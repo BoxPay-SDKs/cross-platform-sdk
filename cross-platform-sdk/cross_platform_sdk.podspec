@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'cross_platform_sdk'
-    spec.version                  = '1.0.4-beta4'
+    spec.version                  = '1.0.4-beta8'
     spec.homepage                 = 'https://developers.boxpay.tech/'
     spec.source                   = { :http=> ''}
     spec.authors                  = ''

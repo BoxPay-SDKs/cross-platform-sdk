@@ -11,9 +11,6 @@ import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.encryptCardData
 import com.crossplatform.sdk.presentation.getStatus
 import com.crossplatform.sdk.presentation.resolveErrorMessage
-import crossplatformsdk.cross_platform_sdk.generated.resources.Res
-import crossplatformsdk.cross_platform_sdk.generated.resources.payment_failed_error_messages
-import org.jetbrains.compose.resources.getString
 
 private const val PAYMENT_MAX_ATTEMPTS_REACHED = "BE_1815"
 private const val CHECKOUT_MAX_ATTEMPTS_REACHED = "BE_1816"
@@ -101,7 +98,7 @@ internal suspend fun handlePaymentResponse(
                     }
                 }
 
-                TransactionStatusEnum.SUCCESS -> {
+                TransactionStatusEnum.SUCCESS, TransactionStatusEnum.PROCESSING -> {
                     CheckoutDetailsHandler.setTimeAndPaymentMethod(
                         timeStamp = response.data.transactionTimestampLocale,
                         paymentMethod = response.data.paymentMethod.brand ?: ""
