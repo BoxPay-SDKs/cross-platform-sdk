@@ -1170,6 +1170,9 @@ internal class BoxPayElementsViewModel (
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
                 setIsBoxPayAnimationVisible = {
                     isBoxPayAnimationLoading.value = it
+                },
+                notifyComponentsHandler = {
+                    deliverPaymentResult()
                 }
             )
         }
