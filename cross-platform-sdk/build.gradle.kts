@@ -43,7 +43,8 @@ kotlin {
             )
             linkerOpts += listOf(
                 "-dead_strip",
-                "-Wl,-x"
+                "-Wl,-x",
+                "-framework", "CoreNFC"   // NFC card scan
             )
             xcf.add(this)
         }
@@ -57,7 +58,7 @@ kotlin {
                 "-Xg0",
                 "-Xadd-light-debug=disable"
             )
-            linkerOpts += listOf("-dead_strip", "-Wl,-x")
+            linkerOpts += listOf("-dead_strip", "-Wl,-x", "-framework", "CoreNFC")
             xcf.add(this)
         }
     }
@@ -70,7 +71,7 @@ kotlin {
                 "-Xg0",
                 "-Xadd-light-debug=disable"
             )
-            linkerOpts += listOf("-dead_strip", "-Wl,-x")
+            linkerOpts += listOf("-dead_strip", "-Wl,-x", "-framework", "CoreNFC")
             xcf.add(this)
         }
     }
@@ -84,6 +85,9 @@ kotlin {
             baseName = "cross-platform-sdk"
             isStatic = true
         }
+        // CoreNFC is not auto-linked by Xcode — must be declared explicitly so the
+        // generated Podspec adds it to the host app's linked frameworks.
+        extraSpecAttributes["frameworks"] = "'CoreNFC'"
     }
 
     sourceSets {
