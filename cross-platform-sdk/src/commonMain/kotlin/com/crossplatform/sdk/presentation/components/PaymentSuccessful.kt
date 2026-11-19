@@ -33,6 +33,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -110,7 +111,7 @@ internal fun PaymentSuccessful(
         "Date"           to (dateNTimeExtracted?.first  ?: ""),
         "Time"           to (dateNTimeExtracted?.second ?: ""),
         "Payment Method" to paymentMethod,
-        ("Product Name" to productName).takeIf { productName.isNotBlank() }
+        (PRODUCT_NAME_LABEL to productName).takeIf { productName.isNotBlank() }
     )
 
     ModalBottomSheet(
@@ -148,9 +149,10 @@ internal fun PaymentSuccessful(
 
             // ── Detail rows ───────────────────────────────────────────────────
             uiRows.forEach { (label, value) ->
+                val valueLines = if (label == PRODUCT_NAME_LABEL) productNameLines(value) else listOf(value)
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = if (valueLines.size > 1) Alignment.Top else Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
@@ -159,12 +161,23 @@ internal fun PaymentSuccessful(
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
                     )
-                    Text(
-                        text       = value,
-                        fontSize   = 14.sp,
-                        fontFamily = LocalSDKFonts.current.primary,
-                        fontWeight = FontWeight.SemiBold,
-                    )
+                    // One line per value (product names: one line per product), ellipsized if too wide
+                    Column(
+                        modifier = Modifier.weight(1f).padding(start = 16.dp),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        valueLines.forEach { line ->
+                            Text(
+                                text       = line,
+                                fontSize   = 14.sp,
+                                fontFamily = LocalSDKFonts.current.primary,
+                                fontWeight = FontWeight.SemiBold,
+                                maxLines   = 1,
+                                overflow   = TextOverflow.Ellipsis,
+                                textAlign  = TextAlign.End,
+                            )
+                        }
+                    }
                 }
             }
 

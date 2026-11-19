@@ -71,6 +71,8 @@ internal actual object PdfReceiptGenerator {
     private val green  = UIColor(red = 0.004, green = 0.600, blue = 0.224, alpha = 1.0)
     private val navy   = UIColor(red = 0.102, green = 0.137, blue = 0.494, alpha = 1.0)
     private val margin = 50.0
+    private const val PAGE_WIDTH = 595.0
+    private const val VALUE_LINE_HEIGHT = 18.0
 
     private fun drawReceiptPage(data: ReceiptData) {
         val titleAttrs: Map<Any?, *> = mapOf(
@@ -108,10 +110,16 @@ internal actual object PdfReceiptGenerator {
             "Payment Method" to data.paymentMethod,
             ("Product Name" to data.productName).takeIf { data.productName.isNotBlank() }
         )
+        // Each value sits on one line (ellipsized if too wide); product names get one line each
+        val valueMaxWidth = PAGE_WIDTH - margin - valueX
         for ((label, value) in rows) {
             drawText(label, x = margin, y = y, attrs = labelAttrs)
-            drawText(value, x = valueX, y = y, attrs = valueAttrs)
-            y += 34.0
+            val rawLines = if (label == PRODUCT_NAME_LABEL) productNameLines(value) else listOf(value)
+            val valueLines = rawLines.map { ellipsize(it, valueMaxWidth) { s -> measureText(s, valueAttrs) } }
+            valueLines.forEachIndexed { index, line ->
+                drawText(line, x = valueX, y = y + index * VALUE_LINE_HEIGHT, attrs = valueAttrs)
+            }
+            y += 34.0 + (valueLines.size - 1) * VALUE_LINE_HEIGHT
         }
 
         y += 12.0

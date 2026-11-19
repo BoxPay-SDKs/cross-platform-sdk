@@ -19,6 +19,8 @@ import androidx.core.graphics.scale
 private const val PAGE_WIDTH  = 595f
 private const val PAGE_HEIGHT = 842f
 private const val MARGIN      = 50f
+private const val VALUE_GAP   = 16f
+private const val VALUE_LINE_HEIGHT = 18f
 
 internal actual object PdfReceiptGenerator {
 
@@ -109,10 +111,17 @@ internal actual object PdfReceiptGenerator {
             "Payment Method" to data.paymentMethod,
             ("Product Name" to data.productName).takeIf { data.productName.isNotBlank() }
         )
+        // Each value sits on one line (ellipsized if too wide); product names get one line each
+        val labelColumnWidth = rows.maxOfOrNull { labelPaint.measureText(it.first) } ?: 0f
+        val valueMaxWidth = (right - MARGIN - labelColumnWidth - VALUE_GAP).toDouble()
         for ((label, value) in rows) {
             canvas.drawText(label, MARGIN, y, labelPaint)
-            canvas.drawText(value, right - valuePaint.measureText(value), y, valuePaint)
-            y += 34f
+            val rawLines = if (label == PRODUCT_NAME_LABEL) productNameLines(value) else listOf(value)
+            val valueLines = rawLines.map { ellipsize(it, valueMaxWidth) { s -> valuePaint.measureText(s).toDouble() } }
+            valueLines.forEachIndexed { index, line ->
+                canvas.drawText(line, right - valuePaint.measureText(line), y + index * VALUE_LINE_HEIGHT, valuePaint)
+            }
+            y += 34f + (valueLines.size - 1) * VALUE_LINE_HEIGHT
         }
 
         y += 6f

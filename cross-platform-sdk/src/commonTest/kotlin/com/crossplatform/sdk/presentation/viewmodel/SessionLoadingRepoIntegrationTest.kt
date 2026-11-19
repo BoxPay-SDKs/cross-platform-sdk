@@ -373,4 +373,44 @@ class SessionLoadingRepoIntegrationTest {
         assertIs<UiState.Success<*>>(viewModel.state.value)
         assertEquals(before, CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
     }
+
+    @Test
+    fun `loadSession with a POSTED session emits Success with PROCESSING status without toggling the success flag`() = runTest {
+        val before = CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful
+
+        api.nextSessionDetails = ApiResponse.Success(
+            buildMinimalSessionDetails(status = "POSTED"),
+            responseCode = 200
+        )
+        viewModel.loadSession()
+
+        val state = viewModel.state.value
+        assertIs<UiState.Success<*>>(state)
+        assertEquals(TransactionStatusEnum.PROCESSING, (state.data as MainScreenModel).status)
+        assertEquals(before, CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful)
+    }
+
+    @Test
+    fun `loadSession with a PROCESSING session emits Success with PROCESSING status`() = runTest {
+        api.nextSessionDetails = ApiResponse.Success(
+            buildMinimalSessionDetails(status = "PROCESSING"),
+            responseCode = 200
+        )
+        viewModel.loadSession()
+
+        val state = viewModel.state.value
+        assertIs<UiState.Success<*>>(state)
+        assertEquals(TransactionStatusEnum.PROCESSING, (state.data as MainScreenModel).status)
+    }
+
+    @Test
+    fun `loadSession with a POSTED session skips the payment method setup like SUCCESS does`() = runTest {
+        api.nextSessionDetails = ApiResponse.Success(
+            buildMinimalSessionDetails(status = "POSTED"),
+            responseCode = 200
+        )
+        viewModel.loadSession()
+
+        assertEquals(false, viewModel.isBoxPayAnimationLoading.value)
+    }
 }
