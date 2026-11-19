@@ -279,6 +279,7 @@ internal fun CardScreen(
             isOtpInvalid = viewModel.isNativeOtpInvalid.value,
             isLoading = viewModel.isNativeOtpLoading.value,
             onPageTimerExpired = {
+                showCancelModal.value = false
                 viewModel.showNativeOtpBottomSheet.value = false
                 viewModel.nativeOtpPageExpired()
             }
