@@ -6,10 +6,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,6 +39,7 @@ import com.crossplatform.sdk.presentation.SectionTitle
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.buildAddressString
 import com.crossplatform.sdk.presentation.components.AddressComponent
+import com.crossplatform.sdk.presentation.components.EditCardNickNameContent
 import com.crossplatform.sdk.presentation.components.ExpressCheckout
 import com.crossplatform.sdk.presentation.components.Footer
 import com.crossplatform.sdk.presentation.components.MorePaymentMethods
@@ -76,7 +81,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun MainScreen(
     viewModel : MainScreenViewModel,
@@ -171,6 +176,14 @@ internal fun MainScreen(
     val expressCheckoutCountryCode = remember {
         mutableStateOf("IN")
     }
+
+    val isShowEditNicknameSheet = remember { mutableStateOf(false) }
+    val editCardId = remember { mutableStateOf("") }
+    val editCardNickName = remember { mutableStateOf("") }
+    val editCardDisplayValue = remember { mutableStateOf("") }
+    val isSavingNickName = remember { mutableStateOf(false) }
+    val showNickNameSaveError = remember { mutableStateOf(false) }
+    val editSavedCardSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     when (screenState) {
         is UiState.Loading ->  ShimmerView(modifier = Modifier.fillMaxSize())
@@ -501,14 +514,19 @@ internal fun MainScreen(
                     SectionTitle(stringResource(Res.string.recommended_title))
                     PaymentSelectorView(
                         providerList      = viewModel.recommendedList.value,
-                        onProceedForward  = { display, instrument, _ ->
+                        onProceedForward  = { display, instrument, type->
                             viewModel.callUiAnalytics(
                                 event = AnalyticsEvents.PAYMENT_METHOD_SELECTED.value,
                                 screenName = "MainScreen",
                                 message = "Payment Category selected through recommended method"
                             )
                             val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
-                            viewModel.postUpiCollectRequest(instrumentRef = instrument, type = "upi/collect", shopperVpa = display, surchargeList =  surchargeList)
+                            if(type.equals("upi", true)) {
+                                viewModel.postUpiCollectRequest(instrumentRef = instrument, type = "upi/collect", shopperVpa = display, surchargeList =  surchargeList)
+                            } else {
+                                viewModel.postSavedCardRequest(instrument, false)
+                            }
+
                         },
                         drawableResource = Res.drawable.ic_upi,
                         onClickRadio = {
@@ -768,7 +786,15 @@ internal fun MainScreen(
                             isSICheckboxEnabled = isSICheckboxEnabled.value,
                             onClickRadio =  {
                                 viewModel.removeQRFromView()
-                            }
+                            },
+                            onClickEditCard = { id, nickName, cardNumber ->
+                                viewModel.removeQRFromView()
+                                editCardId.value = id
+                                editCardNickName.value = nickName
+                                editCardDisplayValue.value = cardNumber
+                                showNickNameSaveError.value = false
+                    isShowEditNicknameSheet.value = true
+                            },
                         )
                     }
                     SectionTitle(
@@ -935,6 +961,39 @@ internal fun MainScreen(
                 },
                 onSuccess = {
                     viewModel.isUpiOpening.value = true
+                }
+            )
+        }
+    }
+
+    if (isShowEditNicknameSheet.value) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                isShowEditNicknameSheet.value = false
+            },
+            sheetState = editSavedCardSheetState,
+            containerColor = LocalSDKColors.current.background,
+            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+        ) {
+            EditCardNickNameContent(
+                imageUrl = viewModel.cardsRecommendedList.value.find { it.id == editCardId.value }?.imageUrl ?: "",
+                cardDisplayValue = editCardDisplayValue.value,
+                initialNickName  = editCardNickName.value,
+                buttonColor      = buttonColor.value,
+                buttonTextColor  = buttonTextColor.value,
+                ctaBorderRadius  = ctaBorderRadius.value,
+                onDismiss        = { isShowEditNicknameSheet.value = false },
+                isSaving         = isSavingNickName.value,
+                showSaveError    = showNickNameSaveError.value,
+                onNickNameChange = { showNickNameSaveError.value = false },
+                onSave           = { newName ->
+                    isSavingNickName.value = true
+                    showNickNameSaveError.value = false
+                    viewModel.postEditSavedCard(editCardId.value, newName) { success ->
+                        isSavingNickName.value = false
+                        if (success) isShowEditNicknameSheet.value = false
+                        else showNickNameSaveError.value = true
+                    }
                 }
             )
         }

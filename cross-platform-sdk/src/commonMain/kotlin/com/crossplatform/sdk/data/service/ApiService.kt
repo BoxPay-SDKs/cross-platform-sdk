@@ -126,8 +126,17 @@ internal interface ApiService {
         isTestEnv : Boolean
     ) : ApiResponse<NativeOtpResponse>
 
+    suspend fun nativeOtpExpired(
+        transactionId: String
+    ) : ApiResponse<PaymentMethodPostResponse>
+
     suspend fun cancelTransaction(
         transactionId : String
     ) : ApiResponse<PaymentMethodPostResponse>
+
+    suspend fun editSavedCard(
+        newNickName: String,
+        instrumentRef : String
+    ) : ApiResponse<RecommendedInstrumentsResponse>
 
 }

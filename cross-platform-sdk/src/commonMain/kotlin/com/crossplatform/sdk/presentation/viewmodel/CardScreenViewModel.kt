@@ -460,7 +460,7 @@ internal class CardScreenViewModel(
                     }
                 }
                 else -> {
-                    isNativeOtpLoading.value = true
+                    isNativeOtpLoading.value = false
                 }
             }
         }
@@ -533,6 +533,39 @@ internal class CardScreenViewModel(
                 },
                 onSetNativeOtp = { _, _, _, _ ->
                    // no op
+                },
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                setIsBoxPayAnimationVisible = {
+                    isBoxPayAnimationVisible.value = it
+                }
+            )
+        }
+    }
+
+    fun nativeOtpPageExpired() {
+        viewModelScope.launch {
+            isBoxPayAnimationVisible.value = true
+            val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+            val response = repo.expireNativeOtpTransaction(checkoutDetails.transactionId)
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentUrl = {
+                    // no operation
+                },
+                onSetPaymentHtml = {
+                    // no operation
+                },
+                onNavigateToTimer = {
+                    // no operation
+                },
+                onOpenQr = {_, _ ->
+                    // no operation
+                },
+                onOpenUpiIntent = {_ ->
+                    // no operation
+                },
+                onSetNativeOtp = { _, _, _, _ ->
+                    // no op
                 },
                 errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
                 setIsBoxPayAnimationVisible = {

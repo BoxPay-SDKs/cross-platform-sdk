@@ -39,6 +39,7 @@
     <string name="qr_expired_title">QR कालबाह्य झाला</string>
     <string name="complete_your_payment_title">तुमचे पेमेंट पूर्ण करा</string>
     <string name="saved_addresses_title">सेव्ह केलेले पत्ते</string>
+    <string name="edit_card_nickname_title">कार्डचे टोपणनाव संपादित करा</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">शोधा</string>
@@ -91,6 +92,7 @@
     <string name="download_qr_cta">QR डाउनलोड करा</string>
     <string name="get_new_qr_cta">नवीन QR मिळवा</string>
     <string name="add_new_address_cta">नवीन पत्ता जोडा</string>
+    <string name="save_cta">जतन करा</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">या पेमेंटसाठी स्टँडिंग इन्स्ट्रक्शन्स (SI) सेट करा.</string>
@@ -139,6 +141,7 @@
     <string name="expires_in_info">इतक्या वेळात कालबाह्य होईल</string>
     <string name="avoid_back_button_in_upi_timer_info">कृपया व्यवहार प्रक्रिया पूर्ण होईपर्यंत बॅक बटण वापरणे टाळा</string>
     <string name="upi_timer_info">वेळ संपण्यापूर्वी तुमचे UPI अ‍ॅप उघडा आणि पेमेंटची पुष्टी करा</string>
+    <string name="card_ending_with">**** %1$s वर संपणारे कार्ड</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s महिने x</string>
@@ -223,4 +226,19 @@
     <string name="scan_card_cancel">रद्द करा</string>
     <string name="scan_card_permission_denied">कॅमेरा अ‍ॅक्सेस बंद आहे. तुमचे कार्ड स्कॅन करण्यासाठी सेटिंग्जमध्ये तो सुरू करा.</string>
     <string name="scan_card_camera_unavailable">या डिव्हाइसवर कॅमेरा उपलब्ध नाही.</string>
+
+    <!-- NFC card scan -->
+    <string name="nfc_scan_cta">कार्ड टॅप करा</string>
+    <string name="nfc_scan_title">स्कॅनसाठी तयार</string>
+    <string name="nfc_scan_hint">तुमचे NFC कार्ड डिव्हाइसच्या मागील बाजूस धरा. तपशील फक्त तुमच्या डिव्हाइसवर वाचले जातात.</string>
+    <string name="nfc_scan_cancel">रद्द करा</string>
+    <string name="nfc_scan_disabled">NFC बंद आहे. तुमचे कार्ड टॅप करण्यासाठी सेटिंग्जमध्ये ते सुरू करा.</string>
+    <string name="nfc_scan_not_supported">या डिव्हाइसवर NFC उपलब्ध नाही.</string>
+    <string name="nfc_scan_error">कार्ड स्कॅन करता आले नाही. कृपया पुन्हा प्रयत्न करा किंवा तुमच्या कार्डचा तपशील मॅन्युअली टाका.</string>
+    <string name="nfc_scan_error_tag_lost">कार्ड खूप लवकर बाजूला गेले. ते तुमच्या डिव्हाइसच्या मागील बाजूस स्थिर धरा आणि पुन्हा प्रयत्न करा.</string>
+    <string name="nfc_scan_try_again">पुन्हा प्रयत्न करा</string>
+    <string name="nfc_scan_enter_manually">मॅन्युअली टाका</string>
+    <string name="edit_card_nickname_error">टोपणनाव अपडेट करता आले नाही. कृपया पुन्हा प्रयत्न करा.</string>
+    <string name="nickname_invalid_chars">फक्त अक्षरे, अंक, स्पेस आणि . _ \' - वापरा</string>
+    <string name="nickname_looks_like_card">टोपणनाव कार्ड क्रमांकासारखे दिसू नये</string>
 </resources>

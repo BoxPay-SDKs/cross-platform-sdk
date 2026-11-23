@@ -66,7 +66,6 @@ import io.kamel.image.asyncPainterResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun SwipeToPayComponent(

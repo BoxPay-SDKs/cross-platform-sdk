@@ -44,7 +44,7 @@ internal data class SavedCardPostRequestBody(
     @Serializable
     internal data class Instrument(
         @SerialName("type") val type : String, // 'card/token'
-        @SerialName("card") val card : SavedCard
+        @SerialName("savedCard") val card : SavedCard
     )
 
     @Serializable

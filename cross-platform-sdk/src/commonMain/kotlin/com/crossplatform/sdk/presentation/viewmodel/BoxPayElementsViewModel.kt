@@ -1,5 +1,6 @@
 package com.crossplatform.sdk.presentation.viewmodel
 
+import com.crossplatform.sdk.presentation.components.withDisplayName
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
@@ -659,7 +660,7 @@ internal class BoxPayElementsViewModel (
                     }
                 }
                 else -> {
-                    isNativeOtpLoading.value = true
+                    isNativeOtpLoading.value = false
                 }
             }
         }
@@ -1141,5 +1142,59 @@ internal class BoxPayElementsViewModel (
                 inquiryToken = inquiryToken
             )
         )
+    }
+
+    fun postEditSavedCard(
+        instrumentRef: String,
+        newNickName: String,
+        onResult: (success: Boolean) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            val response = repo.editSavedCard(newNickName, instrumentRef)
+            if (response is ApiResponse.Success) {
+                // Prefer the name the server stored, in case it normalised the value
+                val savedName = response.data.cardNickName?.takeIf { it.isNotBlank() } ?: newNickName
+                cardsRecommendedList.value = cardsRecommendedList.value.withDisplayName(instrumentRef, savedName)
+                recommendedList.value = recommendedList.value.withDisplayName(instrumentRef, savedName)
+                onResult(true)
+            } else {
+                onResult(false)
+            }
+        }
+    }
+
+    fun nativeOtpPageExpired() {
+        viewModelScope.launch {
+            val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
+            val response = cardRepo.expireNativeOtpTransaction(checkoutDetails.transactionId)
+            handlePaymentResponse(
+                response = response,
+                onSetPaymentUrl = {
+                    // no operation
+                },
+                onSetPaymentHtml = {
+                    // no operation
+                },
+                onNavigateToTimer = {
+                    // no operation
+                },
+                onOpenQr = {_, _ ->
+                    // no operation
+                },
+                onOpenUpiIntent = {_ ->
+                    // no operation
+                },
+                onSetNativeOtp = { _, _, _, _ ->
+                    // no op
+                },
+                errorMessage = CheckoutDetailsHandler.checkoutDetails.errorMessage,
+                setIsBoxPayAnimationVisible = {
+                    isBoxPayAnimationLoading.value = it
+                },
+                notifyComponentsHandler = {
+                    deliverPaymentResult()
+                }
+            )
+        }
     }
 }

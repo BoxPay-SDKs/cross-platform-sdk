@@ -39,6 +39,7 @@
     <string name="qr_expired_title">QR Kedaluwarsa</string>
     <string name="complete_your_payment_title">Selesaikan pembayaran Anda</string>
     <string name="saved_addresses_title">Alamat Tersimpan</string>
+    <string name="edit_card_nickname_title">Edit nama panggilan kartu</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">Cari</string>
@@ -91,6 +92,7 @@
     <string name="download_qr_cta">Unduh QR</string>
     <string name="get_new_qr_cta">Dapatkan QR Baru</string>
     <string name="add_new_address_cta">Tambah Alamat Baru</string>
+    <string name="save_cta">Simpan</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">Siapkan Instruksi Tetap (SI) untuk pembayaran ini.</string>
@@ -139,6 +141,7 @@
     <string name="expires_in_info">Kedaluwarsa dalam</string>
     <string name="avoid_back_button_in_upi_timer_info">Mohon hindari menggunakan tombol kembali hingga proses transaksi selesai</string>
     <string name="upi_timer_info">Buka aplikasi UPI Anda dan konfirmasi pembayaran sebelum waktu habis</string>
+    <string name="card_ending_with">Kartu berakhiran **** %1$s</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s bulan x</string>
@@ -223,4 +226,19 @@
     <string name="scan_card_cancel">Batal</string>
     <string name="scan_card_permission_denied">Akses kamera dimatikan. Aktifkan di Pengaturan untuk memindai kartu Anda.</string>
     <string name="scan_card_camera_unavailable">Kamera tidak tersedia di perangkat ini.</string>
+
+    <!-- NFC card scan -->
+    <string name="nfc_scan_cta">Ketuk kartu</string>
+    <string name="nfc_scan_title">Siap memindai</string>
+    <string name="nfc_scan_hint">Tempelkan kartu NFC ke bagian belakang perangkat Anda. Detail hanya dibaca di perangkat Anda.</string>
+    <string name="nfc_scan_cancel">Batal</string>
+    <string name="nfc_scan_disabled">NFC dimatikan. Aktifkan di Pengaturan untuk mengetuk kartu Anda.</string>
+    <string name="nfc_scan_not_supported">NFC tidak tersedia di perangkat ini.</string>
+    <string name="nfc_scan_error">Kartu tidak dapat dipindai. Silakan coba lagi atau masukkan detail kartu Anda secara manual.</string>
+    <string name="nfc_scan_error_tag_lost">Kartu terlalu cepat dijauhkan. Tahan kartu dengan stabil di bagian belakang perangkat Anda lalu coba lagi.</string>
+    <string name="nfc_scan_try_again">Coba Lagi</string>
+    <string name="nfc_scan_enter_manually">Masukkan Manual</string>
+    <string name="edit_card_nickname_error">Tidak dapat memperbarui nama panggilan. Silakan coba lagi.</string>
+    <string name="nickname_invalid_chars">Gunakan hanya huruf, angka, spasi, dan . _ \' -</string>
+    <string name="nickname_looks_like_card">Nama panggilan tidak boleh menyerupai nomor kartu</string>
 </resources>

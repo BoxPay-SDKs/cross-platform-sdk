@@ -9,7 +9,7 @@ internal data class SessionDetails(
     @SerialName("paymentDetails") val paymentDetails: PaymentDetails,
     @SerialName("merchantDetails") val merchantDetails: MerchantDetails,
     @SerialName("sessionExpiryTimestamp") val sessionExpiryTimestamp: String? = null,
-    @SerialName("status") val status: String,
+    @SerialName("status") val status: String?,
     @SerialName("paymentAttemptsExhausted") val paymentAttemptsExhausted : Boolean = false,
     @SerialName("lastPaidAtTimestamp") val lastPaidAtTimestamp: String?,
     @SerialName("lastTransactionId") val lastTransactionId: String?,
