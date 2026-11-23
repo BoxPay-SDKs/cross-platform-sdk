@@ -266,11 +266,9 @@ internal fun CardScreen(
             },
             onClickProceed = {
                 viewModel.submitOtp(it, isTestEnv.value)
-                viewModel.isNativeOtpInvalid.value = false
             },
             onClickResend = {
                 viewModel.resendOtp(isTestEnv.value)
-                viewModel.isNativeOtpInvalid.value = false
             },
             cardBrand = viewModel.cardSelectedNetwork.value,
             onClickUrl = {

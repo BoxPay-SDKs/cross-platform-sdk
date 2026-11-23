@@ -86,7 +86,7 @@ internal fun CardRetryLimitReached(
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.SemiBold,
                 color      = Color(0xFFE84142),
-                textAlign  = TextAlign.Center,
+                textAlign  = TextAlign.Start,
                 modifier   = Modifier.padding(top = 8.dp)
             )
 
@@ -96,7 +96,7 @@ internal fun CardRetryLimitReached(
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
                 color      = LocalSDKColors.current.textSecondary,
-                textAlign  = TextAlign.Center,
+                textAlign  = TextAlign.Start,
                 lineHeight = 20.sp,
                 modifier   = Modifier.padding(top = 8.dp, bottom = 16.dp)
             )
