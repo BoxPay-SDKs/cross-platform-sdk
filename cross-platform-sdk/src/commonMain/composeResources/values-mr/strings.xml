@@ -39,6 +39,7 @@
     <string name="qr_expired_title">QR कालबाह्य झाला</string>
     <string name="complete_your_payment_title">तुमचे पेमेंट पूर्ण करा</string>
     <string name="saved_addresses_title">सेव्ह केलेले पत्ते</string>
+    <string name="edit_card_nickname_title">कार्डचे टोपणनाव संपादित करा</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">शोधा</string>
@@ -91,6 +92,7 @@
     <string name="download_qr_cta">QR डाउनलोड करा</string>
     <string name="get_new_qr_cta">नवीन QR मिळवा</string>
     <string name="add_new_address_cta">नवीन पत्ता जोडा</string>
+    <string name="save_cta">जतन करा</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">या पेमेंटसाठी स्टँडिंग इन्स्ट्रक्शन्स (SI) सेट करा.</string>
@@ -139,6 +141,7 @@
     <string name="expires_in_info">इतक्या वेळात कालबाह्य होईल</string>
     <string name="avoid_back_button_in_upi_timer_info">कृपया व्यवहार प्रक्रिया पूर्ण होईपर्यंत बॅक बटण वापरणे टाळा</string>
     <string name="upi_timer_info">वेळ संपण्यापूर्वी तुमचे UPI अ‍ॅप उघडा आणि पेमेंटची पुष्टी करा</string>
+    <string name="card_ending_with">**** %1$s वर संपणारे कार्ड</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s महिने x</string>
@@ -238,4 +241,7 @@
     <string name="card_retry_limit_reached_title">कार्ड पुनःप्रयत्न मर्यादा गाठली</string>
     <string name="card_retry_limit_reached_desc">तुम्ही या कार्डसाठी पेमेंटच्या कमाल प्रयत्नांपर्यंत पोहोचला आहात. कृपया दुसरे कार्ड वापरून पहा</string>
     <string name="try_another_card_cta">दुसरे कार्ड वापरून पहा</string>
+    <string name="edit_card_nickname_error">टोपणनाव अपडेट करता आले नाही. कृपया पुन्हा प्रयत्न करा.</string>
+    <string name="nickname_invalid_chars">फक्त अक्षरे, अंक, स्पेस आणि . _ \' - वापरा</string>
+    <string name="nickname_looks_like_card">टोपणनाव कार्ड क्रमांकासारखे दिसू नये</string>
 </resources>

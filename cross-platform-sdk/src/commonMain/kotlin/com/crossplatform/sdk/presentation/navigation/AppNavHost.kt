@@ -14,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -74,7 +73,6 @@ import io.ktor.http.encodeURLParameter
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -510,16 +508,22 @@ internal fun AppNavHost(
                 onSwipeComplete = {
                     showSwipeToPay = false
                     val surchargeList = viewModel.resolveSurchargeList( "upi", "upicollect")
-                    viewModel.postUpiCollectRequest(
-                        instrumentRef = firstInstrument.instrumentType,
-                        type = if (firstInstrument.type.equals(
-                                "upi",
-                                true
-                            )
-                        ) "upi/collect" else "card/token",
-                        shopperVpa = firstInstrument.displayValue,
-                        surchargeList = surchargeList
-                    )
+                    if (firstInstrument.type.equals(
+                            "upi",
+                            true
+                    )) {
+                        viewModel.postUpiCollectRequest(
+                            instrumentRef = firstInstrument.instrumentType,
+                            type = "upi/collect" ,
+                            shopperVpa = firstInstrument.displayValue,
+                            surchargeList = surchargeList
+                        )
+                    } else {
+                        viewModel.postSavedCardRequest(
+                            instrumentRef = firstInstrument.instrumentType,
+                            isSICheckboxChecked = false
+                        )
+                    }
                 },
                 onClickChangeAddress = {
                     showSwipeToPay = false

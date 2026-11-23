@@ -134,4 +134,9 @@ internal interface ApiService {
         transactionId : String
     ) : ApiResponse<PaymentMethodPostResponse>
 
+    suspend fun editSavedCard(
+        newNickName: String,
+        instrumentRef : String
+    ) : ApiResponse<RecommendedInstrumentsResponse>
+
 }

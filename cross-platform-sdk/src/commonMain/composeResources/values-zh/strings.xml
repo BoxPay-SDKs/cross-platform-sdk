@@ -39,6 +39,7 @@
     <string name="qr_expired_title">二维码已过期</string>
     <string name="complete_your_payment_title">完成付款</string>
     <string name="saved_addresses_title">已保存的地址</string>
+    <string name="edit_card_nickname_title">编辑卡片昵称</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">搜索</string>
@@ -91,6 +92,7 @@
     <string name="download_qr_cta">下载二维码</string>
     <string name="get_new_qr_cta">获取新二维码</string>
     <string name="add_new_address_cta">添加新地址</string>
+    <string name="save_cta">保存</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">为此次付款设置长期指令（SI）。</string>
@@ -139,6 +141,7 @@
     <string name="expires_in_info">将在以下时间后过期</string>
     <string name="avoid_back_button_in_upi_timer_info">在交易完成之前，请勿使用返回按钮</string>
     <string name="upi_timer_info">请在时间到期前打开您的 UPI 应用并确认付款</string>
+    <string name="card_ending_with">尾号 **** %1$s 的卡片</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s 个月 x</string>
@@ -238,4 +241,7 @@
     <string name="card_retry_limit_reached_title">已达到该卡的重试次数上限</string>
     <string name="card_retry_limit_reached_desc">您已达到此卡的最大支付尝试次数。请尝试其他卡</string>
     <string name="try_another_card_cta">尝试其他卡</string>
+    <string name="edit_card_nickname_error">无法更新昵称，请重试。</string>
+    <string name="nickname_invalid_chars">仅可使用字母、数字、空格以及 . _ \' -</string>
+    <string name="nickname_looks_like_card">昵称不能与卡号相似</string>
 </resources>

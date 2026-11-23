@@ -39,6 +39,7 @@
     <string name="qr_expired_title">QR காலாவதியானது</string>
     <string name="complete_your_payment_title">உங்கள் கட்டணத்தை முடிக்கவும்</string>
     <string name="saved_addresses_title">சேமிக்கப்பட்ட முகவரிகள்</string>
+    <string name="edit_card_nickname_title">கார்டு புனைப்பெயரைத் திருத்தவும்</string>
 
     <!--    Text input fields string resources-->
     <string name="search_title">தேடு</string>
@@ -91,6 +92,7 @@
     <string name="download_qr_cta">QR பதிவிறக்கு</string>
     <string name="get_new_qr_cta">புதிய QR பெறு</string>
     <string name="add_new_address_cta">புதிய முகவரியைச் சேர்</string>
+    <string name="save_cta">சேமி</string>
 
     <!--    Information String Resources-->
     <string name="set_up_si_instructions">இந்த கட்டணத்திற்கான ஸ்டாண்டிங் இன்ஸ்ட்ரக்ஷன்ஸ் (SI) அமைக்கவும்.</string>
@@ -139,6 +141,7 @@
     <string name="expires_in_info">இதில் காலாவதியாகும்</string>
     <string name="avoid_back_button_in_upi_timer_info">பரிவர்த்தனை செயல்முறை முடியும் வரை பின் பட்டனைப் பயன்படுத்துவதைத் தவிர்க்கவும்</string>
     <string name="upi_timer_info">நேரம் முடிவதற்குள் உங்கள் UPI ஆப்பைத் திறந்து கட்டணத்தை உறுதிப்படுத்தவும்</string>
+    <string name="card_ending_with">**** %1$s இல் முடியும் கார்டு</string>
 
     <!--    String resources with values-->
     <string name="duration_months_x">%1$s மாதங்கள் x</string>
@@ -238,4 +241,7 @@
     <string name="card_retry_limit_reached_title">கார்டு மறுமுயற்சி வரம்பு எட்டப்பட்டது</string>
     <string name="card_retry_limit_reached_desc">இந்த கார்டுக்கான அதிகபட்ச கட்டண முயற்சிகளை அடைந்துவிட்டீர்கள். வேறு கார்டை முயற்சிக்கவும்</string>
     <string name="try_another_card_cta">வேறு கார்டை முயற்சிக்கவும்</string>
+    <string name="edit_card_nickname_error">புனைப்பெயரைப் புதுப்பிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.</string>
+    <string name="nickname_invalid_chars">எழுத்துகள், எண்கள், இடைவெளிகள் மற்றும் . _ \' - மட்டும் பயன்படுத்தவும்</string>
+    <string name="nickname_looks_like_card">புனைப்பெயர் கார்டு எண்ணைப் போல இருக்கக் கூடாது</string>
 </resources>
