@@ -76,6 +76,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AppNavHost(
+    selectedLanguage : String,
     onLanguageChange : (String) -> Unit
 ) {
     val shopperDetails by CheckoutDetailsHandler.shopperFieldsConfigFlow.collectAsStateWithLifecycle()
@@ -225,7 +226,8 @@ internal fun AppNavHost(
                     }
                 },    // from API via ViewModel
                 sessionSeconds = viewModel.sessionSeconds.value,
-                onLanguageChange = onLanguageChange
+                onLanguageChange = onLanguageChange,
+                selectedLanguageCode = selectedLanguage
             )
         }
         NavHost(

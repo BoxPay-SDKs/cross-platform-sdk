@@ -57,6 +57,7 @@ internal fun TopBar(
     text: String,
     onBackPress: () -> Unit,
     sessionSeconds: Long?,
+    selectedLanguageCode: String,
     onLanguageChange: (String) -> Unit
 ) {
     val itemsLength = CheckoutDetailsHandler.itemsLengthFlow.collectAsStateWithLifecycle()
@@ -237,6 +238,7 @@ internal fun TopBar(
             if (isLanguageSelectorVisible.value) {
                 Spacer(modifier = Modifier.width(8.dp))
                 LanguageIconButton(
+                    selectedLanguageCode = selectedLanguageCode,
                     onLanguageChange = onLanguageChange
                 )
             }
@@ -248,6 +250,7 @@ internal fun TopBar(
 
 @Composable
 private fun LanguageIconButton(
+    selectedLanguageCode: String,
     onLanguageChange: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -267,11 +270,25 @@ private fun LanguageIconButton(
 
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            containerColor = LocalSDKColors.current.background,   // NEW
+            tonalElevation = 0.dp,                                // NEW: no elevation tint
+            shadowElevation = 8.dp
         ) {
             AppLanguage.entries.forEach { lang ->
+                val isSelected = lang.code == selectedLanguageCode
                 DropdownMenuItem(
-                    text = { Text(lang.displayName) },
+                    modifier = Modifier.background(
+                        if (isSelected) Color(0xFFE8F1FD) else LocalSDKColors.current.background
+                    ),
+                    text = {
+                        Text(
+                            text = lang.displayName,
+                            color = if (isSelected) Color(0xFF1A73E8)
+                            else LocalSDKColors.current.textPrimary,
+                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
+                        )
+                    },
                     onClick = {
                         onLanguageChange(lang.code)
                         expanded = false
