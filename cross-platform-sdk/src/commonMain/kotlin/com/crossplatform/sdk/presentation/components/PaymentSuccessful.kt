@@ -33,6 +33,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,7 +79,9 @@ internal fun PaymentSuccessful(
     val (_, currencyCode) = currencyDetails.value
     val transactionDetail = CheckoutDetailsHandler.transactionFlow.collectAsStateWithLifecycle()
     val merchantName = CheckoutDetailsHandler.merchantNameFlow.collectAsStateWithLifecycle()
-    val (_, transactionId) = transactionDetail.value
+    val (transactionStatus, transactionId) = transactionDetail.value
+    val orderId = CheckoutDetailsHandler.orderIdFlow.collectAsStateWithLifecycle().value
+    val productName = CheckoutDetailsHandler.productNameFlow.collectAsStateWithLifecycle().value
 
     // Toast-like feedback for the download action
     var downloadStatusMessage by remember { mutableStateOf<String?>(null) }
@@ -98,12 +101,17 @@ internal fun PaymentSuccessful(
     val dateNTimeExtracted = formatTransactionTimestamp(dateNTime)
     val formattedAmount    = formatAmount(amount.value)
 
-    val uiRows = listOf(
+    val statusLabel = transactionStatus.lowercase().replaceFirstChar { it.uppercase() }
+
+    val uiRows = listOfNotNull(
         "Merchant Name" to merchantName.value,
         "Transaction ID" to transactionId,
+        ("Order ID" to orderId).takeIf { orderId.isNotBlank() },
+        ("Status" to statusLabel).takeIf { statusLabel.isNotBlank() },
         "Date"           to (dateNTimeExtracted?.first  ?: ""),
         "Time"           to (dateNTimeExtracted?.second ?: ""),
         "Payment Method" to paymentMethod,
+        (PRODUCT_NAME_LABEL to productName).takeIf { productName.isNotBlank() }
     )
 
     ModalBottomSheet(
@@ -141,9 +149,10 @@ internal fun PaymentSuccessful(
 
             // ── Detail rows ───────────────────────────────────────────────────
             uiRows.forEach { (label, value) ->
+                val valueLines = if (label == PRODUCT_NAME_LABEL) productNameLines(value) else listOf(value)
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = if (valueLines.size > 1) Alignment.Top else Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
@@ -152,12 +161,23 @@ internal fun PaymentSuccessful(
                         fontFamily = LocalSDKFonts.current.primary,
                         fontWeight = FontWeight.Normal,
                     )
-                    Text(
-                        text       = value,
-                        fontSize   = 14.sp,
-                        fontFamily = LocalSDKFonts.current.primary,
-                        fontWeight = FontWeight.SemiBold,
-                    )
+                    // One line per value (product names: one line per product), ellipsized if too wide
+                    Column(
+                        modifier = Modifier.weight(1f).padding(start = 16.dp),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        valueLines.forEach { line ->
+                            Text(
+                                text       = line,
+                                fontSize   = 14.sp,
+                                fontFamily = LocalSDKFonts.current.primary,
+                                fontWeight = FontWeight.SemiBold,
+                                maxLines   = 1,
+                                overflow   = TextOverflow.Ellipsis,
+                                textAlign  = TextAlign.End,
+                            )
+                        }
+                    }
                 }
             }
 
@@ -211,12 +231,16 @@ internal fun PaymentSuccessful(
                             isDownloading.value = true
                             downloadStatusMessage = null
                             val receiptData = ReceiptData(
+                                merchantName = merchantName.value,
+                                orderId = orderId,
                                 transactionId = transactionId,
                                 date = dateNTimeExtracted?.first ?: "",
                                 time = dateNTimeExtracted?.second ?: "",
                                 paymentMethod = paymentMethod,
                                 formattedAmount = formattedAmount,
                                 currencyCode = currencyCode,
+                                status = statusLabel,
+                                productName = productName
                             )
                             PdfReceiptGenerator.generateAndDownload(receiptData, context) { success, message ->
                                 isDownloading.value = false

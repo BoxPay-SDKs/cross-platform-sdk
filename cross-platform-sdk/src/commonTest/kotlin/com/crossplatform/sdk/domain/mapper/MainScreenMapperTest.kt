@@ -9,6 +9,8 @@ import com.crossplatform.sdk.data.model.EnabledFields
 import com.crossplatform.sdk.data.model.MerchantDetails
 import com.crossplatform.sdk.data.model.Money
 import com.crossplatform.sdk.data.model.PaymentContext
+import com.crossplatform.sdk.data.model.OrderDetails
+import com.crossplatform.sdk.data.model.OrderItem
 import com.crossplatform.sdk.data.model.PaymentDetails
 import com.crossplatform.sdk.data.model.SessionDetails
 import com.crossplatform.sdk.data.model.Shopper
@@ -22,6 +24,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * [formatDate] / [formatWords] are pure string-formatting helpers used by
@@ -201,6 +204,89 @@ class MainScreenMapperTest {
         assertEquals(true, uiModel.paymentsAttemptExhausted)
     }
 
+    // ── Order id / product name (Thank You page + receipt) ──────────────────
+
+    @Test
+    fun `toUiModel carries the order id onto the UI model and CheckoutDetailsHandler`() {
+        val uiModel = sessionDetails(orderId = "ORD-1001").toUiModel()
+
+        assertEquals("ORD-1001", uiModel.orderId)
+        assertEquals("ORD-1001", CheckoutDetailsHandler.checkoutDetails.orderId)
+        assertEquals("ORD-1001", CheckoutDetailsHandler.orderIdFlow.value)
+    }
+
+    @Test
+    fun `toUiModel uses an empty order id when the session has none`() {
+        sessionDetails(orderId = null).toUiModel()
+
+        assertEquals("", CheckoutDetailsHandler.checkoutDetails.orderId)
+    }
+
+    @Test
+    fun `toUiModel uses the single item name as product name`() {
+        sessionDetails(order = order("Latte")).toUiModel()
+
+        assertEquals("Latte", CheckoutDetailsHandler.checkoutDetails.productName)
+        assertEquals("Latte", CheckoutDetailsHandler.productNameFlow.value)
+    }
+
+    @Test
+    fun `toUiModel joins multiple item names with a comma`() {
+        sessionDetails(order = order("Latte", "Croissant", "Cookie")).toUiModel()
+
+        assertEquals("Latte, Croissant, Cookie", CheckoutDetailsHandler.checkoutDetails.productName)
+    }
+
+    @Test
+    fun `toUiModel skips null and blank item names in product name`() {
+        sessionDetails(order = order("Latte", null, "  ", "", "Cookie")).toUiModel()
+
+        assertEquals("Latte, Cookie", CheckoutDetailsHandler.checkoutDetails.productName)
+    }
+
+    @Test
+    fun `toUiModel uses an empty product name when there is no order`() {
+        sessionDetails(order = null).toUiModel()
+
+        assertEquals("", CheckoutDetailsHandler.checkoutDetails.productName)
+    }
+
+    @Test
+    fun `toUiModel uses an empty product name when the order has no items`() {
+        sessionDetails(order = OrderDetails(items = null)).toUiModel()
+        assertEquals("", CheckoutDetailsHandler.checkoutDetails.productName)
+
+        sessionDetails(order = OrderDetails(items = emptyList())).toUiModel()
+        assertEquals("", CheckoutDetailsHandler.checkoutDetails.productName)
+    }
+
+    @Test
+    fun `resetToDefault clears order id and product name`() {
+        sessionDetails(orderId = "ORD-1", order = order("Latte")).toUiModel()
+        assertTrue(CheckoutDetailsHandler.checkoutDetails.orderId.isNotEmpty())
+
+        CheckoutDetailsHandler.resetToDefault()
+
+        assertEquals("", CheckoutDetailsHandler.checkoutDetails.orderId)
+        assertEquals("", CheckoutDetailsHandler.checkoutDetails.productName)
+    }
+
+    // ── PROCESSING status ────────────────────────────────────────────────────
+
+    @Test
+    fun `toUiModel maps POSTED session status to PROCESSING`() {
+        assertEquals(TransactionStatusEnum.PROCESSING, sessionDetails(status = "POSTED").toUiModel().status)
+    }
+
+    @Test
+    fun `toUiModel maps PROCESSING session status to PROCESSING`() {
+        assertEquals(TransactionStatusEnum.PROCESSING, sessionDetails(status = "PROCESSING").toUiModel().status)
+    }
+
+    private fun order(vararg itemNames: String?) = OrderDetails(
+        items = itemNames.map { OrderItem(itemName = it, quantity = 1) }
+    )
+
     // ── Fixture builder ─────────────────────────────────────────────────────
 
     private fun sessionDetails(
@@ -218,10 +304,11 @@ class MainScreenMapperTest {
         order: com.crossplatform.sdk.data.model.OrderDetails? = null,
         status: String = "NOACTION",
         paymentAttemptsExhausted: Boolean? = null,
+        orderId: String? = null,
     ) = SessionDetails(
         configs = Configs(paymentMethods = emptyList(), enabledFields = enabledFields),
         paymentDetails = PaymentDetails(
-            context = PaymentContext(countryCode = "IN", localeCode = "en-IN"),
+            context = PaymentContext(countryCode = "IN", orderId = orderId, localeCode = "en-IN"),
             money = Money(currencySymbol = currencySymbol, currencyCode = currencyCode, amount = amount),
             shopper = Shopper(
                 firstName = shopperFirstName,

@@ -107,7 +107,7 @@ internal suspend fun handlePaymentResponse(
                     }
                 }
 
-                TransactionStatusEnum.SUCCESS -> {
+                TransactionStatusEnum.SUCCESS, TransactionStatusEnum.PROCESSING -> {
                     CheckoutDetailsHandler.setTimeAndPaymentMethod(
                         timeStamp = response.data.transactionTimestampLocale,
                         paymentMethod = response.data.paymentMethod.brand ?: ""

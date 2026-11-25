@@ -4,6 +4,7 @@ import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.model.AppliedOfferResponse
 import com.crossplatform.sdk.data.model.PaymentMethod
+import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.fakes.FakeCallUIAnalyticsRepo
 import com.crossplatform.sdk.fakes.FakeFetchStatusRepo
 import com.crossplatform.sdk.fakes.FakeInstantOfferRepo
@@ -165,6 +166,22 @@ class MainScreenViewModelTest {
         assertEquals(!before, details.isPaymentSuccessful)
     }
 
+    @Test
+    fun `callCheckoutSessionSuccessModal records PROCESSING status and still shows the success page`() {
+        val before = CheckoutDetailsHandler.checkoutDetails.isPaymentSuccessful
+
+        viewModel.callCheckoutSessionSuccessModal(
+            transactionId = "txn_proc",
+            dateNTime = "18/11/2026 17:10",
+            paymentMethod = "VISA",
+            status = TransactionStatusEnum.PROCESSING
+        )
+
+        val details = CheckoutDetailsHandler.checkoutDetails
+        assertEquals("PROCESSING", details.status)
+        assertEquals("txn_proc", details.transactionId)
+        assertEquals(!before, details.isPaymentSuccessful)
+    }
     // ── postEditSavedCard ────────────────────────────────────────────────────
 
     private fun savedCard(id: String, name: String) = com.crossplatform.sdk.domain.model.SelectedPaymentMethod(
@@ -270,5 +287,4 @@ class MainScreenViewModelTest {
         viewModel.onClickDeleteSavedCard("card_1")
 
         assertEquals(listOf("card_1", "card_2"), viewModel.recommendedList.value.map { it.id })
-    }
 }

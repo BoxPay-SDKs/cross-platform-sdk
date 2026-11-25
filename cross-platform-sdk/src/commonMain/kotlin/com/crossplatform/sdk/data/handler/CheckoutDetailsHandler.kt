@@ -59,6 +59,8 @@ internal object CheckoutDetailsHandler {
         isSubscriptionCheckout = false,
         status = TransactionStatusEnum.NOACTION.name,
         transactionId = "",
+        orderId = "",
+        productName = "",
         inquiryToken = "",
         isSuccessScreenVisible = false,
         isFailedScreenVisible = false,
@@ -222,6 +224,16 @@ internal object CheckoutDetailsHandler {
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, TransactionStatusEnum.NOACTION.name to "")
 
+    val orderIdFlow: StateFlow<String> = _checkoutDetailsFlow
+        .map { it.orderId }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, "")
+
+    val productNameFlow: StateFlow<String> = _checkoutDetailsFlow
+        .map { it.productName }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, "")
+
     val inquiryTokenFlow: StateFlow<String> = _checkoutDetailsFlow
         .map { it.inquiryToken }
         .distinctUntilChanged()
@@ -381,6 +393,8 @@ internal object CheckoutDetailsHandler {
         merchantName: String,
         merchantLogo: String,
         itemsLength: Int,
+        orderId: String,
+        productName: String,
         errorMessage: String,
         isShippingAddressEnabled: Boolean,
         isShippingAddressEditable: Boolean,
@@ -418,6 +432,8 @@ internal object CheckoutDetailsHandler {
             headerColor               = headerColor,
             headerTextColor           = headerTextColor,
             itemsLength               = itemsLength,
+            orderId                   = orderId,
+            productName               = productName,
             merchantName              = merchantName,
             merchantLogo              = merchantLogo,
             errorMessage              = errorMessage,
