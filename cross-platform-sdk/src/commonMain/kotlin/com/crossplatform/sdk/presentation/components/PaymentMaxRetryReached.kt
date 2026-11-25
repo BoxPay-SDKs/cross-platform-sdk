@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.ChevronIcon
+import com.crossplatform.sdk.presentation.sharedContext.getLabelRes
 import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
@@ -54,7 +55,6 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -114,7 +114,7 @@ internal fun PaymentMaxRetryReached(
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
                 color      = LocalSDKColors.current.textSecondary,
-                textAlign  = TextAlign.Center,
+                textAlign  = TextAlign.Start,
                 lineHeight = 20.sp,
                 modifier   = Modifier.padding(top = 8.dp, bottom = 16.dp)
             )
@@ -138,6 +138,7 @@ internal fun PaymentMaxRetryReached(
                     .clip(RoundedCornerShape(12.dp))
             ) {
                 itemsIndexed(availableMethods) { index, method ->
+                    val labelRes = getLabelRes(method)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -153,7 +154,7 @@ internal fun PaymentMaxRetryReached(
                             modifier = Modifier.size(28.dp)
                         )
                         Text(
-                            text       = method,
+                            text       = labelRes?.let { stringResource(it) } ?: method,
                             fontSize   = 15.sp,
                             fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Normal,

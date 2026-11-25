@@ -11,6 +11,15 @@ import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.encryptCardData
 import com.crossplatform.sdk.presentation.getStatus
 import com.crossplatform.sdk.presentation.resolveErrorMessage
+import crossplatformsdk.cross_platform_sdk.generated.resources.Res
+import crossplatformsdk.cross_platform_sdk.generated.resources.bnpl_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.cards_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.emi_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.net_banking_title
+import crossplatformsdk.cross_platform_sdk.generated.resources.upi_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.upi_mandate_info
+import crossplatformsdk.cross_platform_sdk.generated.resources.wallet_title
+import org.jetbrains.compose.resources.StringResource
 
 private const val PAYMENT_MAX_ATTEMPTS_REACHED = "BE_1815"
 private const val CHECKOUT_MAX_ATTEMPTS_REACHED = "BE_1816"
@@ -148,6 +157,7 @@ internal suspend fun handlePaymentResponse(
                     val availableMethods = structuredError.fieldErrorItems
                         .filter { (it.message?.toIntOrNull() ?: 0) > 0 }
                         .map { it.fieldName }
+
 
                     CheckoutDetailsHandler.setRetryAvailableMethods(availableMethods)
                     CheckoutDetailsHandler.setIsPaymentMaxAttemptsReached()
@@ -347,3 +357,16 @@ private fun String.escapeHtml(): String =
         .replace("\"", "&quot;")
         .replace("<", "&lt;")
         .replace(">", "&gt;")
+
+private val PAYMENT_METHOD_DISPLAY_NAMES = mapOf(
+    "netbanking"        to Res.string.net_banking_title,
+    "upi"               to Res.string.upi_info,
+    "card"              to Res.string.cards_title,
+    "upionetimemandate" to Res.string.upi_mandate_info,
+    "buynowpaylater"    to Res.string.bnpl_title,
+    "emi"               to Res.string.emi_title,
+    "wallet"            to Res.string.wallet_title
+)
+
+internal fun getLabelRes(key: String): StringResource? =
+    PAYMENT_METHOD_DISPLAY_NAMES[key.lowercase()]
