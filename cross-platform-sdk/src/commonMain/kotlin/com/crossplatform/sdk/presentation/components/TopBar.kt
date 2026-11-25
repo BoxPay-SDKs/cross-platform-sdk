@@ -31,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -271,16 +273,16 @@ private fun LanguageIconButton(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            containerColor = LocalSDKColors.current.background,   // NEW
-            tonalElevation = 0.dp,                                // NEW: no elevation tint
+            containerColor = LocalSDKColors.current.background,
+            tonalElevation = 0.dp,
             shadowElevation = 8.dp
         ) {
             AppLanguage.entries.forEach { lang ->
                 val isSelected = lang.code == selectedLanguageCode
                 DropdownMenuItem(
-                    modifier = Modifier.background(
-                        if (isSelected) Color(0xFFE8F1FD) else LocalSDKColors.current.background
-                    ),
+                    modifier = Modifier
+                        .semantics { selected = isSelected }
+                        .background(if (isSelected) Color(0xFFE8F1FD) else Color.Transparent),
                     text = {
                         Text(
                             text = lang.displayName,

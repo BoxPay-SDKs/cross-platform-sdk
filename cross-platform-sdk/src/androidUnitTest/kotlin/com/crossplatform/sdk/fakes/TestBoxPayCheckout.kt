@@ -89,6 +89,7 @@ internal fun TestBoxPayCheckout(
 
             MaterialTheme {
                 AppNavHost(
+                    selectedLanguage = sessionLocaleCode,
                     onLanguageChange = {}
                 )
             }
