@@ -74,6 +74,12 @@ class BoxPayActivity : ComponentActivity() {
     }
 
 
+    override fun onDestroy() {
+        // isFinishing is false on rotation / process-driven recreation, where state must survive.
+        if (isFinishing) CommonSDKDismissHandler.releaseSession()
+        super.onDestroy()
+    }
+
     @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (AffirmSDK.handleActivityResult(this, requestCode, resultCode, data)) {

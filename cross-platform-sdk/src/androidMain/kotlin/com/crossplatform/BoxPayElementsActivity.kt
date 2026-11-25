@@ -5,10 +5,12 @@ import android.view.View
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import com.crossplatform.sdk.BoxPayCommonElements
 import com.crossplatform.sdk.data.handler.BoxPayElementsHandler
+import com.crossplatform.sdk.data.handler.CommonSDKDismissHandler
 import com.crossplatform.sdk.domain.model.PaymentMethodTab
 
 object BoxPayElementsView {
@@ -38,6 +40,7 @@ object BoxPayElementsView {
         return ComposeView(context).apply {
             // merchant controls their own screen; if they need a close hook, expose it.
             setContent {
+                DisposableEffect(Unit) { onDispose { CommonSDKDismissHandler.releaseSession() } }
                 Box(modifier = Modifier.fillMaxWidth().wrapContentHeight()) {
                     BoxPayCommonElements(
                         paymentMethodList = paymentMethodTabs,
