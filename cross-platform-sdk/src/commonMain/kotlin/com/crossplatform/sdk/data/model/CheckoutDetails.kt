@@ -74,7 +74,7 @@ internal data class CheckoutDetails(
 
 // Likely culprit — no arity, resolves to raw Function<Unit>
     val proceedAutoRetryPayment: () -> Unit = {},
-    val availableRetryMethods : List<String>,
+    val availableRetryMethods : List<Pair<String, String>>,
     val isCheckoutLimitReached : Boolean,
     val isPaymentMaxAttemptsReached : Boolean,
     val localeCode : String

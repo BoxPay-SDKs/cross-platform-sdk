@@ -11,9 +11,6 @@ import com.crossplatform.sdk.domain.model.TransactionStatusEnum
 import com.crossplatform.sdk.presentation.encryptCardData
 import com.crossplatform.sdk.presentation.getStatus
 import com.crossplatform.sdk.presentation.resolveErrorMessage
-import crossplatformsdk.cross_platform_sdk.generated.resources.Res
-import crossplatformsdk.cross_platform_sdk.generated.resources.payment_failed_error_messages
-import org.jetbrains.compose.resources.getString
 
 private const val PAYMENT_MAX_ATTEMPTS_REACHED = "BE_1815"
 private const val CHECKOUT_MAX_ATTEMPTS_REACHED = "BE_1816"
@@ -141,7 +138,11 @@ internal suspend fun handlePaymentResponse(
                         .filter { (it.message?.toIntOrNull() ?: 0) > 0 }
                         .map { it.fieldName }
 
-                    CheckoutDetailsHandler.setRetryAvailableMethods(availableMethods)
+
+                    val retryMethods = availableMethods.map { key ->
+                        Pair(key,key.toDisplayName())
+                    }
+                    CheckoutDetailsHandler.setRetryAvailableMethods(retryMethods)
                     CheckoutDetailsHandler.setIsPaymentMaxAttemptsReached()
                     setIsBoxPayAnimationVisible(false)
                     if(notifyComponentsHandler != null) {
@@ -339,3 +340,19 @@ private fun String.escapeHtml(): String =
         .replace("\"", "&quot;")
         .replace("<", "&lt;")
         .replace(">", "&gt;")
+
+private val PAYMENT_METHOD_DISPLAY_NAMES = mapOf(
+    "NetBanking"        to "Bank Transfers",
+    "Upi"               to "UPI",
+    "Card"              to "Cards",
+    "UpiOneTimeMandate" to "UPI Mandate",
+    "BuyNowPayLater"    to "Buy Now Pay Later",
+    "Emi"               to "EMI",
+    "Wallet"            to "Wallet"
+)
+
+private fun String.toDisplayName(): String =
+    PAYMENT_METHOD_DISPLAY_NAMES.entries
+        .firstOrNull { it.key.equals(this, ignoreCase = true) }
+        ?.value
+        ?: this

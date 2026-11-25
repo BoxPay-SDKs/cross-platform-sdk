@@ -54,12 +54,11 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun PaymentMaxRetryReached(
-    availableMethods : List<String>,
+    availableMethods : List<Pair<String, String>>,
     sheetState: SheetState,
     onSelectMethod: (String) -> Unit,
     onDismiss: () -> Unit
@@ -114,7 +113,7 @@ internal fun PaymentMaxRetryReached(
                 fontFamily = LocalSDKFonts.current.primary,
                 fontWeight = FontWeight.Normal,
                 color      = LocalSDKColors.current.textSecondary,
-                textAlign  = TextAlign.Center,
+                textAlign  = TextAlign.Start,
                 lineHeight = 20.sp,
                 modifier   = Modifier.padding(top = 8.dp, bottom = 16.dp)
             )
@@ -142,18 +141,18 @@ internal fun PaymentMaxRetryReached(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
-                            .clickable { onSelectMethod(method) }
+                            .clickable { onSelectMethod(method.first) }
                             .padding(vertical = 8.dp, horizontal = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start
                     ) {
                         Image(
-                            painter = painterResource(getIcon(method)),
-                            contentDescription = method,
+                            painter = painterResource(getIcon(method.first)),
+                            contentDescription = method.first,
                             modifier = Modifier.size(28.dp)
                         )
                         Text(
-                            text       = method,
+                            text       = method.second,
                             fontSize   = 15.sp,
                             fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Normal,
