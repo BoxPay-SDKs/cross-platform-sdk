@@ -110,7 +110,7 @@ internal object CheckoutDetailsHandler {
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().amountBeforeSurcharge)
 
-    val availableMethodsListFlow: StateFlow<List<Pair<String, String>>> = _checkoutDetailsFlow
+    val availableMethodsListFlow: StateFlow<List<String>> = _checkoutDetailsFlow
         .map { it.availableRetryMethods }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().availableRetryMethods)
@@ -582,7 +582,7 @@ internal object CheckoutDetailsHandler {
         _checkoutDetailsFlow.value = checkoutDetails
     }
 
-    fun setRetryAvailableMethods(availableMethodsList : List<Pair<String, String>>) {
+    fun setRetryAvailableMethods(availableMethodsList : List<String>) {
         checkoutDetails = checkoutDetails.copy(availableRetryMethods = availableMethodsList)
         _checkoutDetailsFlow.value = checkoutDetails
     }

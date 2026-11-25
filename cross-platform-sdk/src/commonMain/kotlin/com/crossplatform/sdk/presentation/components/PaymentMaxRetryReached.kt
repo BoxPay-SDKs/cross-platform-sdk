@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.presentation.ChevronIcon
+import com.crossplatform.sdk.presentation.sharedContext.getLabelRes
 import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 import com.crossplatform.sdk.presentation.theme.LocalSDKFonts
 import com.crossplatform.sdk.presentation.toComposeColor
@@ -58,7 +59,7 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun PaymentMaxRetryReached(
-    availableMethods : List<Pair<String, String>>,
+    availableMethods : List<String>,
     sheetState: SheetState,
     onSelectMethod: (String) -> Unit,
     onDismiss: () -> Unit
@@ -137,22 +138,23 @@ internal fun PaymentMaxRetryReached(
                     .clip(RoundedCornerShape(12.dp))
             ) {
                 itemsIndexed(availableMethods) { index, method ->
+                    val labelRes = getLabelRes(method)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
-                            .clickable { onSelectMethod(method.first) }
+                            .clickable { onSelectMethod(method) }
                             .padding(vertical = 8.dp, horizontal = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start
                     ) {
                         Image(
-                            painter = painterResource(getIcon(method.first)),
-                            contentDescription = method.first,
+                            painter = painterResource(getIcon(method)),
+                            contentDescription = method,
                             modifier = Modifier.size(28.dp)
                         )
                         Text(
-                            text       = method.second,
+                            text       = labelRes?.let { stringResource(it) } ?: method,
                             fontSize   = 15.sp,
                             fontFamily = LocalSDKFonts.current.primary,
                             fontWeight = FontWeight.Normal,
