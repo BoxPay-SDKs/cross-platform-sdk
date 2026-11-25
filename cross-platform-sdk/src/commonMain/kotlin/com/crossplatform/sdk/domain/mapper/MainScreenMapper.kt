@@ -146,6 +146,10 @@ internal fun SessionDetails.toUiModel(): MainScreenModel {
         currencySymbol              = moneyObject.currencySymbol,
         currencyCode                = moneyObject.currencyCode,
         itemsLength                 = this.paymentDetails.order?.items?.sumOf { it.quantity ?: 1 } ?: 0,
+        orderId                     = this.paymentDetails.context.orderId ?: "",
+        productName                 = this.paymentDetails.order?.items
+            ?.mapNotNull { it.itemName?.takeIf { name -> name.isNotBlank() } }
+            ?.joinToString(", ") ?: "",
         amount                      = paymentDetails.money.amount,
         amountBeforeSurcharge = paymentDetails.money.amount,
         buttonColor                 = merchantDetails.checkoutTheme.primaryButtonColor,

@@ -210,12 +210,13 @@ internal fun MainScreen(
                 return
             }
 
-            if(response.status == TransactionStatusEnum.SUCCESS) {
+            if(response.status == TransactionStatusEnum.SUCCESS || response.status == TransactionStatusEnum.PROCESSING) {
                 LaunchedEffect(Unit) {
                     viewModel.callCheckoutSessionSuccessModal(
                         transactionId = response.transactionId,
                         dateNTime = response.successfulTimeStamp,
-                        paymentMethod = response.successfulPaymentMethod
+                        paymentMethod = response.successfulPaymentMethod,
+                        status = response.status
                     )
                 }
                 return
