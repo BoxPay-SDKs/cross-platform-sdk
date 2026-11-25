@@ -22,12 +22,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.crossplatform.sdk.data.ServiceRequest
 import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.CommonSDKDismissHandler
-import com.crossplatform.sdk.data.handler.SDKJobHandler
 import com.crossplatform.sdk.data.handler.SDKPaymentResponseHandler
-import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsEvents
 import com.crossplatform.sdk.data.model.SDKPaymentResponse
 import com.crossplatform.sdk.presentation.BackHandler
@@ -160,18 +157,14 @@ internal fun AppNavHost(
     }
 
     fun callSDKPaymentResponse() {
-        SDKJobHandler.cancelAll()
         showExitCheckoutConfirmation.value = false
 
         // ✅ Capture data BEFORE resetting
         val (status, transactionId) = CheckoutDetailsHandler.transactionFlow.value
         val inquiryToken = CheckoutDetailsHandler.inquiryTokenFlow.value
 
-        ServiceRequest.close()
-
         // ✅ Reset first so UI clears immediately
-        CheckoutDetailsHandler.resetToDefault()
-        UserDataHandler.resetToDefault()
+        CommonSDKDismissHandler.releaseSession()
 
         // ✅ Notify after reset
         SDKPaymentResponseHandler.notifyResult(

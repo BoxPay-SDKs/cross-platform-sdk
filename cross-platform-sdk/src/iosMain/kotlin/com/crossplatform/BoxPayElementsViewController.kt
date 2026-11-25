@@ -1,5 +1,6 @@
 package com.crossplatform
 
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.window.ComposeUIViewController
 import com.crossplatform.sdk.BoxPayCommonElements
 import com.crossplatform.sdk.data.handler.BoxPayElementsHandler
@@ -27,6 +28,7 @@ fun BoxPayElementsViewController(
     }
 
     CommonSDKDismissHandler.setCloseSDK { onDismiss() }
+    DisposableEffect(Unit) { onDispose { CommonSDKDismissHandler.releaseSession() } }
     BoxPayCommonElements(
         paymentMethodList = paymentMethodTabs,
         token = token,

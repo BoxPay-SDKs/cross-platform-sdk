@@ -1,6 +1,6 @@
 package com.crossplatform.sdk.data.handler
 
-import com.crossplatform.sdk.data.model.SDKPaymentResponse
+import com.crossplatform.sdk.data.ServiceRequest
 
 internal object CommonSDKDismissHandler {
 
@@ -12,5 +12,12 @@ internal object CommonSDKDismissHandler {
 
     fun notifyToCloseSDK() {
         onClose()
+    }
+
+    fun releaseSession() {
+        SDKJobHandler.cancelAll()
+        ServiceRequest.close()
+        CheckoutDetailsHandler.resetToDefault()
+        UserDataHandler.resetToDefault()
     }
 }

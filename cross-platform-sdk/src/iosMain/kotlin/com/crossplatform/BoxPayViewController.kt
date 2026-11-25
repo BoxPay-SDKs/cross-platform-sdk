@@ -1,5 +1,6 @@
 package com.crossplatform
 
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.window.ComposeUIViewController
 import com.crossplatform.sdk.BoxPayCommonCheckout
 import com.crossplatform.sdk.data.handler.CommonSDKDismissHandler
@@ -32,6 +33,7 @@ fun BoxPayViewController(
     themeMode: BoxPayThemeMode = BoxPayThemeMode.SYSTEM,
 ) = ComposeUIViewController {
     CommonSDKDismissHandler.setCloseSDK { onDismiss() }
+    DisposableEffect(Unit) { onDispose { CommonSDKDismissHandler.releaseSession() } }
     val localeManager = LocaleManager()
     BoxPayCommonCheckout(
         token = token,
