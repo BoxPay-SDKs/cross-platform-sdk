@@ -68,7 +68,8 @@ internal fun BoxPayCommonCheckout(
                 AppNavHost(
                     onLanguageChange = {
                         localeManager.setLanguage(it)
-                    }
+                    },
+                    selectedLanguage = activeLanguage
                 )
             }
         }

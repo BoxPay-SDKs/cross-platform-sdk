@@ -287,4 +287,5 @@ class MainScreenViewModelTest {
         viewModel.onClickDeleteSavedCard("card_1")
 
         assertEquals(listOf("card_1", "card_2"), viewModel.recommendedList.value.map { it.id })
+    }
 }
