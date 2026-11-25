@@ -510,6 +510,7 @@ internal class BoxPayElementsViewModel (
             val response = repo.postSavedCardRequest(instrumentRef = instrumentRef, isSICheckboxChecked = isSICheckboxChecked )
             handlePaymentResponse(
                 response = response,
+                isCardPayment = true,
                 onSetPaymentUrl = {
                     setWebViewUrl.value = it
                     setWebViewScreen(true)
@@ -910,6 +911,7 @@ internal class BoxPayElementsViewModel (
             )
             handlePaymentResponse(
                 response = response,
+                isCardPayment = true,
                 onSetPaymentHtml = {html ->
                     htmlString.value = html
                     setWebViewScreen(true)

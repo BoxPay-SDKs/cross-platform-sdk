@@ -238,6 +238,9 @@
     <string name="nfc_scan_error_tag_lost">Thẻ bị di chuyển ra quá sớm. Hãy giữ yên thẻ sát mặt sau thiết bị rồi thử lại.</string>
     <string name="nfc_scan_try_again">Thử lại</string>
     <string name="nfc_scan_enter_manually">Nhập thủ công</string>
+    <string name="card_retry_limit_reached_title">Đã đạt giới hạn thử lại của thẻ</string>
+    <string name="card_retry_limit_reached_desc">Bạn đã đạt số lần thanh toán tối đa cho thẻ này. Vui lòng thử thẻ khác</string>
+    <string name="try_another_card_cta">Thử thẻ khác</string>
     <string name="edit_card_nickname_error">Không thể cập nhật biệt danh. Vui lòng thử lại.</string>
     <string name="nickname_invalid_chars">Chỉ dùng chữ cái, số, khoảng trắng và . _ \' -</string>
     <string name="nickname_looks_like_card">Biệt danh không được giống số thẻ</string>

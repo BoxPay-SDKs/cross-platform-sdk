@@ -238,6 +238,9 @@
     <string name="nfc_scan_error_tag_lost">கார்டு மிக விரைவாக விலகிவிட்டது. அதை உங்கள் சாதனத்தின் பின்புறத்தில் அசையாமல் வைத்து மீண்டும் முயலவும்.</string>
     <string name="nfc_scan_try_again">மீண்டும் முயலவும்</string>
     <string name="nfc_scan_enter_manually">கைமுறையாக உள்ளிடவும்</string>
+    <string name="card_retry_limit_reached_title">கார்டு மறுமுயற்சி வரம்பு எட்டப்பட்டது</string>
+    <string name="card_retry_limit_reached_desc">இந்த கார்டுக்கான அதிகபட்ச கட்டண முயற்சிகளை அடைந்துவிட்டீர்கள். வேறு கார்டை முயற்சிக்கவும்</string>
+    <string name="try_another_card_cta">வேறு கார்டை முயற்சிக்கவும்</string>
     <string name="edit_card_nickname_error">புனைப்பெயரைப் புதுப்பிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.</string>
     <string name="nickname_invalid_chars">எழுத்துகள், எண்கள், இடைவெளிகள் மற்றும் . _ \' - மட்டும் பயன்படுத்தவும்</string>
     <string name="nickname_looks_like_card">புனைப்பெயர் கார்டு எண்ணைப் போல இருக்கக் கூடாது</string>

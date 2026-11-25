@@ -87,6 +87,7 @@ internal object CheckoutDetailsHandler {
         availableRetryMethods = emptyList(),
         isCheckoutLimitReached = false,
         isPaymentMaxAttemptsReached = false,
+        isCardRetryLimitReached = false,
         localeCode = "en"
     )
 
@@ -152,6 +153,11 @@ internal object CheckoutDetailsHandler {
         .map { it.isPaymentMaxAttemptsReached }
         .distinctUntilChanged()
         .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().isPaymentMaxAttemptsReached)
+
+    val isCardRetryLimitReachedFlow: StateFlow<Boolean> = _checkoutDetailsFlow
+        .map { it.isCardRetryLimitReached }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, defaultCheckoutDetails().isCardRetryLimitReached)
 
     val isCheckoutLimitReachedFlow: StateFlow<Boolean> = _checkoutDetailsFlow
         .map { it.isCheckoutLimitReached }
@@ -590,6 +596,11 @@ internal object CheckoutDetailsHandler {
 
     fun setIsPaymentMaxAttemptsReached() {
         checkoutDetails = checkoutDetails.copy(isPaymentMaxAttemptsReached = !checkoutDetails.isPaymentMaxAttemptsReached)
+        _checkoutDetailsFlow.value = checkoutDetails
+    }
+
+    fun setIsCardRetryLimitReached(isReached: Boolean) {
+        checkoutDetails = checkoutDetails.copy(isCardRetryLimitReached = isReached)
         _checkoutDetailsFlow.value = checkoutDetails
     }
 

@@ -262,6 +262,7 @@ internal fun CardScreen(
             sheetState = sheetState,
             onClickCancel = {
                 showCancelModal.value = true
+                viewModel.isNativeOtpInvalid.value = false
             },
             onClickProceed = {
                 viewModel.submitOtp(it, isTestEnv.value)
@@ -273,6 +274,7 @@ internal fun CardScreen(
             onClickUrl = {
                 viewModel.showNativeOtpBottomSheet.value = false
                 viewModel.setWebViewScreen(true)
+                viewModel.isNativeOtpInvalid.value = false
             },
             minOtpField = viewModel.minOtpLength.value,
             maxOtpField = viewModel.maxOtpLength.value,
@@ -282,6 +284,7 @@ internal fun CardScreen(
                 showCancelModal.value = false
                 viewModel.showNativeOtpBottomSheet.value = false
                 viewModel.nativeOtpPageExpired()
+                viewModel.isNativeOtpInvalid.value = false
             }
         )
     }
