@@ -7,6 +7,7 @@ import com.crossplatform.sdk.domain.repo.FetchStatusRepo
 import com.crossplatform.sdk.presentation.currentTimeMillis
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.auto_refund_timeout_error_message
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.coroutineScope
@@ -72,13 +73,30 @@ internal suspend fun fetchStatusWithAutoRefund(
     // A countdown is already resolving the status; don't start a second one.
     if (AutoRefundHandler.isRunning) return
 
-    val response = fetchStatusRepo.fetchStatus()
+    val response = safeFetchStatus(fetchStatusRepo)
     // Another overlapping call may have started the countdown while this fetch was in flight.
     if (AutoRefundHandler.isRunning) return
+
     val resolved: ApiResponse<FetchStatusResponse>? =
         if (AutoRefundHandler.isEnabled && response is ApiResponse.Success && response.data.isPending()) {
-            setIsBoxPayAnimationVisible(true) // make sure the loader (with the countdown) is visible
-            runAutoRefundFlow(fetchStatusRepo, response.data.transactionId)
+            AutoRefundHandler.isRunning = true // keep the overlap guard while the timer starts
+            try {
+                val timer = (safeStartTimer(fetchStatusRepo, response.data.transactionId)
+                        as? ApiResponse.Success)?.data
+                if (timer?.timerStarted == true) {
+                    setIsBoxPayAnimationVisible(true) // loader (with the countdown) must be visible
+                    runAutoRefundFlow(
+                        fetchStatusRepo = fetchStatusRepo,
+                        timeoutSeconds = timer.autoRefundTimeoutSeconds
+                            .takeIf { it > 0 } ?: DEFAULT_AUTO_REFUND_TIMEOUT_SECONDS
+                    )
+                } else {
+                    response
+                }
+            } finally {
+                AutoRefundHandler.setSecondsLeft(null)
+                AutoRefundHandler.isRunning = false
+            }
         } else {
             response
         }
@@ -109,57 +127,67 @@ internal suspend fun fetchStatusWithAutoRefund(
 }
 
 /**
+ * Runs the countdown for [timeoutSeconds] and polls the status every 4 seconds.
  * Returns the first non-PENDING status response, or null if the timer runs out first.
  * The countdown and the polling run in separate coroutines so a slow status call never
- * freezes the visible timer.
+ * freezes the visible timer. The caller owns [AutoRefundHandler.isRunning] and clearing
+ * the countdown.
  */
 private suspend fun runAutoRefundFlow(
     fetchStatusRepo: FetchStatusRepo,
-    transactionId: String
+    timeoutSeconds: Int
 ): ApiResponse<FetchStatusResponse>? {
-    AutoRefundHandler.isRunning = true
-    try {
-        val timer = fetchStatusRepo.startAutoRefundTimer(transactionId)
-        val timeoutSeconds = (timer as? ApiResponse.Success)
-            ?.data?.autoRefundTimeoutSeconds
-            ?.takeIf { it > 0 }
-            ?: DEFAULT_AUTO_REFUND_TIMEOUT_SECONDS
-        val deadline = AutoRefundHandler.clock() + timeoutSeconds * 1000L
+    val deadline = AutoRefundHandler.clock() + timeoutSeconds * 1000L
 
-        val resolved = CompletableDeferred<ApiResponse<FetchStatusResponse>>()
-        val result = coroutineScope {
-            // Polling: every 4 seconds, stops as soon as the status is no longer PENDING.
-            launch {
-                while (isActive && !resolved.isCompleted) {
-                    delay(STATUS_POLL_INTERVAL_MS)
-                    val response = fetchStatusRepo.fetchStatus()
-                    if (response is ApiResponse.Success && !response.data.isPending()) {
-                        resolved.complete(response)
-                    }
+    val resolved = CompletableDeferred<ApiResponse<FetchStatusResponse>>()
+    val result = coroutineScope {
+        // Polling: every 4 seconds, stops as soon as the status is no longer PENDING.
+        launch {
+            while (isActive && !resolved.isCompleted) {
+                delay(STATUS_POLL_INTERVAL_MS)
+                val response = safeFetchStatus(fetchStatusRepo)
+                if (response is ApiResponse.Success && !response.data.isPending()) {
+                    resolved.complete(response)
                 }
             }
-            // Countdown: ticks every second; one last status check when it reaches 0.
-            launch {
-                while (isActive && !resolved.isCompleted) {
-                    val left = secondsUntil(deadline)
-                    AutoRefundHandler.setSecondsLeft(left)
-                    if (left <= 0) break
-                    delay(1000L)
-                }
-                if (!resolved.isCompleted) {
-                    resolved.complete(fetchStatusRepo.fetchStatus())
-                }
-            }
-            val finalResponse = resolved.await()
-            this.coroutineContext.cancelChildren()
-            finalResponse
         }
-        return if (result is ApiResponse.Success && !result.data.isPending()) result else null
-    } finally {
-        AutoRefundHandler.setSecondsLeft(null)
-        AutoRefundHandler.isRunning = false
+        // Countdown: ticks every second; one last status check when it reaches 0.
+        launch {
+            while (isActive && !resolved.isCompleted) {
+                val left = secondsUntil(deadline)
+                AutoRefundHandler.setSecondsLeft(left)
+                if (left <= 0) break
+                delay(1000L)
+            }
+            if (!resolved.isCompleted) {
+                resolved.complete(safeFetchStatus(fetchStatusRepo))
+            }
+        }
+        val finalResponse = resolved.await()
+        this.coroutineContext.cancelChildren()
+        finalResponse
     }
+    return if (result is ApiResponse.Success && !result.data.isPending()) result else null
 }
+
+/** A status call that throws becomes an [ApiResponse.Error] instead of crashing the flow. */
+private suspend fun safeFetchStatus(repo: FetchStatusRepo): ApiResponse<FetchStatusResponse> =
+    try {
+        repo.fetchStatus()
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        ApiResponse.Error(e.message ?: "status check failed")
+    }
+
+private suspend fun safeStartTimer(repo: FetchStatusRepo, transactionId: String) =
+    try {
+        repo.startAutoRefundTimer(transactionId)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        ApiResponse.Error(e.message ?: "auto refund timer failed")
+    }
 
 private fun secondsUntil(deadlineMillis: Long): Int {
     val remainingMs = deadlineMillis - AutoRefundHandler.clock()
