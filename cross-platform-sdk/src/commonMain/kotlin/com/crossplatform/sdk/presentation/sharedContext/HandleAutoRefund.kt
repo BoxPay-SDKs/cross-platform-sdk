@@ -31,6 +31,16 @@ internal object AutoRefundHandler {
 
     internal var isRunning: Boolean = false
 
+    /** Clock used for the countdown deadline; replaced in tests so virtual time can be used. */
+    internal var clock: () -> Long = { currentTimeMillis() }
+
+    internal fun resetForTest() {
+        isEnabled = false
+        isRunning = false
+        _secondsLeft.value = null
+        clock = { currentTimeMillis() }
+    }
+
     private val _secondsLeft = MutableStateFlow<Int?>(null)
     val secondsLeft: StateFlow<Int?> = _secondsLeft
 
@@ -114,7 +124,7 @@ private suspend fun runAutoRefundFlow(
             ?.data?.autoRefundTimeoutSeconds
             ?.takeIf { it > 0 }
             ?: DEFAULT_AUTO_REFUND_TIMEOUT_SECONDS
-        val deadline = currentTimeMillis() + timeoutSeconds * 1000L
+        val deadline = AutoRefundHandler.clock() + timeoutSeconds * 1000L
 
         val resolved = CompletableDeferred<ApiResponse<FetchStatusResponse>>()
         val result = coroutineScope {
@@ -152,7 +162,7 @@ private suspend fun runAutoRefundFlow(
 }
 
 private fun secondsUntil(deadlineMillis: Long): Int {
-    val remainingMs = deadlineMillis - currentTimeMillis()
+    val remainingMs = deadlineMillis - AutoRefundHandler.clock()
     return if (remainingMs <= 0) 0 else ((remainingMs + 999) / 1000).toInt()
 }
 

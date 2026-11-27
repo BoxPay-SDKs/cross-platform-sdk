@@ -92,6 +92,9 @@ internal class FakeFetchStatusRepo : FetchStatusRepo {
     var fetchStatusResult: ApiResponse<FetchStatusResponse> = ApiResponse.Loading
     var autoRetryResult: ApiResponse<PaymentMethodPostResponse> = ApiResponse.Loading
 
+    /** Responses returned one by one (before falling back to [fetchStatusResult]). */
+    val fetchStatusQueue = ArrayDeque<ApiResponse<FetchStatusResponse>>()
+
     var fetchStatusCallCount: Int = 0
     var lastAutoRetryTransactionId: String? = null
     var startAutoRefundTimerResult: ApiResponse<AutoRefundTimerResponse> = ApiResponse.Loading
@@ -99,6 +102,7 @@ internal class FakeFetchStatusRepo : FetchStatusRepo {
 
     override suspend fun fetchStatus(): ApiResponse<FetchStatusResponse> {
         fetchStatusCallCount++
+        if (fetchStatusQueue.isNotEmpty()) return fetchStatusQueue.removeFirst()
         return fetchStatusResult
     }
 
