@@ -166,6 +166,8 @@ internal class BoxPayElementsViewModel (
 
     fun loadSession() {
         if (isSessionLoaded) return
+        // Never carry the previous session's auto-refund setting over if this load fails.
+        AutoRefundHandler.isEnabled = false
         val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
         if (checkoutDetails.token.isEmpty()) {
             _state.value = UiState.Error("Token is empty")

@@ -29,6 +29,7 @@ internal fun buildMinimalSessionDetails(
     status: String = "created",
     localeCode: String = "en",
     paymentAttemptsExhausted: Boolean = false,
+    autoRefundEnabled: Boolean = false,
     paymentMethods: List<PaymentMethod> = listOf(
         buildPaymentMethod(id = "pm_card", type = "Card", brand = "VISA"),
         buildPaymentMethod(id = "pm_upi",  type = "Upi",  brand = "UPI"),
@@ -36,7 +37,8 @@ internal fun buildMinimalSessionDetails(
 ): SessionDetails = SessionDetails(
     configs = Configs(
         paymentMethods = paymentMethods,
-        enabledFields  = listOf(EnabledFields(field = "email", editable = true, mandatory = false))
+        enabledFields  = listOf(EnabledFields(field = "email", editable = true, mandatory = false)),
+        autoRefundEnabled = autoRefundEnabled
     ),
     paymentDetails = PaymentDetails(
         context = PaymentContext(countryCode = "IN", localeCode = localeCode),

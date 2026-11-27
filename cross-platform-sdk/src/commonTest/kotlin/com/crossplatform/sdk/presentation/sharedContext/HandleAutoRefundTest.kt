@@ -145,10 +145,47 @@ class HandleAutoRefundTest {
         assertFalse(AutoRefundHandler.isRunning)
     }
 
+    private fun assertOldBehaviourWithoutCountdown() {
+        assertEquals(1, repo.fetchStatusCallCount, "no polling when the server timer did not start")
+        assertFalse(
+            CheckoutDetailsHandler.checkoutDetails.errorMessage.contains("refunded or released automatically"),
+            "must not promise a refund when no server timer exists",
+        )
+        assertNull(AutoRefundHandler.secondsLeft.value)
+        assertFalse(AutoRefundHandler.isRunning)
+    }
+
     @Test
-    fun `timer api failure falls back to a 30 second countdown`() = runTest {
+    fun `timer api failure - no countdown and old behaviour`() = runTest {
         useVirtualClock()
         repo.startAutoRefundTimerResult = ApiResponse.Error("boom")
+        repo.fetchStatusResult = status("PENDING")
+
+        run()
+
+        assertEquals(0L, testScheduler.currentTime)
+        assertOldBehaviourWithoutCountdown()
+    }
+
+    @Test
+    fun `timerStarted false - no countdown and old behaviour`() = runTest {
+        useVirtualClock()
+        repo.startAutoRefundTimerResult = ApiResponse.Success(
+            AutoRefundTimerResponse(timerStarted = false, autoRefundTimeoutSeconds = 30),
+            responseCode = 200,
+        )
+        repo.fetchStatusResult = status("PENDING")
+
+        run()
+
+        assertEquals(0L, testScheduler.currentTime)
+        assertOldBehaviourWithoutCountdown()
+    }
+
+    @Test
+    fun `missing timeout seconds falls back to the 30 second default`() = runTest {
+        useVirtualClock()
+        repo.startAutoRefundTimerResult = timer(0)
         repo.fetchStatusResult = status("PENDING")
 
         run()
