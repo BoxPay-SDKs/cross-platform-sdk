@@ -3,6 +3,7 @@ package com.crossplatform.sdk.fakes
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.model.AnalyticsResponse
 import com.crossplatform.sdk.data.model.AppliedOfferResponse
+import com.crossplatform.sdk.data.model.AutoRefundTimerResponse
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.data.model.FetchStatusResponse
@@ -91,17 +92,28 @@ internal class FakeFetchStatusRepo : FetchStatusRepo {
     var fetchStatusResult: ApiResponse<FetchStatusResponse> = ApiResponse.Loading
     var autoRetryResult: ApiResponse<PaymentMethodPostResponse> = ApiResponse.Loading
 
+    /** Responses returned one by one (before falling back to [fetchStatusResult]). */
+    val fetchStatusQueue = ArrayDeque<ApiResponse<FetchStatusResponse>>()
+
     var fetchStatusCallCount: Int = 0
     var lastAutoRetryTransactionId: String? = null
+    var startAutoRefundTimerResult: ApiResponse<AutoRefundTimerResponse> = ApiResponse.Loading
+    var lastAutoRefundTransactionId: String? = null
 
     override suspend fun fetchStatus(): ApiResponse<FetchStatusResponse> {
         fetchStatusCallCount++
+        if (fetchStatusQueue.isNotEmpty()) return fetchStatusQueue.removeFirst()
         return fetchStatusResult
     }
 
     override suspend fun autoRetryInitiatePayment(transactionId: String): ApiResponse<PaymentMethodPostResponse> {
         lastAutoRetryTransactionId = transactionId
         return autoRetryResult
+    }
+
+    override suspend fun startAutoRefundTimer(transactionId: String): ApiResponse<AutoRefundTimerResponse> {
+        lastAutoRefundTransactionId = transactionId
+        return startAutoRefundTimerResult
     }
 }
 

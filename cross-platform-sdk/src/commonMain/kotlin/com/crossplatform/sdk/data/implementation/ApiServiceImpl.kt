@@ -7,6 +7,7 @@ import com.crossplatform.sdk.data.handler.CheckoutDetailsHandler
 import com.crossplatform.sdk.data.handler.UserDataHandler
 import com.crossplatform.sdk.data.model.AnalyticsResponse
 import com.crossplatform.sdk.data.model.AppliedOfferResponse
+import com.crossplatform.sdk.data.model.AutoRefundTimerResponse
 import com.crossplatform.sdk.data.model.Details
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.data.model.FetchSavedAddress
@@ -413,6 +414,16 @@ internal class ApiServiceImpl : ApiService {
     ): ApiResponse<PaymentMethodPostResponse> {
         return executeWithResponse{
             client.post(urlString = "transactions/${transactionId}/clones") {
+                contentType(ContentType.Application.Json)
+            }
+        }
+    }
+
+    override suspend fun startAutoRefundTimer(
+        transactionId : String
+    ): ApiResponse<AutoRefundTimerResponse> {
+        return executeWithResponse {
+            client.post(urlString = "transactions/$transactionId/auto-refund-timer") {
                 contentType(ContentType.Application.Json)
             }
         }

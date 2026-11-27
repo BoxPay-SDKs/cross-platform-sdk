@@ -209,6 +209,8 @@
     <string name="enter_a_valid_number_error_message">Saisissez un numéro valide</string>
     <string name="invalid_card_number_error_message">Numéro de carte invalide</string>
     <string name="payment_failed_error_messages">Vous avez peut-être annulé le paiement ou un délai de réponse s'est produit. Veuillez réessayer.</string>
+    <string name="auto_refund_timeout_error_message">Si un montant a été débité ou bloqué, il sera remboursé ou libéré automatiquement, selon le cas.</string>
+    <string name="confirming_payment_info">Confirmation de votre paiement…</string>
 
     <!--    Cta with values-->
     <string name="auto_retry_cta_with_value">Nouvelle tentative dans %1$s – Appuyez pour annuler</string>

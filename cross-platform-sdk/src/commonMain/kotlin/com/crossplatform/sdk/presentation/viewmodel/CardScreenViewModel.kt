@@ -16,7 +16,7 @@ import com.crossplatform.sdk.domain.repo.FetchStatusRepo
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.currentMonth
 import com.crossplatform.sdk.presentation.currentYear
-import com.crossplatform.sdk.presentation.sharedContext.handleFetchStatus
+import com.crossplatform.sdk.presentation.sharedContext.fetchStatusWithAutoRefund
 import com.crossplatform.sdk.presentation.sharedContext.handlePaymentResponse
 import com.crossplatform.sdk.presentation.sharedContext.handleUpiCollectFetchStatus
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -336,9 +336,8 @@ internal class CardScreenViewModel(
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
             isBoxPayAnimationVisible.value = true
-            val response = fetchStatusRepo.fetchStatus()
-            handleFetchStatus(
-                response = response,
+            fetchStatusWithAutoRefund(
+                fetchStatusRepo = fetchStatusRepo,
                 setIsBoxPayAnimationVisible = {isBoxPayAnimationVisible.value = it},
                 onAutoRetry = {
                     CheckoutDetailsHandler.showAutoRetryDropDown({ autoRetryInitiatePayment() })
@@ -454,7 +453,7 @@ internal class CardScreenViewModel(
                     if(data.success) {
                         showNativeOtpBottomSheet.value = false
                         isBoxPayAnimationVisible.value = true
-                        startFetchStatusPolling("")
+                        startFetchStatusPolling("", autoRefundOnPending = true)
                     } else {
                         isNativeOtpInvalid.value = true
                         isNativeOtpLoading.value = false
@@ -481,19 +480,30 @@ internal class CardScreenViewModel(
         }
     }
 
-    fun startFetchStatusPolling(inquiryResult: String) {
+    fun startFetchStatusPolling(inquiryResult: String, autoRefundOnPending: Boolean = false) {
         fetchStatusJob?.cancel()
         fetchStatusJob = viewModelScope.launch {
             while (isActive) {
-                callUpiCollectFetchStatue(inquiryResult)
+                callUpiCollectFetchStatue(inquiryResult, autoRefundOnPending)
                 delay(4000L)
             }
         }
     }
-
-    fun callUpiCollectFetchStatue(inquiryResult : String) {
+    fun callUpiCollectFetchStatue(inquiryResult : String, autoRefundOnPending : Boolean = false) {
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
+            if (autoRefundOnPending) {
+                fetchStatusWithAutoRefund(
+                    fetchStatusRepo = fetchStatusRepo,
+                    setIsBoxPayAnimationVisible = {
+                        stopFetchStatusPolling()
+                        isBoxPayAnimationVisible.value = it
+                    },
+                    onAutoRetry = {},
+                    isPollingFlow = true
+                )
+                return@launch
+            }
             val response = fetchStatusRepo.fetchStatus()
             handleUpiCollectFetchStatus(
                 response = response,

@@ -31,7 +31,8 @@ import com.crossplatform.sdk.presentation.components.upiRegex
 import com.crossplatform.sdk.presentation.currentMonth
 import com.crossplatform.sdk.presentation.currentYear
 import com.crossplatform.sdk.presentation.loadCountryData
-import com.crossplatform.sdk.presentation.sharedContext.handleFetchStatus
+import com.crossplatform.sdk.presentation.sharedContext.AutoRefundHandler
+import com.crossplatform.sdk.presentation.sharedContext.fetchStatusWithAutoRefund
 import com.crossplatform.sdk.presentation.sharedContext.handlePaymentResponse
 import com.crossplatform.sdk.presentation.sharedContext.handleUpiCollectFetchStatus
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
@@ -165,6 +166,8 @@ internal class BoxPayElementsViewModel (
 
     fun loadSession() {
         if (isSessionLoaded) return
+        // Never carry the previous session's auto-refund setting over if this load fails.
+        AutoRefundHandler.isEnabled = false
         val checkoutDetails = CheckoutDetailsHandler.checkoutDetails
         if (checkoutDetails.token.isEmpty()) {
             _state.value = UiState.Error("Token is empty")
@@ -187,6 +190,7 @@ internal class BoxPayElementsViewModel (
                 }
 
                 val sessionData = sessionResponse.data
+                AutoRefundHandler.isEnabled = sessionData.configs.autoRefundEnabled
                 val responseData = sessionData.toUiModel()
                 val shopper = sessionData.paymentDetails.shopper
 
@@ -415,9 +419,8 @@ internal class BoxPayElementsViewModel (
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
             isBoxPayAnimationLoading.value = true
-            val response = fetchStatusRepo.fetchStatus()
-            handleFetchStatus(
-                response = response,
+            fetchStatusWithAutoRefund(
+                fetchStatusRepo = fetchStatusRepo,
                 setIsBoxPayAnimationVisible = {
                     isBoxPayAnimationLoading.value = it
                 },
@@ -467,9 +470,23 @@ internal class BoxPayElementsViewModel (
         }
     }
 
-    fun callUpiCollectFetchStatue(inquiryResult : String) {
+    /** See CardScreenViewModel.callUpiCollectFetchStatue: [autoRefundOnPending] is for native OTP. */
+    fun callUpiCollectFetchStatue(inquiryResult : String, autoRefundOnPending : Boolean = false) {
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
+            if (autoRefundOnPending) {
+                fetchStatusWithAutoRefund(
+                    fetchStatusRepo = fetchStatusRepo,
+                    setIsBoxPayAnimationVisible = {
+                        stopFetchStatusPolling()
+                        isBoxPayAnimationLoading.value = it
+                    },
+                    onAutoRetry = {},
+                    notifyComponentsHandler = { deliverPaymentResult() },
+                    isPollingFlow = true
+                )
+                return@launch
+            }
             val response = fetchStatusRepo.fetchStatus()
             handleUpiCollectFetchStatus(
                 response = response,
@@ -484,13 +501,30 @@ internal class BoxPayElementsViewModel (
         }
     }
 
-    fun startFetchStatusPolling(inquiryResult: String) {
+    fun startFetchStatusPolling(inquiryResult: String, autoRefundOnPending: Boolean = false) {
         fetchStatusJob?.cancel()
         fetchStatusJob = viewModelScope.launch {
             while (isActive) {
-                callUpiCollectFetchStatue(inquiryResult)
+                callUpiCollectFetchStatue(inquiryResult, autoRefundOnPending)
                 delay(4000L)
             }
+        }
+    }
+
+    /** See MainScreenViewModel.onUpiWindowEnded. */
+    fun onUpiWindowEnded() {
+        if (!AutoRefundHandler.isEnabled || AutoRefundHandler.isRunning) return
+        viewModelScope.launch {
+            fetchStatusWithAutoRefund(
+                fetchStatusRepo = fetchStatusRepo,
+                setIsBoxPayAnimationVisible = {
+                    stopFetchStatusPolling()
+                    isBoxPayAnimationLoading.value = it
+                },
+                onAutoRetry = {},
+                notifyComponentsHandler = { deliverPaymentResult() },
+                isPollingFlow = true
+            )
         }
     }
 
@@ -654,7 +688,7 @@ internal class BoxPayElementsViewModel (
                     if(data.success) {
                         showNativeOtpBottomSheet.value = false
                         isBoxPayAnimationLoading.value = true
-                        startFetchStatusPolling("")
+                        startFetchStatusPolling("", autoRefundOnPending = true)
                     } else {
                         isNativeOtpInvalid.value = true
                         isNativeOtpLoading.value = false

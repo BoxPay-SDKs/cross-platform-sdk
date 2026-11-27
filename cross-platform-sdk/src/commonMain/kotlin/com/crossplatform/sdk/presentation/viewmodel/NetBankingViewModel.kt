@@ -12,7 +12,7 @@ import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
 import com.crossplatform.sdk.domain.repo.FetchStatusRepo
 import com.crossplatform.sdk.domain.repo.OtherPaymentMethodRepo
 import com.crossplatform.sdk.presentation.UiState
-import com.crossplatform.sdk.presentation.sharedContext.handleFetchStatus
+import com.crossplatform.sdk.presentation.sharedContext.fetchStatusWithAutoRefund
 import com.crossplatform.sdk.presentation.sharedContext.handlePaymentResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -127,9 +127,8 @@ internal class NetBankingViewModel (
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
             isBoxPayAnimationVisible.value = true
-            val response = fetchStatusRepo.fetchStatus()
-            handleFetchStatus(
-                response = response,
+            fetchStatusWithAutoRefund(
+                fetchStatusRepo = fetchStatusRepo,
                 setIsBoxPayAnimationVisible = {isBoxPayAnimationVisible.value = it},
                 onAutoRetry = {
                     CheckoutDetailsHandler.showAutoRetryDropDown { autoRetryInitiatePayment()}

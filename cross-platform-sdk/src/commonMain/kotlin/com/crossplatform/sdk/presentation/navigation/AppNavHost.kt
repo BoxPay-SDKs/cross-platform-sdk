@@ -293,7 +293,8 @@ internal fun AppNavHost(
                         navController.popBackStack()
                     },
                     buttonColor = buttonColor.value,
-                    buttonTextColor = buttonTextColor.value
+                    buttonTextColor = buttonTextColor.value,
+                    onTimerExpired = { viewModel.onUpiWindowEnded() }
                 )
             }
 

@@ -147,6 +147,7 @@ internal fun BoxPayElementsComponent(
                 },
 
                 stopFetchStatusPolling = { viewModel.stopFetchStatusPolling() },
+                onQrExpired            = { viewModel.onUpiWindowEnded() },
                 postUPIQrRequest       = { type -> viewModel.postUPIQrRequest(type) },
                 postUpiCollectRequest  = { shopperVpa, type, instrumentRef, saveInstrument ->
                     viewModel.postUpiCollectRequest(
@@ -293,7 +294,8 @@ internal fun BoxPayElementsComponent(
                     viewModel.onUPITimerBottomSheetDismissed()
                 },
                 buttonColor = buttonColor,
-                buttonTextColor = buttonTextColor
+                buttonTextColor = buttonTextColor,
+                onTimerExpired = { viewModel.onUpiWindowEnded() }
             )
         }
     }

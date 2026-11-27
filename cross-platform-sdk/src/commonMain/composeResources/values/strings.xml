@@ -209,6 +209,8 @@
     <string name="enter_a_valid_number_error_message">Enter a valid number</string>
     <string name="invalid_card_number_error_message">Invalid card number</string>
     <string name="payment_failed_error_messages">You may have cancelled the payment or there was a delay in response. Please retry.</string>
+    <string name="auto_refund_timeout_error_message">If any amount is deducted or blocked, it will be refunded or released automatically, as applicable.</string>
+    <string name="confirming_payment_info">Confirming your payment…</string>
 
 <!--    Cta with values-->
     <string name="auto_retry_cta_with_value">Retrying in %1$s – Tap to cancel</string>

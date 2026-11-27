@@ -3,6 +3,7 @@ package com.crossplatform.sdk.fakes
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.model.AnalyticsResponse
 import com.crossplatform.sdk.data.model.AppliedOfferResponse
+import com.crossplatform.sdk.data.model.AutoRefundTimerResponse
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.data.model.FetchStatusResponse
@@ -50,6 +51,7 @@ internal class FakeApiService : ApiService {
     var nextOffer: ApiResponse<List<InstantOfferResponse>>? = null
     var nextApplyOffer: ApiResponse<AppliedOfferResponse>? = null
     var nextAutoRetryInitiatePayment: ApiResponse<PaymentMethodPostResponse>? = null
+    var nextStartAutoRefundTimer: ApiResponse<AutoRefundTimerResponse>? = null
     var nextSubmitNativeOtp: ApiResponse<NativeOtpResponse>? = null
     var nextResendOtp: ApiResponse<NativeOtpResponse>? = null
     var nextCancelTransaction: ApiResponse<PaymentMethodPostResponse>? = null
@@ -251,6 +253,13 @@ internal class FakeApiService : ApiService {
         lastAutoRetryTransactionId = transactionId
         callLog += "autoRetryInitiatePayment($transactionId)"
         return require(nextAutoRetryInitiatePayment, "nextAutoRetryInitiatePayment")
+    }
+
+    override suspend fun startAutoRefundTimer(
+        transactionId: String
+    ): ApiResponse<AutoRefundTimerResponse> {
+        callLog += "startAutoRefundTimer($transactionId)"
+        return require(nextStartAutoRefundTimer, "nextStartAutoRefundTimer")
     }
 
     override suspend fun submitNativeOtp(

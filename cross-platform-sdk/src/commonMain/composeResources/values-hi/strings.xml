@@ -209,6 +209,8 @@
     <string name="enter_a_valid_number_error_message">मान्य नंबर दर्ज करें</string>
     <string name="invalid_card_number_error_message">अमान्य कार्ड नंबर</string>
     <string name="payment_failed_error_messages">हो सकता है आपने भुगतान रद्द कर दिया हो या प्रतिक्रिया में देरी हुई हो। कृपया फिर से प्रयास करें।</string>
+    <string name="auto_refund_timeout_error_message">यदि कोई राशि काटी गई है या रोकी गई है, तो उसे लागू स्थिति के अनुसार स्वचालित रूप से रिफंड या रिलीज़ कर दिया जाएगा।</string>
+    <string name="confirming_payment_info">आपके भुगतान की पुष्टि की जा रही है…</string>
 
     <!--    Cta with values-->
     <string name="auto_retry_cta_with_value">%1$s में फिर से प्रयास हो रहा है – रद्द करने के लिए टैप करें</string>

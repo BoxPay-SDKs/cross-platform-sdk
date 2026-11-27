@@ -3,6 +3,7 @@ package com.crossplatform.sdk.data.service
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.model.AnalyticsResponse
 import com.crossplatform.sdk.data.model.AppliedOfferResponse
+import com.crossplatform.sdk.data.model.AutoRefundTimerResponse
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.data.model.FetchStatusResponse
@@ -114,6 +115,11 @@ internal interface ApiService {
     suspend fun autoRetryInitiatePayment(
         transactionId : String
     ) : ApiResponse<PaymentMethodPostResponse>
+
+    /** Starts the server-side auto-refund timer for a transaction that is still PENDING. */
+    suspend fun startAutoRefundTimer(
+        transactionId : String
+    ) : ApiResponse<AutoRefundTimerResponse>
 
     suspend fun submitNativeOtp(
         otp : String,

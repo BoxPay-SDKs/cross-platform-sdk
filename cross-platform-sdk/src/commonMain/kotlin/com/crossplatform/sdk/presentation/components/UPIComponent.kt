@@ -83,7 +83,6 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.io.encoding.ExperimentalEncodingApi
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 internal val upiRegex = Regex("^[a-zA-Z0-9.\\-_]{2,256}@[a-zA-Z]{3,64}$")
 
@@ -114,6 +113,7 @@ internal fun UPIComponent(
     qrImage : String,
     qrTimer : Int,
     stopFunctionCall : () -> Unit,
+    onQrExpired : () -> Unit = {},
     showQROnLoad : Boolean,
     isQRLoaded : Boolean,
     isBoxPayPayButtonVisible : Boolean = true,
@@ -208,6 +208,8 @@ internal fun UPIComponent(
 
         qrIsExpired.value = true
         if(qrIsExpired.value) stopFunctionCall()
+        // Real expiry only (not when the QR section was collapsed or the QR was removed)
+        if (qrTimer > 0 && expandedUpiSection == UpiSection.QR) onQrExpired()
     }
 
     fun handleTextChange(text: String) {
