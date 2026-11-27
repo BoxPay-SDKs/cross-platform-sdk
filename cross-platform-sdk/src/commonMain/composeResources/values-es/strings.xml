@@ -209,6 +209,8 @@
     <string name="enter_a_valid_number_error_message">Ingresa un número válido</string>
     <string name="invalid_card_number_error_message">Número de tarjeta inválido</string>
     <string name="payment_failed_error_messages">Es posible que hayas cancelado el pago o que la respuesta se haya demorado. Vuelve a intentarlo.</string>
+    <string name="auto_refund_timeout_error_message">Si se ha descontado o bloqueado algún importe, se reembolsará o liberará automáticamente, según corresponda.</string>
+    <string name="confirming_payment_info">Confirmando tu pago…</string>
 
     <!--    Cta with values-->
     <string name="auto_retry_cta_with_value">Reintentando en %1$s – Toca para cancelar</string>

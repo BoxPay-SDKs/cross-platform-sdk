@@ -25,7 +25,9 @@ internal data class LastTransactionDetails(
 @Serializable
 internal data class Configs(
     @SerialName("paymentMethods") val paymentMethods: List<PaymentMethod>,
-    @SerialName("enabledFields") val enabledFields: List<EnabledFields>
+    @SerialName("enabledFields") val enabledFields: List<EnabledFields>,
+    // Auto refund (pending-payment timer) runs only when the session says it is enabled.
+    @SerialName("autoRefundEnabled") val autoRefundEnabled: Boolean = false
 )
 
 @Serializable

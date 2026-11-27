@@ -26,7 +26,8 @@ import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.currentTimeMillis
 import com.crossplatform.sdk.presentation.loadCountryData
 import com.crossplatform.sdk.presentation.parseIso8601ToMillis
-import com.crossplatform.sdk.presentation.sharedContext.handleFetchStatus
+import com.crossplatform.sdk.presentation.sharedContext.AutoRefundHandler
+import com.crossplatform.sdk.presentation.sharedContext.fetchStatusWithAutoRefund
 import com.crossplatform.sdk.presentation.sharedContext.handlePaymentResponse
 import com.crossplatform.sdk.presentation.sharedContext.handleUpiCollectFetchStatus
 import kotlinx.coroutines.Job
@@ -119,6 +120,7 @@ internal class MainScreenViewModel(
                 }
 
                 val sessionData = sessionResponse.data
+                AutoRefundHandler.isEnabled = sessionData.configs.autoRefundEnabled
                 val responseData = sessionData.toUiModel()
                 val shopper = sessionData.paymentDetails.shopper
 
@@ -415,9 +417,8 @@ internal class MainScreenViewModel(
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
             isBoxPayAnimationLoading.value = true
-            val response = fetchStatusRepo.fetchStatus()
-            handleFetchStatus(
-                response = response,
+            fetchStatusWithAutoRefund(
+                fetchStatusRepo = fetchStatusRepo,
                 setIsBoxPayAnimationVisible = {
                     isBoxPayAnimationLoading.value = it
                 },
@@ -483,6 +484,26 @@ internal class MainScreenViewModel(
                 callUpiCollectFetchStatue(inquiryResult)
                 delay(4000L)
             }
+        }
+    }
+
+    /**
+     * Called when a UPI QR / UPI collect window ends without a result. If auto refund is
+     * enabled and the status is still PENDING, runs the auto-refund countdown; any other
+     * status is handled exactly like the regular polling does.
+     */
+    fun onUpiWindowEnded() {
+        if (!AutoRefundHandler.isEnabled || AutoRefundHandler.isRunning) return
+        viewModelScope.launch {
+            fetchStatusWithAutoRefund(
+                fetchStatusRepo = fetchStatusRepo,
+                setIsBoxPayAnimationVisible = {
+                    stopFetchStatusPolling()
+                    isBoxPayAnimationLoading.value = it
+                },
+                onAutoRetry = {},
+                isPollingFlow = true
+            )
         }
     }
 

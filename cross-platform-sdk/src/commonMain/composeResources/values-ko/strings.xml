@@ -209,6 +209,8 @@
     <string name="enter_a_valid_number_error_message">유효한 번호를 입력하세요</string>
     <string name="invalid_card_number_error_message">잘못된 카드 번호</string>
     <string name="payment_failed_error_messages">결제를 취소했거나 응답이 지연되었을 수 있습니다. 다시 시도해 주세요.</string>
+    <string name="auto_refund_timeout_error_message">금액이 차감되었거나 보류된 경우, 해당되는 대로 자동으로 환불되거나 해제됩니다.</string>
+    <string name="confirming_payment_info">결제를 확인하는 중…</string>
 
     <!--    Cta with values-->
     <string name="auto_retry_cta_with_value">%1$s 후 재시도 – 취소하려면 탭하세요</string>

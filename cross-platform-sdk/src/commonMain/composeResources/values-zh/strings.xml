@@ -209,6 +209,8 @@
     <string name="enter_a_valid_number_error_message">请输入有效号码</string>
     <string name="invalid_card_number_error_message">卡号无效</string>
     <string name="payment_failed_error_messages">您可能取消了付款，或响应出现延迟，请重试。</string>
+    <string name="auto_refund_timeout_error_message">如有金额被扣除或冻结，将根据情况自动退款或解冻。</string>
+    <string name="confirming_payment_info">正在确认您的付款…</string>
 
     <!--    Cta with values-->
     <string name="auto_retry_cta_with_value">%1$s 后重试 – 点击取消</string>

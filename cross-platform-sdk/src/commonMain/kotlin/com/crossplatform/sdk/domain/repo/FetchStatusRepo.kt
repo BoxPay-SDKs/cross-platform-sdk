@@ -1,6 +1,7 @@
 package com.crossplatform.sdk.domain.repo
 
 import com.crossplatform.sdk.data.ApiResponse
+import com.crossplatform.sdk.data.model.AutoRefundTimerResponse
 import com.crossplatform.sdk.data.model.FetchStatusResponse
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 
@@ -9,4 +10,8 @@ internal interface FetchStatusRepo {
     suspend fun autoRetryInitiatePayment(
         transactionId : String
     ) : ApiResponse<PaymentMethodPostResponse>
+
+    suspend fun startAutoRefundTimer(
+        transactionId : String
+    ) : ApiResponse<AutoRefundTimerResponse>
 }

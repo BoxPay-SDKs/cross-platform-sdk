@@ -209,6 +209,8 @@
     <string name="enter_a_valid_number_error_message">Nhập số hợp lệ</string>
     <string name="invalid_card_number_error_message">Số thẻ không hợp lệ</string>
     <string name="payment_failed_error_messages">Có thể bạn đã hủy thanh toán hoặc phản hồi bị chậm trễ. Vui lòng thử lại.</string>
+    <string name="auto_refund_timeout_error_message">Nếu có bất kỳ khoản tiền nào bị trừ hoặc bị giữ, khoản đó sẽ được tự động hoàn lại hoặc giải phóng, tùy trường hợp.</string>
+    <string name="confirming_payment_info">Đang xác nhận thanh toán của bạn…</string>
 
     <!--    Cta with values-->
     <string name="auto_retry_cta_with_value">Đang thử lại sau %1$s – Nhấn để hủy</string>

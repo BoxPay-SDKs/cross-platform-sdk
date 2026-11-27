@@ -209,6 +209,8 @@
     <string name="enter_a_valid_number_error_message">Masukkan nomor yang valid</string>
     <string name="invalid_card_number_error_message">Nomor kartu tidak valid</string>
     <string name="payment_failed_error_messages">Anda mungkin telah membatalkan pembayaran atau ada penundaan respons. Silakan coba lagi.</string>
+    <string name="auto_refund_timeout_error_message">Jika ada dana yang terpotong atau diblokir, dana tersebut akan dikembalikan atau dilepaskan secara otomatis, sesuai kondisi.</string>
+    <string name="confirming_payment_info">Mengonfirmasi pembayaran Anda…</string>
 
     <!--    Cta with values-->
     <string name="auto_retry_cta_with_value">Mencoba ulang dalam %1$s – Ketuk untuk membatalkan</string>

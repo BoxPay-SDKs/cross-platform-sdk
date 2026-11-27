@@ -11,6 +11,8 @@ import com.crossplatform.sdk.domain.repo.CallUIAnalyticsRepo
 import com.crossplatform.sdk.domain.repo.FetchStatusRepo
 import com.crossplatform.sdk.domain.repo.OtherPaymentMethodRepo
 import com.crossplatform.sdk.presentation.AppLifecycleObserver
+import com.crossplatform.sdk.presentation.sharedContext.AutoRefundHandler
+import com.crossplatform.sdk.presentation.sharedContext.fetchStatusWithAutoRefund
 import com.crossplatform.sdk.presentation.sharedContext.handlePaymentResponse
 import com.crossplatform.sdk.presentation.sharedContext.handleUpiCollectFetchStatus
 import kotlinx.coroutines.Job
@@ -102,6 +104,19 @@ internal class PayNowScreenViewModel(
 
     fun markExpired() {
         _qrState.value = PayNowUiState.Expired
+        // QR window ended: if still PENDING and auto refund is enabled, run the countdown.
+        if (!AutoRefundHandler.isEnabled || AutoRefundHandler.isRunning) return
+        viewModelScope.launch {
+            fetchStatusWithAutoRefund(
+                fetchStatusRepo = fetchStatusRepo,
+                setIsBoxPayAnimationVisible = {
+                    stopFetchStatusPolling()
+                    isQRFetching.value = it
+                },
+                onAutoRetry = {},
+                isPollingFlow = true
+            )
+        }
     }
 
     fun startFetchStatusPolling() {

@@ -626,6 +626,7 @@ internal fun MainScreen(
                         stopFunctionCall = {
                             viewModel.stopFetchStatusPolling()
                         },
+                        onQrExpired = { viewModel.onUpiWindowEnded() },
                         showQROnLoad = showQROnLoad.value,
                         isQRLoaded = viewModel.isQRLoaded.value,
                         onVpaChanged = {
@@ -687,9 +688,11 @@ internal fun MainScreen(
                             viewModel.postUpiIntentRequest(selectedIntent = selectedIntent, type = "upiotm/intent", surchargeList = surchargeList)
                         },
                         onClickUpiQRPayButton = {
-                            viewModel.isQRLoaded.value = true
-                            val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
-                            viewModel.postUPIQrRequest("upiotm/qr", surchargeList = surchargeList)
+                            if(selectedPaymentMethod.value.equals("upionetimemandate", true)) {
+                                viewModel.isQRLoaded.value = true
+                                val surchargeList = viewModel.resolveSurchargeList( selectedPaymentMethod.value, selectedPaymentNetwork.value,)
+                                viewModel.postUPIQrRequest("upiotm/qr", surchargeList = surchargeList)
+                            }
                         },
                         savedUpiList = viewModel.upiRecommendedList.value,
                         onClickRadio = {
@@ -722,6 +725,7 @@ internal fun MainScreen(
                         stopFunctionCall = {
                             viewModel.stopFetchStatusPolling()
                         },
+                        onQrExpired = { viewModel.onUpiWindowEnded() },
                         showQROnLoad = showQROnLoad.value,
                         isQRLoaded = viewModel.isQRLoaded.value,
                         onVpaChanged = {

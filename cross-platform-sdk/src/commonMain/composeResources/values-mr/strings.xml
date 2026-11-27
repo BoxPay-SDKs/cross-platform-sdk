@@ -209,6 +209,8 @@
     <string name="enter_a_valid_number_error_message">वैध क्रमांक टाका</string>
     <string name="invalid_card_number_error_message">अवैध कार्ड नंबर</string>
     <string name="payment_failed_error_messages">तुम्ही पेमेंट रद्द केले असावे किंवा प्रतिसादात विलंब झाला असावा. कृपया पुन्हा प्रयत्न करा.</string>
+    <string name="auto_refund_timeout_error_message">जर कोणतीही रक्कम कापली गेली असेल किंवा रोखली गेली असेल, तर ती लागू असेल त्यानुसार आपोआप परत केली जाईल किंवा मोकळी केली जाईल.</string>
+    <string name="confirming_payment_info">तुमच्या पेमेंटची पुष्टी केली जात आहे…</string>
 
     <!--    Cta with values-->
     <string name="auto_retry_cta_with_value">%1$s मध्ये पुन्हा प्रयत्न करत आहोत – रद्द करण्यासाठी टॅप करा</string>

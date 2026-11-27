@@ -20,7 +20,7 @@ import com.crossplatform.sdk.domain.repo.OtherPaymentMethodRepo
 import com.crossplatform.sdk.presentation.UiState
 import com.crossplatform.sdk.presentation.currentMonth
 import com.crossplatform.sdk.presentation.currentYear
-import com.crossplatform.sdk.presentation.sharedContext.handleFetchStatus
+import com.crossplatform.sdk.presentation.sharedContext.fetchStatusWithAutoRefund
 import com.crossplatform.sdk.presentation.sharedContext.handlePaymentResponse
 import crossplatformsdk.cross_platform_sdk.generated.resources.Res
 import crossplatformsdk.cross_platform_sdk.generated.resources.ic_amex
@@ -341,9 +341,8 @@ internal class EMIScreenViewModel(
         viewModelScope.launch {
             CheckoutDetailsHandler.setInquiryToken(inquiryResult)
             isBoxPayAnimationVisible.value = true
-            val response = fetchStatusRepo.fetchStatus()
-            handleFetchStatus(
-                response = response,
+            fetchStatusWithAutoRefund(
+                fetchStatusRepo = fetchStatusRepo,
                 setIsBoxPayAnimationVisible = {isBoxPayAnimationVisible.value = it},
                 onAutoRetry = {
                     CheckoutDetailsHandler.showAutoRetryDropDown { autoRetryInitiatePayment() }

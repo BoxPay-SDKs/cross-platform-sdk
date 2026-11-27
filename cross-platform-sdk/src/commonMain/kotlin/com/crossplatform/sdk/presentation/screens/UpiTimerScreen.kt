@@ -7,6 +7,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import com.crossplatform.sdk.presentation.components.ShowLoadingComponent
+import com.crossplatform.sdk.presentation.sharedContext.AutoRefundHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -62,14 +64,14 @@ import crossplatformsdk.cross_platform_sdk.generated.resources.yes_cta
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import com.crossplatform.sdk.presentation.theme.LocalSDKColors
 
 @Composable
 internal fun UpiTimerScreen(
     onBackPress : () -> Unit,
     shopperVpa : String,
     buttonColor : String,
-    buttonTextColor : String
+    buttonTextColor : String,
+    onTimerExpired : () -> Unit = {}
 ) {
     val viewModel : UpiTimerViewModel = koinViewModel()
     val timeRemaining by viewModel.timeRemaining.collectAsStateWithLifecycle()
@@ -79,6 +81,14 @@ internal fun UpiTimerScreen(
     val textColor     = if (isUrgent) Color(0xFFF53535) else buttonColor.toComposeColor()
 
     BackHandler(onBack = onBackPress)
+
+    // Timer reached 0 without a result: let the caller check for a pending payment.
+    androidx.compose.runtime.LaunchedEffect(timeRemaining) {
+        if (timeRemaining <= 0) onTimerExpired()
+    }
+    val autoRefundSeconds by AutoRefundHandler.secondsLeft.collectAsStateWithLifecycle()
+
+    Box(Modifier.fillMaxSize()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -195,6 +205,11 @@ internal fun UpiTimerScreen(
             isValid = true
         )
         Footer()
+    }
+    // Auto-refund countdown (loader + timer) while a pending payment is being confirmed
+    if (autoRefundSeconds != null) {
+        ShowLoadingComponent(Modifier.fillMaxSize())
+    }
     }
     if (showCancelModal) {
         CancelPaymentModal(

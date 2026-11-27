@@ -209,6 +209,8 @@
     <string name="enter_a_valid_number_error_message">சரியான எண்ணை உள்ளிடவும்</string>
     <string name="invalid_card_number_error_message">தவறான கார்டு எண்</string>
     <string name="payment_failed_error_messages">நீங்கள் கட்டணத்தை ரத்து செய்திருக்கலாம் அல்லது பதிலில் தாமதம் ஏற்பட்டிருக்கலாம். மீண்டும் முயற்சிக்கவும்.</string>
+    <string name="auto_refund_timeout_error_message">ஏதேனும் தொகை கழிக்கப்பட்டாலோ அல்லது முடக்கப்பட்டாலோ, பொருந்தும் வகையில் அது தானாகவே திருப்பிச் செலுத்தப்படும் அல்லது விடுவிக்கப்படும்.</string>
+    <string name="confirming_payment_info">உங்கள் கட்டணத்தை உறுதிசெய்கிறது…</string>
 
     <!--    Cta with values-->
     <string name="auto_retry_cta_with_value">%1$s-இல் மீண்டும் முயற்சிக்கிறோம் – ரத்து செய்ய தட்டவும்</string>

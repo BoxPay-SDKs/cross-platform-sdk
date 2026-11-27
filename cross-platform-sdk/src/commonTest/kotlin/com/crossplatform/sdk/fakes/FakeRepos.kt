@@ -3,6 +3,7 @@ package com.crossplatform.sdk.fakes
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.model.AnalyticsResponse
 import com.crossplatform.sdk.data.model.AppliedOfferResponse
+import com.crossplatform.sdk.data.model.AutoRefundTimerResponse
 import com.crossplatform.sdk.data.model.FetchCardDetails
 import com.crossplatform.sdk.data.model.FetchSavedAddress
 import com.crossplatform.sdk.data.model.FetchStatusResponse
@@ -93,6 +94,8 @@ internal class FakeFetchStatusRepo : FetchStatusRepo {
 
     var fetchStatusCallCount: Int = 0
     var lastAutoRetryTransactionId: String? = null
+    var startAutoRefundTimerResult: ApiResponse<AutoRefundTimerResponse> = ApiResponse.Loading
+    var lastAutoRefundTransactionId: String? = null
 
     override suspend fun fetchStatus(): ApiResponse<FetchStatusResponse> {
         fetchStatusCallCount++
@@ -102,6 +105,11 @@ internal class FakeFetchStatusRepo : FetchStatusRepo {
     override suspend fun autoRetryInitiatePayment(transactionId: String): ApiResponse<PaymentMethodPostResponse> {
         lastAutoRetryTransactionId = transactionId
         return autoRetryResult
+    }
+
+    override suspend fun startAutoRefundTimer(transactionId: String): ApiResponse<AutoRefundTimerResponse> {
+        lastAutoRefundTransactionId = transactionId
+        return startAutoRefundTimerResult
     }
 }
 

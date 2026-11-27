@@ -2,6 +2,7 @@ package com.crossplatform.sdk.data.repo
 
 import com.crossplatform.sdk.data.ApiResponse
 import com.crossplatform.sdk.data.implementation.ApiServiceImpl
+import com.crossplatform.sdk.data.model.AutoRefundTimerResponse
 import com.crossplatform.sdk.data.model.FetchStatusResponse
 import com.crossplatform.sdk.data.model.PaymentMethodPostResponse
 import com.crossplatform.sdk.data.service.ApiService
@@ -23,5 +24,11 @@ internal class FetchStatusRepoImpl (
         transactionId : String
     ) : ApiResponse<PaymentMethodPostResponse> = withContext(ioDispatcher) {
         apiService.autoRetryInitiatePayment(transactionId)
+    }
+
+    override suspend fun startAutoRefundTimer(
+        transactionId : String
+    ) : ApiResponse<AutoRefundTimerResponse> = withContext(ioDispatcher) {
+        apiService.startAutoRefundTimer(transactionId)
     }
 }
